@@ -1,3 +1,15 @@
+import type { Context } from 'hono';
+
+import { Hono } from 'hono';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
+
+import type {
+  ReadOptions,
+  ReadResponse,
+  ReadSuccessResponse,
+  ScrapedData,
+} from '@deepcrawl-worker/types/index';
+
 import { KV_CACHE_EXPIRATION_TTL } from '@/config/constants';
 import {
   readPostValidator,
@@ -16,15 +28,6 @@ import {
 } from '@/utils/markdown';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
-import type {
-  ReadOptions,
-  ReadResponse,
-  ReadSuccessResponse,
-  ScrapedData,
-} from '@deepcrawl-worker/types/index';
-
-import { type Context, Hono } from 'hono';
-import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 

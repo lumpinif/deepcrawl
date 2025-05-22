@@ -1,7 +1,8 @@
-import { targetUrlHelper } from '@/utils/url/target-url-helper';
-import { readOptionsSchema as baseReadOptionsSchema } from '@deepcrawl-worker/types/routers/read';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+
+import { targetUrlHelper } from '@/utils/url/target-url-helper';
+import { readOptionsSchema as baseReadOptionsSchema } from '@deepcrawl-worker/types/routers/read';
 
 // Create a version of the schema without the url field
 export const readOptionsSchema = baseReadOptionsSchema.extend({

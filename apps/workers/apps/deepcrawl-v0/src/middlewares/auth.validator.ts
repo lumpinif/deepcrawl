@@ -6,5 +6,6 @@ export const authEmailLoginSchema = z.object({
   password: z.string(),
 });
 
-export const authEmailLoginValidator = () =>
-  zValidator('form', authEmailLoginSchema);
+export function authEmailLoginValidator() {
+  return zValidator('form', authEmailLoginSchema);
+}

@@ -5,12 +5,12 @@ interface URLUtils {
   /**
    * Removes the anchor fragment from a URL while preserving the rest of the URL
    */
-  removeAnchorFragment(url: string): string;
+  removeAnchorFragment: (url: string) => string;
 
   /**
    * Normalizes a URL by converting relative paths to absolute using the base URL
    */
-  normalizeUrl(url: string): string;
+  normalizeUrl: (url: string) => string;
 }
 
 /**

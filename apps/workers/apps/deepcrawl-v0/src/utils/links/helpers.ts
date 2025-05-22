@@ -39,8 +39,9 @@ export function getTreeNameForUrl(url: string): string {
   }
 }
 
-export const setToArrayOrUndefined = (set: Set<string>) =>
-  set.size > 0 ? Array.from(set) : undefined;
+export function setToArrayOrUndefined(set: Set<string>) {
+  return set.size > 0 ? Array.from(set) : undefined;
+}
 
 /**
  * Recursively counts the total number of nodes in a tree

@@ -1,13 +1,15 @@
+import type {
+  HTMLCleaningOptions,
+  HTMLCleaningResult,
+} from '@deepcrawl-worker/types/services/html-cleaning';
+
 import { DEFAULT_HTMLCLEANING_OPTIONS } from '@/config/default-options';
 import {
   AnchorFragmentHandler,
   ImageSrcNormalizeHandler,
   LinkNormalizeHandler,
 } from '@/services/html-cleaning/handlers/link-normalize';
-import type {
-  HTMLCleaningOptions,
-  HTMLCleaningResult,
-} from '@deepcrawl-worker/types/services/html-cleaning';
+
 import { Base64ImageHandler } from './handlers/base64-image';
 import { MainContentHandler } from './handlers/main-content';
 import { TagFilterHandler } from './handlers/tag-filter';
@@ -96,7 +98,7 @@ export async function HTMLCleaning({
   // metrics.compressionRatio = metrics.outputSize / metrics.inputSize;
 
   return {
-    cleanedHtml: cleanedHtml,
+    cleanedHtml,
     // metrics,
   };
 }

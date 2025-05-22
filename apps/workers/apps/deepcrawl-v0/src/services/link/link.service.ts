@@ -1,11 +1,4 @@
-import { MAX_VISITED_URLS_LIMIT } from '@/config/constants';
-import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
 import type { _linksSets } from '@/routers/links/route';
-import {
-  ImageSrcNormalizeHandler,
-  LinkNormalizeHandler,
-} from '@/services/html-cleaning/handlers/link-normalize';
-import { validateURL } from '@/utils/url/validate-url';
 import type {
   SkippedUrl,
   Visited,
@@ -14,6 +7,14 @@ import type {
   ExtractedLinks,
   LinkExtractionOptions,
 } from '@deepcrawl-worker/types/services/link';
+
+import { MAX_VISITED_URLS_LIMIT } from '@/config/constants';
+import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
+import {
+  ImageSrcNormalizeHandler,
+  LinkNormalizeHandler,
+} from '@/services/html-cleaning/handlers/link-normalize';
+import { validateURL } from '@/utils/url/validate-url';
 
 const MEDIA_EXTENSIONS = {
   images: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico'],

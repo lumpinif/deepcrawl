@@ -1,7 +1,8 @@
 import type { ErrorHandler } from 'hono';
+import type { StatusCode } from 'hono/utils/http-status';
+
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
-import type { StatusCode } from 'hono/utils/http-status';
 import { ZodError } from 'zod';
 
 interface ErrorIssue {
@@ -90,24 +91,26 @@ export class CrawlingError extends BaseError {
   }
 }
 
-export const createErrorResponse = (error: Error): ErrorResponse => ({
-  status: 'failed',
-  error: {
-    name: error.name,
-    issues:
-      error instanceof BaseError
-        ? error.issues
-        : error instanceof ZodError
-          ? error.errors
-          : [
-              {
-                code: 'unknown_error',
-                message: error.message,
-                cause: error.cause,
-              },
-            ],
-  },
-});
+export function createErrorResponse(error: Error): ErrorResponse {
+  return {
+    status: 'failed',
+    error: {
+      name: error.name,
+      issues:
+        error instanceof BaseError
+          ? error.issues
+          : error instanceof ZodError
+            ? error.errors
+            : [
+                {
+                  code: 'unknown_error',
+                  message: error.message,
+                  cause: error.cause,
+                },
+              ],
+    },
+  };
+}
 
 export const errorHandler: ErrorHandler = (err, c) => {
   let status: StatusCode = 500;

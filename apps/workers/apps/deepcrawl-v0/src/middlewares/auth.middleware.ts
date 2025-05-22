@@ -1,7 +1,8 @@
 import type { Database } from '@deepcrawl-worker/supabase/types/database.types';
-import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Context } from 'hono';
+
+import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import { setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 
@@ -11,9 +12,9 @@ declare module 'hono' {
   }
 }
 
-export const getSupabase = (c: Context) => {
+export function getSupabase(c: Context) {
   return c.get('supabase') as SupabaseClient<Database>;
-};
+}
 
 export const supabaseMiddleware = createMiddleware<{
   Bindings: CloudflareBindings;

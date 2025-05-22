@@ -1,3 +1,6 @@
+import { createSupabaseClientWithApiKey } from '@deepcrawl-worker/supabase/clients/api-client';
+import { Hono } from 'hono';
+
 import {
   createApikeyPostValidator,
   getApikeyLoadKeysPostValidator,
@@ -6,8 +9,6 @@ import {
 } from '@/middlewares/api-key.validator';
 import { getSupabase } from '@/middlewares/auth.middleware';
 import { authEmailLoginValidator } from '@/middlewares/auth.validator';
-import { createSupabaseClientWithApiKey } from '@deepcrawl-worker/supabase/clients/api-client';
-import { Hono } from 'hono';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 

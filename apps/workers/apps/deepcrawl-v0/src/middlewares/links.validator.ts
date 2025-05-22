@@ -1,7 +1,8 @@
-import { targetUrlHelper } from '@/utils/url/target-url-helper';
-import { linksOptionsSchema as baseLinkOptionsSchema } from '@deepcrawl-worker/types/routers/links';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+
+import { targetUrlHelper } from '@/utils/url/target-url-helper';
+import { linksOptionsSchema as baseLinkOptionsSchema } from '@deepcrawl-worker/types/routers/links';
 
 // Extend the base schema and override only the url field to use targetUrlHelper
 export const linksOptionsSchema = baseLinkOptionsSchema.extend({
@@ -13,5 +14,6 @@ export const linksOptionsSchema = baseLinkOptionsSchema.extend({
  */
 export const linksPostValidator = () => zValidator('json', linksOptionsSchema);
 
-export const linksQueryValidator = () =>
-  zValidator('query', linksOptionsSchema);
+export function linksQueryValidator() {
+  return zValidator('query', linksOptionsSchema);
+}

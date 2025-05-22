@@ -1,5 +1,9 @@
-import { RobotsParser } from '@/utils/meta/robots-parser';
-import { SitemapParser } from '@/utils/meta/sitemap-parser';
+import type { Options, ReadabilityResult } from '@paoramen/cheer-reader';
+import type { CheerioOptions } from 'cheerio';
+
+import { Readability } from '@paoramen/cheer-reader';
+import * as cheerio from 'cheerio';
+
 import type {
   LinksOptions,
   MetaFiles,
@@ -9,13 +13,10 @@ import type {
   MetadataOptions,
   PageMetadata,
 } from '@deepcrawl-worker/types/services/metadata';
-import {
-  type Options,
-  Readability,
-  type ReadabilityResult,
-} from '@paoramen/cheer-reader';
-import * as cheerio from 'cheerio';
-import type { CheerioOptions } from 'cheerio';
+
+import { RobotsParser } from '@/utils/meta/robots-parser';
+import { SitemapParser } from '@/utils/meta/sitemap-parser';
+
 import { HTMLCleaning } from '../html-cleaning/html-cleaning.service';
 
 interface MetaFilesOptions {
@@ -351,11 +352,12 @@ export class CheerioService {
     // Keywords
     if (keywords) {
       const kw = $('meta[name="keywords"]').attr('content');
-      if (kw)
+      if (kw) {
         metadata.keywords = kw
           .split(',')
           .map((s) => s.trim())
           .filter(Boolean);
+      }
     }
 
     // Favicon

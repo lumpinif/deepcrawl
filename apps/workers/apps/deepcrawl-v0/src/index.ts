@@ -1,17 +1,19 @@
+import type { RateLimitInfo } from 'hono-rate-limiter';
+
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { secureHeaders } from 'hono/secure-headers';
+import { trimTrailingSlash } from 'hono/trailing-slash';
+
 import { supabaseMiddleware } from '@/middlewares/auth.middleware';
 import { errorHandler, errorMiddleware } from '@/middlewares/error';
 import authRouter from '@/routers/auth/route';
 import linksRouter from '@/routers/links/route';
 import readRouter from '@/routers/read/route';
-import { Hono } from 'hono';
-import type { RateLimitInfo } from 'hono-rate-limiter';
-import { cors } from 'hono/cors';
-import { secureHeaders } from 'hono/secure-headers';
-import { trimTrailingSlash } from 'hono/trailing-slash';
 
-export type AppVariables = {
+export interface AppVariables {
   rateLimit: RateLimitInfo;
-};
+}
 
 const allowedOrigins = [
   'https://deepcrawl.dev',

@@ -1,22 +1,22 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "lib": ["ESNext", "DOM"],
+    "experimentalDecorators": true,
+    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "strict": true,
-    "skipLibCheck": true,
-    "lib": ["ESNext", "DOM"],
-    "types": ["./worker-configuration.d.ts", "node"],
-    "jsx": "react-jsx",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "@deepcrawl-worker/types/*": ["../../packages/types/dist/*"]
     },
-    "jsxImportSource": "hono/jsx",
-    "isolatedModules": true,
+    "types": ["./worker-configuration.d.ts", "node"],
     "allowJs": true,
+    "strict": true,
     "noEmit": true,
-    "experimentalDecorators": true
+    "isolatedModules": true,
+    "skipLibCheck": true
   }
 }

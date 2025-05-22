@@ -1,6 +1,8 @@
 import { URLError } from '@/middlewares/error';
-import { validateURL } from './validate-url';
-import { type ScrapeAllowedResult, isScrapeAllowed } from './validate-url';
+
+import type { ScrapeAllowedResult } from './validate-url';
+
+import { isScrapeAllowed, validateURL } from './validate-url';
 
 /**
  * Validate and normalize a URL, and check if it's allowed for scraping.
@@ -10,10 +12,10 @@ import { type ScrapeAllowedResult, isScrapeAllowed } from './validate-url';
  * @returns The normalized URL.
  * @throws URLError if the URL is invalid, not allowed for security reasons, or not allowed for scraping.
  */
-export const targetUrlHelper = (
+export function targetUrlHelper(
   url: string | null,
   shouldRemoveFragment = false,
-): string => {
+): string {
   if (!url) {
     throw new URLError('URL parameter is required');
   }
@@ -50,4 +52,4 @@ export const targetUrlHelper = (
   }
 
   return result.normalizedURL;
-};
+}

@@ -1,4 +1,21 @@
+import type { Context } from 'hono';
+
 import { performance } from 'node:perf_hooks';
+import { Hono } from 'hono';
+
+import type {
+  LinksOptions,
+  LinksPostResponse,
+  LinksPostSuccessResponse,
+  SkippedUrl,
+  Tree,
+  Visited,
+} from '@deepcrawl-worker/types/routers/links';
+import type { ScrapedData } from '@deepcrawl-worker/types/services/cheerio';
+import type {
+  ExtractedLinks,
+  LinkExtractionOptions,
+} from '@deepcrawl-worker/types/services/link';
 
 import {
   KV_CACHE_EXPIRATION_TTL,
@@ -17,22 +34,8 @@ import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
-import type {
-  LinksOptions,
-  LinksPostResponse,
-  LinksPostSuccessResponse,
-  SkippedUrl,
-  Tree,
-  Visited,
-} from '@deepcrawl-worker/types/routers/links';
-import type { ScrapedData } from '@deepcrawl-worker/types/services/cheerio';
-import type {
-  ExtractedLinks,
-  LinkExtractionOptions,
-} from '@deepcrawl-worker/types/services/link';
-import { type Context, Hono } from 'hono';
 
-//TODO: CONSIDER REMOVE cleanedHtml from the response and the tree
+// TODO: CONSIDER REMOVE cleanedHtml from the response and the tree
 
 export interface _linksSets {
   internal: Set<string>;
@@ -91,10 +94,10 @@ async function processLinksRequest(
 
   // Target
   let targetUrl: string;
-  let ancestors: string[] | undefined = undefined;
-  let descendants: string[] | undefined = undefined;
-  let targetScrapeResult: ScrapedData | undefined = undefined;
-  let linksFromTarget: ExtractedLinks | undefined = undefined;
+  let ancestors: string[] | undefined;
+  let descendants: string[] | undefined;
+  let targetScrapeResult: ScrapedData | undefined;
+  let linksFromTarget: ExtractedLinks | undefined;
 
   // Extracted links map for each node in the tree
   const extractedLinksMap: Record<string, ExtractedLinks> = {};
@@ -121,8 +124,8 @@ async function processLinksRequest(
   };
 
   // KV Caches
-  let existingTree: Tree | undefined = undefined;
-  let finalTree: Tree | undefined = undefined;
+  let existingTree: Tree | undefined;
+  let finalTree: Tree | undefined;
   let lastVisitedUrlsInCache = new Set<Visited>();
   let linksCacheIsFresh = false;
 
@@ -139,7 +142,7 @@ async function processLinksRequest(
     return false;
   };
 
-  let linksPostResponse: LinksPostResponse | undefined = undefined;
+  let linksPostResponse: LinksPostResponse | undefined;
 
   try {
     const scrapeService = new CheerioService();
@@ -529,11 +532,11 @@ async function processLinksRequest(
         existingTree,
         newLinks: _internalLinks,
         rootUrl,
-        linkService: linkService,
+        linkService,
         visitedUrls: mergedVisitedUrls,
         metadataCache,
         extractedLinksMap,
-        includeExtractedLinks: includeExtractedLinks,
+        includeExtractedLinks,
         folderFirst,
         linksOrder,
       });
@@ -542,11 +545,11 @@ async function processLinksRequest(
       finalTree = helpers.buildLinksTree({
         internalLinks: _internalLinks,
         rootUrl,
-        linkService: linkService,
+        linkService,
         visitedUrls: mergedVisitedUrls,
         metadataCache,
         extractedLinksMap,
-        includeExtractedLinks: includeExtractedLinks,
+        includeExtractedLinks,
         folderFirst,
         linksOrder,
       });
@@ -579,7 +582,7 @@ async function processLinksRequest(
       }
     }
 
-    //*IMPORTANT* --- ONLY STAY HERE --- if user requested cleaned HTML, merge with the final tree --- this should stay after the KV put, since we don't want to store the cleaned HTML into KV which is a large amount of data
+    //* IMPORTANT* --- ONLY STAY HERE --- if user requested cleaned HTML, merge with the final tree --- this should stay after the KV put, since we don't want to store the cleaned HTML into KV which is a large amount of data
     if ((isCleanedHtml || !isMetadata) && withTree && finalTree) {
       // --- extract cleaned HTML from cache ---
       const cleanedHtmlCache: Record<string, ScrapedData['cleanedHtml']> = {};
@@ -594,12 +597,12 @@ async function processLinksRequest(
         existingTree: finalTree,
         newLinks: [],
         rootUrl,
-        linkService: linkService,
+        linkService,
         visitedUrls: mergedVisitedUrls,
         metadataCache: isMetadata ? metadataCache : undefined,
         cleanedHtmlCache,
         extractedLinksMap,
-        includeExtractedLinks: includeExtractedLinks,
+        includeExtractedLinks,
         folderFirst,
         linksOrder,
       });

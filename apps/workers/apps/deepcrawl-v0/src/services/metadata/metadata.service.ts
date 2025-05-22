@@ -1,8 +1,9 @@
-import { DEFAULT_METADATA_OPTIONS } from '@/config/default-options';
 import type {
   MetadataOptions,
   PageMetadata,
 } from '@deepcrawl-worker/types/services/metadata';
+
+import { DEFAULT_METADATA_OPTIONS } from '@/config/default-options';
 
 /**
  * Handler for extracting metadata from HTML elements

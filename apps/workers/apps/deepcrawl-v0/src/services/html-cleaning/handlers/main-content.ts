@@ -58,7 +58,6 @@ export class MainContentHandler implements HTMLRewriterElementContentHandlers {
 
     if (shouldRemove) {
       element.remove();
-      return;
     }
   }
 }

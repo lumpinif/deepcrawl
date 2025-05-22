@@ -12,11 +12,12 @@
     "db:gen-types": "pnpm dlx supabase gen types typescript --project-id $PROJECT_REF --schema public > supabase/types/database.types.ts"
   },
   "devDependencies": {
-    "supabase": "^2.23.4",
+    "@antfu/eslint-config": "^4.13.2",
+    "@biomejs/biome": "^1.9.4",
     "@deepcrawl-worker/typescript-config": "workspace:*",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.1",
-    "@biomejs/biome": "^1.9.4",
+    "supabase": "^2.23.4",
     "turbo": "^2.4.2"
   },
   "engines": {
