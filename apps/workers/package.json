@@ -1,0 +1,26 @@
+{
+  "name": "deepcrawl-worker",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "deploy": "turbo run deploy",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "fix": "turbo run fix",
+    "format": "turbo run format",
+    "typecheck": "turbo run typecheck",
+    "db:gen-types": "pnpm dlx supabase gen types typescript --project-id $PROJECT_REF --schema public > supabase/types/database.types.ts"
+  },
+  "devDependencies": {
+    "supabase": "^2.23.4",
+    "@deepcrawl-worker/typescript-config": "workspace:*",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.1",
+    "@biomejs/biome": "^1.9.4",
+    "turbo": "^2.4.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.4.1"
+}

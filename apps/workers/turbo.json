@@ -6,21 +6,11 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "cache": true
     },
     "lint": {
       "dependsOn": ["^lint"],
-      "outputs": [],
-      "cache": true
-    },
-    "format": {
-      "dependsOn": ["^format"],
-      "outputs": [],
-      "cache": true
-    },
-    "fix": {
-      "dependsOn": ["^fix"],
       "outputs": [],
       "cache": true
     },
@@ -29,8 +19,7 @@
       "outputs": [],
       "cache": true
     },
-    "check-types": {
-      "dependsOn": ["^check-types"],
+    "format": {
       "outputs": [],
       "cache": true
     },
@@ -39,6 +28,20 @@
       "persistent": true,
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": []
+    },
+    "fix": {
+      "dependsOn": ["^fix"],
+      "outputs": [],
+      "cache": true
+    },
+    "deploy": {
+      "dependsOn": ["^deploy"],
+      "outputs": [],
+      "cache": false
+    },
+    "db:gen-types": {
+      "outputs": ["**/supabase/types/**"],
+      "cache": true
     }
   }
 }

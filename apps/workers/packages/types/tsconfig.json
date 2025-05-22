@@ -1,0 +1,14 @@
+{
+  "extends": "@deepcrawl-worker/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": [".", "src"],
+  "exclude": ["*/dist", "dist", "node_modules"]
+}

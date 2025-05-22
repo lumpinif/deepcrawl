@@ -1,0 +1,66 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "deepcrawl-worker-v0",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-22",
+  "compatibility_flags": ["nodejs_compat"],
+  // "browser": {
+  //   "binding": "DEEPCRAWL_BROWSER_v0"
+  // },
+  // "durable_objects": {
+  //   "bindings": []
+  // },
+  "routes": [
+    {
+      "pattern": "api.deepcrawl.dev",
+      "custom_domain": true
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "DEEPCRAWL_V0_LINKS_STORE",
+      "id": "0c344c2052234f0d96e3a99a3e6b43ba",
+      "preview_id": "2f7ff57f058748eea8ba5c02876a8eae"
+    },
+    {
+      "binding": "DEEPCRAWL_V0_READ_STORE",
+      "id": "1dd4e23d3db2409ab2fa401cac8efad0",
+      "preview_id": "812d7fc53b5a47438054c749ec3d505a"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "observability": {
+    "enabled": true
+    // "head_sampling_rate": 1
+  }
+  // "queues": {
+  //   "producers": [
+  //     {
+  //       "queue": "crawler-02-queue",
+  //       "binding": "crawler_02_queue"
+  //     }
+  //   ],
+  //   "consumers": [
+  //     {
+  //       "queue": "crawler-02-queue",
+  //       "max_batch_size": 10,
+  //       "max_batch_timeout": 5
+  //     }
+  //   ]
+  // },
+  // "r2_buckets": [
+  //   {
+  //     "binding": "MY_BUCKET",
+  //     "bucket_name": "my-bucket"
+  //   }
+  // ],
+  // "d1_databases": [
+  //   {
+  //     "binding": "MY_DB",
+  //     "database_name": "my-database",
+  //     "database_id": ""
+  //   }
+  // ],
+}

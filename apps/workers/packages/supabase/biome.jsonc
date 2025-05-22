@@ -1,0 +1,6 @@
+{
+	"extends": ["./biome.jsonc"],
+	"files": {
+		"ignore": ["./types/database.types.ts"]
+	}
+}
