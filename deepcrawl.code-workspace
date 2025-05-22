@@ -1,0 +1,27 @@
+{
+  "folders": [
+    {
+      "name": "root",
+      "path": "."
+    },
+    {
+      "name": "workers",
+      "path": "./apps/workers"
+    },
+    {
+      "name": "web",
+      "path": "./apps/web"
+    },
+    {
+      "name": "dashboard",
+      "path": "./apps/dashboard"
+    },
+    {
+      "name": "packages",
+      "path": "./packages"
+    }
+  ],
+  "settings": {
+    "workbench.colorTheme": "Night Wolf (black)"
+  }
+}
