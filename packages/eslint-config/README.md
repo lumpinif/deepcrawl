@@ -1,3 +1,3 @@
-# `@workspace/eslint-config`
+# `@deepcrawl/eslint-config`
 
 Shared eslint configuration for the workspace.

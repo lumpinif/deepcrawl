@@ -7,12 +7,17 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "next lint && biome lint --write --unsafe",
+    "lint:fix": "next lint --fix && biome lint --write --unsafe",
+    "format": "biome format --write .",
+    "fix": "pnpm lint:fix && pnpm format && pnpm typecheck",
+    "ui": "pnpm dlx shadcn@canary",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@workspace/ui": "workspace:*",
+    "@deepcrawl/ui": "workspace:*",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.5",
     "lucide-react": "^0.475.0",
     "next": "^15.2.3",
     "next-themes": "^0.4.4",
@@ -20,11 +25,11 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@deepcrawl/eslint-config": "workspace:^",
+    "@deepcrawl/typescript-config": "workspace:*",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@workspace/eslint-config": "workspace:^",
-    "@workspace/typescript-config": "workspace:*",
-    "typescript": "^5.7.3"
+    "typescript": "5.7.3"
   }
 }

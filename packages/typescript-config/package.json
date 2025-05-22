@@ -1,6 +1,6 @@
 {
-  "name": "@workspace/typescript-config",
-  "version": "0.0.0",
+  "name": "@deepcrawl/typescript-config",
+  "version": "0.0.1",
   "private": true,
   "license": "PROPRIETARY",
   "publishConfig": {

@@ -1,16 +1,20 @@
 {
-  "name": "shadcn-ui-monorepo",
+  "name": "deepcrawl",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "turbo format && biome format --write .",
+    "lint:repo": "pnpm dlx sherif@latest",
+    "lint:repo:fix": "pnpm dlx sherif@latest --fix",
+    "fix": "turbo lint && turbo fix && pnpm format && turbo typecheck && pnpm run lint:repo:fix"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
-    "@workspace/typescript-config": "workspace:*",
+    "@biomejs/biome": "^1.9.4",
+    "@deepcrawl/eslint-config": "workspace:*",
+    "@deepcrawl/typescript-config": "workspace:*",
     "prettier": "^3.5.1",
     "turbo": "^2.4.2",
     "typescript": "5.7.3"

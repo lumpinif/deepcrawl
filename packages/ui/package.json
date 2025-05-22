@@ -1,12 +1,19 @@
 {
-  "name": "@workspace/ui",
-  "version": "0.0.0",
+  "name": "@deepcrawl/ui",
+  "version": "0.0.1",
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "eslint . --max-warnings 0"
+    "format": "biome format --write .",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "pnpm lint --fix",
+    "ui": "pnpm dlx shadcn@canary",
+    "fix": "pnpm run format && pnpm lint && pnpm lint:fix",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -19,15 +26,15 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@deepcrawl/eslint-config": "workspace:*",
+    "@deepcrawl/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.0.8",
     "@turbo/gen": "^2.4.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@workspace/eslint-config": "workspace:*",
-    "@workspace/typescript-config": "workspace:*",
     "tailwindcss": "^4.0.8",
-    "typescript": "^5.7.3"
+    "typescript": "5.7.3"
   },
   "exports": {
     "./globals.css": "./src/styles/globals.css",

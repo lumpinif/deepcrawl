@@ -1,3 +1,3 @@
-# `@workspace/typescript-config`
+# `@deepcrawl/typescript-config`
 
 Shared typescript configuration for the workspace.

@@ -1,6 +1,6 @@
 {
-  "name": "@workspace/eslint-config",
-  "version": "0.0.0",
+  "name": "@deepcrawl/eslint-config",
+  "version": "0.0.1",
   "type": "module",
   "private": true,
   "exports": {
@@ -19,7 +19,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-turbo": "^2.4.2",
     "globals": "^15.15.0",
-    "typescript": "^5.7.3",
+    "typescript": "5.7.3",
     "typescript-eslint": "^8.24.1"
   }
 }
