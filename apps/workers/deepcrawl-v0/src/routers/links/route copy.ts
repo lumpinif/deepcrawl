@@ -11,11 +11,11 @@ import type {
   Tree,
   Visited,
 } from '@deepcrawl/types/routers/links';
-import type { ScrapedData } from '@deepcrawl/types/services/cheerio';
 import type {
   ExtractedLinks,
   LinkExtractionOptions,
 } from '@deepcrawl/types/services/link';
+import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 
 import {
   KV_CACHE_EXPIRATION_TTL,

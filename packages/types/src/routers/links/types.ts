@@ -1,4 +1,3 @@
-import type { ScrapedData } from '@deepcrawl/types/services/cheerio/types';
 import { HTMLCleaningOptionsSchema } from '@deepcrawl/types/services/html-cleaning/types';
 import {
   type ExtractedLinks,
@@ -8,6 +7,7 @@ import {
   MetadataOptionsSchema,
   type PageMetadata,
 } from '@deepcrawl/types/services/metadata/types';
+import type { ScrapedData } from '@deepcrawl/types/services/scrape/types';
 import { z } from '@hono/zod-openapi';
 
 /**

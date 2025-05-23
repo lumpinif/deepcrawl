@@ -18,8 +18,8 @@
     "./routers/browse": {
       "types": "./src/routers/browse/index.ts"
     },
-    "./services/cheerio": {
-      "types": "./src/services/cheerio/index.ts"
+    "./services/scrape": {
+      "types": "./src/services/scrape/index.ts"
     },
     "./services/html-cleaning": {
       "types": "./src/services/html-cleaning/index.ts"

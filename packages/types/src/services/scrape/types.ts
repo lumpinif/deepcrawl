@@ -2,7 +2,7 @@ import type { MetaFiles } from '@deepcrawl/types/routers/links/types';
 import type { PageMetadata } from '@deepcrawl/types/services/metadata/types';
 
 /**
- * Represents data scraped from a webpage using Cheerio.
+ * Represents data scraped from a webpage.
  * Contains various extracted elements and metadata from the target page.
  *
  * @interface ScrapedData

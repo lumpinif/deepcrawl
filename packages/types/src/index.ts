@@ -12,14 +12,13 @@
  * import { LinkOptions } from '@deepcrawl/types/routers/link';
  *
  * // Or for service-specific types:
- * import { ScrapedData } from '@deepcrawl/types/services/cheerio';
+ * import { ScrapedData } from '@deepcrawl/types/services/scrape';
  * import { HTMLCleaningOptions } from '@deepcrawl/types/services/html-cleaning';
  * import { LinkExtractionOptions } from '@deepcrawl/types/services/link';
  * import { PageMetadata } from '@deepcrawl/types/services/metadata';
  */
 
 // Export a services object for discoverability
-import * as CheerioTypes from './services/cheerio/types';
 import * as HTMLCleaningTypes from './services/html-cleaning/types';
 import * as LinkServiceTypes from './services/link/types';
 import * as MetadataTypes from './services/metadata/types';
@@ -34,7 +33,6 @@ export type { LinksTree as Tree };
  * Services namespace - provides access to all service types
  */
 export const Services = {
-  Cheerio: CheerioTypes,
   HTMLCleaning: HTMLCleaningTypes,
   Link: LinkServiceTypes,
   Metadata: MetadataTypes,
@@ -48,7 +46,7 @@ export const Routers = {
 };
 
 // Type-only exports for better IDE support
-export * as CheerioTypes from './services/cheerio/types';
+export * as ScrapedDataTypes from './services/scrape/types';
 export * as HTMLCleaningTypes from './services/html-cleaning/types';
 export * as LinkServiceTypes from './services/link/types';
 export * as MetadataTypes from './services/metadata/types';
@@ -56,7 +54,7 @@ export * as LinksRouterTypes from './routers/links/types';
 
 export * from './routers/links/index';
 export * from './routers/read/index';
-export * from './services/cheerio/index';
+export * from './services/scrape/index';
 export * from './services/html-cleaning/index';
 export * from './services/link/index';
 export * from './services/metadata/index';

@@ -7,16 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@supabase/ssr':
-        specifier: ^0.5.2
-        version: 0.5.2(@supabase/supabase-js@2.49.8)
-      '@supabase/supabase-js':
-        specifier: ^2.49.1
-        version: 2.49.8
-      supabase:
-        specifier: ^2.23.4
-        version: 2.23.4
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.9.4
@@ -27,6 +17,15 @@ importers:
       '@deepcrawl/typescript-config':
         specifier: workspace:*
         version: link:packages/typescript-config
+      '@supabase/ssr':
+        specifier: ^0.5.2
+        version: 0.5.2(@supabase/supabase-js@2.49.8)
+      '@supabase/supabase-js':
+        specifier: ^2.49.1
+        version: 2.49.8
+      supabase:
+        specifier: ^2.23.4
+        version: 2.23.4
       turbo:
         specifier: ^2.4.2
         version: 2.5.3
@@ -37,6 +36,8 @@ importers:
   apps/dashboard: {}
 
   apps/js-sdk: {}
+
+  apps/workers: {}
 
   apps/workers/deepcrawl-v0:
     dependencies:
