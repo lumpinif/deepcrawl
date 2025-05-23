@@ -1,112 +1,112 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "files": {
-    "ignoreUnknown": false,
-    "ignore": [
-      "**/bun.lockb",
-      "node_modules",
-      "node_modules/**/*",
-      "pnpm-lock.yaml",
-      "pnpm-workspace.yaml",
-      ".next",
-      "public",
-      ".vercel",
-      ".react-email",
-      "dist",
-      "./dist/**/*"
-    ]
-  },
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "defaultBranch": "main",
-    "useIgnoreFile": true
-  },
-  "formatter": {
-    "ignore": ["node_modules", ".next"],
-    "enabled": true,
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineEnding": "lf",
-    "lineWidth": 80,
-    "attributePosition": "auto"
-  },
-  "linter": {
-    "ignore": ["node_modules", ".next"],
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "nursery": {
-        "useSortedClasses": "info",
-        "noStaticElementInteractions": "warn",
-        "noHeadImportInDocument": "warn",
-        "noDocumentImportInPage": "warn",
-        "noDuplicateElseIf": "warn",
-        "noIrregularWhitespace": "warn",
-        "useValidAutocomplete": "warn"
-      },
-      "a11y": {
-        "useSemanticElements": "off", // Rule is buggy, revisit later
-        "noSvgWithoutTitle": "off", // We do not intend to adhere to this rule
-        // "useMediaCaption": "off", // We would need a cultural change to turn this on
-        "noAutofocus": "off", // We're highly intentional about when we use autofocus
-        "noBlankTarget": "off", // Covered by Conformance
-        "useFocusableInteractive": "off", // Disable focusable interactive element requirement
-        "useAriaPropsForRole": "off", // Disable required ARIA attributes check
-        "useKeyWithClickEvents": "off" // Disable keyboard event requirement with click events
-      },
-      "style": {
-        "useFragmentSyntax": "warn", // Not in recommended ruleset, turning on manually
-        "noYodaExpression": "warn", // Not in recommended ruleset, turning on manually
-        "useDefaultParameterLast": "warn", // Not in recommended ruleset, turning on manually
-        "useExponentiationOperator": "off", // Obscure and arguably not easily readable
-        "noUnusedTemplateLiteral": "off", // Stylistic opinion
-        "noUselessElse": "off" // Stylistic opinion
-      },
-      "correctness": {
-        "noUnusedImports": "warn", // Not in recommended ruleset, turning on manually
-        "useArrayLiterals": "warn", // Not in recommended ruleset, turning on manually
-        "noNewSymbol": "warn", // Not in recommended ruleset, turning on manually
-        "useJsxKeyInIterable": "off", // Rule is buggy, revisit later
-        "useExhaustiveDependencies": "off" // Community feedback on this rule has been poor, we will continue with ESLint
-      },
-      "complexity": {
-        "noForEach": "warn"
-      },
-      "suspicious": {
-        "noArrayIndexKey": "off",
-        "noShadowRestrictedNames": "off"
-      },
-      "security": {
-        // "noDangerouslySetInnerHtml": "off"
-      }
-    }
-  },
-  "organizeImports": {
-    "enabled": true
-  },
-  "javascript": {
-    "jsxRuntime": "reactClassic",
-    "formatter": {
-      "jsxQuoteStyle": "double",
-      "quoteProperties": "asNeeded",
-      "trailingCommas": "all",
-      "semicolons": "always",
-      "arrowParentheses": "always",
-      "bracketSpacing": true,
-      "bracketSameLine": false,
-      "quoteStyle": "single",
-      "attributePosition": "auto"
-    }
-  },
-  "json": {
-    "formatter": {
-      "enabled": true,
-      "trailingCommas": "none"
-    },
-    "parser": {
-      "allowComments": true,
-      "allowTrailingCommas": false
-    }
-  }
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"files": {
+		"ignoreUnknown": false,
+		"ignore": [
+			"**/bun.lockb",
+			"node_modules",
+			"node_modules/**/*",
+			"pnpm-lock.yaml",
+			"pnpm-workspace.yaml",
+			".next",
+			"public",
+			".vercel",
+			".react-email",
+			"dist",
+			"./dist/**/*"
+		]
+	},
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"defaultBranch": "main",
+		"useIgnoreFile": true
+	},
+	"formatter": {
+		"ignore": ["node_modules", ".next"],
+		"enabled": true,
+		"indentStyle": "space",
+		"indentWidth": 2,
+		"lineEnding": "lf",
+		"lineWidth": 80,
+		"attributePosition": "auto"
+	},
+	"linter": {
+		"ignore": ["node_modules", ".next"],
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"nursery": {
+				"useSortedClasses": "info",
+				"noStaticElementInteractions": "warn",
+				"noHeadImportInDocument": "warn",
+				"noDocumentImportInPage": "warn",
+				"noDuplicateElseIf": "warn",
+				"noIrregularWhitespace": "warn",
+				"useValidAutocomplete": "warn"
+			},
+			"a11y": {
+				"useSemanticElements": "off", // Rule is buggy, revisit later
+				"noSvgWithoutTitle": "off", // We do not intend to adhere to this rule
+				// "useMediaCaption": "off", // We would need a cultural change to turn this on
+				"noAutofocus": "off", // We're highly intentional about when we use autofocus
+				"noBlankTarget": "off", // Covered by Conformance
+				"useFocusableInteractive": "off", // Disable focusable interactive element requirement
+				"useAriaPropsForRole": "off", // Disable required ARIA attributes check
+				"useKeyWithClickEvents": "off" // Disable keyboard event requirement with click events
+			},
+			"style": {
+				"useFragmentSyntax": "warn", // Not in recommended ruleset, turning on manually
+				"noYodaExpression": "warn", // Not in recommended ruleset, turning on manually
+				"useDefaultParameterLast": "warn", // Not in recommended ruleset, turning on manually
+				"useExponentiationOperator": "off", // Obscure and arguably not easily readable
+				"noUnusedTemplateLiteral": "off", // Stylistic opinion
+				"noUselessElse": "off" // Stylistic opinion
+			},
+			"correctness": {
+				"noUnusedImports": "warn", // Not in recommended ruleset, turning on manually
+				"useArrayLiterals": "warn", // Not in recommended ruleset, turning on manually
+				"noNewSymbol": "warn", // Not in recommended ruleset, turning on manually
+				"useJsxKeyInIterable": "off", // Rule is buggy, revisit later
+				"useExhaustiveDependencies": "off" // Community feedback on this rule has been poor, we will continue with ESLint
+			},
+			"complexity": {
+				"noForEach": "warn"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "off",
+				"noShadowRestrictedNames": "off"
+			},
+			"security": {
+				// "noDangerouslySetInnerHtml": "off"
+			}
+		}
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"javascript": {
+		"jsxRuntime": "reactClassic",
+		"formatter": {
+			"jsxQuoteStyle": "double",
+			"quoteProperties": "asNeeded",
+			"trailingCommas": "all",
+			"semicolons": "always",
+			"arrowParentheses": "always",
+			"bracketSpacing": true,
+			"bracketSameLine": false,
+			"quoteStyle": "single",
+			"attributePosition": "auto"
+		}
+	},
+	"json": {
+		"formatter": {
+			"enabled": true,
+			"trailingCommas": "none"
+		},
+		"parser": {
+			"allowComments": true,
+			"allowTrailingCommas": false
+		}
+	}
 }

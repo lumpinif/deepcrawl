@@ -1,0 +1,29 @@
+{
+	"name": "@deepcrawl/types",
+	"version": "0.0.1",
+	"description": "TypeScript types and schemas for the @deepcrawl API",
+	"author": "deepcrawl.ai - Felix",
+	"private": true,
+	"types": "./src/index.ts",
+	"exports": {
+		".": {
+			"types": "./src/index.ts"
+		}
+	},
+	"scripts": {
+		"lint": "biome lint --write .",
+		"lint:fix": "biome lint --write --unsafe",
+		"format": "biome format --write .",
+		"check": "biome check . --write",
+		"fix": "pnpm lint && pnpm format && pnpm check",
+		"typecheck": "tsc --noEmit"
+	},
+	"peerDependencies": {
+		"typescript": ">=5.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "20.8.3",
+		"rimraf": "^5.0.5"
+	},
+	"keywords": ["deepcrawl", "api", "types", "typescript", "zod"]
+}

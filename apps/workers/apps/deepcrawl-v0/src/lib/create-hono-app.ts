@@ -49,8 +49,8 @@ export default function createApp() {
         allowMethods: ['GET', 'POST', 'OPTIONS'],
       }),
     )
-    .use('*', supabaseMiddleware)
-    .use('*', errorMiddleware);
+    .use('*', supabaseMiddleware);
+  // .use('*', errorMiddleware);
 
   // app.use('*', freeUserRateLimiter);
 
