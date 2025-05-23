@@ -1,52 +1,23 @@
-import type { RateLimitInfo } from 'hono-rate-limiter';
-
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
-import { secureHeaders } from 'hono/secure-headers';
-import { trimTrailingSlash } from 'hono/trailing-slash';
-
-import { supabaseMiddleware } from '@/middlewares/auth.middleware';
-import { errorHandler, errorMiddleware } from '@/middlewares/error';
 import authRouter from '@/routers/auth/route';
 import linksRouter from '@/routers/links/route';
 import readRouter from '@/routers/read/route';
 
-export interface AppVariables {
-  rateLimit: RateLimitInfo;
+import configureOpenAPI from './lib/configure-open-api';
+import createApp from './lib/create-hono-app';
+import root from './routers/root/route';
+
+const app = createApp();
+
+configureOpenAPI(app);
+
+const routes = [root] as const;
+
+for (const route of routes) {
+  app.route('/', route);
 }
 
-const allowedOrigins = [
-  'https://deepcrawl.dev',
-  'http://localhost:3000',
-  'http://127.0.0.1:8787',
-];
-
-const app = new Hono<{
-  Bindings: CloudflareBindings;
-  Variables: AppVariables;
-}>();
-
-app.use('*', secureHeaders());
-app.use(
-  '*',
-  cors({
-    credentials: true,
-    origin: allowedOrigins,
-    allowHeaders: ['content-type'],
-    allowMethods: ['GET', 'POST', 'OPTIONS'],
-  }),
-);
-app.use('*', supabaseMiddleware);
-app.use('*', errorMiddleware);
-app.use('*', trimTrailingSlash());
-// app.use('*', freeUserRateLimiter);
-
-app
-  .get('/', (c) => c.json({ hi: 'Welcome to deepcrawl-v0 API' }))
-  .route('/auth', authRouter)
-  .route('/links', linksRouter)
-  .route('/read', readRouter)
-  .onError(errorHandler)
-  .notFound((c) => c.json({ error: 'Endpoint Not found' }, 404));
+app.route('/auth', authRouter);
+app.route('/links', linksRouter);
+app.route('/read', readRouter);
 
 export default app;

@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 
-import { performance } from 'node:perf_hooks';
 import { Hono } from 'hono';
+import { performance } from 'node:perf_hooks';
 
 import type {
   LinksOptions,
@@ -207,7 +207,7 @@ async function processLinksRequest(
           error instanceof Error ? error.message : String(error);
         skippedUrls.set(url, `Failed to scrape: ${errorMessage}`);
         // Return undefined on error
-        return;
+        // return;
       }
     };
 
