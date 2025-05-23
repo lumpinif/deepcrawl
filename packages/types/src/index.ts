@@ -19,44 +19,44 @@
  */
 
 // Export a services object for discoverability
-import * as CheerioTypes from "./services/cheerio/types";
-import * as HTMLCleaningTypes from "./services/html-cleaning/types";
-import * as LinkServiceTypes from "./services/link/types";
-import * as MetadataTypes from "./services/metadata/types";
+import * as CheerioTypes from './services/cheerio/types';
+import * as HTMLCleaningTypes from './services/html-cleaning/types';
+import * as LinkServiceTypes from './services/link/types';
+import * as MetadataTypes from './services/metadata/types';
 
 // Re-export router types for better discoverability
-import * as LinksRouterTypes from "./routers/links/types";
+import * as LinksRouterTypes from './routers/links/types';
 
-import type { LinksTree } from "./routers/links/types";
+import type { LinksTree } from './routers/links/types';
 export type { LinksTree as Tree };
 
 /**
  * Services namespace - provides access to all service types
  */
 export const Services = {
-	Cheerio: CheerioTypes,
-	HTMLCleaning: HTMLCleaningTypes,
-	Link: LinkServiceTypes,
-	Metadata: MetadataTypes,
+  Cheerio: CheerioTypes,
+  HTMLCleaning: HTMLCleaningTypes,
+  Link: LinkServiceTypes,
+  Metadata: MetadataTypes,
 };
 
 /**
  * Routers namespace - provides access to all router types
  */
 export const Routers = {
-	Links: LinksRouterTypes,
+  Links: LinksRouterTypes,
 };
 
 // Type-only exports for better IDE support
-export * as CheerioTypes from "./services/cheerio/types";
-export * as HTMLCleaningTypes from "./services/html-cleaning/types";
-export * as LinkServiceTypes from "./services/link/types";
-export * as MetadataTypes from "./services/metadata/types";
-export * as LinksRouterTypes from "./routers/links/types";
+export * as CheerioTypes from './services/cheerio/types';
+export * as HTMLCleaningTypes from './services/html-cleaning/types';
+export * as LinkServiceTypes from './services/link/types';
+export * as MetadataTypes from './services/metadata/types';
+export * as LinksRouterTypes from './routers/links/types';
 
-export * from "./routers/links/index";
-export * from "./routers/read/index";
-export * from "./services/cheerio/index";
-export * from "./services/html-cleaning/index";
-export * from "./services/link/index";
-export * from "./services/metadata/index";
+export * from './routers/links/index';
+export * from './routers/read/index';
+export * from './services/cheerio/index';
+export * from './services/html-cleaning/index';
+export * from './services/link/index';
+export * from './services/metadata/index';

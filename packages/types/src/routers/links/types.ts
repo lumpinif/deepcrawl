@@ -1,14 +1,14 @@
-import type { ScrapedData } from "@/services/cheerio/types";
-import { HTMLCleaningOptionsSchema } from "@/services/html-cleaning/types";
+import type { ScrapedData } from "@deepcrawl/types/services/cheerio/types";
+import { HTMLCleaningOptionsSchema } from "@deepcrawl/types/services/html-cleaning/types";
 import {
 	type ExtractedLinks,
 	LinkExtractionOptionsSchema,
-} from "@/services/link/types";
+} from "@deepcrawl/types/services/link/types";
 import {
 	MetadataOptionsSchema,
 	type PageMetadata,
-} from "@/services/metadata/types";
-import { z } from "zod";
+} from "@deepcrawl/types/services/metadata/types";
+import { z } from "@hono/zod-openapi";
 
 /**
  * Schema for content extraction options.

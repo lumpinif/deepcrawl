@@ -1,5 +1,4 @@
 packages:
   - "apps/*"
   - "packages/*"
-  # Include nested workspace packages
-  - "apps/workers/packages/*"
+  - "apps/workers/*"

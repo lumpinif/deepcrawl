@@ -1,9 +1,23 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # Dependencies
-node_modules
+node_modules/
+.wrangler
 .pnp
 .pnp.js
+
+# prod
+dist/
+
+# dev
+.yarn/
+!.yarn/releases
+.vscode/*
+!.vscode/launch.json
+!.vscode/*.code-snippets
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf
 
 # Local env files
 .env
@@ -11,6 +25,10 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+.dev.vars
+.env.test
+.env.test.local
 
 # Testing
 coverage
@@ -27,9 +45,14 @@ out/
 build
 dist
 
-
-# Debug
+# logs
+logs/
+*.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Misc
 .DS_Store

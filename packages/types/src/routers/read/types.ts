@@ -1,6 +1,6 @@
-import type { ScrapedData } from "@/services/cheerio";
-import { MetadataOptionsSchema } from "@/services/metadata";
-import z from "zod";
+import type { ScrapedData } from "@deepcrawl/types/services/cheerio";
+import { MetadataOptionsSchema } from "@deepcrawl/types/services/metadata";
+import { z } from "@hono/zod-openapi";
 
 export const readOptionsSchema = z.object({
 	/**

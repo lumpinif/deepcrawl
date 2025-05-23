@@ -1,3 +1,0 @@
-{
-  "extends": "@deepcrawl-worker/typescript-config/base.json"
-}
