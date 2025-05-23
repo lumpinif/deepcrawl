@@ -1,5 +1,5 @@
-import type { MetaFiles } from "@deepcrawl/types/routers/links/types";
-import type { PageMetadata } from "@deepcrawl/types/services/metadata/types";
+import type { MetaFiles } from '@deepcrawl/types/routers/links/types';
+import type { PageMetadata } from '@deepcrawl/types/services/metadata/types';
 
 /**
  * Represents data scraped from a webpage using Cheerio.
@@ -35,10 +35,10 @@ import type { PageMetadata } from "@deepcrawl/types/services/metadata/types";
  * ```
  */
 export interface ScrapedData {
-	title: string;
-	rawHtml: string;
-	description: string;
-	metadata?: PageMetadata;
-	cleanedHtml?: string;
-	metaFiles?: MetaFiles;
+  title: string;
+  rawHtml: string;
+  description: string;
+  metadata?: PageMetadata;
+  cleanedHtml?: string;
+  metaFiles?: MetaFiles;
 }

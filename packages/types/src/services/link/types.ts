@@ -1,32 +1,32 @@
-import { z } from "@hono/zod-openapi";
+import { z } from '@hono/zod-openapi';
 
 /**
  * Schema for configuring link extraction behavior.
  * Defines validation rules for controlling how links are extracted from HTML.
  */
 export const LinkExtractionOptionsSchema = z
-	.object({
-		includeExternal: z.boolean().optional(), // Include links from other domains
-		includeMedia: z.boolean().optional(), // Include media files (images, videos, docs)
-		excludePatterns: z.array(z.string()).optional(), // Regex patterns to exclude URLs
-		removeQueryParams: z.boolean().optional(), // Remove query parameters from URLs
-	})
-	.strict();
+  .object({
+    includeExternal: z.boolean().optional(), // Include links from other domains
+    includeMedia: z.boolean().optional(), // Include media files (images, videos, docs)
+    excludePatterns: z.array(z.string()).optional(), // Regex patterns to exclude URLs
+    removeQueryParams: z.boolean().optional(), // Remove query parameters from URLs
+  })
+  .strict();
 
 /**
  * Schema for storing extracted links by category.
  * Defines the structure for organizing links extracted from a webpage.
  */
 export const ExtractedLinksSchema = z.object({
-	internal: z.array(z.string()).optional(),
-	external: z.array(z.string()).optional(),
-	media: z
-		.object({
-			images: z.array(z.string()).optional(),
-			videos: z.array(z.string()).optional(),
-			documents: z.array(z.string()).optional(),
-		})
-		.optional(),
+  internal: z.array(z.string()).optional(),
+  external: z.array(z.string()).optional(),
+  media: z
+    .object({
+      images: z.array(z.string()).optional(),
+      videos: z.array(z.string()).optional(),
+      documents: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 /**

@@ -1,19 +1,19 @@
-import { z } from "@hono/zod-openapi";
+import { z } from '@hono/zod-openapi';
 
 /**
  * Schema for HTML cleaning configuration options.
  * Defines the validation rules for HTML sanitization parameters.
  */
 export const HTMLCleaningOptionsSchema = z
-	.object({
-		allowedHTMLTags: z.array(z.string()).optional(),
-		disallowedHTMLTags: z.array(z.string()).optional(),
-		extractMainContent: z.boolean().optional().default(true),
-		/* Deprecated property, will be removed in future. add baseUrl to HTMLCleaning as a required parameter instead*/
-		documentBaseUrl: z.string().optional(),
-		removeBase64Images: z.boolean().optional().default(true),
-	})
-	.strict();
+  .object({
+    allowedHTMLTags: z.array(z.string()).optional(),
+    disallowedHTMLTags: z.array(z.string()).optional(),
+    extractMainContent: z.boolean().optional().default(true),
+    /* Deprecated property, will be removed in future. add baseUrl to HTMLCleaning as a required parameter instead*/
+    documentBaseUrl: z.string().optional(),
+    removeBase64Images: z.boolean().optional().default(true),
+  })
+  .strict();
 
 /**
  * Configuration options for HTML content cleaning and sanitization.
@@ -43,22 +43,22 @@ export type HTMLCleaningOptions = z.infer<typeof HTMLCleaningOptionsSchema>;
  * Used to create selectors for targeting specific elements during HTML processing.
  */
 export const ElementPatternSchema = z
-	.object({
-		tag: z.union([z.string(), z.instanceof(RegExp)]).optional(),
-		attributes: z
-			.array(
-				z
-					.object({
-						name: z.union([z.string(), z.instanceof(RegExp)]),
-						value: z.union([z.string(), z.instanceof(RegExp)]).optional(),
-					})
-					.strict(),
-			)
-			.optional(),
-		classNames: z.array(z.union([z.string(), z.instanceof(RegExp)])).optional(),
-		ids: z.array(z.union([z.string(), z.instanceof(RegExp)])).optional(),
-	})
-	.strict();
+  .object({
+    tag: z.union([z.string(), z.instanceof(RegExp)]).optional(),
+    attributes: z
+      .array(
+        z
+          .object({
+            name: z.union([z.string(), z.instanceof(RegExp)]),
+            value: z.union([z.string(), z.instanceof(RegExp)]).optional(),
+          })
+          .strict(),
+      )
+      .optional(),
+    classNames: z.array(z.union([z.string(), z.instanceof(RegExp)])).optional(),
+    ids: z.array(z.union([z.string(), z.instanceof(RegExp)])).optional(),
+  })
+  .strict();
 
 /**
  * Defines a pattern for matching DOM elements based on their properties.
@@ -92,9 +92,9 @@ export type ElementPattern = z.infer<typeof ElementPatternSchema>;
  * Tracks performance and effectiveness of the cleaning process.
  */
 export const HTMLCleaningMetricsSchema = z.object({
-	inputSize: z.number(),
-	outputSize: z.number(),
-	compressionRatio: z.number(),
+  inputSize: z.number(),
+  outputSize: z.number(),
+  compressionRatio: z.number(),
 });
 
 /**
@@ -121,8 +121,8 @@ export type HTMLCleaningMetrics = z.infer<typeof HTMLCleaningMetricsSchema>;
  * Defines the structure of the cleaning operation output.
  */
 export const HTMLCleaningResultSchema = z.object({
-	cleanedHtml: z.string(),
-	metrics: HTMLCleaningMetricsSchema.optional(),
+  cleanedHtml: z.string(),
+  metrics: HTMLCleaningMetricsSchema.optional(),
 });
 
 /**

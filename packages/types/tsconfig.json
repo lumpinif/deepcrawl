@@ -1,11 +1,11 @@
 {
-	"extends": "@deepcrawl/typescript-config/base.json",
-	"compilerOptions": {
-		"baseUrl": ".",
-		"paths": {
-			"@deepcrawl/types/*": ["./src/*"]
-		}
-	},
-	"include": [".", "src"],
-	"exclude": ["node_modules", "dist"]
+  "extends": "@deepcrawl/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@deepcrawl/types/*": ["./src/*"]
+    }
+  },
+  "include": [".", "src"],
+  "exclude": ["node_modules", "dist"]
 }

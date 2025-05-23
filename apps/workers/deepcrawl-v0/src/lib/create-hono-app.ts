@@ -10,7 +10,6 @@ import { notFound, onError, serveEmojiFavicon } from 'stoker/middlewares';
 import { defaultHook } from 'stoker/openapi';
 
 import { supabaseMiddleware } from '@/middlewares/auth.middleware';
-import { errorMiddleware } from '@/middlewares/error';
 import { pinoLogger } from '@/middlewares/pino-logger';
 
 import type { AppBindings, AppOpenAPI } from './types';

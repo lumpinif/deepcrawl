@@ -1,14 +1,14 @@
-import type { ScrapedData } from "@deepcrawl/types/services/cheerio/types";
-import { HTMLCleaningOptionsSchema } from "@deepcrawl/types/services/html-cleaning/types";
+import type { ScrapedData } from '@deepcrawl/types/services/cheerio/types';
+import { HTMLCleaningOptionsSchema } from '@deepcrawl/types/services/html-cleaning/types';
 import {
-	type ExtractedLinks,
-	LinkExtractionOptionsSchema,
-} from "@deepcrawl/types/services/link/types";
+  type ExtractedLinks,
+  LinkExtractionOptionsSchema,
+} from '@deepcrawl/types/services/link/types';
 import {
-	MetadataOptionsSchema,
-	type PageMetadata,
-} from "@deepcrawl/types/services/metadata/types";
-import { z } from "@hono/zod-openapi";
+  MetadataOptionsSchema,
+  type PageMetadata,
+} from '@deepcrawl/types/services/metadata/types';
+import { z } from '@hono/zod-openapi';
 
 /**
  * Schema for content extraction options.
@@ -19,23 +19,23 @@ import { z } from "@hono/zod-openapi";
  * @property cleanedHtmlOptions - Options for HTML cleaning
  */
 export const contentOptionsSchema = z.object({
-	/**
-	 * Options for metadata extraction.
-	 * Controls how metadata like title, description, etc. are extracted.
-	 */
-	metadataOptions: MetadataOptionsSchema.optional(),
+  /**
+   * Options for metadata extraction.
+   * Controls how metadata like title, description, etc. are extracted.
+   */
+  metadataOptions: MetadataOptionsSchema.optional(),
 
-	/**
-	 * Options for link extraction.
-	 * Controls how links are extracted and categorized.
-	 */
-	linksOptions: LinkExtractionOptionsSchema.optional(),
+  /**
+   * Options for link extraction.
+   * Controls how links are extracted and categorized.
+   */
+  linksOptions: LinkExtractionOptionsSchema.optional(),
 
-	/**
-	 * Options for HTML cleaning.
-	 * Controls how HTML is sanitized and cleaned.
-	 */
-	cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
+  /**
+   * Options for HTML cleaning.
+   * Controls how HTML is sanitized and cleaned.
+   */
+  cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
 });
 
 /**
@@ -46,40 +46,40 @@ export const contentOptionsSchema = z.object({
  * @property linksOrder - How to order links within each folder
  */
 export const treeOptionsSchema = z.object({
-	/**
-	 * Whether to place folders before leaf nodes in the tree.
-	 * Default: true
-	 */
-	folderFirst: z.preprocess(
-		(val) => val !== "false" && val !== false,
-		z.boolean().optional(),
-	),
-	/**
-	 * How to order links within each folder:
-	 *  - 'page'        preserve the original document order
-	 *  - 'alphabetical'  sort A→Z by URL
-	 * Default: 'page'
-	 */
-	linksOrder: z.enum(["page", "alphabetical"]).optional(),
+  /**
+   * Whether to place folders before leaf nodes in the tree.
+   * Default: true
+   */
+  folderFirst: z.preprocess(
+    (val) => val !== 'false' && val !== false,
+    z.boolean().optional(),
+  ),
+  /**
+   * How to order links within each folder:
+   *  - 'page'        preserve the original document order
+   *  - 'alphabetical'  sort A→Z by URL
+   * Default: 'page'
+   */
+  linksOrder: z.enum(['page', 'alphabetical']).optional(),
 
-	/**
-	 * Whether to include extracted links for each node in the tree.
-	 * Default: true
-	 */
-	extractedLinks: z.preprocess(
-		(val) => val !== "false" && val !== false,
-		z.boolean().optional(),
-	),
+  /**
+   * Whether to include extracted links for each node in the tree.
+   * Default: true
+   */
+  extractedLinks: z.preprocess(
+    (val) => val !== 'false' && val !== false,
+    z.boolean().optional(),
+  ),
 
-	/**
-	 * Whether to exclude subdomain as root URL.
-	 * Default: true
-	 * e.g., if false: rootUrl: https://swr.vercel.app -> https://vercel.app
-	 */
-	subdomainAsRootUrl: z.preprocess(
-		(val) => val !== "false" && val !== false,
-		z.boolean().optional(),
-	),
+  /**
+   * Whether to exclude subdomain as root URL.
+   * Default: true
+   * e.g., if false: rootUrl: https://swr.vercel.app -> https://vercel.app
+   */
+  subdomainAsRootUrl: z.preprocess(
+    (val) => val !== 'false' && val !== false,
+    z.boolean().optional(),
+  ),
 });
 
 /**
@@ -109,62 +109,62 @@ export const treeOptionsSchema = z.object({
  * ```
  */
 export const linksOptionsSchema = z.object({
-	/**
-	 * The URL to scrape.
-	 * Must be a valid URL string.
-	 */
-	url: z.string(),
+  /**
+   * The URL to scrape.
+   * Must be a valid URL string.
+   */
+  url: z.string(),
 
-	/**
-	 * Whether to build a site map tree.
-	 * Default: true
-	 */
-	// default true if not set
-	tree: z.preprocess(
-		(val) => val !== "false" && val !== false,
-		z.boolean().optional(),
-	),
+  /**
+   * Whether to build a site map tree.
+   * Default: true
+   */
+  // default true if not set
+  tree: z.preprocess(
+    (val) => val !== 'false' && val !== false,
+    z.boolean().optional(),
+  ),
 
-	/**
-	 * Whether to extract metadata from the page.
-	 * Default: true
-	 */
-	// default true if not set
-	metadata: z.preprocess(
-		(val) => val !== "false" && val !== false,
-		z.boolean().optional(),
-	),
+  /**
+   * Whether to extract metadata from the page.
+   * Default: true
+   */
+  // default true if not set
+  metadata: z.preprocess(
+    (val) => val !== 'false' && val !== false,
+    z.boolean().optional(),
+  ),
 
-	/**
-	 * Whether to return cleaned HTML.
-	 * Default: false
-	 */
-	cleanedHtml: z.preprocess(
-		(val) => val === "true" || val === true,
-		z.boolean().optional(),
-	),
+  /**
+   * Whether to return cleaned HTML.
+   * Default: false
+   */
+  cleanedHtml: z.preprocess(
+    (val) => val === 'true' || val === true,
+    z.boolean().optional(),
+  ),
 
-	/**
-	 * Whether to fetch and parse robots.txt.
-	 * Default: false
-	 */
-	robots: z.preprocess(
-		(val) => val === "true" || val === true,
-		z.boolean().optional(),
-	),
+  /**
+   * Whether to fetch and parse robots.txt.
+   * Default: false
+   */
+  robots: z.preprocess(
+    (val) => val === 'true' || val === true,
+    z.boolean().optional(),
+  ),
 
-	/**
-	 * Whether to fetch and parse sitemap.xml.
-	 * Default: false
-	 */
-	sitemapXML: z.preprocess(
-		(val) => val === "true" || val === true,
-		z.boolean().optional(),
-	),
+  /**
+   * Whether to fetch and parse sitemap.xml.
+   * Default: false
+   */
+  sitemapXML: z.preprocess(
+    (val) => val === 'true' || val === true,
+    z.boolean().optional(),
+  ),
 
-	...treeOptionsSchema.shape,
+  ...treeOptionsSchema.shape,
 
-	...contentOptionsSchema.shape,
+  ...contentOptionsSchema.shape,
 });
 
 /**
@@ -248,79 +248,79 @@ export type LinksOptions = z.infer<typeof linksOptionsSchema>;
  * ```
  */
 export interface LinksTree {
-	/**
-	 * The URL of this node.
-	 */
-	url: string;
+  /**
+   * The URL of this node.
+   */
+  url: string;
 
-	/**
-	 * The root URL of the website.
-	 * This is the domain root, not necessarily the targetUrl.
-	 */
-	rootUrl?: string;
+  /**
+   * The root URL of the website.
+   * This is the domain root, not necessarily the targetUrl.
+   */
+  rootUrl?: string;
 
-	/**
-	 * The name of this node.
-	 */
-	name?: string;
+  /**
+   * The name of this node.
+   */
+  name?: string;
 
-	/**
-	 * Total number of URLs in the tree.
-	 */
-	totalUrls?: number;
+  /**
+   * Total number of URLs in the tree.
+   */
+  totalUrls?: number;
 
-	/**
-	 * Execution time of the request in milliseconds.
-	 * Format: string with "ms" suffix (e.g., "1234ms").
-	 */
-	executionTime?: string;
+  /**
+   * Execution time of the request in milliseconds.
+   * Format: string with "ms" suffix (e.g., "1234ms").
+   */
+  executionTime?: string;
 
-	/**
-	 * ISO timestamp when this node was last updated.
-	 * Format: ISO 8601 string.
-	 */
-	lastUpdated: string;
+  /**
+   * ISO timestamp when this node was last updated.
+   * Format: ISO 8601 string.
+   */
+  lastUpdated: string;
 
-	/**
-	 * ISO timestamp when this URL was last visited.
-	 * Format: ISO 8601 string or null if never visited.
-	 */
-	lastVisited?: string | null;
+  /**
+   * ISO timestamp when this URL was last visited.
+   * Format: ISO 8601 string or null if never visited.
+   */
+  lastVisited?: string | null;
 
-	/**
-	 * Child pages of this URL.
-	 * Each child is another LinksTree node.
-	 */
-	children?: LinksTree[];
+  /**
+   * Child pages of this URL.
+   * Each child is another LinksTree node.
+   */
+  children?: LinksTree[];
 
-	/**
-	 * Error message if there was an issue processing this URL.
-	 */
-	error?: string;
+  /**
+   * Error message if there was an issue processing this URL.
+   */
+  error?: string;
 
-	/**
-	 * Metadata extracted from the page.
-	 * Contains information like title, description, etc.
-	 */
-	metadata?: PageMetadata;
+  /**
+   * Metadata extracted from the page.
+   * Contains information like title, description, etc.
+   */
+  metadata?: PageMetadata;
 
-	/**
-	 * Cleaned HTML content of the page.
-	 * Contains sanitized HTML with unnecessary elements removed.
-	 */
-	cleanedHtml?: string;
+  /**
+   * Cleaned HTML content of the page.
+   * Contains sanitized HTML with unnecessary elements removed.
+   */
+  cleanedHtml?: string;
 
-	/**
-	 * Extracted links from the page.
-	 * Contains information about the current url's extracted links.
-	 */
-	extractedLinks?: ExtractedLinks;
+  /**
+   * Extracted links from the page.
+   * Contains information about the current url's extracted links.
+   */
+  extractedLinks?: ExtractedLinks;
 
-	/**
-	 * Skipped URLs and their reasons.
-	 * Contains information about URLs that were not processed.
-	 */
-	skippedUrls?: SkippedLinks;
+  /**
+   * Skipped URLs and their reasons.
+   * Contains information about URLs that were not processed.
+   */
+  skippedUrls?: SkippedLinks;
 }
 
 /**
@@ -331,16 +331,16 @@ export interface LinksTree {
  * @property lastVisited - ISO timestamp when this URL was last visited
  */
 export interface Visited {
-	/**
-	 * The URL that was visited.
-	 */
-	url: string;
+  /**
+   * The URL that was visited.
+   */
+  url: string;
 
-	/**
-	 * ISO timestamp when this URL was last visited.
-	 * Format: ISO 8601 string or null if never visited.
-	 */
-	lastVisited?: string | null;
+  /**
+   * ISO timestamp when this URL was last visited.
+   * Format: ISO 8601 string or null if never visited.
+   */
+  lastVisited?: string | null;
 }
 
 /**
@@ -359,16 +359,16 @@ export interface Visited {
  * ```
  */
 export interface SkippedUrl {
-	/**
-	 * The URL that was skipped.
-	 */
-	url: string;
+  /**
+   * The URL that was skipped.
+   */
+  url: string;
 
-	/**
-	 * The reason why this URL was skipped.
-	 * Examples: "Blocked by robots.txt", "HTTP error", etc.
-	 */
-	reason: string;
+  /**
+   * The reason why this URL was skipped.
+   * Examples: "Blocked by robots.txt", "HTTP error", etc.
+   */
+  reason: string;
 }
 
 /**
@@ -393,43 +393,43 @@ export interface SkippedUrl {
  * ```
  */
 export interface SkippedLinks {
-	/**
-	 * Internal links that were skipped.
-	 * These are links within the same domain.
-	 */
-	internal?: SkippedUrl[];
+  /**
+   * Internal links that were skipped.
+   * These are links within the same domain.
+   */
+  internal?: SkippedUrl[];
 
-	/**
-	 * External links that were skipped.
-	 * These are links to other domains.
-	 */
-	external?: SkippedUrl[];
+  /**
+   * External links that were skipped.
+   * These are links to other domains.
+   */
+  external?: SkippedUrl[];
 
-	/**
-	 * Media links that were skipped.
-	 * Categorized by media type.
-	 */
-	media?: {
-		/**
-		 * Image links that were skipped.
-		 */
-		images?: SkippedUrl[];
+  /**
+   * Media links that were skipped.
+   * Categorized by media type.
+   */
+  media?: {
+    /**
+     * Image links that were skipped.
+     */
+    images?: SkippedUrl[];
 
-		/**
-		 * Video links that were skipped.
-		 */
-		videos?: SkippedUrl[];
+    /**
+     * Video links that were skipped.
+     */
+    videos?: SkippedUrl[];
 
-		/**
-		 * Document links that were skipped.
-		 */
-		documents?: SkippedUrl[];
-	};
+    /**
+     * Document links that were skipped.
+     */
+    documents?: SkippedUrl[];
+  };
 
-	/**
-	 * Other links that don't fit into the above categories.
-	 */
-	other?: SkippedUrl[];
+  /**
+   * Other links that don't fit into the above categories.
+   */
+  other?: SkippedUrl[];
 }
 
 /**
@@ -447,15 +447,15 @@ export interface SkippedLinks {
  * ```
  */
 export interface MetaFiles {
-	/**
-	 * Content of the robots.txt file.
-	 */
-	robots?: string;
+  /**
+   * Content of the robots.txt file.
+   */
+  robots?: string;
 
-	/**
-	 * Content of the sitemap.xml file.
-	 */
-	sitemapXML?: string;
+  /**
+   * Content of the sitemap.xml file.
+   */
+  sitemapXML?: string;
 }
 
 /**
@@ -466,22 +466,22 @@ export interface MetaFiles {
  * @property timestamp - ISO timestamp when the request was processed
  */
 interface LinksPostResponseBase {
-	/**
-	 * Whether the operation was successful.
-	 * Will always be true for successful responses.
-	 */
-	success: boolean;
+  /**
+   * Whether the operation was successful.
+   * Will always be true for successful responses.
+   */
+  success: boolean;
 
-	/**
-	 * The URL that was requested to be scraped.
-	 */
-	targetUrl: string;
+  /**
+   * The URL that was requested to be scraped.
+   */
+  targetUrl: string;
 
-	/**
-	 * ISO timestamp when the request was processed.
-	 * Format: ISO 8601 string.
-	 */
-	timestamp: string;
+  /**
+   * ISO timestamp when the request was processed.
+   * Format: ISO 8601 string.
+   */
+  timestamp: string;
 }
 
 /**
@@ -525,48 +525,48 @@ interface LinksPostResponseBase {
  * ```
  */
 export interface LinksPostSuccessResponse
-	extends LinksPostResponseBase,
-		Omit<Partial<ScrapedData>, "rawHtml"> {
-	/**
-	 * Whether the operation was successful.
-	 * Will always be true for successful responses.
-	 */
-	success: true;
+  extends LinksPostResponseBase,
+    Omit<Partial<ScrapedData>, 'rawHtml'> {
+  /**
+   * Whether the operation was successful.
+   * Will always be true for successful responses.
+   */
+  success: true;
 
-	/**
-	 * Return true if there is a cache hit from KV Store.
-	 */
-	cached: boolean;
+  /**
+   * Return true if there is a cache hit from KV Store.
+   */
+  cached: boolean;
 
-	/**
-	 * Execution time of the request in milliseconds.
-	 * Format: string with "ms" suffix (e.g., "1234ms").
-	 */
-	executionTime?: string;
+  /**
+   * Execution time of the request in milliseconds.
+   * Format: string with "ms" suffix (e.g., "1234ms").
+   */
+  executionTime?: string;
 
-	/**
-	 * Array of parent URLs leading to this URL.
-	 * Represents the path in the site hierarchy.
-	 */
-	ancestors?: string[];
+  /**
+   * Array of parent URLs leading to this URL.
+   * Represents the path in the site hierarchy.
+   */
+  ancestors?: string[];
 
-	/**
-	 * URLs that were skipped during processing.
-	 * Includes reasons why they were skipped.
-	 */
-	skippedUrls?: SkippedLinks;
+  /**
+   * URLs that were skipped during processing.
+   * Includes reasons why they were skipped.
+   */
+  skippedUrls?: SkippedLinks;
 
-	/**
-	 * Extracted links from the page.
-	 * Categorized by type (internal, external, media).
-	 */
-	extractedLinks?: ExtractedLinks;
+  /**
+   * Extracted links from the page.
+   * Categorized by type (internal, external, media).
+   */
+  extractedLinks?: ExtractedLinks;
 
-	/**
-	 * Site map tree starting from the root URL.
-	 * Only included if tree generation was requested.
-	 */
-	tree?: LinksTree | null;
+  /**
+   * Site map tree starting from the root URL.
+   * Only included if tree generation was requested.
+   */
+  tree?: LinksTree | null;
 }
 
 /**
@@ -590,23 +590,23 @@ export interface LinksPostSuccessResponse
  * ```
  */
 export interface LinksPostErrorResponse extends LinksPostResponseBase {
-	/**
-	 * Whether the operation was successful.
-	 * Will always be false for error responses.
-	 */
-	success: false;
+  /**
+   * Whether the operation was successful.
+   * Will always be false for error responses.
+   */
+  success: false;
 
-	/**
-	 * Error message describing what went wrong.
-	 * Provides details about the failure reason.
-	 */
-	error: string;
+  /**
+   * Error message describing what went wrong.
+   * Provides details about the failure reason.
+   */
+  error: string;
 
-	/**
-	 * Partial site map tree if available.
-	 * May contain data collected before the error occurred.
-	 */
-	tree?: LinksTree | null;
+  /**
+   * Partial site map tree if available.
+   * May contain data collected before the error occurred.
+   */
+  tree?: LinksTree | null;
 }
 
 /**
@@ -627,5 +627,5 @@ export interface LinksPostErrorResponse extends LinksPostResponseBase {
  * ```
  */
 export type LinksPostResponse =
-	| LinksPostSuccessResponse
-	| LinksPostErrorResponse;
+  | LinksPostSuccessResponse
+  | LinksPostErrorResponse;
