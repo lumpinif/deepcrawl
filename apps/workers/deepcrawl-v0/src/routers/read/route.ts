@@ -13,7 +13,7 @@ import {
   readPostValidator,
   readQueryValidator,
 } from '@/middlewares/read.validator';
-import { CheerioService } from '@/services/cheerio/cheerio.service';
+import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
@@ -177,7 +177,7 @@ async function processReadRequest(
       // Proceed without cache if read fails
     }
 
-    const scrapeService = new CheerioService();
+    const scrapeService = new ScrapeService();
     const isGithubUrl = targetUrl.startsWith('https://github.com');
 
     const scrapeResult: ScrapedData = await scrapeService.scrape({

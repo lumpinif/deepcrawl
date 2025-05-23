@@ -26,7 +26,7 @@ interface FetchPageResult {
   isIframeAllowed?: boolean;
 }
 
-export class CheerioService {
+export class ScrapeService {
   // Helper method to determine if iframe embedding is allowed
   private isIframeAllowed(
     xFrameOptions?: string | null,

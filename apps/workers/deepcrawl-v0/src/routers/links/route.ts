@@ -27,8 +27,8 @@ import {
   linksPostValidator,
   linksQueryValidator,
 } from '@/middlewares/links.validator';
-import { CheerioService } from '@/services/cheerio/cheerio.service';
 import { LinkService } from '@/services/link/link.service';
+import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
@@ -145,7 +145,7 @@ async function processLinksRequest(
   let linksPostResponse: LinksPostResponse | undefined;
 
   try {
-    const scrapeService = new CheerioService();
+    const scrapeService = new ScrapeService();
     const linkService = new LinkService();
     // --- Validate and Normalize Input URL & Identify Root ---
     targetUrl = targetUrlHelper(url);
