@@ -4,16 +4,21 @@
     "ignoreUnknown": false,
     "ignore": [
       "**/bun.lockb",
+      "**/package-lock.json",
+      "**/yarn.lock",
+      "**/pnpm-lock.yaml",
+      "./apps/main/src/lib/editor/react-renderer.tsx",
       "node_modules",
+      ".wrangler",
       "node_modules/**/*",
-      "pnpm-lock.yaml",
-      "pnpm-workspace.yaml",
+      ".turbo",
       ".next",
       "public",
       ".vercel",
       ".react-email",
       "dist",
-      "./dist/**/*"
+      "./dist/**/*",
+      "worker-configuration.d.ts"
     ]
   },
   "vcs": {

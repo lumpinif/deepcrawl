@@ -46,7 +46,11 @@ export class RobotsParser {
           ) {
             result.rules.push({ ...currentRule });
           }
-          currentRule = { userAgent: valueCombined, allow: [], disallow: [] };
+          currentRule = {
+            userAgent: valueCombined,
+            allow: [],
+            disallow: [],
+          };
         } else if (directiveLower === 'allow') {
           currentRule.allow.push(valueCombined);
         } else if (directiveLower === 'disallow') {

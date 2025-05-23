@@ -217,7 +217,10 @@ async function processLinksRequest(
      */
     async function processTargetUrl(): Promise<
       | Response
-      | { targetScrapeResult: ScrapedData; allTargetLinks: ExtractedLinks }
+      | {
+          targetScrapeResult: ScrapedData;
+          allTargetLinks: ExtractedLinks;
+        }
     > {
       // --- Scrape the target URL  ---
       const targetScrapeResult = await scrapeIfNotVisited(targetUrl);
