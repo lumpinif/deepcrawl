@@ -14,6 +14,7 @@ export default antfu(
   },
   {
     rules: {
+      'style/arrow-parens': ['off'],
       'unicorn/prefer-includes': ['off'],
       'style/brace-style': ['off'],
       'style/operator-linebreak': ['off'],
