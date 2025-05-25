@@ -1,3 +1,4 @@
+import type { AppBindings } from '@/lib/types';
 import type { ErrorHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
@@ -126,15 +127,15 @@ export const errorHandler: ErrorHandler = (err, c) => {
   return c.json(response, status);
 };
 
-export const errorMiddleware = createMiddleware<{
-  Bindings: CloudflareBindings;
-}>(async (c, next) => {
-  try {
-    await next();
-  } catch (error) {
-    return errorHandler(
-      error instanceof Error ? error : new Error(String(error)),
-      c,
-    );
-  }
-});
+export const errorMiddleware = createMiddleware<AppBindings>(
+  async (c, next) => {
+    try {
+      await next();
+    } catch (error) {
+      return errorHandler(
+        error instanceof Error ? error : new Error(String(error)),
+        c,
+      );
+    }
+  },
+);
