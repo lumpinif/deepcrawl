@@ -1,4 +1,5 @@
-import type { AppBindings } from '@/lib/types';
+import type { AppBindings, AppContext } from '@/lib/types';
+import { isProduction } from '@/utils/worker-env';
 import type { ErrorHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
@@ -82,34 +83,47 @@ export class URLError extends BaseError {
   }
 }
 
-export function createErrorResponse(error: Error): ErrorResponse {
+export function createErrorResponse(
+  error: Error,
+  c: AppContext,
+): ErrorResponse {
+  const isProd = isProduction(c);
+
+  if (isProd) {
+    return {
+      success: false,
+      targetUrl: error instanceof ValidationError ? error.targetUrl : undefined,
+      error: error.message,
+    };
+  }
+
   return {
     success: false,
     targetUrl: error instanceof ValidationError ? error.targetUrl : undefined,
-    error: error.message,
-    // error: {
-    //   name: error.name,
-    //   issues:
-    //     error instanceof BaseError
-    //       ? error.issues
-    //       : error instanceof ZodError
-    //         ? error.errors
-    //         : [
-    //             {
-    //               code: 'unknown_error',
-    //               message: error.message,
-    //               cause: error.cause,
-    //             },
-    //           ],
-    // },
+    error: {
+      name: error.name,
+      issues:
+        error instanceof BaseError
+          ? error.issues
+          : error instanceof ZodError
+            ? error.errors
+            : [
+                {
+                  code: 'unknown_error',
+                  message: error.message,
+                  cause: error.cause,
+                },
+              ],
+    },
   };
 }
 
-export const errorHandler: ErrorHandler = (err, c) => {
+export const errorHandler: ErrorHandler<AppBindings> = (err, c) => {
   let status: StatusCode = HttpStatusCodes.INTERNAL_SERVER_ERROR;
 
   const response = createErrorResponse(
     err instanceof Error ? err : new Error(String(err)),
+    c,
   );
 
   if (err instanceof HTTPException) {

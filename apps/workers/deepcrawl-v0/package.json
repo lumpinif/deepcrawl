@@ -2,7 +2,7 @@
   "name": "deepcrawl-worker-v0",
   "version": "0.0.1",
   "scripts": {
-    "dev": "wrangler dev --remote --env=development",
+    "dev": "wrangler dev --remote",
     "dev:staging": "wrangler dev --remote --env=staging",
     "dev:prod": "wrangler dev --remote --env=production",
     "deploy": "pnpm fix && wrangler deploy",
