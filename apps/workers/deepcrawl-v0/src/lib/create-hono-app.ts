@@ -7,12 +7,11 @@ import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
-import { defaultHook } from 'stoker/openapi';
 
 // import { supabaseMiddleware } from '@/middlewares/auth.middleware';
 import { pinoLogger } from '@/middlewares/pino-logger';
 
-import { errorHandler } from '@/middlewares/error';
+import { defaultErrorHook, errorHandler } from '@/middlewares/error';
 import type { AppBindings, AppOpenAPI } from './types';
 
 const allowedOrigins = [
@@ -24,7 +23,7 @@ const allowedOrigins = [
 export function createRouter() {
   return new OpenAPIHono<AppBindings>({
     strict: false,
-    defaultHook,
+    defaultHook: defaultErrorHook,
   });
 }
 
