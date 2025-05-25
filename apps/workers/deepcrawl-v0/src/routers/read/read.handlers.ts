@@ -3,9 +3,9 @@ import * as HttpStatusCodes from 'stoker/http-status-codes';
 
 import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { processReadRequest } from './read.processor';
-import type { readGETRoute, readPOSTRoute } from './read.routes';
+import type { ReadGETRoute, ReadPOSTRoute } from './read.routes';
 
-export const readGET: AppRouteHandler<readGETRoute> = async (c) => {
+export const readGET: AppRouteHandler<ReadGETRoute> = async (c) => {
   const {
     url,
     markdown: isMarkdown,
@@ -43,7 +43,7 @@ export const readGET: AppRouteHandler<readGETRoute> = async (c) => {
   }
 };
 
-export const readPOST: AppRouteHandler<readPOSTRoute> = async (c) => {
+export const readPOST: AppRouteHandler<ReadPOSTRoute> = async (c) => {
   const {
     url,
     markdown: isMarkdown,

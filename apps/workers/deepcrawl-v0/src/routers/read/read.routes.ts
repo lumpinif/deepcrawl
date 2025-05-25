@@ -63,8 +63,8 @@ export const readPOSTRoute = createRoute({
   },
 });
 
-export type readGETRoute = typeof readGETRoute;
-export type readPOSTRoute = typeof readPOSTRoute;
+export type ReadGETRoute = typeof readGETRoute;
+export type ReadPOSTRoute = typeof readPOSTRoute;
 
 const router = createRouter()
   .openapi(readGETRoute, handlers.readGET)

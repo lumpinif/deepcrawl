@@ -3,20 +3,11 @@ import { z } from '@hono/zod-openapi';
 import { zValidator } from '@hono/zod-validator';
 
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
-import { ValidationError } from './error';
 
 // Extend the base schema and override only the url field to use targetUrlHelper
 export const LinksOptionsSchema = baseLinkOptionsSchema.extend({
   url: z.string().transform((url) => {
-    try {
-      return targetUrlHelper(url);
-    } catch (error) {
-      throw new ValidationError(
-        error instanceof Error ? error.message : String(error),
-        ['links.validator'],
-        url,
-      );
-    }
+    return targetUrlHelper(url);
   }),
 });
 
