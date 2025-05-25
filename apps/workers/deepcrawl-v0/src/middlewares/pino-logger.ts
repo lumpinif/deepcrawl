@@ -3,6 +3,7 @@ import pino from 'pino';
 import pretty from 'pino-pretty';
 
 import type { AppContext } from '@/lib/types';
+import { isProduction } from '@/utils/worker-env';
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 export function pinoLogger({ c }: { c: AppContext }) {
@@ -13,8 +14,7 @@ export function pinoLogger({ c }: { c: AppContext }) {
           // c.env.LOG_LEVEL ||
           'info',
       },
-      // c.env.NODE_ENV === 'production' ? undefined : pretty(),
-      pretty(),
+      isProduction(c) ? undefined : pretty(),
     ),
   });
 }

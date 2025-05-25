@@ -14,6 +14,21 @@
   // "durable_objects": {
   //   "bindings": []
   // },
+  "vars": {
+    "WORKER_NODE_ENV": "development"
+  },
+  "env": {
+    "staging": {
+      "vars": {
+        "WORKER_NODE_ENV": "staging"
+      }
+    },
+    "production": {
+      "vars": {
+        "WORKER_NODE_ENV": "production"
+      }
+    }
+  },
   "routes": [
     {
       "pattern": "api.deepcrawl.dev",
