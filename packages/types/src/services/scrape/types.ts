@@ -1,6 +1,26 @@
-import { MetaFilesSchema } from '@deepcrawl/types/routers/links/types';
 import { PageMetadataSchema } from '@deepcrawl/types/services/metadata/types';
 import { z } from '@hono/zod-openapi';
+
+export const MetaFilesSchema = z.object({
+  robots: z.string().optional(),
+  sitemapXML: z.string().optional(),
+});
+
+/**
+ * Contains robots.txt and sitemap.xml content.
+ *
+ * @property robots - Content of the robots.txt file
+ * @property sitemapXML - Content of the sitemap.xml file
+ *
+ * @example
+ * ```typescript
+ * const metaFiles: MetaFiles = {
+ *   robots: "User-agent: *\nDisallow: /private/",
+ *   sitemapXML: "<?xml version=\"1.0\"?><urlset>...</urlset>"
+ * };
+ * ```
+ */
+export type MetaFiles = z.infer<typeof MetaFilesSchema>;
 
 export const ScrapedDataSchema = z.object({
   title: z.string(),

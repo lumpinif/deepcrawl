@@ -167,11 +167,6 @@ export const LinksOptionsSchema = z.object({
   ...ContentOptionsSchema.shape,
 });
 
-export const MetaFilesSchema = z.object({
-  robots: z.string().optional(),
-  sitemapXML: z.string().optional(),
-});
-
 export const SkippedUrlSchema = z.object({
   url: z.string(),
   reason: z.string(),
@@ -222,6 +217,7 @@ const LinksPostResponseBaseSchema = z.object({
   timestamp: z.string(),
 });
 
+/* NOTE: use partial() to make all properties optional for /links response for better response shape such as not returning title and description if there is tree */
 const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
   rawHtml: true,
 });
@@ -327,22 +323,6 @@ export type LinksTree = z.infer<typeof baseLinksTreeSchema> & {
  * Derived from the linksOptionsSchema.
  */
 export type LinksOptions = z.infer<typeof LinksOptionsSchema>;
-
-/**
- * Contains robots.txt and sitemap.xml content.
- *
- * @property robots - Content of the robots.txt file
- * @property sitemapXML - Content of the sitemap.xml file
- *
- * @example
- * ```typescript
- * const metaFiles: MetaFiles = {
- *   robots: "User-agent: *\nDisallow: /private/",
- *   sitemapXML: "<?xml version=\"1.0\"?><urlset>...</urlset>"
- * };
- * ```
- */
-export type MetaFiles = z.infer<typeof MetaFilesSchema>;
 
 /**
  * Represents a URL that was skipped during scraping.
