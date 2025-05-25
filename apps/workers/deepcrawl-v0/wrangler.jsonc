@@ -15,17 +15,47 @@
   //   "bindings": []
   // },
   "vars": {
-    "WORKER_NODE_ENV": "development"
+    "WORKER_NODE_ENV": "production"
   },
   "env": {
-    "staging": {
+    "development": {
+      "ai": {
+        "binding": "AI"
+      },
+      "kv_namespaces": [
+        {
+          "binding": "DEEPCRAWL_V0_LINKS_STORE",
+          "id": "0c344c2052234f0d96e3a99a3e6b43ba",
+          "preview_id": "2f7ff57f058748eea8ba5c02876a8eae"
+        },
+        {
+          "binding": "DEEPCRAWL_V0_READ_STORE",
+          "id": "1dd4e23d3db2409ab2fa401cac8efad0",
+          "preview_id": "812d7fc53b5a47438054c749ec3d505a"
+        }
+      ],
       "vars": {
-        "WORKER_NODE_ENV": "staging"
+        "WORKER_NODE_ENV": "development"
       }
     },
-    "production": {
+    "staging": {
       "vars": {
-        "WORKER_NODE_ENV": "production"
+        "ai": {
+          "binding": "AI"
+        },
+        "WORKER_NODE_ENV": "staging",
+        "kv_namespaces": [
+          {
+            "binding": "DEEPCRAWL_V0_LINKS_STORE",
+            "id": "0c344c2052234f0d96e3a99a3e6b43ba",
+            "preview_id": "2f7ff57f058748eea8ba5c02876a8eae"
+          },
+          {
+            "binding": "DEEPCRAWL_V0_READ_STORE",
+            "id": "1dd4e23d3db2409ab2fa401cac8efad0",
+            "preview_id": "812d7fc53b5a47438054c749ec3d505a"
+          }
+        ]
       }
     }
   },
