@@ -6,12 +6,13 @@ import { prettyJSON } from 'hono/pretty-json';
 import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
-import { notFound, onError, serveEmojiFavicon } from 'stoker/middlewares';
+import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
 import { defaultHook } from 'stoker/openapi';
 
-import { supabaseMiddleware } from '@/middlewares/auth.middleware';
+// import { supabaseMiddleware } from '@/middlewares/auth.middleware';
 import { pinoLogger } from '@/middlewares/pino-logger';
 
+import { errorHandler } from '@/middlewares/error';
 import type { AppBindings, AppOpenAPI } from './types';
 
 const allowedOrigins = [
@@ -48,15 +49,13 @@ export default function createApp() {
         allowMethods: ['GET', 'POST', 'OPTIONS'],
       }),
     )
-    .use('*', supabaseMiddleware);
-  // .use('*', errorMiddleware);
+    .use('/openapi/*', prettyJSON());
 
+  // .use('*', supabaseMiddleware);
   // app.use('*', freeUserRateLimiter);
 
-  app.use('/openapi/*', prettyJSON());
-
+  app.onError(errorHandler);
   app.notFound(notFound);
-  app.onError(onError);
   return app;
 }
 

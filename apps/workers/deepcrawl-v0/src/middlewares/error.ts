@@ -1,8 +1,8 @@
 import type { ErrorHandler } from 'hono';
-import type { StatusCode } from 'hono/utils/http-status';
-
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
+import type { StatusCode } from 'hono/utils/http-status';
+import * as HttpStatusCodes from 'stoker/http-status-codes';
 import { ZodError } from 'zod';
 
 interface ErrorIssue {
@@ -15,11 +15,14 @@ interface ErrorIssue {
 
 // TODO: INFER TO THE SOURCE OF TYPE PACKAGE LATER
 interface ErrorResponse {
-  status?: 'completed' | 'failed' | 'pending' | 'queued';
-  error: {
-    name: string;
-    issues: ErrorIssue[];
-  };
+  success: boolean;
+  targetUrl?: string;
+  error:
+    | string
+    | {
+        name: string;
+        issues: ErrorIssue[];
+      };
 }
 
 // Base error class with consistent structure
@@ -48,8 +51,13 @@ class BaseError extends Error {
 }
 
 export class ValidationError extends BaseError {
-  constructor(message: string, path?: (string | number)[]) {
+  constructor(
+    message: string,
+    path?: (string | number)[],
+    public targetUrl?: string,
+  ) {
     super(message, 'validation_error', path);
+    this.targetUrl = targetUrl;
     this.name = 'ValidationError';
   }
 }
@@ -73,47 +81,32 @@ export class URLError extends BaseError {
   }
 }
 
-export class BrowserError extends BaseError {
-  constructor(message: string, path?: (string | number)[], cause?: unknown) {
-    super(message, 'browser_error', path, cause);
-    this.name = 'BrowserError';
-  }
-}
-
-export class CrawlingError extends BaseError {
-  constructor(
-    message: string,
-    public readonly url: string,
-    public readonly cause?: unknown,
-  ) {
-    super(message, 'crawling_error', [url], cause);
-    this.name = 'CrawlingError';
-  }
-}
-
 export function createErrorResponse(error: Error): ErrorResponse {
   return {
-    status: 'failed',
-    error: {
-      name: error.name,
-      issues:
-        error instanceof BaseError
-          ? error.issues
-          : error instanceof ZodError
-            ? error.errors
-            : [
-                {
-                  code: 'unknown_error',
-                  message: error.message,
-                  cause: error.cause,
-                },
-              ],
-    },
+    success: false,
+    targetUrl: error instanceof ValidationError ? error.targetUrl : undefined,
+    error: error.message,
+    // error: {
+    //   name: error.name,
+    //   issues:
+    //     error instanceof BaseError
+    //       ? error.issues
+    //       : error instanceof ZodError
+    //         ? error.errors
+    //         : [
+    //             {
+    //               code: 'unknown_error',
+    //               message: error.message,
+    //               cause: error.cause,
+    //             },
+    //           ],
+    // },
   };
 }
 
 export const errorHandler: ErrorHandler = (err, c) => {
-  let status: StatusCode = 500;
+  let status: StatusCode = HttpStatusCodes.INTERNAL_SERVER_ERROR;
+
   const response = createErrorResponse(
     err instanceof Error ? err : new Error(String(err)),
   );
@@ -121,13 +114,13 @@ export const errorHandler: ErrorHandler = (err, c) => {
   if (err instanceof HTTPException) {
     status = err.status;
   } else if (err instanceof RateLimitError) {
-    status = 429; // Too Many Requests
+    status = HttpStatusCodes.TOO_MANY_REQUESTS; // Too Many Requests
   } else if (
     err instanceof ZodError ||
     err instanceof ValidationError ||
     err instanceof URLError
   ) {
-    status = 400;
+    status = HttpStatusCodes.BAD_REQUEST;
   }
 
   return c.json(response, status);
