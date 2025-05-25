@@ -4,7 +4,7 @@ import type {
   SkippedLinks,
   SkippedUrl,
   Tree,
-  Visited,
+  VisitedUrl,
 } from '@deepcrawl/types/routers/links';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 
@@ -155,7 +155,7 @@ interface BuildLinksTreeOptions {
   internalLinks: string[] | undefined;
   rootUrl: string;
   linkService: LinkService;
-  visitedUrls?: Set<Visited>;
+  visitedUrls?: Set<VisitedUrl>;
   metadataCache?: Record<string, ScrapedData['metadata']>;
   extractedLinksMap?: Record<string, ExtractedLinks>;
   includeExtractedLinks?: boolean;
@@ -408,7 +408,7 @@ interface MergeNewLinksIntoTreeOptions {
   newLinks: string[];
   rootUrl: string;
   linkService: LinkService;
-  visitedUrls?: Set<Visited>;
+  visitedUrls?: Set<VisitedUrl>;
   metadataCache?: Record<string, ScrapedData['metadata']>;
   cleanedHtmlCache?: Record<string, ScrapedData['cleanedHtml']>;
   extractedLinksMap?: Record<string, ExtractedLinks>;

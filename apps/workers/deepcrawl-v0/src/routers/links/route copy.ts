@@ -9,7 +9,7 @@ import type {
   LinksPostSuccessResponse,
   SkippedUrl,
   Tree,
-  Visited,
+  VisitedUrl,
 } from '@deepcrawl/types/routers/links';
 import type {
   ExtractedLinks,
@@ -126,12 +126,12 @@ async function processLinksRequest(
   // KV Caches
   let existingTree: Tree | undefined;
   let finalTree: Tree | undefined;
-  let lastVisitedUrlsInCache = new Set<Visited>();
+  let lastVisitedUrlsInCache = new Set<VisitedUrl>();
   let linksCacheIsFresh = false;
 
   // Helper function to check if a URL exists in the Set of visited URLs
   const isUrlInVisitedSet = (
-    urlSet: Set<Visited>,
+    urlSet: Set<VisitedUrl>,
     urlToCheck: string,
   ): boolean => {
     for (const visitedItem of urlSet) {

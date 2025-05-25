@@ -1,5 +1,5 @@
 import type { _linksSets } from '@/routers/links/route';
-import type { SkippedUrl, Visited } from '@deepcrawl/types/routers/links';
+import type { SkippedUrl, VisitedUrl } from '@deepcrawl/types/routers/links';
 import type {
   ExtractedLinks,
   LinkExtractionOptions,
@@ -580,11 +580,11 @@ export class LinkService {
    * @returns A Set of merged and deduplicated visited URLs, sorted by lastVisited (newest first)
    */
   public mergeVisitedUrls(
-    existingUrls: Set<Visited>,
+    existingUrls: Set<VisitedUrl>,
     newlyVisitedUrls: Set<string>,
     urlTimestamps: Map<string, string>,
-  ): Set<Visited> {
-    const urlMap = new Map<string, Visited>();
+  ): Set<VisitedUrl> {
+    const urlMap = new Map<string, VisitedUrl>();
 
     // First add all existing URLs to the map
     for (const visitedItem of existingUrls) {
