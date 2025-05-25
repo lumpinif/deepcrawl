@@ -1,21 +1,19 @@
 import type {
   ReadOptions,
+  ReadPostResponse,
   ReadResponse,
+  ReadStringResponse,
   ReadSuccessResponse,
   ScrapedData,
 } from '@deepcrawl/types/index';
-import type { Context } from 'hono';
 
-import { Hono } from 'hono';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 import { KV_CACHE_EXPIRATION_TTL } from '@/config/constants';
-import {
-  readPostValidator,
-  readQueryValidator,
-} from '@/middlewares/read.validator';
+import type { AppContext } from '@/lib/types';
 import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
+
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import {
@@ -28,7 +26,24 @@ import {
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
 
-const app = new Hono<{ Bindings: CloudflareBindings }>();
+/**
+ * Calculates performance metrics for the read operation.
+ * @param startTime - Timestamp in milliseconds when the operation started.
+ * @param endTime - Timestamp in milliseconds when the operation finished.
+ * @returns An object with duration metrics.
+ * @property readableDuration - Human-readable representation of the duration.
+ * @property duration - Duration of the operation in milliseconds.
+ * @property startTime - Timestamp in milliseconds when the operation started.
+ * @property endTime - Timestamp in milliseconds when the operation finished.
+ */
+function getMetrics(startTime: number, endTime: number) {
+  return {
+    readableDuration: formatDuration(endTime - startTime),
+    duration: endTime - startTime,
+    startTime,
+    endTime,
+  };
+}
 
 /**
  * Convert HTML to Markdown
@@ -62,60 +77,38 @@ function getMarkdown({ html }: { html: string }): string {
   }
 }
 
-app.get('/', readQueryValidator(), async (c) => {
-  const {
-    url,
-    markdown: isMarkdown,
-    cleanedHtml: isCleanedHtml,
-    metadata: isMetadata,
-    robots: isRobots,
-    metadataOptions,
-    rawHtml: isRawHtml,
-  } = c.req.valid('query');
-
-  return processReadRequest(
-    c,
-    {
-      url,
-      markdown: isMarkdown,
-      cleanedHtml: isCleanedHtml,
-      metadata: isMetadata,
-      robots: isRobots,
-      metadataOptions,
-      rawHtml: isRawHtml,
-    },
-    /* isStringResponse */
-    true,
-  );
-});
-
-app.post('/', readPostValidator(), async (c) => {
-  const {
-    url,
-    markdown: isMarkdown,
-    cleanedHtml: isCleanedHtml,
-    metadata: isMetadata,
-    robots: isRobots,
-    metadataOptions,
-    rawHtml: isRawHtml,
-  } = c.req.valid('json');
-
-  return processReadRequest(c, {
-    url,
-    markdown: isMarkdown,
-    cleanedHtml: isCleanedHtml,
-    metadata: isMetadata,
-    robots: isRobots,
-    metadataOptions,
-    rawHtml: isRawHtml,
-  });
-});
-
-async function processReadRequest(
-  c: Context<{ Bindings: CloudflareBindings }>,
+/**
+ * Handles GET requests to the read endpoint.
+ * @param c - Hono AppContext
+ * @param params - Read options
+ * @param isGETRequest - Flag indicating that this is a GET request
+ * @returns A string response containing the rendered HTML (if `rawHtml` is true)
+ * or Markdown (if `rawHtml` is false)
+ */
+export async function processReadRequest(
+  c: AppContext,
   params: ReadOptions,
-  isStringResponse = false,
-): Promise<Response> {
+  isGETRequest: true,
+): Promise<ReadStringResponse>;
+
+/**
+ * Processes a read POST request for the read endpoint.
+ * @param c - Hono AppContext
+ * @param params - Read options
+ * @param isGETRequest - Optional flag indicating if this is a GET request; defaults to false
+ * @returns A promise resolving to a ReadPostResponse object
+ */
+export async function processReadRequest(
+  c: AppContext,
+  params: ReadOptions,
+  isGETRequest?: false,
+): Promise<ReadPostResponse>;
+
+export async function processReadRequest(
+  c: AppContext,
+  params: ReadOptions,
+  isGETRequest = false,
+): Promise<ReadResponse> {
   const {
     url,
     markdown: isMarkdown,
@@ -128,7 +121,7 @@ async function processReadRequest(
 
   let readResponse: ReadResponse | undefined;
   // Initialize cache flag
-  let readCacheIsFresh = false;
+  let isReadCacheFresh = false;
 
   try {
     const targetUrl = targetUrlHelper(url, true);
@@ -138,18 +131,18 @@ async function processReadRequest(
     const startRequestTime = performance.now();
 
     // Generate cache key
-    const cacheKey = await getReadCacheKey(params, isStringResponse);
+    const cacheKey = await getReadCacheKey(params, isGETRequest);
 
     // Check cache first
     try {
-      const { value, metadata } =
+      const { value: cachedResult, metadata } =
         await c.env.DEEPCRAWL_V0_READ_STORE.getWithMetadata<{
           title?: string;
           description?: string;
           timestamp?: string;
         }>(cacheKey);
 
-      if (value) {
+      if (cachedResult) {
         // Check if cache is fresh (e.g., within the last day - matches expirationTtl)
         const cacheTimestamp = metadata?.timestamp
           ? new Date(metadata.timestamp).getTime()
@@ -157,21 +150,25 @@ async function processReadRequest(
         const oneDayAgo = Date.now() - KV_CACHE_EXPIRATION_TTL * 1000; // 1 day in milliseconds
 
         if (cacheTimestamp > oneDayAgo) {
-          readCacheIsFresh = true;
+          isReadCacheFresh = true;
 
-          if (isStringResponse) {
-            return c.text(value, { status: 200 });
-          } else {
-            // Parse the cached value and set the cached flag to true
-            const parsedResponse = JSON.parse(value);
-            parsedResponse.cached = true;
-            return c.json(parsedResponse, { status: 200 });
+          if (isGETRequest) {
+            return cachedResult as ReadStringResponse;
           }
+
+          // Parse the cached value and set the cached flag to true
+          const parsedResponse = JSON.parse(
+            cachedResult,
+          ) as ReadSuccessResponse;
+          parsedResponse.cached = true;
+          const metrics = getMetrics(startRequestTime, performance.now());
+          parsedResponse.metrics = metrics;
+          return parsedResponse;
         }
       }
     } catch (error) {
       console.error(
-        `Error reading from DEEPCRAWL_V0_READ_STORE for ${url}:`,
+        `❌ Error reading Cache from DEEPCRAWL_V0_READ_STORE for ${url}:`,
         error,
       );
       // Proceed without cache if read fails
@@ -180,7 +177,14 @@ async function processReadRequest(
     const scrapeService = new ScrapeService();
     const isGithubUrl = targetUrl.startsWith('https://github.com');
 
-    const scrapeResult: ScrapedData = await scrapeService.scrape({
+    const {
+      title,
+      rawHtml,
+      metadata,
+      metaFiles,
+      cleanedHtml,
+      description,
+    }: ScrapedData = await scrapeService.scrape({
       url: targetUrl,
       cleanedHtml: true,
       cleaningProcessor: !isGithubUrl ? 'html-rewriter' : 'reader',
@@ -191,40 +195,36 @@ async function processReadRequest(
 
     // Convert article content to markdown if available
     const markdown =
-      (isMarkdown || isStringResponse) && scrapeResult.cleanedHtml
-        ? getMarkdown({ html: scrapeResult.cleanedHtml })
+      (isMarkdown || isGETRequest) && cleanedHtml
+        ? getMarkdown({ html: cleanedHtml })
         : undefined;
 
     // Sanitize rawHtml if present
-    const cleanedHtml =
-      isCleanedHtml || isMarkdown
-        ? scrapeResult.cleanedHtml || undefined
-        : undefined;
+    // ?? why enable if isMarkdown
+    // const cleanedHtml = isCleanedHtml
+    //   ? // || isMarkdown
+    //     cleanedHtml || undefined
+    //   : undefined;
 
     const endRequestTime = performance.now();
-    const readableDuration = formatDuration(endRequestTime - startRequestTime);
+    const metrics = getMetrics(startRequestTime, endRequestTime);
 
     readResponse = cleanEmptyValues<ReadSuccessResponse>({
       success: true,
-      cached: readCacheIsFresh,
+      cached: isReadCacheFresh,
       targetUrl,
-      title: scrapeResult.title,
-      description: scrapeResult.description,
-      metadata: scrapeResult.metadata,
-      metrics: {
-        readableDuration,
-        duration: endRequestTime - startRequestTime,
-        startTime: startRequestTime,
-        endTime: endRequestTime,
-      },
+      title,
+      description,
+      metadata,
+      metrics,
       markdown,
-      cleanedHtml,
-      metaFiles: scrapeResult.metaFiles,
-      rawHtml: isRawHtml ? scrapeResult.rawHtml : undefined,
+      cleanedHtml: isCleanedHtml ? cleanedHtml : undefined,
+      rawHtml: isRawHtml ? rawHtml : undefined,
+      metaFiles,
     });
 
     try {
-      const valueToCache = isStringResponse
+      const valueToCache = isGETRequest
         ? markdown || ''
         : JSON.stringify(readResponse);
 
@@ -242,31 +242,19 @@ async function processReadRequest(
         },
       );
     } catch (error) {
-      console.error(`Error writing to cache for ${url}:`, error);
+      console.error(`❌ Error writing to cache for ${url}:`, error);
       // Continue without caching if write fails
     }
 
-    if (isStringResponse) {
+    if (isGETRequest) {
       const stringResponse = markdown || JSON.stringify(readResponse);
-      return c.text(stringResponse, { status: 200 });
+      return stringResponse;
     }
 
-    return c.json(readResponse, { status: 200 });
+    return readResponse as ReadSuccessResponse;
   } catch (error) {
-    console.error('Error reading URL:', error);
+    console.error('❌ Error reading URL:', error);
 
-    readResponse = {
-      success: false,
-      targetUrl: url,
-      error: 'Failed to read url',
-    };
-
-    if (isStringResponse) {
-      const stringResponse = JSON.stringify(readResponse);
-      return c.text(stringResponse, { status: 500 });
-    }
-    return c.json(readResponse, { status: 500 });
+    throw new Error('Failed to read url');
   }
 }
-
-export default app;
