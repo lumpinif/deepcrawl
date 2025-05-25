@@ -1,13 +1,13 @@
 import { HTMLCleaningOptionsSchema } from '@deepcrawl/types/services/html-cleaning/types';
 import {
-  type ExtractedLinks,
+  ExtractedLinksSchema,
   LinkExtractionOptionsSchema,
 } from '@deepcrawl/types/services/link/types';
 import {
   MetadataOptionsSchema,
-  type PageMetadata,
+  PageMetadataSchema,
 } from '@deepcrawl/types/services/metadata/types';
-import type { ScrapedData } from '@deepcrawl/types/services/scrape/types';
+import { ScrapedDataSchema } from '@deepcrawl/types/services/scrape/types';
 import { z } from '@hono/zod-openapi';
 
 /**
@@ -18,7 +18,7 @@ import { z } from '@hono/zod-openapi';
  * @property linksOptions - Options for link extraction
  * @property cleanedHtmlOptions - Options for HTML cleaning
  */
-export const contentOptionsSchema = z.object({
+export const ContentOptionsSchema = z.object({
   /**
    * Options for metadata extraction.
    * Controls how metadata like title, description, etc. are extracted.
@@ -45,7 +45,7 @@ export const contentOptionsSchema = z.object({
  * @property folderFirst - Whether to place folders before leaf nodes in the tree
  * @property linksOrder - How to order links within each folder
  */
-export const treeOptionsSchema = z.object({
+export const TreeOptionsSchema = z.object({
   /**
    * Whether to place folders before leaf nodes in the tree.
    * Default: true
@@ -108,7 +108,7 @@ export const treeOptionsSchema = z.object({
  * };
  * ```
  */
-export const linksOptionsSchema = z.object({
+export const LinksOptionsSchema = z.object({
   /**
    * The URL to scrape.
    * Must be a valid URL string.
@@ -162,16 +162,87 @@ export const linksOptionsSchema = z.object({
     z.boolean().optional(),
   ),
 
-  ...treeOptionsSchema.shape,
+  ...TreeOptionsSchema.shape,
 
-  ...contentOptionsSchema.shape,
+  ...ContentOptionsSchema.shape,
 });
 
-/**
- * Type representing options for link scraping operations.
- * Derived from the linksOptionsSchema.
- */
-export type LinksOptions = z.infer<typeof linksOptionsSchema>;
+export const MetaFilesSchema = z.object({
+  robots: z.string().optional(),
+  sitemapXML: z.string().optional(),
+});
+
+export const SkippedUrlSchema = z.object({
+  url: z.string(),
+  reason: z.string(),
+});
+
+export const VisitedUrlSchema = z.object({
+  url: z.string(),
+  lastVisited: z.string().nullable().optional(),
+});
+
+export const SkippedLinksSchema = z.object({
+  internal: z.array(SkippedUrlSchema).optional(),
+  external: z.array(SkippedUrlSchema).optional(),
+  media: z
+    .object({
+      images: z.array(SkippedUrlSchema).optional(),
+      videos: z.array(SkippedUrlSchema).optional(),
+      documents: z.array(SkippedUrlSchema).optional(),
+    })
+    .optional(),
+  other: z.array(SkippedUrlSchema).optional(),
+});
+
+const baseLinksTreeSchema = z.object({
+  url: z.string(),
+  rootUrl: z.string().optional(),
+  name: z.string().optional(),
+  totalUrls: z.number().optional(),
+  executionTime: z.string().optional(),
+  lastUpdated: z.string(),
+  lastVisited: z.string().nullable().optional(),
+  error: z.string().optional(),
+  metadata: PageMetadataSchema.optional(),
+  cleanedHtml: z.string().optional(),
+  extractedLinks: ExtractedLinksSchema.optional(),
+  skippedUrls: SkippedLinksSchema.optional(),
+});
+
+export const LinksTreeSchema: z.ZodType<LinksTree> = baseLinksTreeSchema.extend(
+  {
+    children: z.lazy(() => LinksTreeSchema.array()).optional(),
+  },
+);
+
+const LinksPostResponseBaseSchema = z.object({
+  success: z.boolean(),
+  targetUrl: z.string(),
+  timestamp: z.string(),
+});
+
+const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
+  rawHtml: true,
+});
+
+export const LinksPostSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
+  PartialScrapedDataSchema,
+).extend({
+  success: z.literal(true),
+  cached: z.boolean(),
+  executionTime: z.string().optional(),
+  ancestors: z.array(z.string()).optional(),
+  skippedUrls: SkippedLinksSchema.optional(),
+  extractedLinks: ExtractedLinksSchema.optional(),
+  tree: LinksTreeSchema.nullable().optional(),
+});
+
+export const LinksPostErrorResponseSchema = LinksPostResponseBaseSchema.extend({
+  success: z.literal(false),
+  error: z.string(),
+  tree: LinksTreeSchema.nullable().optional(),
+});
 
 /**
  * @name    can be imported as LinksTree or Tree
@@ -247,101 +318,31 @@ export type LinksOptions = z.infer<typeof linksOptionsSchema>;
  * };
  * ```
  */
-export interface LinksTree {
-  /**
-   * The URL of this node.
-   */
-  url: string;
-
-  /**
-   * The root URL of the website.
-   * This is the domain root, not necessarily the targetUrl.
-   */
-  rootUrl?: string;
-
-  /**
-   * The name of this node.
-   */
-  name?: string;
-
-  /**
-   * Total number of URLs in the tree.
-   */
-  totalUrls?: number;
-
-  /**
-   * Execution time of the request in milliseconds.
-   * Format: string with "ms" suffix (e.g., "1234ms").
-   */
-  executionTime?: string;
-
-  /**
-   * ISO timestamp when this node was last updated.
-   * Format: ISO 8601 string.
-   */
-  lastUpdated: string;
-
-  /**
-   * ISO timestamp when this URL was last visited.
-   * Format: ISO 8601 string or null if never visited.
-   */
-  lastVisited?: string | null;
-
-  /**
-   * Child pages of this URL.
-   * Each child is another LinksTree node.
-   */
+export type LinksTree = z.infer<typeof baseLinksTreeSchema> & {
   children?: LinksTree[];
-
-  /**
-   * Error message if there was an issue processing this URL.
-   */
-  error?: string;
-
-  /**
-   * Metadata extracted from the page.
-   * Contains information like title, description, etc.
-   */
-  metadata?: PageMetadata;
-
-  /**
-   * Cleaned HTML content of the page.
-   * Contains sanitized HTML with unnecessary elements removed.
-   */
-  cleanedHtml?: string;
-
-  /**
-   * Extracted links from the page.
-   * Contains information about the current url's extracted links.
-   */
-  extractedLinks?: ExtractedLinks;
-
-  /**
-   * Skipped URLs and their reasons.
-   * Contains information about URLs that were not processed.
-   */
-  skippedUrls?: SkippedLinks;
-}
+};
 
 /**
- * Represents a URL that has been visited.
- * Used to track when URLs were last accessed.
- *
- * @property url - The URL that was visited
- * @property lastVisited - ISO timestamp when this URL was last visited
+ * Type representing options for link scraping operations.
+ * Derived from the linksOptionsSchema.
  */
-export interface Visited {
-  /**
-   * The URL that was visited.
-   */
-  url: string;
+export type LinksOptions = z.infer<typeof LinksOptionsSchema>;
 
-  /**
-   * ISO timestamp when this URL was last visited.
-   * Format: ISO 8601 string or null if never visited.
-   */
-  lastVisited?: string | null;
-}
+/**
+ * Contains robots.txt and sitemap.xml content.
+ *
+ * @property robots - Content of the robots.txt file
+ * @property sitemapXML - Content of the sitemap.xml file
+ *
+ * @example
+ * ```typescript
+ * const metaFiles: MetaFiles = {
+ *   robots: "User-agent: *\nDisallow: /private/",
+ *   sitemapXML: "<?xml version=\"1.0\"?><urlset>...</urlset>"
+ * };
+ * ```
+ */
+export type MetaFiles = z.infer<typeof MetaFilesSchema>;
 
 /**
  * Represents a URL that was skipped during scraping.
@@ -358,18 +359,7 @@ export interface Visited {
  * };
  * ```
  */
-export interface SkippedUrl {
-  /**
-   * The URL that was skipped.
-   */
-  url: string;
-
-  /**
-   * The reason why this URL was skipped.
-   * Examples: "Blocked by robots.txt", "HTTP error", etc.
-   */
-  reason: string;
-}
+export type SkippedUrl = z.infer<typeof SkippedUrlSchema>;
 
 /**
  * Categorized collection of skipped URLs.
@@ -392,97 +382,16 @@ export interface SkippedUrl {
  * };
  * ```
  */
-export interface SkippedLinks {
-  /**
-   * Internal links that were skipped.
-   * These are links within the same domain.
-   */
-  internal?: SkippedUrl[];
-
-  /**
-   * External links that were skipped.
-   * These are links to other domains.
-   */
-  external?: SkippedUrl[];
-
-  /**
-   * Media links that were skipped.
-   * Categorized by media type.
-   */
-  media?: {
-    /**
-     * Image links that were skipped.
-     */
-    images?: SkippedUrl[];
-
-    /**
-     * Video links that were skipped.
-     */
-    videos?: SkippedUrl[];
-
-    /**
-     * Document links that were skipped.
-     */
-    documents?: SkippedUrl[];
-  };
-
-  /**
-   * Other links that don't fit into the above categories.
-   */
-  other?: SkippedUrl[];
-}
+export type SkippedLinks = z.infer<typeof SkippedLinksSchema>;
 
 /**
- * Contains robots.txt and sitemap.xml content.
+ * Represents a URL that has been visited.
+ * Used to track when URLs were last accessed.
  *
- * @property robots - Content of the robots.txt file
- * @property sitemapXML - Content of the sitemap.xml file
- *
- * @example
- * ```typescript
- * const metaFiles: MetaFiles = {
- *   robots: "User-agent: *\nDisallow: /private/",
- *   sitemapXML: "<?xml version=\"1.0\"?><urlset>...</urlset>"
- * };
- * ```
+ * @property url - The URL that was visited
+ * @property lastVisited - ISO timestamp when this URL was last visited
  */
-export interface MetaFiles {
-  /**
-   * Content of the robots.txt file.
-   */
-  robots?: string;
-
-  /**
-   * Content of the sitemap.xml file.
-   */
-  sitemapXML?: string;
-}
-
-/**
- * Base interface for links POST route responses.
- * Contains common properties shared by both success and error responses.
- *
- * @property targetUrl - The URL that was requested to be scraped
- * @property timestamp - ISO timestamp when the request was processed
- */
-interface LinksPostResponseBase {
-  /**
-   * Whether the operation was successful.
-   * Will always be true for successful responses.
-   */
-  success: boolean;
-
-  /**
-   * The URL that was requested to be scraped.
-   */
-  targetUrl: string;
-
-  /**
-   * ISO timestamp when the request was processed.
-   * Format: ISO 8601 string.
-   */
-  timestamp: string;
-}
+export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
 
 /**
  * Represents a successful links POST route response.
@@ -524,50 +433,9 @@ interface LinksPostResponseBase {
  * };
  * ```
  */
-export interface LinksPostSuccessResponse
-  extends LinksPostResponseBase,
-    Omit<Partial<ScrapedData>, 'rawHtml'> {
-  /**
-   * Whether the operation was successful.
-   * Will always be true for successful responses.
-   */
-  success: true;
-
-  /**
-   * Return true if there is a cache hit from KV Store.
-   */
-  cached: boolean;
-
-  /**
-   * Execution time of the request in milliseconds.
-   * Format: string with "ms" suffix (e.g., "1234ms").
-   */
-  executionTime?: string;
-
-  /**
-   * Array of parent URLs leading to this URL.
-   * Represents the path in the site hierarchy.
-   */
-  ancestors?: string[];
-
-  /**
-   * URLs that were skipped during processing.
-   * Includes reasons why they were skipped.
-   */
-  skippedUrls?: SkippedLinks;
-
-  /**
-   * Extracted links from the page.
-   * Categorized by type (internal, external, media).
-   */
-  extractedLinks?: ExtractedLinks;
-
-  /**
-   * Site map tree starting from the root URL.
-   * Only included if tree generation was requested.
-   */
-  tree?: LinksTree | null;
-}
+export type LinksPostSuccessResponse = z.infer<
+  typeof LinksPostSuccessResponseSchema
+>;
 
 /**
  * Represents an error response from a links POST route.
@@ -589,25 +457,9 @@ export interface LinksPostSuccessResponse
  * };
  * ```
  */
-export interface LinksPostErrorResponse extends LinksPostResponseBase {
-  /**
-   * Whether the operation was successful.
-   * Will always be false for error responses.
-   */
-  success: false;
-
-  /**
-   * Error message describing what went wrong.
-   * Provides details about the failure reason.
-   */
-  error: string;
-
-  /**
-   * Partial site map tree if available.
-   * May contain data collected before the error occurred.
-   */
-  tree?: LinksTree | null;
-}
+export type LinksPostErrorResponse = z.infer<
+  typeof LinksPostErrorResponseSchema
+>;
 
 /**
  * Union type representing either a successful or failed link scraping operation.

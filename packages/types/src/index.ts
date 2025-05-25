@@ -52,9 +52,9 @@ export * as LinkServiceTypes from './services/link/types';
 export * as MetadataTypes from './services/metadata/types';
 export * as LinksRouterTypes from './routers/links/types';
 
-export * from './routers/links/index';
-export * from './routers/read/index';
-export * from './services/scrape/index';
-export * from './services/html-cleaning/index';
-export * from './services/link/index';
-export * from './services/metadata/index';
+export * from './routers/links';
+export * from './routers/read';
+export * from './services/scrape';
+export * from './services/html-cleaning';
+export * from './services/link';
+export * from './services/metadata';

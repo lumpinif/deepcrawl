@@ -1,5 +1,15 @@
-import type { MetaFiles } from '@deepcrawl/types/routers/links/types';
-import type { PageMetadata } from '@deepcrawl/types/services/metadata/types';
+import { MetaFilesSchema } from '@deepcrawl/types/routers/links/types';
+import { PageMetadataSchema } from '@deepcrawl/types/services/metadata/types';
+import { z } from '@hono/zod-openapi';
+
+export const ScrapedDataSchema = z.object({
+  title: z.string(),
+  rawHtml: z.string(),
+  description: z.string(),
+  metadata: PageMetadataSchema.optional(),
+  cleanedHtml: z.string().optional(),
+  metaFiles: MetaFilesSchema.optional(),
+});
 
 /**
  * Represents data scraped from a webpage.
@@ -34,11 +44,4 @@ import type { PageMetadata } from '@deepcrawl/types/services/metadata/types';
  * };
  * ```
  */
-export interface ScrapedData {
-  title: string;
-  rawHtml: string;
-  description: string;
-  metadata?: PageMetadata;
-  cleanedHtml?: string;
-  metaFiles?: MetaFiles;
-}
+export type ScrapedData = z.infer<typeof ScrapedDataSchema>;
