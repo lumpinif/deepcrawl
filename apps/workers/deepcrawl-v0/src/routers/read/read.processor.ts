@@ -223,6 +223,10 @@ export async function processReadRequest(
       metaFiles,
     });
 
+    if (!readResponse) {
+      throw new Error('Failed to process read request');
+    }
+
     try {
       const valueToCache = isGETRequest
         ? markdown || ''

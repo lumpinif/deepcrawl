@@ -190,26 +190,35 @@ export const SkippedLinksSchema = z.object({
   other: z.array(SkippedUrlSchema).optional(),
 });
 
-const baseLinksTreeSchema = z.object({
-  url: z.string(),
-  rootUrl: z.string().optional(),
-  name: z.string().optional(),
-  totalUrls: z.number().optional(),
-  executionTime: z.string().optional(),
-  lastUpdated: z.string(),
-  lastVisited: z.string().nullable().optional(),
-  error: z.string().optional(),
-  metadata: PageMetadataSchema.optional(),
-  cleanedHtml: z.string().optional(),
-  extractedLinks: ExtractedLinksSchema.optional(),
-  skippedUrls: SkippedLinksSchema.optional(),
-});
+export const baseLinksTreeSchema = z
+  .object({
+    url: z.string(),
+    rootUrl: z.string().optional(),
+    name: z.string().optional(),
+    totalUrls: z.number().optional(),
+    executionTime: z.string().optional(),
+    lastUpdated: z.string(),
+    lastVisited: z.string().nullable().optional(),
+    error: z.string().optional(),
+    metadata: PageMetadataSchema.optional(),
+    cleanedHtml: z.string().optional(),
+    extractedLinks: ExtractedLinksSchema.optional(),
+    skippedUrls: SkippedLinksSchema.optional(),
+  })
+  .openapi('LinksTreeBase');
 
-export const LinksTreeSchema: z.ZodType<LinksTree> = baseLinksTreeSchema.extend(
-  {
-    children: z.lazy(() => LinksTreeSchema.array()).optional(),
-  },
-);
+export const LinksTreeSchema: z.ZodType<LinksTree> = baseLinksTreeSchema
+  .extend({
+    children: z
+      .lazy(() => LinksTreeSchema.array())
+      .optional()
+      .openapi({
+        type: 'array',
+        items: { $ref: '#/components/schemas/LinksTree' },
+        description: 'Children of this node',
+      }),
+  })
+  .openapi('LinksTree');
 
 const LinksPostResponseBaseSchema = z.object({
   success: z.boolean(),
