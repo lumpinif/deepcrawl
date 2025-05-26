@@ -1,6 +1,3 @@
-// import authRouter from '@/routers/auth/route';
-// import linksRouter from '@/routers/links/route';
-
 import configureOpenAPI from './lib/configure-open-api';
 import createApp from './lib/create-hono-app';
 import linksRouter from './routers/links/links.routes';
@@ -20,8 +17,5 @@ const routes = [
 for (const route of routes) {
   app.route(route.path, route.router);
 }
-
-// app.route('/auth', authRouter);
-// app.route('/links', linksRouter);
 
 export default app;
