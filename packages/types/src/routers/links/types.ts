@@ -177,18 +177,20 @@ export const VisitedUrlSchema = z.object({
   lastVisited: z.string().nullable().optional(),
 });
 
-export const SkippedLinksSchema = z.object({
-  internal: z.array(SkippedUrlSchema).optional(),
-  external: z.array(SkippedUrlSchema).optional(),
-  media: z
-    .object({
-      images: z.array(SkippedUrlSchema).optional(),
-      videos: z.array(SkippedUrlSchema).optional(),
-      documents: z.array(SkippedUrlSchema).optional(),
-    })
-    .optional(),
-  other: z.array(SkippedUrlSchema).optional(),
-});
+export const SkippedLinksSchema = z
+  .object({
+    internal: z.array(SkippedUrlSchema).optional(),
+    external: z.array(SkippedUrlSchema).optional(),
+    media: z
+      .object({
+        images: z.array(SkippedUrlSchema).optional(),
+        videos: z.array(SkippedUrlSchema).optional(),
+        documents: z.array(SkippedUrlSchema).optional(),
+      })
+      .optional(),
+    other: z.array(SkippedUrlSchema).optional(),
+  })
+  .openapi('SkippedLinks');
 
 export const baseLinksTreeSchema = z
   .object({

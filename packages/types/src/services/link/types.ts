@@ -17,17 +17,19 @@ export const LinkExtractionOptionsSchema = z
  * Schema for storing extracted links by category.
  * Defines the structure for organizing links extracted from a webpage.
  */
-export const ExtractedLinksSchema = z.object({
-  internal: z.array(z.string()).optional(),
-  external: z.array(z.string()).optional(),
-  media: z
-    .object({
-      images: z.array(z.string()).optional(),
-      videos: z.array(z.string()).optional(),
-      documents: z.array(z.string()).optional(),
-    })
-    .optional(),
-});
+export const ExtractedLinksSchema = z
+  .object({
+    internal: z.array(z.string()).optional(),
+    external: z.array(z.string()).optional(),
+    media: z
+      .object({
+        images: z.array(z.string()).optional(),
+        videos: z.array(z.string()).optional(),
+        documents: z.array(z.string()).optional(),
+      })
+      .optional(),
+  })
+  .openapi('ExtractedLinks');
 
 /**
  * Configuration options for link extraction behavior.

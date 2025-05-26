@@ -22,14 +22,16 @@ export const MetaFilesSchema = z.object({
  */
 export type MetaFiles = z.infer<typeof MetaFilesSchema>;
 
-export const ScrapedDataSchema = z.object({
-  title: z.string(),
-  rawHtml: z.string(),
-  description: z.string(),
-  metadata: PageMetadataSchema.optional(),
-  cleanedHtml: z.string().optional(),
-  metaFiles: MetaFilesSchema.optional(),
-});
+export const ScrapedDataSchema = z
+  .object({
+    title: z.string(),
+    rawHtml: z.string(),
+    description: z.string(),
+    metadata: PageMetadataSchema.optional(),
+    cleanedHtml: z.string().optional(),
+    metaFiles: MetaFilesSchema.optional(),
+  })
+  .openapi('ScrapedData');
 
 /**
  * Represents data scraped from a webpage.
