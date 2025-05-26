@@ -9,12 +9,12 @@ import {
   createLinksErrorResponse,
   processLinksRequest,
 } from './links.processor';
-import type { LinksPOSTRoute } from './links.routes';
+import type { LinksGETRoute, LinksPOSTRoute } from './links.routes';
 
-export const linksGET: AppRouteHandler<LinksPOSTRoute> = async (c) => {
-  const body = c.req.valid('json');
+export const linksGET: AppRouteHandler<LinksGETRoute> = async (c) => {
+  const params = c.req.valid('query');
   try {
-    const result = await processLinksRequest(c, body);
+    const result = await processLinksRequest(c, params);
 
     return c.json(result as LinksPostSuccessResponse, HttpStatusCodes.OK);
   } catch (error) {
@@ -25,7 +25,7 @@ export const linksGET: AppRouteHandler<LinksPOSTRoute> = async (c) => {
 
     const linksPostErrorResponse: LinksPostErrorResponse =
       createLinksErrorResponse({
-        targetUrl: body.url,
+        targetUrl: params.url,
         error: err,
         withTree: false,
         existingTree: undefined,
