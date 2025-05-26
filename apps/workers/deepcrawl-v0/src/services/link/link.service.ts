@@ -1,4 +1,3 @@
-import type { _linksSets } from '@/routers/links/route';
 import type { SkippedUrl, VisitedUrl } from '@deepcrawl/types/routers/links';
 import type {
   ExtractedLinks,
@@ -7,6 +6,7 @@ import type {
 
 import { MAX_VISITED_URLS_LIMIT } from '@/config/constants';
 import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
+import type { _linksSets } from '@/routers/links/links.processor';
 import {
   ImageSrcNormalizeHandler,
   LinkNormalizeHandler,
