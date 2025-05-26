@@ -53,8 +53,8 @@ export default function createApp() {
   // .use('*', supabaseMiddleware);
   // app.use('*', freeUserRateLimiter);
 
-  app.onError(errorHandler);
   app.notFound(notFound);
+  app.onError(errorHandler);
   return app;
 }
 
