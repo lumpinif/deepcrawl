@@ -6,27 +6,13 @@ import { processReadRequest } from './read.processor';
 import type { ReadGETRoute, ReadPOSTRoute } from './read.routes';
 
 export const readGET: AppRouteHandler<ReadGETRoute> = async (c) => {
-  const {
-    url,
-    markdown: isMarkdown,
-    cleanedHtml: isCleanedHtml,
-    metadata: isMetadata,
-    robots: isRobots,
-    metadataOptions,
-    rawHtml: isRawHtml,
-  } = c.req.valid('query');
+  const { url } = c.req.valid('query');
 
   try {
     const result = await processReadRequest(
       c,
       {
         url,
-        markdown: isMarkdown,
-        cleanedHtml: isCleanedHtml,
-        metadata: isMetadata,
-        robots: isRobots,
-        metadataOptions,
-        rawHtml: isRawHtml,
       },
       /* isStringResponse */
       true,
