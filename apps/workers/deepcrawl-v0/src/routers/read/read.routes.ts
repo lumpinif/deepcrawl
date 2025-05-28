@@ -19,7 +19,9 @@ export const readGETRoute = createRoute({
   method: 'get',
   description: 'Directly return page markdown content from the request URL.',
   request: {
-    query: ReadOptionsSchema,
+    query: ReadOptionsSchema.pick({
+      url: true,
+    }),
   },
   tags,
   responses: {
