@@ -12,7 +12,7 @@ import {
   ReadSuccessResponseSchema,
 } from '@deepcrawl/types/index';
 
-const tags = ['Read'];
+const tags = ['Deepcrawl Read URL API'];
 
 export const readGETRoute = createRoute({
   path: '/',
@@ -21,7 +21,7 @@ export const readGETRoute = createRoute({
   request: {
     query: ReadOptionsSchema,
   },
-  tags: [...tags, 'Read GET'],
+  tags,
   responses: {
     [HttpStatusCodes.OK]: {
       content: {
@@ -50,7 +50,7 @@ export const readPOSTRoute = createRoute({
       '/read POST request body, read options schema',
     ),
   },
-  tags: [...tags, 'Read POST'],
+  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       ReadSuccessResponseSchema,

@@ -12,7 +12,7 @@ import {
   LinksPostSuccessResponseSchema,
 } from '@deepcrawl/types/index';
 
-const tags = ['Links'];
+const tags = ['Deepcrawl Links Extractor API'];
 
 export const linksGETRoute = createRoute({
   path: '/',
@@ -21,7 +21,7 @@ export const linksGETRoute = createRoute({
   request: {
     query: LinksOptionsSchema,
   },
-  tags: [...tags, 'Links GET'],
+  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       LinksPostSuccessResponseSchema,
@@ -44,7 +44,7 @@ export const linksPOSTRoute = createRoute({
       '/links POST request body, links options schema',
     ),
   },
-  tags: [...tags, 'Links POST'],
+  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       LinksPostSuccessResponseSchema,

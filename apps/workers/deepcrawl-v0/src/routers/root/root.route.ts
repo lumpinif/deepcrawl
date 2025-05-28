@@ -7,7 +7,7 @@ import { createRouter } from '@/lib/create-hono-app';
 
 const router = createRouter().openapi(
   createRoute({
-    tags: ['Root'],
+    tags: ['Deepcrawl API Root'],
     method: 'get',
     path: '/',
     security: [],
