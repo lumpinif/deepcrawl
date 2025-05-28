@@ -2,6 +2,7 @@ import { Scalar } from '@scalar/hono-api-reference';
 
 import type { AppOpenAPI } from './types';
 
+import { isProduction } from '@/utils/worker-env';
 import packageJSON from '../../package.json' with { type: 'json' };
 
 export default function configureOpenAPI(app: AppOpenAPI) {
@@ -18,7 +19,9 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     },
     servers: [
       {
-        url: new URL(c.req.url).origin,
+        url: isProduction(c)
+          ? new URL(c.req.url).origin
+          : 'http://127.0.0.1:8787',
         description: 'Deepcrawl Official API server',
       },
     ],
