@@ -4,55 +4,59 @@ import { z } from '@hono/zod-openapi';
  * Schema for configuring metadata extraction options.
  * Controls which metadata fields should be extracted from a webpage.
  */
-export const MetadataOptionsSchema = z.object({
-  title: z.boolean().optional().default(true),
-  description: z.boolean().optional().default(true),
-  language: z.boolean().optional().default(true),
-  canonical: z.boolean().optional().default(true),
-  robots: z.boolean().optional().default(true),
-  author: z.boolean().optional().default(true),
-  keywords: z.boolean().optional().default(true),
-  favicon: z.boolean().optional().default(true),
-  openGraph: z.boolean().optional().default(true),
-  twitter: z.boolean().optional().default(true),
-  isIframeAllowed: z.boolean().optional().default(true),
-});
+export const MetadataOptionsSchema = z
+  .object({
+    title: z.boolean().optional().default(true),
+    description: z.boolean().optional().default(true),
+    language: z.boolean().optional().default(true),
+    canonical: z.boolean().optional().default(true),
+    robots: z.boolean().optional().default(true),
+    author: z.boolean().optional().default(true),
+    keywords: z.boolean().optional().default(true),
+    favicon: z.boolean().optional().default(true),
+    openGraph: z.boolean().optional().default(true),
+    twitter: z.boolean().optional().default(true),
+    isIframeAllowed: z.boolean().optional().default(true),
+  })
+  .openapi('MetadataOptions');
 
 /**
  * Schema for page metadata extracted from a webpage.
  * Defines the structure and validation rules for all possible metadata fields.
  */
-export const PageMetadataSchema = z.object({
-  // Basic metadata
-  title: z.string().optional(),
-  description: z.string().optional(),
-  language: z.string().optional(),
-  canonical: z.string().url().optional(),
-  robots: z.string().optional(),
-  author: z.string().optional(),
-  keywords: z.array(z.string()).optional(),
-  lastModified: z.string().optional().nullable(),
-  favicon: z.string().url().optional(),
+export const PageMetadataSchema = z
+  .object({
+    // Basic metadata
+    title: z.string().optional(),
+    description: z.string().optional(),
+    language: z.string().optional(),
+    canonical: z.string().url().optional(),
+    robots: z.string().optional(),
+    author: z.string().optional(),
+    keywords: z.array(z.string()).optional(),
+    lastModified: z.string().optional().nullable(),
+    favicon: z.string().url().optional(),
 
-  // OpenGraph metadata (flattened)
-  ogTitle: z.string().optional(),
-  ogDescription: z.string().optional(),
-  ogImage: z.string().url().optional(),
-  ogUrl: z.string().url().optional(),
-  ogType: z.string().optional(),
-  ogSiteName: z.string().optional(),
+    // OpenGraph metadata (flattened)
+    ogTitle: z.string().optional(),
+    ogDescription: z.string().optional(),
+    ogImage: z.string().url().optional(),
+    ogUrl: z.string().url().optional(),
+    ogType: z.string().optional(),
+    ogSiteName: z.string().optional(),
 
-  // Twitter Card metadata (flattened)
-  twitterCard: z.string().optional(),
-  twitterSite: z.string().optional(),
-  twitterCreator: z.string().optional(),
-  twitterTitle: z.string().optional(),
-  twitterDescription: z.string().optional(),
-  twitterImage: z.string().url().optional(),
+    // Twitter Card metadata (flattened)
+    twitterCard: z.string().optional(),
+    twitterSite: z.string().optional(),
+    twitterCreator: z.string().optional(),
+    twitterTitle: z.string().optional(),
+    twitterDescription: z.string().optional(),
+    twitterImage: z.string().url().optional(),
 
-  // iframe allowed
-  isIframeAllowed: z.boolean().optional(),
-});
+    // iframe allowed
+    isIframeAllowed: z.boolean().optional(),
+  })
+  .openapi('PageMetadata');
 
 /**
  * Options for controlling which metadata fields should be extracted.

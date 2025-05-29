@@ -13,7 +13,8 @@ export const HTMLCleaningOptionsSchema = z
     documentBaseUrl: z.string().optional(),
     removeBase64Images: z.boolean().optional().default(true),
   })
-  .strict();
+  .strict()
+  .openapi('HTMLCleaningOptions');
 
 /**
  * Configuration options for HTML content cleaning and sanitization.
@@ -91,11 +92,13 @@ export type ElementPattern = z.infer<typeof ElementPatternSchema>;
  * Schema for metrics collected during HTML cleaning.
  * Tracks performance and effectiveness of the cleaning process.
  */
-export const HTMLCleaningMetricsSchema = z.object({
-  inputSize: z.number(),
-  outputSize: z.number(),
-  compressionRatio: z.number(),
-});
+export const HTMLCleaningMetricsSchema = z
+  .object({
+    inputSize: z.number(),
+    outputSize: z.number(),
+    compressionRatio: z.number(),
+  })
+  .openapi('HTMLCleaningMetrics');
 
 /**
  * Metrics collected during HTML cleaning and sanitization.
@@ -120,10 +123,12 @@ export type HTMLCleaningMetrics = z.infer<typeof HTMLCleaningMetricsSchema>;
  * Schema for the result of HTML cleaning operation.
  * Defines the structure of the cleaning operation output.
  */
-export const HTMLCleaningResultSchema = z.object({
-  cleanedHtml: z.string(),
-  metrics: HTMLCleaningMetricsSchema.optional(),
-});
+export const HTMLCleaningResultSchema = z
+  .object({
+    cleanedHtml: z.string(),
+    metrics: HTMLCleaningMetricsSchema.optional(),
+  })
+  .openapi('HTMLCleaningResult');
 
 /**
  * Result of HTML cleaning and sanitization.

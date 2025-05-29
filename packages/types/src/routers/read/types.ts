@@ -15,73 +15,55 @@ export const ReadOptionsSchema = z
      * Default: true
      */
     // default true if not set
-    metadata: z
-      .preprocess(
-        (val) => val !== 'false' && val !== false,
-        z.boolean().optional(),
-      )
-      .openapi({
-        default: true,
-      }),
+    metadata: z.coerce.boolean().optional().default(true).openapi({
+      default: true,
+      description: 'Whether to extract metadata from the page.',
+    }),
 
     /**
      * Whether to extract markdown from the page.
      * Default: true
      */
     // default true if not set
-    markdown: z
-      .preprocess(
-        (val) => val !== 'false' && val !== false,
-        z.boolean().optional(),
-      )
-      .openapi({
-        default: true,
-      }),
+    markdown: z.coerce.boolean().optional().default(true).openapi({
+      default: true,
+      description: 'Whether to extract markdown from the page.',
+    }),
 
     /**
      * Whether to return cleaned HTML.
-     * Default: true
+     * Default: false
      */
-    cleanedHtml: z
-      .preprocess(
-        (val) => val !== 'false' && val !== false,
-        z.boolean().optional(),
-      )
-      .openapi({
-        default: true,
-      }),
+    cleanedHtml: z.coerce.boolean().optional().default(false).openapi({
+      default: false,
+      description: 'Whether to return cleaned HTML.',
+    }),
 
     /**
      * Whether to fetch and parse robots.txt.
      * Default: false
      */
-    robots: z
-      .preprocess(
-        (val) => val === 'true' || val === true,
-        z.boolean().optional(),
-      )
-      .openapi({
-        default: false,
-      }),
+    robots: z.coerce.boolean().optional().default(false).openapi({
+      default: false,
+      description: 'Whether to fetch and parse robots.txt.',
+    }),
 
     /**
      * Whether to return raw HTML.
      * Default: false
      */
-    rawHtml: z
-      .preprocess(
-        (val) => val !== 'false' && val !== false,
-        z.boolean().optional(),
-      )
-      .openapi({
-        default: false,
-      }),
+    rawHtml: z.coerce.boolean().optional().default(false).openapi({
+      default: false,
+      description: 'Whether to return raw HTML.',
+    }),
 
     /**
      * Options for metadata extraction.
      * Controls how metadata like title, description, etc. are extracted.
      */
-    metadataOptions: MetadataOptionsSchema.optional(),
+    metadataOptions: MetadataOptionsSchema.optional().openapi({
+      description: 'Options for metadata extraction.',
+    }),
 
     /** DEPRECATED: AS WE ARE NOT USING HTMLREWRITE FOR CLEANING THE HTML FOR NOW, MAY BE REUSED THIS IN THE FUTURE
      * Options for HTML cleaning.
@@ -121,11 +103,15 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
     metrics: MetricsSchema.optional(),
   });
 
+type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {
+  url: T['url'];
+} & Partial<Omit<T, 'url'>>;
+
 /**
  * Type representing options for read operations.
  * Derived from the readOptionsSchema.
  */
-export type ReadOptions = z.infer<typeof ReadOptionsSchema>;
+export type ReadOptions = PartialExceptUrl<z.infer<typeof ReadOptionsSchema>>;
 
 /**
  * Base type for read responses.

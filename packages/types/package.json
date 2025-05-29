@@ -6,6 +6,7 @@
   "private": true,
   "types": "./src/index.ts",
   "exports": {
+    "./*": "./src/*",
     ".": {
       "types": "./src/index.ts"
     },

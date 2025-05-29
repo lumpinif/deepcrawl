@@ -11,7 +11,8 @@ export const LinkExtractionOptionsSchema = z
     excludePatterns: z.array(z.string()).optional(), // Regex patterns to exclude URLs
     removeQueryParams: z.boolean().optional(), // Remove query parameters from URLs
   })
-  .strict();
+  .strict()
+  .openapi('LinkExtractionOptions');
 
 /**
  * Schema for storing extracted links by category.

@@ -18,25 +18,27 @@ import { z } from '@hono/zod-openapi';
  * @property linksOptions - Options for link extraction
  * @property cleanedHtmlOptions - Options for HTML cleaning
  */
-export const ContentOptionsSchema = z.object({
-  /**
-   * Options for metadata extraction.
-   * Controls how metadata like title, description, etc. are extracted.
-   */
-  metadataOptions: MetadataOptionsSchema.optional(),
+export const ContentOptionsSchema = z
+  .object({
+    /**
+     * Options for metadata extraction.
+     * Controls how metadata like title, description, etc. are extracted.
+     */
+    metadataOptions: MetadataOptionsSchema.optional(),
 
-  /**
-   * Options for link extraction.
-   * Controls how links are extracted and categorized.
-   */
-  linksOptions: LinkExtractionOptionsSchema.optional(),
+    /**
+     * Options for link extraction.
+     * Controls how links are extracted and categorized.
+     */
+    linksOptions: LinkExtractionOptionsSchema.optional(),
 
-  /**
-   * Options for HTML cleaning.
-   * Controls how HTML is sanitized and cleaned.
-   */
-  cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
-});
+    /**
+     * Options for HTML cleaning.
+     * Controls how HTML is sanitized and cleaned.
+     */
+    cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
+  })
+  .openapi('ContentOptions');
 
 /**
  * Schema for tree options.
@@ -45,42 +47,44 @@ export const ContentOptionsSchema = z.object({
  * @property folderFirst - Whether to place folders before leaf nodes in the tree
  * @property linksOrder - How to order links within each folder
  */
-export const TreeOptionsSchema = z.object({
-  /**
-   * Whether to place folders before leaf nodes in the tree.
-   * Default: true
-   */
-  folderFirst: z.preprocess(
-    (val) => val !== 'false' && val !== false,
-    z.boolean().optional(),
-  ),
-  /**
-   * How to order links within each folder:
-   *  - 'page'        preserve the original document order
-   *  - 'alphabetical'  sort A→Z by URL
-   * Default: 'page'
-   */
-  linksOrder: z.enum(['page', 'alphabetical']).optional(),
+export const TreeOptionsSchema = z
+  .object({
+    /**
+     * Whether to place folders before leaf nodes in the tree.
+     * Default: true
+     */
+    folderFirst: z.preprocess(
+      (val) => val !== 'false' && val !== false,
+      z.boolean().optional(),
+    ),
+    /**
+     * How to order links within each folder:
+     *  - 'page'        preserve the original document order
+     *  - 'alphabetical'  sort A→Z by URL
+     * Default: 'page'
+     */
+    linksOrder: z.enum(['page', 'alphabetical']).optional(),
 
-  /**
-   * Whether to include extracted links for each node in the tree.
-   * Default: true
-   */
-  extractedLinks: z.preprocess(
-    (val) => val !== 'false' && val !== false,
-    z.boolean().optional(),
-  ),
+    /**
+     * Whether to include extracted links for each node in the tree.
+     * Default: true
+     */
+    extractedLinks: z.preprocess(
+      (val) => val !== 'false' && val !== false,
+      z.boolean().optional(),
+    ),
 
-  /**
-   * Whether to exclude subdomain as root URL.
-   * Default: true
-   * e.g., if false: rootUrl: https://swr.vercel.app -> https://vercel.app
-   */
-  subdomainAsRootUrl: z.preprocess(
-    (val) => val !== 'false' && val !== false,
-    z.boolean().optional(),
-  ),
-});
+    /**
+     * Whether to exclude subdomain as root URL.
+     * Default: true
+     * e.g., if false: rootUrl: https://swr.vercel.app -> https://vercel.app
+     */
+    subdomainAsRootUrl: z.preprocess(
+      (val) => val !== 'false' && val !== false,
+      z.boolean().optional(),
+    ),
+  })
+  .openapi('TreeOptions');
 
 /**
  * Schema for links route options.
@@ -108,74 +112,82 @@ export const TreeOptionsSchema = z.object({
  * };
  * ```
  */
-export const LinksOptionsSchema = z.object({
-  /**
-   * The URL to scrape.
-   * Must be a valid URL string.
-   */
-  url: z.string(),
+export const LinksOptionsSchema = z
+  .object({
+    /**
+     * The URL to extract links from.
+     * Must be a valid URL string.
+     */
+    url: z.string().openapi({
+      description: 'The URL to extract links from.',
+    }),
 
-  /**
-   * Whether to build a site map tree.
-   * Default: true
-   */
-  // default true if not set
-  tree: z.preprocess(
-    (val) => val !== 'false' && val !== false,
-    z.boolean().optional(),
-  ),
+    /**
+     * Whether to build a site map tree.
+     * Default: true
+     */
+    // default true if not set
+    tree: z.coerce.boolean().optional().default(true).openapi({
+      default: true,
+      description: 'Whether to build a site map tree.',
+    }),
 
-  /**
-   * Whether to extract metadata from the page.
-   * Default: true
-   */
-  // default true if not set
-  metadata: z.preprocess(
-    (val) => val !== 'false' && val !== false,
-    z.boolean().optional(),
-  ),
+    /**
+     * Whether to extract metadata from the page.
+     * Default: true
+     */
+    // default true if not set
+    metadata: z.coerce.boolean().optional().default(true).openapi({
+      default: true,
+      description: 'Whether to extract metadata from the page.',
+    }),
 
-  /**
-   * Whether to return cleaned HTML.
-   * Default: false
-   */
-  cleanedHtml: z.preprocess(
-    (val) => val === 'true' || val === true,
-    z.boolean().optional(),
-  ),
+    /**
+     * Whether to return cleaned HTML.
+     * Default: false
+     */
+    cleanedHtml: z.coerce.boolean().optional().default(false).openapi({
+      default: false,
+      description: 'Whether to return cleaned HTML.',
+    }),
 
-  /**
-   * Whether to fetch and parse robots.txt.
-   * Default: false
-   */
-  robots: z.preprocess(
-    (val) => val === 'true' || val === true,
-    z.boolean().optional(),
-  ),
+    /**
+     * Whether to fetch and parse robots.txt.
+     * Default: false
+     */
+    robots: z.coerce.boolean().optional().default(false).openapi({
+      default: false,
+      description: 'Whether to fetch and parse robots.txt.',
+    }),
 
-  /**
-   * Whether to fetch and parse sitemap.xml.
-   * Default: false
-   */
-  sitemapXML: z.preprocess(
-    (val) => val === 'true' || val === true,
-    z.boolean().optional(),
-  ),
+    /**
+     * Whether to fetch and parse sitemap.xml.
+     * Default: false
+     */
+    sitemapXML: z.coerce.boolean().optional().default(false).openapi({
+      default: false,
+      description: 'Whether to fetch and parse sitemap.xml.',
+    }),
 
-  ...TreeOptionsSchema.shape,
+    ...TreeOptionsSchema.shape,
 
-  ...ContentOptionsSchema.shape,
-});
+    ...ContentOptionsSchema.shape,
+  })
+  .openapi('LinksOptions');
 
-export const SkippedUrlSchema = z.object({
-  url: z.string(),
-  reason: z.string(),
-});
+export const SkippedUrlSchema = z
+  .object({
+    url: z.string(),
+    reason: z.string(),
+  })
+  .openapi('SkippedUrl');
 
-export const VisitedUrlSchema = z.object({
-  url: z.string(),
-  lastVisited: z.string().nullable().optional(),
-});
+export const VisitedUrlSchema = z
+  .object({
+    url: z.string(),
+    lastVisited: z.string().nullable().optional(),
+  })
+  .openapi('VisitedUrl');
 
 export const SkippedLinksSchema = z
   .object({
@@ -329,11 +341,15 @@ export type LinksTree = z.infer<typeof baseLinksTreeSchema> & {
   children?: LinksTree[];
 };
 
+type PartialExceptUrl<T extends z.infer<typeof LinksOptionsSchema>> = {
+  url: T['url'];
+} & Partial<Omit<T, 'url'>>;
+
 /**
  * Type representing options for link scraping operations.
  * Derived from the linksOptionsSchema.
  */
-export type LinksOptions = z.infer<typeof LinksOptionsSchema>;
+export type LinksOptions = PartialExceptUrl<z.infer<typeof LinksOptionsSchema>>;
 
 /**
  * Represents a URL that was skipped during scraping.
