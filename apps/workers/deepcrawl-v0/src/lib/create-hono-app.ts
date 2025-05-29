@@ -49,7 +49,7 @@ export default function createApp() {
         allowMethods: ['GET', 'POST', 'OPTIONS'],
       }),
     )
-    .use('/openapi/*', prettyJSON());
+    .use('*', prettyJSON());
 
   // .use('*', supabaseMiddleware);
   // app.use('*', freeUserRateLimiter);
