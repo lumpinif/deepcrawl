@@ -14,7 +14,8 @@
     "mdlint": "markdownlint-cli2 --config .markdownlint-cli2.jsonc --fix",
     "typecheck": "tsc --noEmit",
     "fix": "pnpm lint && pnpm format && pnpm check && pnpm mdlint && pnpm typecheck",
-    "cf-typegen": "wrangler types --env-interface=CloudflareBindings && pnpm typecheck"
+    "cf-typegen": "wrangler types --env-interface=CloudflareBindings && pnpm typecheck",
+    "openapi": "curl http://localhost:8787/openapi -o openapi.json && biome format --write openapi.json"
   },
   "dependencies": {
     "@cloudflare/puppeteer": "^0.0.15",

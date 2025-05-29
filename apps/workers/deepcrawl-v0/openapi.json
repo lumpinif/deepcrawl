@@ -1,0 +1,777 @@
+{
+  "openapi": "3.1.0",
+  "info": { "version": "0.0.1", "title": "Deepcrawl OpenAPI" },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8787",
+      "description": "Deepcrawl Official API server"
+    }
+  ],
+  "security": [{ "Bearer": [] }],
+  "components": {
+    "securitySchemes": { "Bearer": { "type": "http", "scheme": "bearer" } },
+    "schemas": {
+      "Metrics": {
+        "type": "object",
+        "properties": {
+          "readableDuration": { "type": "string" },
+          "duration": { "type": "number" },
+          "startTime": { "type": "number" },
+          "endTime": { "type": "number" }
+        },
+        "required": ["readableDuration", "duration", "startTime", "endTime"]
+      },
+      "ReadOptions": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "metadata": { "type": ["boolean", "null"], "default": true },
+          "markdown": { "type": ["boolean", "null"], "default": true },
+          "cleanedHtml": { "type": ["boolean", "null"], "default": true },
+          "robots": { "type": ["boolean", "null"], "default": false },
+          "rawHtml": { "type": ["boolean", "null"], "default": false },
+          "metadataOptions": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "boolean", "default": true },
+              "description": { "type": "boolean", "default": true },
+              "language": { "type": "boolean", "default": true },
+              "canonical": { "type": "boolean", "default": true },
+              "robots": { "type": "boolean", "default": true },
+              "author": { "type": "boolean", "default": true },
+              "keywords": { "type": "boolean", "default": true },
+              "favicon": { "type": "boolean", "default": true },
+              "openGraph": { "type": "boolean", "default": true },
+              "twitter": { "type": "boolean", "default": true },
+              "isIframeAllowed": { "type": "boolean", "default": true }
+            }
+          }
+        },
+        "required": ["url"]
+      },
+      "SkippedLinks": {
+        "type": "object",
+        "properties": {
+          "internal": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": { "type": "string" },
+                "reason": { "type": "string" }
+              },
+              "required": ["url", "reason"]
+            }
+          },
+          "external": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": { "type": "string" },
+                "reason": { "type": "string" }
+              },
+              "required": ["url", "reason"]
+            }
+          },
+          "media": {
+            "type": "object",
+            "properties": {
+              "images": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string" },
+                    "reason": { "type": "string" }
+                  },
+                  "required": ["url", "reason"]
+                }
+              },
+              "videos": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string" },
+                    "reason": { "type": "string" }
+                  },
+                  "required": ["url", "reason"]
+                }
+              },
+              "documents": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string" },
+                    "reason": { "type": "string" }
+                  },
+                  "required": ["url", "reason"]
+                }
+              }
+            }
+          },
+          "other": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": { "type": "string" },
+                "reason": { "type": "string" }
+              },
+              "required": ["url", "reason"]
+            }
+          }
+        }
+      },
+      "ExtractedLinks": {
+        "type": "object",
+        "properties": {
+          "internal": { "type": "array", "items": { "type": "string" } },
+          "external": { "type": "array", "items": { "type": "string" } },
+          "media": {
+            "type": "object",
+            "properties": {
+              "images": { "type": "array", "items": { "type": "string" } },
+              "videos": { "type": "array", "items": { "type": "string" } },
+              "documents": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      },
+      "LinksTreeBase": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "rootUrl": { "type": "string" },
+          "name": { "type": "string" },
+          "totalUrls": { "type": "number" },
+          "executionTime": { "type": "string" },
+          "lastUpdated": { "type": "string" },
+          "lastVisited": { "type": ["string", "null"] },
+          "error": { "type": "string" },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "language": { "type": "string" },
+              "canonical": { "type": "string", "format": "uri" },
+              "robots": { "type": "string" },
+              "author": { "type": "string" },
+              "keywords": { "type": "array", "items": { "type": "string" } },
+              "lastModified": { "type": ["string", "null"] },
+              "favicon": { "type": "string", "format": "uri" },
+              "ogTitle": { "type": "string" },
+              "ogDescription": { "type": "string" },
+              "ogImage": { "type": "string", "format": "uri" },
+              "ogUrl": { "type": "string", "format": "uri" },
+              "ogType": { "type": "string" },
+              "ogSiteName": { "type": "string" },
+              "twitterCard": { "type": "string" },
+              "twitterSite": { "type": "string" },
+              "twitterCreator": { "type": "string" },
+              "twitterTitle": { "type": "string" },
+              "twitterDescription": { "type": "string" },
+              "twitterImage": { "type": "string", "format": "uri" },
+              "isIframeAllowed": { "type": "boolean" }
+            }
+          },
+          "cleanedHtml": { "type": "string" },
+          "extractedLinks": { "$ref": "#/components/schemas/ExtractedLinks" },
+          "skippedUrls": { "$ref": "#/components/schemas/SkippedLinks" }
+        },
+        "required": ["url", "lastUpdated"]
+      },
+      "LinksTree": {
+        "allOf": [
+          { "$ref": "#/components/schemas/LinksTreeBase" },
+          {
+            "type": ["object", "null"],
+            "properties": {
+              "children": {
+                "type": "array",
+                "description": "Children of this node",
+                "items": { "$ref": "#/components/schemas/LinksTree" }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["Deepcrawl API Root"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Deepcrawl API Root",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "message": { "type": "string" } },
+                  "required": ["message"],
+                  "example": { "message": "Welcome to Deepcrawl API" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/read": {
+      "get": {
+        "description": "Directly return page markdown content from the request URL.",
+        "tags": ["Deepcrawl Read URL API"],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The valid URL to read. This URL will be validated and normalized.",
+              "examples": ["example.com", "https://example.com"]
+            },
+            "required": true,
+            "name": "url",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The page markdown content from the request URL",
+            "content": { "text/markdown": { "schema": { "type": "string" } } }
+          },
+          "500": {
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "enum": [false] },
+                    "targetUrl": { "type": "string" },
+                    "error": { "type": "string" }
+                  },
+                  "required": ["success", "targetUrl", "error"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Returning full result object from the request URL.",
+        "tags": ["Deepcrawl Read URL API"],
+        "requestBody": {
+          "description": "/read POST request body, read options schema",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/ReadOptions" },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "description": "The valid URL to read. This URL will be validated and normalized.",
+                        "examples": ["example.com", "https://example.com"]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Read options schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "enum": [true] },
+                    "targetUrl": { "type": "string" },
+                    "title": { "type": "string" },
+                    "description": { "type": "string" },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "title": { "type": "string" },
+                        "description": { "type": "string" },
+                        "language": { "type": "string" },
+                        "canonical": { "type": "string", "format": "uri" },
+                        "robots": { "type": "string" },
+                        "author": { "type": "string" },
+                        "keywords": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "lastModified": { "type": ["string", "null"] },
+                        "favicon": { "type": "string", "format": "uri" },
+                        "ogTitle": { "type": "string" },
+                        "ogDescription": { "type": "string" },
+                        "ogImage": { "type": "string", "format": "uri" },
+                        "ogUrl": { "type": "string", "format": "uri" },
+                        "ogType": { "type": "string" },
+                        "ogSiteName": { "type": "string" },
+                        "twitterCard": { "type": "string" },
+                        "twitterSite": { "type": "string" },
+                        "twitterCreator": { "type": "string" },
+                        "twitterTitle": { "type": "string" },
+                        "twitterDescription": { "type": "string" },
+                        "twitterImage": { "type": "string", "format": "uri" },
+                        "isIframeAllowed": { "type": "boolean" }
+                      }
+                    },
+                    "cleanedHtml": { "type": "string" },
+                    "metaFiles": {
+                      "type": "object",
+                      "properties": {
+                        "robots": { "type": "string" },
+                        "sitemapXML": { "type": "string" }
+                      }
+                    },
+                    "cached": { "type": "boolean" },
+                    "markdown": { "type": "string" },
+                    "rawHtml": { "type": "string" },
+                    "metrics": { "$ref": "#/components/schemas/Metrics" }
+                  },
+                  "required": [
+                    "success",
+                    "targetUrl",
+                    "title",
+                    "description",
+                    "cached"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "enum": [false] },
+                    "targetUrl": { "type": "string" },
+                    "error": { "type": "string" }
+                  },
+                  "required": ["success", "targetUrl", "error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/links": {
+      "get": {
+        "description": "Returning extracted links sitemap results for the request URL.",
+        "tags": ["Deepcrawl Links Extractor API"],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "The valid URL to extract links from. This URL will be validated and normalized.",
+              "examples": ["example.com", "https://example.com"]
+            },
+            "required": true,
+            "name": "url",
+            "in": "query"
+          },
+          {
+            "schema": { "type": ["boolean", "null"] },
+            "required": false,
+            "name": "tree",
+            "in": "query"
+          },
+          {
+            "schema": { "type": ["boolean", "null"] },
+            "required": false,
+            "name": "metadata",
+            "in": "query"
+          },
+          {
+            "schema": { "type": ["boolean", "null"] },
+            "required": false,
+            "name": "cleanedHtml",
+            "in": "query"
+          },
+          {
+            "schema": { "type": ["boolean", "null"] },
+            "required": false,
+            "name": "robots",
+            "in": "query"
+          },
+          {
+            "schema": { "type": ["boolean", "null"] },
+            "required": false,
+            "name": "sitemapXML",
+            "in": "query"
+          },
+          {
+            "schema": { "type": ["boolean", "null"] },
+            "required": false,
+            "name": "folderFirst",
+            "in": "query"
+          },
+          {
+            "schema": { "type": "string", "enum": ["page", "alphabetical"] },
+            "required": false,
+            "name": "linksOrder",
+            "in": "query"
+          },
+          {
+            "schema": { "type": ["boolean", "null"] },
+            "required": false,
+            "name": "extractedLinks",
+            "in": "query"
+          },
+          {
+            "schema": { "type": ["boolean", "null"] },
+            "required": false,
+            "name": "subdomainAsRootUrl",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "boolean", "default": true },
+                "description": { "type": "boolean", "default": true },
+                "language": { "type": "boolean", "default": true },
+                "canonical": { "type": "boolean", "default": true },
+                "robots": { "type": "boolean", "default": true },
+                "author": { "type": "boolean", "default": true },
+                "keywords": { "type": "boolean", "default": true },
+                "favicon": { "type": "boolean", "default": true },
+                "openGraph": { "type": "boolean", "default": true },
+                "twitter": { "type": "boolean", "default": true },
+                "isIframeAllowed": { "type": "boolean", "default": true }
+              }
+            },
+            "required": false,
+            "name": "metadataOptions",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "includeExternal": { "type": "boolean" },
+                "includeMedia": { "type": "boolean" },
+                "excludePatterns": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "removeQueryParams": { "type": "boolean" }
+              },
+              "additionalProperties": false
+            },
+            "required": false,
+            "name": "linksOptions",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "allowedHTMLTags": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "disallowedHTMLTags": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "extractMainContent": { "type": "boolean", "default": true },
+                "documentBaseUrl": { "type": "string" },
+                "removeBase64Images": { "type": "boolean", "default": true }
+              },
+              "additionalProperties": false
+            },
+            "required": false,
+            "name": "cleanedHtmlOptions",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Extracted links sitemap results for request URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "enum": [true] },
+                    "targetUrl": { "type": "string" },
+                    "timestamp": { "type": "string" },
+                    "title": { "type": "string" },
+                    "description": { "type": "string" },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "title": { "type": "string" },
+                        "description": { "type": "string" },
+                        "language": { "type": "string" },
+                        "canonical": { "type": "string", "format": "uri" },
+                        "robots": { "type": "string" },
+                        "author": { "type": "string" },
+                        "keywords": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "lastModified": { "type": ["string", "null"] },
+                        "favicon": { "type": "string", "format": "uri" },
+                        "ogTitle": { "type": "string" },
+                        "ogDescription": { "type": "string" },
+                        "ogImage": { "type": "string", "format": "uri" },
+                        "ogUrl": { "type": "string", "format": "uri" },
+                        "ogType": { "type": "string" },
+                        "ogSiteName": { "type": "string" },
+                        "twitterCard": { "type": "string" },
+                        "twitterSite": { "type": "string" },
+                        "twitterCreator": { "type": "string" },
+                        "twitterTitle": { "type": "string" },
+                        "twitterDescription": { "type": "string" },
+                        "twitterImage": { "type": "string", "format": "uri" },
+                        "isIframeAllowed": { "type": "boolean" }
+                      }
+                    },
+                    "cleanedHtml": { "type": "string" },
+                    "metaFiles": {
+                      "type": "object",
+                      "properties": {
+                        "robots": { "type": "string" },
+                        "sitemapXML": { "type": "string" }
+                      }
+                    },
+                    "cached": { "type": "boolean" },
+                    "executionTime": { "type": "string" },
+                    "ancestors": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "skippedUrls": {
+                      "$ref": "#/components/schemas/SkippedLinks"
+                    },
+                    "extractedLinks": {
+                      "$ref": "#/components/schemas/ExtractedLinks"
+                    },
+                    "tree": { "$ref": "#/components/schemas/LinksTree" }
+                  },
+                  "required": ["success", "targetUrl", "timestamp", "cached"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Bad request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "enum": [false] },
+                    "targetUrl": { "type": "string" },
+                    "timestamp": { "type": "string" },
+                    "error": { "type": "string" },
+                    "tree": { "$ref": "#/components/schemas/LinksTree" }
+                  },
+                  "required": ["success", "targetUrl", "timestamp", "error"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Returning extracted links sitemap results for the request URL.",
+        "tags": ["Deepcrawl Links Extractor API"],
+        "requestBody": {
+          "description": "/links POST request body, links options schema",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "The valid URL to extract links from. This URL will be validated and normalized.",
+                    "examples": ["example.com", "https://example.com"]
+                  },
+                  "tree": { "type": ["boolean", "null"] },
+                  "metadata": { "type": ["boolean", "null"] },
+                  "cleanedHtml": { "type": ["boolean", "null"] },
+                  "robots": { "type": ["boolean", "null"] },
+                  "sitemapXML": { "type": ["boolean", "null"] },
+                  "folderFirst": { "type": ["boolean", "null"] },
+                  "linksOrder": {
+                    "type": "string",
+                    "enum": ["page", "alphabetical"]
+                  },
+                  "extractedLinks": { "type": ["boolean", "null"] },
+                  "subdomainAsRootUrl": { "type": ["boolean", "null"] },
+                  "metadataOptions": {
+                    "type": "object",
+                    "properties": {
+                      "title": { "type": "boolean", "default": true },
+                      "description": { "type": "boolean", "default": true },
+                      "language": { "type": "boolean", "default": true },
+                      "canonical": { "type": "boolean", "default": true },
+                      "robots": { "type": "boolean", "default": true },
+                      "author": { "type": "boolean", "default": true },
+                      "keywords": { "type": "boolean", "default": true },
+                      "favicon": { "type": "boolean", "default": true },
+                      "openGraph": { "type": "boolean", "default": true },
+                      "twitter": { "type": "boolean", "default": true },
+                      "isIframeAllowed": { "type": "boolean", "default": true }
+                    }
+                  },
+                  "linksOptions": {
+                    "type": "object",
+                    "properties": {
+                      "includeExternal": { "type": "boolean" },
+                      "includeMedia": { "type": "boolean" },
+                      "excludePatterns": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      },
+                      "removeQueryParams": { "type": "boolean" }
+                    },
+                    "additionalProperties": false
+                  },
+                  "cleanedHtmlOptions": {
+                    "type": "object",
+                    "properties": {
+                      "allowedHTMLTags": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      },
+                      "disallowedHTMLTags": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      },
+                      "extractMainContent": {
+                        "type": "boolean",
+                        "default": true
+                      },
+                      "documentBaseUrl": { "type": "string" },
+                      "removeBase64Images": {
+                        "type": "boolean",
+                        "default": true
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["url"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extracted links sitemap results for request URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "enum": [true] },
+                    "targetUrl": { "type": "string" },
+                    "timestamp": { "type": "string" },
+                    "title": { "type": "string" },
+                    "description": { "type": "string" },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "title": { "type": "string" },
+                        "description": { "type": "string" },
+                        "language": { "type": "string" },
+                        "canonical": { "type": "string", "format": "uri" },
+                        "robots": { "type": "string" },
+                        "author": { "type": "string" },
+                        "keywords": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "lastModified": { "type": ["string", "null"] },
+                        "favicon": { "type": "string", "format": "uri" },
+                        "ogTitle": { "type": "string" },
+                        "ogDescription": { "type": "string" },
+                        "ogImage": { "type": "string", "format": "uri" },
+                        "ogUrl": { "type": "string", "format": "uri" },
+                        "ogType": { "type": "string" },
+                        "ogSiteName": { "type": "string" },
+                        "twitterCard": { "type": "string" },
+                        "twitterSite": { "type": "string" },
+                        "twitterCreator": { "type": "string" },
+                        "twitterTitle": { "type": "string" },
+                        "twitterDescription": { "type": "string" },
+                        "twitterImage": { "type": "string", "format": "uri" },
+                        "isIframeAllowed": { "type": "boolean" }
+                      }
+                    },
+                    "cleanedHtml": { "type": "string" },
+                    "metaFiles": {
+                      "type": "object",
+                      "properties": {
+                        "robots": { "type": "string" },
+                        "sitemapXML": { "type": "string" }
+                      }
+                    },
+                    "cached": { "type": "boolean" },
+                    "executionTime": { "type": "string" },
+                    "ancestors": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "skippedUrls": {
+                      "$ref": "#/components/schemas/SkippedLinks"
+                    },
+                    "extractedLinks": {
+                      "$ref": "#/components/schemas/ExtractedLinks"
+                    },
+                    "tree": { "$ref": "#/components/schemas/LinksTree" }
+                  },
+                  "required": ["success", "targetUrl", "timestamp", "cached"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "enum": [false] },
+                    "targetUrl": { "type": "string" },
+                    "timestamp": { "type": "string" },
+                    "error": { "type": "string" },
+                    "tree": { "$ref": "#/components/schemas/LinksTree" }
+                  },
+                  "required": ["success", "targetUrl", "timestamp", "error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {}
+}
