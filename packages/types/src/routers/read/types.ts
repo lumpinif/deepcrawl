@@ -75,10 +75,17 @@ export const ReadOptionsSchema = z
 
 export const ReadResponseBaseSchema = z.object({
   success: z.boolean(),
+  cached: z.boolean().optional().default(false).openapi({
+    default: false,
+    description:
+      'The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application.',
+  }),
   targetUrl: z.string(),
 });
 
-export const ReadErrorResponseSchema = ReadResponseBaseSchema.extend({
+export const ReadErrorResponseSchema = ReadResponseBaseSchema.omit({
+  cached: true,
+}).extend({
   success: z.literal(false),
   error: z.string(),
 });
@@ -97,10 +104,15 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
 })
   .merge(ScrapedDataSchema.omit({ rawHtml: true }))
   .extend({
-    cached: z.boolean(),
-    markdown: z.string().optional(),
-    rawHtml: z.string().optional(),
-    metrics: MetricsSchema.optional(),
+    markdown: z.string().optional().openapi({
+      description: 'Markdown content of the page.',
+    }),
+    rawHtml: z.string().optional().openapi({
+      description: 'Raw HTML content of the page.',
+    }),
+    metrics: MetricsSchema.optional().openapi({
+      description: 'Metrics for the read operation.',
+    }),
   });
 
 type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {

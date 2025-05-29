@@ -4,6 +4,8 @@ import {
   MetadataOptionsSchema,
 } from '@deepcrawl/types/index';
 
+export const ENABLE_READ_CACHE = false as const;
+
 // Default markdown options (manual)
 export const DEFAULT_MARKDOWN_OPTIONS = {
   headingStyle: 'atx',

@@ -14,6 +14,7 @@ import type { AppContext } from '@/lib/types';
 import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
 
+import { ENABLE_READ_CACHE } from '@/config/default-options';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import {
@@ -134,44 +135,46 @@ export async function processReadRequest(
     const cacheKey = await getReadCacheKey(params, isGETRequest);
 
     // Check cache first
-    try {
-      const { value: cachedResult, metadata } =
-        await c.env.DEEPCRAWL_V0_READ_STORE.getWithMetadata<{
-          title?: string;
-          description?: string;
-          timestamp?: string;
-        }>(cacheKey);
+    if (ENABLE_READ_CACHE) {
+      try {
+        const { value: cachedResult, metadata } =
+          await c.env.DEEPCRAWL_V0_READ_STORE.getWithMetadata<{
+            title?: string;
+            description?: string;
+            timestamp?: string;
+          }>(cacheKey);
 
-      if (cachedResult) {
-        // Check if cache is fresh (e.g., within the last day - matches expirationTtl)
-        const cacheTimestamp = metadata?.timestamp
-          ? new Date(metadata.timestamp).getTime()
-          : 0;
-        const oneDayAgo = Date.now() - KV_CACHE_EXPIRATION_TTL * 1000; // 1 day in milliseconds
+        if (cachedResult) {
+          // Check if cache is fresh (e.g., within the last day - matches expirationTtl)
+          const cacheTimestamp = metadata?.timestamp
+            ? new Date(metadata.timestamp).getTime()
+            : 0;
+          const oneDayAgo = Date.now() - KV_CACHE_EXPIRATION_TTL * 1000; // 1 day in milliseconds
 
-        if (cacheTimestamp > oneDayAgo) {
-          isReadCacheFresh = true;
+          if (cacheTimestamp > oneDayAgo) {
+            isReadCacheFresh = true;
 
-          if (isGETRequest) {
-            return cachedResult as ReadStringResponse;
+            if (isGETRequest) {
+              return cachedResult as ReadStringResponse;
+            }
+
+            // Parse the cached value and set the cached flag to true
+            const parsedResponse = JSON.parse(
+              cachedResult,
+            ) as ReadSuccessResponse;
+            parsedResponse.cached = true;
+            const metrics = getMetrics(startRequestTime, performance.now());
+            parsedResponse.metrics = metrics;
+            return parsedResponse;
           }
-
-          // Parse the cached value and set the cached flag to true
-          const parsedResponse = JSON.parse(
-            cachedResult,
-          ) as ReadSuccessResponse;
-          parsedResponse.cached = true;
-          const metrics = getMetrics(startRequestTime, performance.now());
-          parsedResponse.metrics = metrics;
-          return parsedResponse;
         }
+      } catch (error) {
+        console.error(
+          `❌ Error reading Cache from DEEPCRAWL_V0_READ_STORE for ${url}:`,
+          error,
+        );
+        // Proceed without cache if read fails
       }
-    } catch (error) {
-      console.error(
-        `❌ Error reading Cache from DEEPCRAWL_V0_READ_STORE for ${url}:`,
-        error,
-      );
-      // Proceed without cache if read fails
     }
 
     const scrapeService = new ScrapeService();
@@ -227,27 +230,30 @@ export async function processReadRequest(
       throw new Error('Failed to process read request');
     }
 
-    try {
-      const valueToCache = isGETRequest
-        ? markdown || ''
-        : JSON.stringify(readResponse);
+    if (ENABLE_READ_CACHE) {
+      // Cache the response
+      try {
+        const valueToCache = isGETRequest
+          ? markdown || ''
+          : JSON.stringify(readResponse);
 
-      await kvPutWithRetry(
-        c.env.DEEPCRAWL_V0_READ_STORE,
-        cacheKey,
-        valueToCache,
-        {
-          expirationTtl: KV_CACHE_EXPIRATION_TTL,
-          metadata: {
-            timestamp: new Date().toISOString(),
-            title: readResponse?.title || undefined,
-            description: readResponse?.description || undefined,
+        await kvPutWithRetry(
+          c.env.DEEPCRAWL_V0_READ_STORE,
+          cacheKey,
+          valueToCache,
+          {
+            expirationTtl: KV_CACHE_EXPIRATION_TTL,
+            metadata: {
+              timestamp: new Date().toISOString(),
+              title: readResponse?.title || undefined,
+              description: readResponse?.description || undefined,
+            },
           },
-        },
-      );
-    } catch (error) {
-      console.error(`❌ Error writing to cache for ${url}:`, error);
-      // Continue without caching if write fails
+        );
+      } catch (error) {
+        console.error(`❌ Error writing to cache for ${url}:`, error);
+        // Continue without caching if write fails
+      }
     }
 
     if (isGETRequest) {
