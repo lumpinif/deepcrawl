@@ -9,8 +9,12 @@
       "path": "./apps/workers/deepcrawl-v0"
     },
     {
-      "name": "web",
-      "path": "./apps/web"
+      "name": "js-sdk",
+      "path": "./apps/js-sdk"
+    },
+    {
+      "name": "www",
+      "path": "./apps/www"
     },
     {
       "name": "dashboard",
