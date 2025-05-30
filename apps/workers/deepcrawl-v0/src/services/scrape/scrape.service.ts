@@ -137,34 +137,15 @@ export class ScrapeService {
         const robotsResult = await robotsParser.parse(baseUrl);
 
         if (robotsResult.sitemaps.length > 0) {
-          // Process all sitemaps from robots.txt in parallel
-          const robotsSitemapPromises = robotsResult.sitemaps.map(
-            async (sitemapUrl) => {
-              try {
-                const { urls, content } = await sitemapParser.parse(sitemapUrl);
-                if (urls.length > 0 && content) {
-                  return content; // Return the already fetched content
-                }
-              } catch (error) {
-                console.log(
-                  `Error fetching sitemap from ${sitemapUrl}:`,
-                  error,
-                );
-              }
-              return null;
-            },
-          );
-
-          // Wait for all promises to resolve
-          const robotsSitemapResults = await Promise.all(robotsSitemapPromises);
-
-          // Use the first successful result
-          const firstValidRobotsSitemap = robotsSitemapResults.find(
-            (content) => content !== null,
-          );
-
-          if (firstValidRobotsSitemap) {
-            result.sitemapXML = firstValidRobotsSitemap;
+          // Just use the first sitemap from robots.txt
+          const sitemapUrl = robotsResult.sitemaps[0];
+          try {
+            const { urls, content } = await sitemapParser.parse(sitemapUrl);
+            if (urls.length > 0 && content) {
+              result.sitemapXML = content;
+            }
+          } catch (error) {
+            console.log(`Error fetching sitemap from ${sitemapUrl}:`, error);
           }
         }
       }
@@ -184,7 +165,7 @@ export class ScrapeService {
           try {
             const { urls, content } = await sitemapParser.parse(sitemapUrl);
             if (urls.length > 0 && content) {
-              return content; // Return the already fetched content
+              return content;
             }
           } catch (error) {
             console.log(`Error fetching sitemap from ${sitemapUrl}:`, error);
