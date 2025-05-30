@@ -120,12 +120,11 @@ export class ScrapeService {
     // Only fetch robots.txt if requested
     if (options.robots) {
       const robotsResult = await robotsParser.parse(baseUrl);
-      if (robotsResult.rules.length > 0 || robotsResult.sitemaps.length > 0) {
-        const robotsUrl = new URL('/robots.txt', baseUrl).toString();
-        const robotsResponse = await fetch(robotsUrl);
-        if (robotsResponse.ok) {
-          result.robots = await robotsResponse.text();
-        }
+      if (
+        (robotsResult.rules.length > 0 || robotsResult.sitemaps.length > 0) &&
+        robotsResult.content
+      ) {
+        result.robots = robotsResult.content; // Use the already fetched content
       }
     }
 
@@ -133,48 +132,76 @@ export class ScrapeService {
     if (options.sitemapXML) {
       // First try sitemaps from robots.txt if we have it
       if (result.robots) {
+        // Reuse the robots.txt parsing result from the options.robots block if available
+        // or parse it now if we didn't request robots.txt earlier
         const robotsResult = await robotsParser.parse(baseUrl);
-        for (const sitemapUrl of robotsResult.sitemaps) {
-          try {
-            const urls = await sitemapParser.parse(sitemapUrl);
-            if (urls.length > 0) {
-              const sitemapResponse = await fetch(sitemapUrl);
-              if (sitemapResponse.ok) {
-                result.sitemapXML = await sitemapResponse.text();
-                break;
+
+        if (robotsResult.sitemaps.length > 0) {
+          // Process all sitemaps from robots.txt in parallel
+          const robotsSitemapPromises = robotsResult.sitemaps.map(
+            async (sitemapUrl) => {
+              try {
+                const { urls, content } = await sitemapParser.parse(sitemapUrl);
+                if (urls.length > 0 && content) {
+                  return content; // Return the already fetched content
+                }
+              } catch (error) {
+                console.log(
+                  `Error fetching sitemap from ${sitemapUrl}:`,
+                  error,
+                );
               }
-            }
-          } catch (error) {
-            console.log(`Error fetching sitemap from ${sitemapUrl}:`, error);
+              return null;
+            },
+          );
+
+          // Wait for all promises to resolve
+          const robotsSitemapResults = await Promise.all(robotsSitemapPromises);
+
+          // Use the first successful result
+          const firstValidRobotsSitemap = robotsSitemapResults.find(
+            (content) => content !== null,
+          );
+
+          if (firstValidRobotsSitemap) {
+            result.sitemapXML = firstValidRobotsSitemap;
           }
         }
       }
 
+      // todo: allow user to add known sitemap paths
       // If no sitemap found yet, try common locations
       if (!result.sitemapXML) {
         const sitemapPaths = [
           '/sitemap.xml',
           '/sitemap_index.xml',
-          '/sitemap/',
           `/sitemaps/${new URL(baseUrl).hostname}.xml`,
-          '/wp-sitemap.xml',
-          '/_next/sitemap.xml',
         ];
 
-        for (const path of sitemapPaths) {
+        // Process all paths in parallel
+        const sitemapPromises = sitemapPaths.map(async (path) => {
           const sitemapUrl = new URL(path, baseUrl).toString();
           try {
-            const urls = await sitemapParser.parse(sitemapUrl);
-            if (urls.length > 0) {
-              const sitemapResponse = await fetch(sitemapUrl);
-              if (sitemapResponse.ok) {
-                result.sitemapXML = await sitemapResponse.text();
-                break;
-              }
+            const { urls, content } = await sitemapParser.parse(sitemapUrl);
+            if (urls.length > 0 && content) {
+              return content; // Return the already fetched content
             }
           } catch (error) {
             console.log(`Error fetching sitemap from ${sitemapUrl}:`, error);
           }
+          return null;
+        });
+
+        // Wait for all promises to resolve
+        const sitemapResults = await Promise.all(sitemapPromises);
+
+        // Use the first successful result
+        const firstValidSitemap = sitemapResults.find(
+          (content) => content !== null,
+        );
+
+        if (firstValidSitemap) {
+          result.sitemapXML = firstValidSitemap;
         }
       }
     }

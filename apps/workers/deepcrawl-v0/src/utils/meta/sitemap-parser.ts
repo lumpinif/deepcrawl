@@ -1,9 +1,11 @@
 export class SitemapParser {
-  async parse(sitemapUrl: string): Promise<string[]> {
+  async parse(
+    sitemapUrl: string,
+  ): Promise<{ urls: string[]; content: string | null }> {
     try {
       const response = await fetch(sitemapUrl);
       if (!response.ok) {
-        return [];
+        return { urls: [], content: null };
       }
 
       const content = await response.text();
@@ -24,14 +26,14 @@ export class SitemapParser {
         urls.length = 0;
 
         for (const subSitemapUrl of subSitemapUrls) {
-          const subUrls = await this.parse(subSitemapUrl);
-          urls.push(...subUrls);
+          const subResult = await this.parse(subSitemapUrl);
+          urls.push(...subResult.urls);
         }
       }
 
-      return urls;
+      return { urls, content };
     } catch (error) {
-      return [];
+      return { urls: [], content: null };
     }
   }
 }

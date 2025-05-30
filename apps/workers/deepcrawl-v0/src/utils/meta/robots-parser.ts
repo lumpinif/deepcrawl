@@ -2,13 +2,14 @@ export class RobotsParser {
   async parse(baseUrl: string): Promise<{
     sitemaps: string[];
     rules: { userAgent: string; allow: string[]; disallow: string[] }[];
+    content: string | null;
   }> {
     try {
       const robotsUrl = new URL('/robots.txt', baseUrl).toString();
       const response = await fetch(robotsUrl);
 
       if (!response.ok) {
-        return { sitemaps: [], rules: [] };
+        return { sitemaps: [], rules: [], content: null };
       }
 
       const content = await response.text();
@@ -67,9 +68,9 @@ export class RobotsParser {
         result.rules.push(currentRule);
       }
 
-      return result;
+      return { ...result, content };
     } catch (error) {
-      return { sitemaps: [], rules: [] };
+      return { sitemaps: [], rules: [], content: null };
     }
   }
 }
