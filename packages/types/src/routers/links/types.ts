@@ -166,7 +166,9 @@ export const LinksOptionsSchema = z
      */
     sitemapXML: z.coerce.boolean().optional().default(false).openapi({
       default: false,
-      description: 'Whether to fetch and parse sitemap.xml.',
+      deprecated: true,
+      description:
+        '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
     }),
 
     ...TreeOptionsSchema.shape,
