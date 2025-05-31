@@ -173,6 +173,8 @@ export class ScrapeService {
           return null;
         });
 
+        //!! parallel requests here are may causing issues
+
         // Wait for all promises to resolve
         const sitemapResults = await Promise.all(sitemapPromises);
 
