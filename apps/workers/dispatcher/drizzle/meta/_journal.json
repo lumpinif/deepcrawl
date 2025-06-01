@@ -8,6 +8,20 @@
       "when": 1748710553925,
       "tag": "0000_old_mephisto",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1748767570499,
+      "tag": "0001_lowly_stephen_strange",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1748767923652,
+      "tag": "0002_plain_reaper",
+      "breakpoints": true
     }
   ]
 }

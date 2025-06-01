@@ -9,7 +9,8 @@
     "db:migrate": "pnpm drizzle-kit migrate",
     "db:push": "pnpm drizzle-kit push",
     "db:studio": "pnpm drizzle-kit studio",
-    "auth:generate": "pnpm dlx @better-auth/cli@latest generate --config ./src/lib/better-auth/cli.config.ts --output ./src/db/schema.ts -y"
+    "format": "biome format --write",
+    "auth:generate": "pnpm dlx @better-auth/cli@latest generate --config ./src/lib/better-auth/cli.config.ts --output ./src/db/schema.ts -y && pnpm format"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",

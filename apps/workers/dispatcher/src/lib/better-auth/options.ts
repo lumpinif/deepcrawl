@@ -1,6 +1,6 @@
 import type { BetterAuthOptions } from 'better-auth';
-
-//todo: optional passing c.env.BETTER_AUTH_URL to construct the options
+import { admin } from 'better-auth/plugins';
+import { apiKey } from 'better-auth/plugins';
 
 /**
  * Custom options for Better Auth
@@ -22,4 +22,5 @@ export const betterAuthOptions: BetterAuthOptions = {
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [admin(), apiKey()],
 };
