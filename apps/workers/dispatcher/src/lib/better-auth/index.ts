@@ -1,8 +1,8 @@
 import { getDrizzleDB } from '@/db';
+import * as schema from '@/db/schema';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { betterAuthOptions } from './options';
-
 /**
  * Better Auth Instance
  */
@@ -13,10 +13,26 @@ export const auth = (
 
   return betterAuth({
     ...betterAuthOptions,
-    database: drizzleAdapter(db, { provider: 'pg' }),
+    database: drizzleAdapter(db, { provider: 'pg', schema: schema }),
     baseURL: env.BETTER_AUTH_URL,
     secret: env.BETTER_AUTH_SECRET,
-    trustedOrigins: ['http://localhost:8787', env.BETTER_AUTH_URL],
+    // add other domains to trustedOrigins, such as tenant domains
+    trustedOrigins: [
+      'http://localhost:8787',
+      env.BETTER_AUTH_URL,
+      `*.${env.BETTER_AUTH_URL}`,
+    ],
     // Additional options that depend on env ...
   });
 };
+
+// export function createAuth(env: CloudflareBindings) {
+//   return auth(env);
+// }
+
+export function createAuth(env: CloudflareBindings) {
+  return auth(env);
+}
+
+export type AuthType = ReturnType<typeof createAuth>;
+export type Session = AuthType['$Infer']['Session'];
