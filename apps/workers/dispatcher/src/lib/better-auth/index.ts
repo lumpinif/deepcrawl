@@ -30,9 +30,9 @@ export const auth = (
 //   return auth(env);
 // }
 
-export function createAuth(env: CloudflareBindings) {
+export function createBetterAuth(env: CloudflareBindings) {
   return auth(env);
 }
 
-export type AuthType = ReturnType<typeof createAuth>;
+export type AuthType = ReturnType<typeof createBetterAuth>;
 export type Session = AuthType['$Infer']['Session'];

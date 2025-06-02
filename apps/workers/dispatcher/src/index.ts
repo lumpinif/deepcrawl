@@ -1,9 +1,16 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { createAuth } from './lib/better-auth';
+import { createBetterAuth } from './lib/better-auth';
 import type { AppBindings } from './types';
 
 const app = new Hono<AppBindings>();
+
+// create auth instance and set it to context
+app.use('*', async (c, next) => {
+  const auth = createBetterAuth(c.env);
+  c.set('betterAuth', auth);
+  await next();
+});
 
 app.use(
   '*', // or replace with "*" to enable cors for all routes
@@ -19,7 +26,7 @@ app.use(
 
 // auth middleware
 app.use('*', async (c, next) => {
-  const auth = createAuth(c.env);
+  const auth = c.var.betterAuth;
   const session = await auth.api.getSession({
     headers: c.req.raw.headers,
   });
@@ -42,8 +49,7 @@ app.get('/', (c) => {
 });
 
 app.get('/signup', async (c) => {
-  const auth = createAuth(c.env);
-
+  const auth = c.var.betterAuth;
   const email = `test${Date.now().toString().slice(7, 10)}@example.com`;
   const password = 'password';
 
@@ -60,8 +66,8 @@ app.get('/signup', async (c) => {
 });
 
 app.get('/session', (c) => {
-  const user = c.get('user');
-  const session = c.get('session');
+  const user = c.var.user;
+  const session = c.var.session;
 
   if (!user) return c.json({ error: 'Unauthorized' }, 401);
 
@@ -72,7 +78,7 @@ app.get('/session', (c) => {
 });
 
 app.get('/signin', async (c) => {
-  const auth = createAuth(c.env);
+  const auth = c.var.betterAuth;
   const response = await auth.api.signInEmail({
     body: {
       email: 'test@example.com',
@@ -86,7 +92,7 @@ app.get('/signin', async (c) => {
 });
 
 app.get('/signout', async (c) => {
-  const auth = createAuth(c.env);
+  const auth = c.var.betterAuth;
   await auth.api.signOut({
     headers: c.req.raw.headers,
   });
