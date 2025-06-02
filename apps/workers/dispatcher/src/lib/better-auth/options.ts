@@ -26,6 +26,7 @@ export const betterAuthOptions: BetterAuthOptions = {
   },
   plugins: [admin(), apiKey()],
   advanced: {
+    cookiePrefix: 'deepcrawl',
     defaultCookieAttributes: {
       sameSite: 'none',
       secure: true,
