@@ -1,6 +1,33 @@
+import type { KVNamespace } from '@cloudflare/workers-types';
 import type { BetterAuthOptions } from 'better-auth';
 import { admin } from 'better-auth/plugins';
 import { apiKey } from 'better-auth/plugins';
+
+export interface SecondaryStorage {
+  get: (key: string) => Promise<string | null>;
+  set: (key: string, value: string, ttl?: number) => Promise<void>;
+  delete: (key: string) => Promise<void>;
+}
+
+export class CloudflareKVStorage implements SecondaryStorage {
+  constructor(private kvNamespace: KVNamespace) {}
+
+  async get(key: string): Promise<string | null> {
+    return this.kvNamespace.get(key);
+  }
+
+  async set(key: string, value: string, ttl?: number): Promise<void> {
+    const options: KVNamespacePutOptions = {};
+    if (ttl) {
+      options.expirationTtl = ttl;
+    }
+    await this.kvNamespace.put(key, value, options);
+  }
+
+  async delete(key: string): Promise<void> {
+    await this.kvNamespace.delete(key);
+  }
+}
 
 /**
  * Custom options for Better Auth
@@ -27,10 +54,34 @@ export const betterAuthOptions: BetterAuthOptions = {
   plugins: [admin(), apiKey()],
   advanced: {
     cookiePrefix: 'deepcrawl',
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: '.deepcrawl.dev', // Domain with a leading period
+    },
     defaultCookieAttributes: {
-      sameSite: 'none',
       secure: true,
+      httpOnly: true,
+      sameSite: 'none',
       partitioned: true, // New browser standards will mandate this for foreign cookies
     },
   },
+  // rateLimit: {
+  // window: 60, // time window in seconds
+  // max: 100, // max requests in the window
+  // customRules: {
+  //     "/sign-in/email": {
+  //         window: 10,
+  //         max: 3,
+  //     },
+  //     "/two-factor/*": async (request)=> {
+  //         // custom function to return rate limit window and max
+  //         return {
+  //             window: 10,
+  //             max: 3,
+  //         }
+  //     }
+  // },
+  //   storage: 'secondary-storage',
+  //   modelName: 'rateLimit', //optional by default "rateLimit" is used
+  // },
 };

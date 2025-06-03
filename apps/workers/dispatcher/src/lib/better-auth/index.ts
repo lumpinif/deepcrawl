@@ -16,11 +16,12 @@ export const auth = (
     database: drizzleAdapter(db, { provider: 'pg', schema: schema }),
     baseURL: env.BETTER_AUTH_URL,
     secret: env.BETTER_AUTH_SECRET,
-    // add other domains to trustedOrigins, such as tenant domains
     trustedOrigins: [
       'http://localhost:8787',
+      'https://deepcrawl.dev',
+      'https://*.deepcrawl.dev',
       env.BETTER_AUTH_URL,
-      `*.${env.BETTER_AUTH_URL}`,
+      // add other domains to trustedOrigins, such as tenant domains
     ],
     // Additional options that depend on env ...
   });
