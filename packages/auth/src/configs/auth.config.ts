@@ -4,7 +4,7 @@ import {
   betterAuth as betterAuthInstance,
 } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { defaultOptions } from '../lib/options';
+import { defaultOptions } from './default-options';
 
 interface Env {
   BETTER_AUTH_URL: string;
