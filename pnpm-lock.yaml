@@ -23,6 +23,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.49.1
         version: 2.49.8
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
       supabase:
         specifier: ^2.23.4
         version: 2.23.4
@@ -231,6 +234,41 @@ importers:
       better-auth:
         specifier: ^1.2.8
         version: 1.2.8
+    devDependencies:
+      '@deepcrawl/db':
+        specifier: workspace:*
+        version: link:../db
+      '@deepcrawl/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: 20.8.3
+        version: 20.8.3
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
+
+  packages/db:
+    dependencies:
+      '@neondatabase/serverless':
+        specifier: ^1.0.0
+        version: 1.0.0
+      drizzle-orm:
+        specifier: ^0.44.1
+        version: 0.44.1(@cloudflare/workers-types@4.20250531.0)(@neondatabase/serverless@1.0.0)(@types/pg@8.15.2)(kysely@0.28.2)(pg@8.16.0)
+    devDependencies:
+      '@deepcrawl/auth':
+        specifier: workspace:*
+        version: link:../auth
+      '@deepcrawl/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: 20.8.3
+        version: 20.8.3
+      drizzle-kit:
+        specifier: ^0.31.1
+        version: 0.31.1
 
   packages/eslint-config:
     devDependencies:
@@ -2778,8 +2816,20 @@ packages:
   dot-case@3.0.4:
     resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
 
+  dotenv-cli@8.0.0:
+    resolution: {integrity: sha512-aLqYbK7xKOiTMIRf1lDPbI+Y+Ip/wo5k3eyp6ePysVaSqbyxjyK3dK35BTxG+rmd7djf5q2UPs4noPNH+cj0Qw==}
+    hasBin: true
+
+  dotenv-expand@10.0.0:
+    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
+    engines: {node: '>=12'}
+
   dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+
+  dotenv@16.5.0:
+    resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
     engines: {node: '>=12'}
 
   drizzle-kit@0.31.1:
@@ -8174,7 +8224,18 @@ snapshots:
       no-case: 3.0.4
       tslib: 2.8.1
 
+  dotenv-cli@8.0.0:
+    dependencies:
+      cross-spawn: 7.0.6
+      dotenv: 16.5.0
+      dotenv-expand: 10.0.0
+      minimist: 1.2.8
+
+  dotenv-expand@10.0.0: {}
+
   dotenv@16.0.3: {}
+
+  dotenv@16.5.0: {}
 
   drizzle-kit@0.31.1:
     dependencies:
