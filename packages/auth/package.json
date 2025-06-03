@@ -1,0 +1,32 @@
+{
+  "name": "@deepcrawl/auth",
+  "version": "0.0.1",
+  "description": "Authentication package for @deepcrawl",
+  "main": "index.ts",
+  "author": "deepcrawl.ai - Felix",
+  "scripts": {
+    "lint": "biome lint --write .",
+    "lint:fix": "biome lint --write --unsafe",
+    "format": "biome format --write .",
+    "check": "biome check . --write",
+    "fix": "pnpm lint && pnpm format && pnpm check",
+    "typecheck": "tsc --noEmit",
+    "auth:generate": "dotenv -e ../../.env -- pnpm dlx @better-auth/cli@latest generate --output ../db/src/db/schema.ts -y && pnpm format ../db/src/db/schema.ts"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "keywords": ["deepcrawl", "auth", "authentication"],
+  "dependencies": {
+    "better-auth": "^1.2.8"
+  },
+  "devDependencies": {
+    "@deepcrawl/db": "workspace:*",
+    "@deepcrawl/typescript-config": "workspace:*",
+    "@types/node": "20.8.3",
+    "dotenv-cli": "^8.0.0"
+  }
+}
