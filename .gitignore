@@ -30,6 +30,15 @@ dist/
 .env.test
 .env.test.local
 
+.dev.vars
+.dev.vars.local
+.dev.vars.development.local
+.dev.vars.test.local
+.dev.vars.production.local
+.dev.vars.production
+.dev.vars.test
+.dev.vars.test.local
+
 # Testing
 coverage
 

@@ -5,8 +5,8 @@
       "path": "."
     },
     {
-      "name": "deepcrawl-v0",
-      "path": "./apps/workers/deepcrawl-v0"
+      "name": "workers",
+      "path": "./apps/workers"
     },
     {
       "name": "js-sdk",
