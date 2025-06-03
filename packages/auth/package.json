@@ -1,0 +1,17 @@
+{
+  "name": "@deepcrawl/auth",
+  "version": "0.0.1",
+  "description": "Authentication package for @deepcrawl",
+  "main": "index.ts",
+  "author": "deepcrawl.ai - Felix",
+  "scripts": {
+    "lint": "biome lint --write .",
+    "lint:fix": "biome lint --write --unsafe",
+    "format": "biome format --write .",
+    "check": "biome check . --write"
+  },
+  "keywords": ["deepcrawl", "auth", "authentication"],
+  "dependencies": {
+    "better-auth": "^1.2.8"
+  }
+}
