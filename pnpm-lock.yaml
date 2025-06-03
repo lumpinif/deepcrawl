@@ -39,6 +39,31 @@ importers:
 
   apps/workers: {}
 
+  apps/workers/auth:
+    dependencies:
+      '@neondatabase/serverless':
+        specifier: ^1.0.0
+        version: 1.0.0
+      better-auth:
+        specifier: ^1.2.8
+        version: 1.2.8
+      drizzle-orm:
+        specifier: ^0.44.1
+        version: 0.44.1(@cloudflare/workers-types@4.20250531.0)(@neondatabase/serverless@1.0.0)(@types/pg@8.15.2)(kysely@0.28.2)(pg@8.16.0)
+      hono:
+        specifier: ^4.7.10
+        version: 4.7.10
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20250531.0
+        version: 4.20250531.0
+      drizzle-kit:
+        specifier: ^0.31.1
+        version: 0.31.1
+      wrangler:
+        specifier: ^4.18.0
+        version: 4.18.0(@cloudflare/workers-types@4.20250531.0)
+
   apps/workers/deepcrawl-v0:
     dependencies:
       '@cloudflare/puppeteer':
