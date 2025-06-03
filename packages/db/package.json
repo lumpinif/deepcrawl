@@ -24,10 +24,13 @@
       "default": "./src/index.ts"
     }
   },
-  "keywords": ["deepcrawl", "db", "database"],
+  "keywords": [
+    "deepcrawl",
+    "db",
+    "database"
+  ],
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
-    "@deepcrawl/auth": "workspace:*",
     "@types/node": "20.8.3",
     "drizzle-kit": "^0.31.1"
   },
