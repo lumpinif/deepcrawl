@@ -226,6 +226,12 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
 
+  packages/auth:
+    dependencies:
+      better-auth:
+        specifier: ^1.2.8
+        version: 1.2.8
+
   packages/eslint-config:
     devDependencies:
       '@next/eslint-plugin-next':
