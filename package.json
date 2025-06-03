@@ -14,12 +14,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@deepcrawl/eslint-config": "workspace:*",
     "@deepcrawl/typescript-config": "workspace:*",
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.49.1",
     "dotenv-cli": "^8.0.0",
-    "supabase": "^2.23.4",
     "turbo": "^2.4.2",
     "typescript": "5.7.3"
   },
