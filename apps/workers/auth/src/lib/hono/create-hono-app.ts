@@ -11,6 +11,7 @@ import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
 import { trimTrailingSlash } from "hono/trailing-slash";
 import { notFound, onError, serveEmojiFavicon } from "stoker/middlewares";
+import { logger } from "hono/logger";
 
 export const allowedOrigins = [
   "https://auth.deepcrawl.dev",
@@ -24,6 +25,7 @@ export default function createHonoApp() {
   const app = new Hono<AppBindings>();
 
   app
+    .use(logger())
     .use("*", corsMiddleware)
     .use("*", requestId())
     .use("*", secureHeaders())

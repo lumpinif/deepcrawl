@@ -20,5 +20,10 @@
     "noEmit": true,
     "isolatedModules": true,
     "skipLibCheck": true
-  }
+  },
+  "references": [
+    {
+      "path": ["../../../packages/auth"]
+    }
+  ]
 }
