@@ -6,10 +6,10 @@
     "lib": ["ESNext"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "verbatimModuleSyntax": true
-  },
-  "paths": {
-    "@deepcrawl/db": ["../db/src/index.ts"]
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@deepcrawl/db": ["../db/src/index.ts"]
+    }
   },
   "include": [".", "src"],
   "exclude": ["node_modules", "dist"]

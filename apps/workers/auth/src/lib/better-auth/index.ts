@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { createAuthConfig } from "@deepcrawl/auth/configs/auth.worker";
+import { createAuthConfig } from "@deepcrawl/auth/configs/auth.config";
 /**
  * Better Auth Instance
  */
