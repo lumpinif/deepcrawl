@@ -15,12 +15,13 @@
     "auth:generate": "pnpm dlx @better-auth/cli@latest generate --config ./src/lib/better-auth/cli.config.ts --output ./src/db/schema.ts -y && pnpm format ./src/db/schema.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.0",
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/db": "workspace:*",
+    "@neondatabase/serverless": "^1.0.0",
     "better-auth": "^1.2.8",
     "drizzle-orm": "^0.44.1",
-    "hono": "^4.7.10"
+    "hono": "^4.7.10",
+    "stoker": "^1.4.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250531.0",

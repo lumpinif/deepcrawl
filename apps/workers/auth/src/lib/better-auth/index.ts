@@ -1,39 +1,27 @@
-import { getDrizzleDB } from '@/db';
-import * as schema from '@/db/schema';
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { betterAuthOptions } from './options';
+import { betterAuth } from "better-auth";
+import { createAuthConfig } from "@deepcrawl/auth/configs/auth.worker";
 /**
  * Better Auth Instance
  */
 export const auth = (
-  env: CloudflareBindings,
+  env: CloudflareBindings
 ): ReturnType<typeof betterAuth> => {
-  const db = getDrizzleDB({ env });
-
-  return betterAuth({
-    ...betterAuthOptions,
-    database: drizzleAdapter(db, { provider: 'pg', schema: schema }),
-    baseURL: env.BETTER_AUTH_URL,
-    secret: env.BETTER_AUTH_SECRET,
-    trustedOrigins: [
-      'http://localhost:8787',
-      'https://deepcrawl.dev',
-      'https://*.deepcrawl.dev',
-      env.BETTER_AUTH_URL,
-      // add other domains to trustedOrigins, such as tenant domains
-    ],
-    // Additional options that depend on env ...
-  });
+  return betterAuth(
+    createAuthConfig(env, {
+      trustedOrigins: [
+        "http://localhost:8787",
+        "https://deepcrawl.dev",
+        "https://*.deepcrawl.dev",
+        env.BETTER_AUTH_URL,
+        // add other domains to trustedOrigins, such as tenant domains
+      ],
+    })
+  );
 };
-
-// export function createAuth(env: CloudflareBindings) {
-//   return auth(env);
-// }
 
 export function createBetterAuth(env: CloudflareBindings) {
   return auth(env);
 }
 
 export type AuthType = ReturnType<typeof createBetterAuth>;
-export type Session = AuthType['$Infer']['Session'];
+export type Session = AuthType["$Infer"]["Session"];
