@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
+    "@deepcrawl/auth": "workspace:*",
+    "@deepcrawl/db": "workspace:*",
     "better-auth": "^1.2.8",
     "drizzle-orm": "^0.44.1",
     "hono": "^4.7.10"

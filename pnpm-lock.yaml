@@ -32,6 +32,12 @@ importers:
 
   apps/workers/auth:
     dependencies:
+      '@deepcrawl/auth':
+        specifier: workspace:*
+        version: link:../../../packages/auth
+      '@deepcrawl/db':
+        specifier: workspace:*
+        version: link:../../../packages/db
       '@neondatabase/serverless':
         specifier: ^1.0.0
         version: 1.0.0
