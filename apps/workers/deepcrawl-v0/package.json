@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@cloudflare/puppeteer": "^0.0.15",
-    "@deepcrawl/supabase": "workspace:*",
     "@deepcrawl/types": "workspace:*",
     "@hono-rate-limiter/cloudflare": "^0.2.2",
     "@hono/zod-openapi": "^0.19.6",

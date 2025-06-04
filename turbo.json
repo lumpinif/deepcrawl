@@ -2,7 +2,16 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "stream",
   "globalDependencies": ["**/.env*", "**/tsconfig*.json"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "DATABASE_URL_PROD",
+    "BETTER_AUTH_URL",
+    "BETTER_AUTH_SECRET"
+  ],
   "tasks": {
+    "auth:generate": {
+      "env": ["DATABASE_URL", "BETTER_AUTH_URL", "BETTER_AUTH_SECRET"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],

@@ -1,0 +1,31 @@
+{
+  "name": "deepcrawl_auth",
+  "scripts": {
+    "dev": "wrangler dev --remote",
+    "deploy": "pnpm run cf-typegen && pnpm run db:pre-deploy && wrangler secret bulk .dev.vars.production && wrangler deploy --minify",
+    "typecheck": "tsc --noEmit",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings && pnpm typecheck",
+    "db:pre-deploy": "pnpm run db:generate && pnpm run db:migrate:prod",
+    "db:generate": "pnpm drizzle-kit generate",
+    "db:migrate": "pnpm drizzle-kit migrate",
+    "db:migrate:prod": "pnpm drizzle-kit migrate --config=drizzle.prod.config.ts",
+    "db:push": "pnpm drizzle-kit push",
+    "db:studio": "pnpm drizzle-kit studio",
+    "format": "biome format --write",
+    "auth:generate": "pnpm dlx @better-auth/cli@latest generate --config ./src/lib/better-auth/cli.config.ts --output ./src/db/schema.ts -y && pnpm format ./src/db/schema.ts"
+  },
+  "dependencies": {
+    "@deepcrawl/auth": "workspace:*",
+    "@deepcrawl/db": "workspace:*",
+    "@neondatabase/serverless": "^1.0.0",
+    "better-auth": "^1.2.8",
+    "drizzle-orm": "^0.44.1",
+    "hono": "^4.7.10",
+    "stoker": "^1.4.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250531.0",
+    "drizzle-kit": "^0.31.1",
+    "wrangler": "^4.18.0"
+  }
+}
