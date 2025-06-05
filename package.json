@@ -5,11 +5,10 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "lint": "turbo lint",
-    "format": "turbo format && biome format --write .",
-    "lint:repo": "pnpm dlx sherif@latest",
-    "lint:repo:fix": "pnpm dlx sherif@latest --fix",
-    "fix": "turbo lint && turbo fix && pnpm format && turbo typecheck && pnpm lint:repo:fix",
+    "sherif": "pnpm dlx sherif@latest",
+    "sherif:fix": "pnpm dlx sherif@latest --fix",
+    "typecheck": "turbo typecheck && tsc --noEmit",
+    "check": "turbo check && pnpm typecheck && biome check --write && pnpm sherif:fix",
     "db:gen-types": "pnpm dlx supabase gen types typescript --project-id $PROJECT_REF --schema public > supabase/types/database.types.ts"
   },
   "devDependencies": {

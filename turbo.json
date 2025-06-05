@@ -28,8 +28,8 @@
       "outputs": [],
       "cache": true
     },
-    "fix": {
-      "dependsOn": ["^fix"],
+    "check": {
+      "dependsOn": ["^check"],
       "outputs": [],
       "cache": true
     },

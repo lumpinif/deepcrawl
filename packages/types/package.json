@@ -33,12 +33,8 @@
     }
   },
   "scripts": {
-    "lint": "biome lint --write .",
-    "lint:fix": "biome lint --write --unsafe",
-    "format": "biome format --write .",
-    "check": "biome check . --write",
-    "fix": "pnpm lint && pnpm format && pnpm check",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "biome check . --write && pnpm typecheck"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0"

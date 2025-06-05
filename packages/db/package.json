@@ -5,12 +5,8 @@
   "main": "index.ts",
   "author": "deepcrawl.ai - Felix",
   "scripts": {
-    "lint": "biome lint --write .",
-    "lint:fix": "biome lint --write --unsafe",
-    "format": "biome format --write .",
-    "check": "biome check . --write",
-    "fix": "pnpm lint && pnpm format && pnpm check",
     "typecheck": "tsc --noEmit",
+    "check": "biome check . --write && pnpm typecheck",
     "db:push": "pnpm drizzle-kit push",
     "db:studio": "pnpm drizzle-kit studio",
     "db:generate": "pnpm drizzle-kit generate",
@@ -24,11 +20,7 @@
       "default": "./src/index.ts"
     }
   },
-  "keywords": [
-    "deepcrawl",
-    "db",
-    "database"
-  ],
+  "keywords": ["deepcrawl", "db", "database"],
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
     "@types/node": "20.8.3",

@@ -7,12 +7,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint && biome lint --write --unsafe",
-    "lint:fix": "next lint --fix && biome lint --write --unsafe",
-    "format": "biome format --write .",
-    "fix": "pnpm lint:fix && pnpm format && pnpm typecheck",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "ui": "pnpm dlx shadcn@canary",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "biome check --write && pnpm lint:fix && pnpm typecheck"
   },
   "dependencies": {
     "@deepcrawl/ui": "workspace:*",

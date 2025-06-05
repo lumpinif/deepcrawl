@@ -4,11 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "format": "biome format --write .",
-    "lint": "eslint . --max-warnings 0",
-    "lint:fix": "pnpm lint --fix",
+    "eslint": "eslint . --max-warnings 0",
     "ui": "pnpm dlx shadcn@canary",
-    "fix": "pnpm run format && pnpm lint && pnpm lint:fix",
+    "check": "biome check --write && pnpm eslint --fix",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
