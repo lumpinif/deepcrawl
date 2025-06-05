@@ -5,5 +5,8 @@
   "license": "PROPRIETARY",
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "check": "biome check . --write"
   }
 }
