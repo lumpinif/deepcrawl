@@ -7,16 +7,16 @@
     "dev": "turbo dev",
     "sherif": "pnpm dlx sherif@latest",
     "sherif:fix": "pnpm dlx sherif@latest --fix",
-    "typecheck": "turbo typecheck && tsc --noEmit",
-    "check": "turbo check && pnpm typecheck && biome check --write && pnpm sherif:fix",
-    "db:gen-types": "pnpm dlx supabase gen types typescript --project-id $PROJECT_REF --schema public > supabase/types/database.types.ts"
+    "typecheck": "turbo typecheck",
+    "check": "turbo check && turbo check && pnpm sherif:fix"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@deepcrawl/typescript-config": "workspace:*",
     "dotenv-cli": "^8.0.0",
     "turbo": "^2.4.2",
-    "typescript": "5.7.3"
+    "typescript": "5.7.3",
+    "wrangler": "^4.19.0"
   },
   "packageManager": "pnpm@10.6.2",
   "engines": {
