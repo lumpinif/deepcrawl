@@ -11,7 +11,7 @@
     "lint:fix": "next lint --fix",
     "ui": "pnpm dlx shadcn@canary",
     "typecheck": "tsc --noEmit",
-    "check": "biome check --write && pnpm lint:fix && pnpm typecheck"
+    "check": "pnpm lint:fix && pnpm typecheck && biome check --write"
   },
   "dependencies": {
     "@deepcrawl/ui": "workspace:*",

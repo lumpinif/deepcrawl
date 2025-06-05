@@ -15,6 +15,6 @@
     "hooks": "@/hooks",
     "lib": "@/lib",
     "utils": "@deepcrawl/ui/lib/utils",
-    "ui": "@deepcrawl/ui/components"
+    "ui": "@deepcrawl/ui/components/ui"
   }
 }

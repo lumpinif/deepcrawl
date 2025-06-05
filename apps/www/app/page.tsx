@@ -1,6 +1,6 @@
 import { Label } from '@radix-ui/react-label';
 
-import { Button } from '@deepcrawl/ui/components/button';
+import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -8,15 +8,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@deepcrawl/ui/components/card';
-import { Input } from '@deepcrawl/ui/components/input';
+} from '@deepcrawl/ui/components/ui/card';
+import { Input } from '@deepcrawl/ui/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@deepcrawl/ui/components/select';
+} from '@deepcrawl/ui/components/ui/select';
 
 export default function Page() {
   return (
