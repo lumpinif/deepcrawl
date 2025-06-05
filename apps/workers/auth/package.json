@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "wrangler dev --remote",
     "deploy": "pnpm run cf-typegen && pnpm run db:pre-deploy && wrangler secret bulk .dev.vars.production && wrangler deploy --minify",
+    "check": "biome check --write && pnpm typecheck",
     "typecheck": "tsc --noEmit",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings && pnpm typecheck",
     "db:pre-deploy": "pnpm run db:generate && pnpm run db:migrate:prod",
@@ -11,7 +12,6 @@
     "db:migrate:prod": "pnpm drizzle-kit migrate --config=drizzle.prod.config.ts",
     "db:push": "pnpm drizzle-kit push",
     "db:studio": "pnpm drizzle-kit studio",
-    "format": "biome format --write",
     "auth:generate": "pnpm dlx @better-auth/cli@latest generate --config ./src/lib/better-auth/cli.config.ts --output ./src/db/schema.ts -y && pnpm format ./src/db/schema.ts"
   },
   "dependencies": {
