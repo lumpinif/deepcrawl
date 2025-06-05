@@ -8,9 +8,9 @@
     "moduleResolution": "Bundler",
     "verbatimModuleSyntax": true,
     "paths": {
-      "@deepcrawl/db": ["../db/src/index.ts"]
+      "@deepcrawl/auth/*": ["./src/*"]
     }
   },
-  "include": [".", "src"],
+  "include": ["."],
   "exclude": ["node_modules", "dist"]
 }

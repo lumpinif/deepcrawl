@@ -6,7 +6,7 @@
   "scripts": {
     "eslint": "eslint . --max-warnings 0",
     "ui": "pnpm dlx shadcn@canary",
-    "check": "biome check --write && pnpm eslint --fix",
+    "check": "pnpm eslint --fix && pnpm biome check --write",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

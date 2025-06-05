@@ -1,4 +1,4 @@
-import betterAuth from '../configs/auth.config';
+import betterAuth from '@deepcrawl/auth/configs/auth.next';
 
 /**
  *  @warning only for cli auth schemas generation
