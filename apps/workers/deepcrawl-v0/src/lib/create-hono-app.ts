@@ -8,7 +8,6 @@ import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
 
-// import { supabaseMiddleware } from '@/middlewares/auth.middleware';
 import { pinoLogger } from '@/middlewares/pino-logger';
 
 import { defaultErrorHook, errorHandler } from '@/middlewares/error';
@@ -51,7 +50,6 @@ export default function createApp() {
     )
     .use('*', prettyJSON());
 
-  // .use('*', supabaseMiddleware);
   // app.use('*', freeUserRateLimiter);
 
   app.notFound(notFound);
