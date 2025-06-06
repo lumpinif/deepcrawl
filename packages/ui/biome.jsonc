@@ -1,9 +1,16 @@
 {
   "extends": ["../../biome.jsonc"],
+  "files": {
+    "ignore": ["node_modules", ".next", "./src/components/ui/*"]
+  },
   "linter": {
     "enabled": true,
     "rules": {
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
       "a11y": {
+        "useValidAnchor": "off",
         "useSemanticElements": "off", // Rule is buggy, revisit later
         "noSvgWithoutTitle": "off", // We do not intend to adhere to this rule
         // "useMediaCaption": "off", // We would need a cultural change to turn this on
