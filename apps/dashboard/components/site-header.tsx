@@ -1,4 +1,3 @@
-import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { SidebarTrigger } from '@deepcrawl/ui/components/ui/sidebar';
 
@@ -12,7 +11,7 @@ export function SiteHeader() {
           className="mx-2 data-[orientation=vertical]:h-4"
         />
         <h1 className="font-medium text-base">Documents</h1>
-        <div className="ml-auto flex items-center gap-2">
+        {/* <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <a
               href="https://github.com/shadcn-ui/ui/tree/main/apps/v4/app/(examples)/dashboard"
@@ -23,7 +22,7 @@ export function SiteHeader() {
               GitHub
             </a>
           </Button>
-        </div>
+        </div> */}
       </div>
     </header>
   );
