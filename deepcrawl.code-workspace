@@ -26,6 +26,6 @@
     }
   ],
   "settings": {
-    "workbench.colorTheme": "Night Wolf (black)"
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }
