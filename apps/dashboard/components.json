@@ -12,8 +12,8 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "hooks": "@/hooks",
-    "lib": "@/lib",
+    "lib": "@deepcrawl/ui/lib",
+    "hooks": "@deepcrawl/ui/hooks",
     "utils": "@deepcrawl/ui/lib/utils",
     "ui": "@deepcrawl/ui/components/ui"
   }
