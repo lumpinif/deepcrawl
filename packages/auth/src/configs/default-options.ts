@@ -8,6 +8,11 @@ export interface SecondaryStorage {
   delete: (key: string) => Promise<void>;
 }
 
+// Environment detection
+const isDevelopment = process.env.NODE_ENV === 'development' || 
+                     process.env.NODE_ENV === undefined ||
+                     typeof process === 'undefined';
+
 /**
  * Custom options for Better Auth
  *
@@ -31,18 +36,32 @@ export const defaultOptions: BetterAuthOptions = {
     autoSignIn: true,
   },
   plugins: [admin(), apiKey()],
+  trustedOrigins: [
+    // Development origins
+    'http://localhost:3000',
+    'https://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:8787',
+    'http://127.0.0.1:8787',
+    // Production origins (add your actual domains)
+    'https://auth.deepcrawl.dev',
+    'https://deepcrawl.dev',
+    'https://app.deepcrawl.dev',
+  ],
   advanced: {
     cookiePrefix: 'deepcrawl',
     crossSubDomainCookies: {
-      enabled: true,
-      domain: '.deepcrawl.dev', // Domain with a leading period
+      enabled: !isDevelopment, // Only enable in production
+      domain: isDevelopment ? undefined : '.deepcrawl.dev',
     },
     defaultCookieAttributes: {
-      secure: true,
+      secure: !isDevelopment, // false for development (HTTP), true for production (HTTPS)
       httpOnly: true,
-      sameSite: 'none',
-      partitioned: true, // New browser standards will mandate this for foreign cookies
+      sameSite: isDevelopment ? 'lax' : 'none', // 'lax' for dev, 'none' for production cross-origin
+      partitioned: !isDevelopment, // Only in production for cross-origin cookies
     },
+    // Ensure cookies work in development
+    useSecureCookies: !isDevelopment,
   },
   // rateLimit: {
   // window: 60, // time window in seconds

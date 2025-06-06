@@ -7,6 +7,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "verbatimModuleSyntax": true,
+    "composite": true,
+    "incremental": true,
     "paths": {
       "@deepcrawl/auth/*": ["./src/*"]
     }

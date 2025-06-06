@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@deepcrawl/ui/*": ["../../packages/ui/src/*"]
+      "@deepcrawl/ui/*": ["../../packages/ui/src/*"],
+      "@deepcrawl/auth/*": ["../../packages/auth/src/*"]
     },
     "plugins": [
       {
@@ -19,5 +20,10 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [
+		{
+			"path": "../../packages/auth"
+		}
+	]
 }

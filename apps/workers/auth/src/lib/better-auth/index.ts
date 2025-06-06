@@ -9,6 +9,7 @@ export const auth = (
   return betterAuth(
     createAuthConfig(env, {
       trustedOrigins: [
+        'http://localhost:3000',
         'http://localhost:8787',
         'https://deepcrawl.dev',
         'https://*.deepcrawl.dev',
