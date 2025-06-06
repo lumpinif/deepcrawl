@@ -6,7 +6,7 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "sherif": "pnpm dlx sherif@latest",
-    "sherif:fix": "pnpm dlx sherif@latest --fix",
+    "sherif:fix": "pnpm dlx sherif@latest --fix -i @types/node",
     "typecheck": "turbo typecheck",
     "check": "turbo check && turbo check && pnpm sherif:fix"
   },
