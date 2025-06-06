@@ -48,7 +48,7 @@
     "@deepcrawl/eslint-config": "workspace:^",
     "@deepcrawl/typescript-config": "workspace:*",
     "@eslint/eslintrc": "^3",
-    "@types/node": "20.8.3",
+    "@types/node":"^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9.20.1",

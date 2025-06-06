@@ -23,7 +23,7 @@
   "keywords": ["deepcrawl", "db", "database"],
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
-    "@types/node": "20.8.3",
+    "@types/node": "^20",
     "drizzle-kit": "^0.31.1"
   },
   "dependencies": {
