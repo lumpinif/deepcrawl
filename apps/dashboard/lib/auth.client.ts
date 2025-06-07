@@ -3,8 +3,8 @@ import {
   adminClient,
   genericOAuthClient,
   inferAdditionalFields,
+  magicLinkClient,
   multiSessionClient,
-  oidcClient,
   organizationClient,
   passkeyClient,
   twoFactorClient,
@@ -17,21 +17,21 @@ export const authClient = createAuthClient({
     organizationClient(),
     twoFactorClient({
       onTwoFactorRedirect() {
-        window.location.href = '/two-factor';
+        window.location.href = '/auth/two-factor';
       },
     }),
-    passkeyClient(),
     adminClient(),
+    passkeyClient(),
+    magicLinkClient(),
     multiSessionClient(),
+    genericOAuthClient(),
+    inferAdditionalFields<typeof auth>(),
     // oneTapClient({
     // 	clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
     // 	promptOptions: {
     // 		maxAttempts: 1,
     // 	},
     // }),
-    oidcClient(),
-    genericOAuthClient(),
-    inferAdditionalFields<typeof auth>(),
   ],
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:8787',
   basePath: '/api/auth',

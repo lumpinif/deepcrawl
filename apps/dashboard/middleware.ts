@@ -1,3 +1,4 @@
+import { authViewPaths } from '@daveyplate/better-auth-ui/server';
 import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
 
@@ -6,28 +7,51 @@ export async function middleware(request: NextRequest) {
     cookiePrefix: 'deepcrawl',
   });
 
+  const { pathname } = request.nextUrl;
+
+  // Define public auth routes that signed-in users shouldn't access
+  // Use authViewPaths from better-auth-ui, but exclude 'settings' since it requires auth
+  const publicAuthRoutes = Object.values(authViewPaths)
+    .map((path) => `/auth/${path}`)
+    .filter((path) => path !== '/auth/settings');
+
   // Debug logging in development
   if (process.env.NODE_ENV === 'development') {
     console.log('🔍 Middleware Debug:', {
-      path: request.nextUrl.pathname,
+      path: pathname,
       sessionCookie: sessionCookie ? '✅ Found' : '❌ Not found',
+      isPublicAuthRoute: publicAuthRoutes.includes(pathname),
     });
   }
 
-  // If no session cookie, redirect to login
+  // If user is signed in and trying to access public auth routes, redirect to dashboard
+  if (
+    sessionCookie &&
+    publicAuthRoutes
+      .filter((path) => path !== '/auth/sign-in')
+      .filter((path) => path !== '/auth/sign-up')
+      .filter((path) => path !== '/auth/reset-password')
+      .includes(pathname)
+  ) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  // If user is on a public auth route and has no session, allow access
+  if (!sessionCookie && publicAuthRoutes.includes(pathname)) {
+    return NextResponse.next();
+  }
+
+  // If no session cookie and not on a public auth route, redirect to login
   if (!sessionCookie) {
-    console.log('🚫 No session cookie found, redirecting to login');
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/auth/sign-in', request.url));
   }
 
   // Session cookie exists, allow the request
-  console.log('✅ Session cookie found, allowing request');
   return NextResponse.next();
 }
 
 export const config = {
-  // Protected routes - exclude auth pages and static assets
-  matcher: [
-    '/((?!login|signup|api|auth|_next/static|_next/image|favicon.ico).*)',
-  ],
+  // Run middleware on protected routes AND public auth routes (to redirect signed-in users)
+  // Exclude only sign-out and static assets
+  matcher: ['/((?!auth/sign-out|api|_next/static|_next/image|favicon.ico).*)'],
 };
