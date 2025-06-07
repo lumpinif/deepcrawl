@@ -5,10 +5,13 @@
     "baseUrl": ".",
     "target": "ESNext",
     "lib": ["ESNext"],
-    "module": "ESNext",
     "verbatimModuleSyntax": true,
-    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "types": ["node"],
+    "resolveJsonModule": true,
+    "jsx": "preserve",
     "paths": {
       "@deepcrawl/auth/*": ["./src/*"]
     }

@@ -19,45 +19,6 @@ const isDevelopment =
  * Docs: https://www.better-auth.com/docs/reference/options
  */
 export const defaultOptions: BetterAuthOptions = {
-  /**
-   * The name of the application.
-   */
-  appName: 'DeepCrawl',
-  /**
-   * Base path for Better Auth.
-   * Must match the path in the app.on for auth handlers
-   * @default "/api/auth"
-   */
-  basePath: '/auth',
-
-  // .... More options
-  emailAndPassword: {
-    enabled: true,
-    autoSignIn: true,
-    // async sendResetPassword({ user, url }) {
-    // 	await resend.emails.send({
-    // 		from,
-    // 		to: user.email,
-    // 		subject: "Reset your password",
-    // 		react: reactResetPasswordEmail({
-    // 			username: user.email,
-    // 			resetLink: url,
-    // 		}),
-    // 	});
-    // },
-  },
-  trustedOrigins: [
-    // Development origins
-    'http://localhost:3000',
-    'https://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:8787',
-    'http://127.0.0.1:8787',
-    // Production origins (add your actual domains)
-    'https://auth.deepcrawl.dev',
-    'https://deepcrawl.dev',
-    'https://app.deepcrawl.dev',
-  ],
   advanced: {
     cookiePrefix: 'deepcrawl',
     crossSubDomainCookies: {
@@ -92,9 +53,4 @@ export const defaultOptions: BetterAuthOptions = {
   //   storage: 'secondary-storage',
   //   modelName: 'rateLimit', //optional by default "rateLimit" is used
   // },
-  account: {
-    accountLinking: {
-      trustedProviders: ['google', 'github'],
-    },
-  },
 };
