@@ -7,16 +7,7 @@ export const auth = (
   env: CloudflareBindings,
 ): ReturnType<typeof betterAuth> => {
   return betterAuth(
-    createAuthConfig(env, {
-      trustedOrigins: [
-        'http://localhost:3000',
-        'http://localhost:8787',
-        'https://deepcrawl.dev',
-        'https://*.deepcrawl.dev',
-        env.BETTER_AUTH_URL,
-        // add other domains to trustedOrigins, such as tenant domains
-      ],
-    }),
+    createAuthConfig(env),
   );
 };
 
