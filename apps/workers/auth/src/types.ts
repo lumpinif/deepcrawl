@@ -1,8 +1,8 @@
-import type { AuthType, Session } from './lib/better-auth';
+import type { Auth, Session } from '@deepcrawl/auth/types';
 
 export interface AppVariables {
   /** Better Auth Instance */
-  betterAuth: AuthType;
+  betterAuth: Auth;
   /** Current User */
   user: Session['user'] | null;
   /** Current Session */
