@@ -34,6 +34,17 @@ export const defaultOptions: BetterAuthOptions = {
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+    // async sendResetPassword({ user, url }) {
+    // 	await resend.emails.send({
+    // 		from,
+    // 		to: user.email,
+    // 		subject: "Reset your password",
+    // 		react: reactResetPasswordEmail({
+    // 			username: user.email,
+    // 			resetLink: url,
+    // 		}),
+    // 	});
+    // },
   },
   trustedOrigins: [
     // Development origins
@@ -81,4 +92,9 @@ export const defaultOptions: BetterAuthOptions = {
   //   storage: 'secondary-storage',
   //   modelName: 'rateLimit', //optional by default "rateLimit" is used
   // },
+  account: {
+    accountLinking: {
+      trustedProviders: ['google', 'github'],
+    },
+  },
 };
