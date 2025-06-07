@@ -1,16 +1,17 @@
 import type { BetterAuthOptions } from 'better-auth';
 
-
 export interface SecondaryStorage {
   get: (key: string) => Promise<string | null>;
   set: (key: string, value: string, ttl?: number) => Promise<void>;
   delete: (key: string) => Promise<void>;
 }
 
+// TODO: MOVE TO AUTH WORKER FOR CORS AND SECURITY
 // Environment detection
-const isDevelopment = process.env.NODE_ENV === 'development' || 
-                     process.env.NODE_ENV === undefined ||
-                     typeof process === 'undefined';
+const isDevelopment =
+  process.env.NODE_ENV === 'development' ||
+  process.env.NODE_ENV === undefined ||
+  typeof process === 'undefined';
 
 /**
  * Custom options for Better Auth

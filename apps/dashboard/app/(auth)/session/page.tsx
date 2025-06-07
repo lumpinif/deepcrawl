@@ -1,6 +1,6 @@
 'use client';
 
-import { authClient } from '@deepcrawl/auth/lib/auth.client';
+import { authClient } from '@/lib/auth.client';
 
 export default function SessionPage() {
   const { data: session, error, isPending } = authClient.useSession();

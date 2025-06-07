@@ -1,7 +1,7 @@
 'use client';
 // import { authClient } from '@/lib/auth.client';
 
-import { authClient } from '@deepcrawl/auth/lib/auth.client';
+import { authClient } from '@/lib/auth.client';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
