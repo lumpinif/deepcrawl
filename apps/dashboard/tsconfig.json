@@ -1,6 +1,7 @@
 {
   "extends": "@deepcrawl/typescript-config/nextjs.json",
   "compilerOptions": {
+    "strict": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
@@ -20,10 +21,5 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"],
-  "references": [
-		{
-			"path": "../../packages/auth"
-		}
-	]
+  "exclude": ["node_modules"]
 }

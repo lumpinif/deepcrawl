@@ -1,6 +1,5 @@
 import type { BetterAuthOptions } from 'better-auth';
-import { admin } from 'better-auth/plugins';
-import { apiKey } from 'better-auth/plugins';
+
 
 export interface SecondaryStorage {
   get: (key: string) => Promise<string | null>;
@@ -35,7 +34,6 @@ export const defaultOptions: BetterAuthOptions = {
     enabled: true,
     autoSignIn: true,
   },
-  plugins: [admin(), apiKey()],
   trustedOrigins: [
     // Development origins
     'http://localhost:3000',

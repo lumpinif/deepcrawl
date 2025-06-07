@@ -1,18 +1,18 @@
 {
   "extends": "@deepcrawl/typescript-config/base.json",
   "compilerOptions": {
+    "strict": true,
     "baseUrl": ".",
     "target": "ESNext",
     "lib": ["ESNext"],
     "module": "ESNext",
-    "moduleResolution": "Bundler",
     "verbatimModuleSyntax": true,
-    "composite": true,
-    "incremental": true,
+    "moduleResolution": "Bundler",
+    "types": ["node"],
     "paths": {
       "@deepcrawl/auth/*": ["./src/*"]
     }
   },
-  "include": ["."],
+  "include": [".", "src"],
   "exclude": ["node_modules", "dist"]
 }
