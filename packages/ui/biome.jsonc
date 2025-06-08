@@ -9,6 +9,9 @@
       "security": {
         "noDangerouslySetInnerHtml": "off"
       },
+      "correctness": {
+        "noUnknownProperty": "off"
+      },
       "a11y": {
         "useValidAnchor": "off",
         "useSemanticElements": "off", // Rule is buggy, revisit later
