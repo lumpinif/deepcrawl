@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { AuthCallback } from './auth-callback';
 import { SignInForm } from './forms/sign-in-form';
 import { SignUpForm } from './forms/sign-up-form';
-import { TwoFactorForm } from './forms/two-factor-form';
+// import { TwoFactorForm } from './forms/two-factor-form';
 import { SignOut } from './sign-out';
 
 export interface AuthFormProps {
@@ -41,7 +41,7 @@ export function AuthForm({
       console.error(`Invalid auth view: ${path}`);
       router.replace(`${authViewRoutes.login}${window.location.search}`);
     }
-  }, [path, authViewRoutes, router]);
+  }, [path, router]);
 
   const view = viewProp || getAuthViewByPath(authViewRoutes, path) || 'login';
 
@@ -68,7 +68,7 @@ export function AuthForm({
           setIsSubmitting={setIsSubmitting}
         />
       );
-    case 'twoFactor':
+    /* case 'twoFactor':
       return (
         <TwoFactorForm
           className={className}
@@ -77,7 +77,7 @@ export function AuthForm({
           isSubmitting={isSubmitting}
           setIsSubmitting={setIsSubmitting}
         />
-      );
+      ); */
     /* case 'recoverAccount':
       return (
         <RecoverAccountForm

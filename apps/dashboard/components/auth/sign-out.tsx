@@ -19,7 +19,7 @@ export function SignOut() {
     signingOut.current = true;
 
     authClient.signOut().finally(onSuccess);
-  }, [authClient, onSuccess]);
+  }, [onSuccess]);
 
   return <Loader2 className="animate-spin" />;
 }

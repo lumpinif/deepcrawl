@@ -11,6 +11,7 @@ import {
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
+import Link from 'next/link';
 import { PasswordInput } from './password-input';
 
 export function LoginCard({
@@ -63,12 +64,12 @@ export function LoginCard({
                 <div className="grid gap-3">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
-                    <a
+                    <Link
                       href="/forgot-password"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
                       Forgot your password?
-                    </a>
+                    </Link>
                   </div>
                   <PasswordInput
                     required
@@ -83,9 +84,9 @@ export function LoginCard({
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{' '}
-                <a href="/sign-up" className="underline underline-offset-4">
+                <Link href="/sign-up" className="underline underline-offset-4">
                   Sign up
-                </a>
+                </Link>
               </div>
             </div>
           </form>
@@ -93,8 +94,8 @@ export function LoginCard({
       </Card>
       <div className="text-balance text-center text-muted-foreground text-xs *:[a]:underline *:[a]:underline-offset-4 *:[a]:hover:text-primary">
         By clicking continue, you agree to our{' '}
-        <a href="/terms-of-service">Terms of Service</a> and{' '}
-        <a href="/privacy-policy">Privacy Policy</a>.
+        <Link href="/terms-of-service">Terms of Service</Link> and{' '}
+        <Link href="/privacy-policy">Privacy Policy</Link>.
       </div>
     </div>
   );

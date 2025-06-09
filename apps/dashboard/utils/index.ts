@@ -169,7 +169,10 @@ type PasswordSchemaMessage = {
   passwordInvalid?: string;
 };
 
-export function getPasswordSchema(passwordValidation?: PasswordValidation, message?: PasswordSchemaMessage) {
+export function getPasswordSchema(
+  passwordValidation?: PasswordValidation,
+  message?: PasswordSchemaMessage,
+) {
   let schema = z.string().min(1, {
     message: message?.passwordRequired || 'Password is required',
   });

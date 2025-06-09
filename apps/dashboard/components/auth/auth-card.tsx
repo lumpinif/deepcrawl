@@ -20,12 +20,12 @@ import { ArrowLeftIcon, GalleryVerticalEnd } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { AuthCallback } from './auth-callback';
+import { AuthForm } from './auth-form';
 import { MagicLinkButton } from './magic-link-button';
 import { PasskeyButton } from './passkey-button';
 import { ProviderButton } from './provider-button';
 import { SignOut } from './sign-out';
 import { socialProviders } from './social-providers';
-import { AuthForm } from './auth-form';
 
 export interface AuthCardProps {
   pathname?: string;
@@ -190,7 +190,7 @@ export function AuthCard({
               case 'emailOTP':
                 return (
                   <>
-                    Don't have an account?
+                    Don&apos;t have an account?
                     <Link
                       className="text-foreground underline"
                       href={`/${authViewRoutes.signUp}${isHydrated ? window.location.search : ''}`}

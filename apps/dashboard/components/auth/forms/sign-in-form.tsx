@@ -8,7 +8,7 @@ import * as z from 'zod';
 
 import { useIsHydrated } from '@/hooks/use-hydrated';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
-import { getPasswordSchema, PasswordValidation } from '@/utils';
+import { type PasswordValidation, getPasswordSchema } from '@/utils';
 import { Checkbox } from '@deepcrawl/ui/components/ui/checkbox';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 
@@ -37,7 +37,7 @@ export interface SignInFormProps {
   passwordValidation?: PasswordValidation;
 }
 
-const REMEMBER_ME_ENABLED = false
+const REMEMBER_ME_ENABLED = false;
 
 export function SignInForm({
   className,
@@ -46,10 +46,9 @@ export function SignInForm({
   setIsSubmitting,
   passwordValidation,
 }: SignInFormProps) {
+  const router = useRouter();
   const isHydrated = useIsHydrated();
   // const { captchaRef, getCaptchaHeaders } = useCaptcha()
-
-
 
   const { onSuccess, isPending: transitionPending } = useOnSuccessTransition({
     redirectTo,
@@ -82,23 +81,20 @@ export function SignInForm({
     password,
     rememberMe,
   }: z.infer<typeof formSchema>) {
-    const router = useRouter()
     try {
       let response: Record<string, unknown> = {};
 
-     
-        const fetchOptions: BetterFetchOption = {
-          throw: true,
-          // headers: await getCaptchaHeaders('/sign-in/email'),
-        };
+      const fetchOptions: BetterFetchOption = {
+        throw: true,
+        // headers: await getCaptchaHeaders('/sign-in/email'),
+      };
 
-        response = await authClient.signIn.email({
-          email,
-          password,
-          rememberMe,
-          fetchOptions,
-        });
-      
+      response = await authClient.signIn.email({
+        email,
+        password,
+        rememberMe,
+        fetchOptions,
+      });
 
       if (response.twoFactorRedirect) {
         router.push(`/${authViewRoutes.twoFactor}${window.location.search}`);
@@ -107,7 +103,9 @@ export function SignInForm({
       }
     } catch (error) {
       form.resetField('password');
-      toast.error(error instanceof Error ? error.message : 'An unknown error occurred');
+      toast.error(
+        error instanceof Error ? error.message : 'An unknown error occurred',
+      );
     }
   }
 
@@ -123,9 +121,7 @@ export function SignInForm({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                Email
-              </FormLabel>
+              <FormLabel>Email</FormLabel>
 
               <FormControl>
                 <Input
@@ -148,18 +144,14 @@ export function SignInForm({
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
-                <FormLabel>
-                  Password
-                </FormLabel>
+                <FormLabel>Password</FormLabel>
 
-               
-                  <Link
-                    className="text-sm hover:underline"
-                    href={`${authViewRoutes.forgotPassword}${isHydrated ? window.location.search : ''}`}
-                  >
-                    Forgot password?
-                  </Link>
-               
+                <Link
+                  className="text-sm hover:underline"
+                  href={`${authViewRoutes.forgotPassword}${isHydrated ? window.location.search : ''}`}
+                >
+                  Forgot password?
+                </Link>
               </div>
 
               <FormControl>
