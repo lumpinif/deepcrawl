@@ -1,18 +1,7 @@
-import { Geist, Geist_Mono } from 'next/font/google';
-
+import { GeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
 import '@deepcrawl/ui/globals.css';
-import { Header } from '@/components/header';
 import { Providers } from '@/components/providers';
-
-const fontSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
-
-const fontMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-});
 
 export default function RootLayout({
   children,
@@ -23,14 +12,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
+        className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
       >
-        <Providers>
-          <div className="flex min-h-svh flex-col">
-            <Header />
-            {children}
-          </div>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
