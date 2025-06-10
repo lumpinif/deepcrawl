@@ -1,8 +1,12 @@
-import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
+import type { Session } from '@deepcrawl/auth/types';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { SidebarTrigger } from '@deepcrawl/ui/components/ui/sidebar';
+import { UserDropdown } from '../user/user-dropdown';
 
-export function SiteHeader() {
+export function SiteHeader({
+  user,
+  sessions,
+}: { user: Session['user']; sessions: Session[] }) {
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-in-out group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2">
@@ -11,10 +15,12 @@ export function SiteHeader() {
           orientation="vertical"
           className="mr-1 data-[orientation=vertical]:h-4"
         />
-        <h1 className="font-semibold text-base">DeepCrawl Dashboard</h1>
-        <div className="ml-auto flex items-center gap-2">
-          <ThemeToggle />
-        </div>
+        <h1 className="font-semibold text-base">Dashboard</h1>
+        {user && (
+          <div className="ml-auto flex items-center gap-2">
+            <UserDropdown user={user} sessions={sessions} />
+          </div>
+        )}
       </div>
     </header>
   );

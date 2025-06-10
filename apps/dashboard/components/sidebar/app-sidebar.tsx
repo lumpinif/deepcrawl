@@ -16,16 +16,19 @@ import * as React from 'react';
 
 import { NavMain } from '@/components/sidebar/nav-main';
 import { NavProjects } from '@/components/sidebar/nav-projects';
-import { NavUser } from '@/components/sidebar/nav-user';
-import { TeamSwitcher } from '@/components/sidebar/team-switcher';
+// import { NavUser } from '@/components/sidebar/nav-user';
+// import { TeamSwitcher } from '@/components/sidebar/team-switcher';
 import type { Session } from '@deepcrawl/auth/types';
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  // SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
   SidebarRail,
 } from '@deepcrawl/ui/components/ui/sidebar';
+import Link from 'next/link';
 
 // This is sample data.
 const data = {
@@ -154,27 +157,38 @@ const data = {
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: Session['user'];
+  session: Session;
+  deviceSessions: Session[];
 }
 
-export function AppSidebar({ user, ...props }: AppSidebarProps) {
+export function AppSidebar({
+  user,
+  session,
+  deviceSessions,
+  ...props
+}: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" {...props} className="overflow-x-hidden">
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+      <SidebarHeader className="h-16 border-b group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+        <SidebarMenu className="my-auto">
+          <SidebarMenuButton
+            asChild
+            className="data-[slot=sidebar-menu-button]:!p-1.5 cursor-default hover:bg-transparent active:bg-transparent"
+          >
+            <Link href="/">
+              <GalleryVerticalEnd className="!size-5" />
+              <span className="font-semibold text-base">Deepcrawl</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser
-          user={{
-            name: user.name,
-            email: user.email,
-            avatar: user.image || '',
-          }}
-        />
-      </SidebarFooter>
+      {/* <SidebarFooter>
+        <NavUser user={user} />
+      </SidebarFooter> */}
       <SidebarRail />
     </Sidebar>
   );

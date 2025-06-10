@@ -11,37 +11,41 @@
 
 // import { RedirectToSignIn, SignedIn } from '@daveyplate/better-auth-ui';
 
-// export default function UserSettingsPage() {
-//   return (
-//     <>
-//       <RedirectToSignIn />
-//       <SignedIn>
-//         <div className="container mx-auto flex flex-col gap-6 px-4 py-12">
-//           <UpdateAvatarCard />
+export default function UserSettingsPage() {
+  return (
+    <>
+      <h1 className="font-bold text-2xl">Account Settings</h1>
+    </>
+  );
+}
 
-//           <UpdateNameCard />
+/*
+<RedirectToSignIn />
+      <SignedIn>
+        <div className="container mx-auto flex flex-col gap-6 px-4 py-12">
+          <UpdateAvatarCard />
 
-//           <UpdateUsernameCard />
+          <UpdateNameCard />
 
-//           <ChangeEmailCard />
+          <UpdateUsernameCard />
 
-//           <ChangePasswordCard />
+          <ChangeEmailCard />
 
-//           <ProvidersCard />
+          <ChangePasswordCard />
 
-//           <SessionsCard />
+          <ProvidersCard />
 
-//           <DeleteAccountCard />
+          <SessionsCard />
 
-//           {/* <UpdateFieldCard
-//             field="age"
-//             label="Age"
-//             description="Update your age"
-//             placeholder="Enter your current age"
-//             type="number"
-//           /> */}
-//         </div>
-//       </SignedIn>
-//     </>
-//   );
-// }
+          <DeleteAccountCard />
+
+         <UpdateFieldCard
+            field="age"
+            label="Age"
+            description="Update your age"
+            placeholder="Enter your current age"
+            type="number"
+          /> 
+          </div>
+          </SignedIn>
+*/
