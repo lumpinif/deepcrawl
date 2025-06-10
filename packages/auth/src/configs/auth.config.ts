@@ -116,6 +116,7 @@ export function createAuthConfig(env: Env) {
     ],
     account: {
       accountLinking: {
+        enabled: true,
         trustedProviders: ['google', 'github'],
       },
     },
