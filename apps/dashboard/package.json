@@ -15,8 +15,6 @@
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.18",
-    "@daveyplate/better-auth-tanstack": "^1.3.6",
-    "@daveyplate/better-auth-ui": "^1.7.4",
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/db": "workspace:*",
     "@deepcrawl/types": "workspace:*",

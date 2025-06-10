@@ -1,16 +1,29 @@
 import { SiteHeader } from '@/components/header';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
+import { auth } from '@deepcrawl/auth/lib/auth';
 import { SidebarInset } from '@deepcrawl/ui/components/ui/sidebar';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  // Fetch session server-side
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  // Redirect to login if no session
+  if (!session || !session.user) {
+    redirect('/login');
+  }
+
   return (
     <>
-      <AppSidebar />
+      <AppSidebar user={session.user} />
       <SidebarInset>
         <div className="flex flex-1 flex-col overflow-hidden">
           <SiteHeader />

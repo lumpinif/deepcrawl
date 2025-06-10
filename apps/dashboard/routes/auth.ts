@@ -1,7 +1,7 @@
 export const authViewRoutes = {
   login: 'login',
   signUp: 'sign-up',
-  signOut: 'sign-out',
+  logout: 'logout',
   callback: 'callback',
   emailOTP: 'email-otp',
   magicLink: 'magic-link',

@@ -7,7 +7,7 @@ import { authClient } from '@/lib/auth.client';
 import { authViewRoutes } from '@/routes/auth';
 import { useOnSuccessTransition } from '../../hooks/use-success-transition';
 
-export function SignOut() {
+export function Logout() {
   const signingOut = useRef(false);
 
   const { onSuccess } = useOnSuccessTransition({

@@ -46,11 +46,7 @@ export function MagicLinkForm({
   );
 
   const getCallbackURL = useCallback(
-    () =>
-      `${
-        callbackURLProp ||
-        `/${authViewRoutes.callback}?redirectTo=${getRedirectTo()}`
-      }`,
+    () => `${callbackURLProp || `/${getRedirectTo()}`}`,
     [callbackURLProp, getRedirectTo],
   );
 

@@ -24,10 +24,10 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AuthCallback } from './auth-callback';
 import { AuthForm } from './auth-form';
+import { Logout } from './logout';
 import { MagicLinkButton } from './magic-link-button';
 import { PasskeyButton } from './passkey-button';
 import { ProviderButton } from './provider-button';
-import { SignOut } from './sign-out';
 import { socialProviders } from './social-providers';
 
 export interface AuthCardProps {
@@ -72,8 +72,8 @@ export function AuthCard({
 
   // Handle special views that don't use the standard card layout
   switch (view) {
-    case 'signOut':
-      return <SignOut />;
+    case 'logout':
+      return <Logout />;
     case 'callback':
       return <AuthCallback redirectTo={redirectTo} />;
     default:

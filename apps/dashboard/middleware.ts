@@ -1,6 +1,6 @@
-import { authViewPaths } from '@daveyplate/better-auth-ui';
 import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
+import { authViewRoutes } from './routes/auth';
 
 const enableRedirect = process.env.NODE_ENV === 'production' || false;
 
@@ -12,8 +12,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Define public auth routes that signed-in users shouldn't access
-  // Use authViewPaths from better-auth-ui, but exclude 'settings' since it requires auth
-  const publicAuthRoutes = Object.values(authViewPaths)
+  // Use authViewRoutes from better-auth-ui, but exclude 'settings' since it requires auth
+  const publicAuthRoutes = Object.values(authViewRoutes)
     .map((path) => `/${path}`)
     .filter((path) => path !== '/settings');
 
@@ -55,6 +55,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // Run middleware on protected routes AND public auth routes (to redirect signed-in users)
-  // Exclude only sign-out and static assets
-  matcher: ['/((?!auth/sign-out|api|_next/static|_next/image|favicon.ico).*)'],
+  // Exclude only logout and static assets
+  matcher: ['/((?!/logout|api|_next/static|_next/image|favicon.ico).*)'],
 };

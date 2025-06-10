@@ -41,9 +41,8 @@ export interface SignUpFormProps {
 }
 
 const nameRequired = true;
-const confirmPasswordEnabled = true;
 const emailVerification = true;
-const persistClient = true;
+const confirmPasswordEnabled = true;
 
 export function SignUpForm({
   className,
@@ -62,11 +61,7 @@ export function SignUpForm({
   );
 
   const getCallbackURL = useCallback(
-    () =>
-      `${
-        callbackURL ||
-        `/${authViewRoutes.callback}?redirectTo=${getRedirectTo()}`
-      }`,
+    () => `${callbackURL || `/${getRedirectTo()}`}`,
     [callbackURL, getRedirectTo],
   );
 
@@ -154,8 +149,7 @@ export function SignUpForm({
         name: name || '',
         ...(username !== undefined && { username }),
         ...additionalFieldValues,
-        ...(emailVerification &&
-          persistClient && { callbackURL: getCallbackURL() }),
+        ...(emailVerification && { callbackURL: getCallbackURL() }),
         fetchOptions,
       });
 

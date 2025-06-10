@@ -66,7 +66,7 @@ export function getAuthViewTitle(authView: AuthView): string {
   const titleMap: Record<AuthView, string> = {
     login: 'Login to Deepcrawl',
     signUp: 'Sign Up to Deepcrawl',
-    signOut: 'Sign Out of Deepcrawl',
+    logout: 'Logout of Deepcrawl',
     callback: 'Authentication Callback',
     emailOTP: 'Email Verification',
     magicLink: 'Magic Link to Deepcrawl',
@@ -86,7 +86,7 @@ export function getAuthViewDescriptionTitle(authView: AuthView): string {
   const descriptionTitleMap: Record<AuthView, string> = {
     login: 'Welcome back',
     signUp: 'Get started',
-    signOut: 'Signing out',
+    logout: 'Logging out',
     callback: 'Authenticating',
     emailOTP: 'Check your email',
     magicLink: 'Magic link sign in',
@@ -106,7 +106,7 @@ export function getAuthViewDetailedDescription(authView: AuthView): string {
   const detailedDescriptionMap: Record<AuthView, string> = {
     login: 'Please sign in to your account to continue.',
     signUp: 'Create a new account to get started with DeepCrawl Dashboard.',
-    signOut: 'You are being signed out of your account.',
+    logout: 'You are being logged out of your account.',
     callback: 'Processing your authentication request...',
     emailOTP: 'Enter the verification code sent to your email address.',
     magicLink: "We'll send you a secure link to sign in without a password.",

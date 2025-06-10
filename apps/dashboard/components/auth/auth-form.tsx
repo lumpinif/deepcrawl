@@ -11,7 +11,7 @@ import { MagicLinkForm } from './forms/magic-link-form';
 import { ResetPasswordForm } from './forms/reset-password-form';
 import { SignInForm } from './forms/sign-in-form';
 import { SignUpForm } from './forms/sign-up-form';
-import { SignOut } from './sign-out';
+import { Logout } from './logout';
 
 export interface AuthFormProps {
   className?: string;
@@ -48,8 +48,8 @@ export function AuthForm({
   const view = viewProp || getAuthViewByPath(authViewRoutes, path) || 'login';
 
   switch (view) {
-    case 'signOut':
-      return <SignOut />;
+    case 'logout':
+      return <Logout />;
     case 'callback':
       return <AuthCallback redirectTo={redirectTo} />;
     case 'login':

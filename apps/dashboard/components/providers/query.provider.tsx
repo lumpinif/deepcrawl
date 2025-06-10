@@ -1,14 +1,13 @@
 'use client';
+
 import { makeQueryClient } from '@/lib/query.client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 
 export function QueryProviders({ children }: { children: ReactNode }) {
   const queryClient = makeQueryClient();
-  const router = useRouter();
 
   return (
     <QueryClientProvider client={queryClient}>

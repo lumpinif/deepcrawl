@@ -34,11 +34,7 @@ export function ProviderButton({
   );
 
   const getCallbackURL = useCallback(
-    () =>
-      `${
-        callbackURLProp ||
-        `/${authViewRoutes.callback}?redirectTo=${getRedirectTo()}`
-      }`,
+    () => `${callbackURLProp || `/${getRedirectTo()}`}`,
     [callbackURLProp, getRedirectTo],
   );
 
