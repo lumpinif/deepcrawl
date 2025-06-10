@@ -21,6 +21,8 @@ const buttonVariants = cva(
           'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
         success: 'bg-green-600 text-white hover:bg-green-600/90 shadow-md',
+        authButton:
+          'border bg-background shadow-xs hover:bg-accent text-md text-accent-foreground/70 hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
