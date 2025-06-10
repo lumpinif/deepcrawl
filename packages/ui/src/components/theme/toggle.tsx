@@ -67,15 +67,18 @@ export function ThemeGroupToggle({
           size="icon"
           className={cn(
             buttonClassName,
-            'rounded-full',
+            'h-5 w-5 rounded-full shadow-sm',
             mounted && theme === value
               ? 'bg-muted text-primary'
               : 'hover:bg-muted/50',
           )}
           variant={mounted && theme === value ? 'outline' : 'ghost'}
-          onClick={() => setTheme(value)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setTheme(value);
+          }}
         >
-          <Icon className={cn('size-5', iconClassName)} />
+          <Icon className={cn('size-3', iconClassName)} />
           {withLabel && (
             <span className="capitalize">
               {value === 'system' ? 'follow device' : value}
