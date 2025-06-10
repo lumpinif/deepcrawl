@@ -130,7 +130,7 @@ export function AuthCard({
                           })}
                         </div>
 
-                        {moreAuthOptions && (
+                        {(moreAuthOptions || view === 'magicLink') && (
                           <>
                             <PasskeyButton
                               redirectTo={redirectTo}
@@ -144,7 +144,7 @@ export function AuthCard({
                           </>
                         )}
 
-                        {!moreAuthOptions && (
+                        {!moreAuthOptions && view !== 'magicLink' && (
                           <Button
                             className="w-full"
                             variant="authButton"
@@ -181,7 +181,7 @@ export function AuthCard({
                               : view === 'signUp'
                                 ? 'Sign up below'
                                 : view === 'magicLink'
-                                  ? 'Continue with magic link'
+                                  ? 'Or continue with magic link'
                                   : null}
                           </span>
                           <Separator className="!w-auto grow" />
@@ -253,9 +253,9 @@ export function AuthCard({
                   <>
                     <ArrowLeftIcon className="size-3" />
                     <Button
-                      variant="link"
                       size="sm"
-                      className="px-0 text-foreground underline"
+                      variant="link"
+                      className="px-0 text-muted-foreground hover:text-foreground hover:underline"
                       onClick={() => window.history.back()}
                     >
                       Go back

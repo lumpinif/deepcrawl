@@ -112,8 +112,8 @@ export function SignInForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(signIn)}
         noValidate={isHydrated}
+        onSubmit={form.handleSubmit(signIn)}
         className={cn('grid w-full gap-6', className)}
       >
         <FormField
@@ -126,6 +126,9 @@ export function SignInForm({
               <FormControl>
                 <Input
                   type="email"
+                  spellCheck={false}
+                  autoCapitalize="off"
+                  autoComplete="email"
                   disabled={isSubmitting}
                   placeholder="your@email.com"
                   suppressHydrationWarning={true}
@@ -147,7 +150,7 @@ export function SignInForm({
                 <FormLabel>Password</FormLabel>
 
                 <Link
-                  className="text-sm hover:underline"
+                  className="text-muted-foreground text-sm hover:text-foreground hover:underline"
                   href={`${authViewRoutes.forgotPassword}${isHydrated ? window.location.search : ''}`}
                 >
                   Forgot password?
@@ -156,10 +159,9 @@ export function SignInForm({
 
               <FormControl>
                 <PasswordInput
-                  // placeholder="********"
+                  disabled={isSubmitting}
                   suppressHydrationWarning={true}
                   autoComplete="current-password"
-                  disabled={isSubmitting}
                   {...field}
                 />
               </FormControl>
@@ -178,8 +180,8 @@ export function SignInForm({
                 <FormControl>
                   <Checkbox
                     checked={field.value}
-                    onCheckedChange={field.onChange}
                     disabled={isSubmitting}
+                    onCheckedChange={field.onChange}
                   />
                 </FormControl>
 
