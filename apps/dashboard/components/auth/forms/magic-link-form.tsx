@@ -8,7 +8,6 @@ import * as z from 'zod';
 
 import { SpinnerButton } from '@/components/spinner-button';
 import { authClient } from '@/lib/auth.client';
-import { authViewRoutes } from '@/routes/auth';
 import { getSearchParam } from '@/utils';
 import {
   Form,

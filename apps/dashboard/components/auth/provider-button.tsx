@@ -2,7 +2,6 @@ import type { SocialProvider } from 'better-auth/social-providers';
 import { useCallback } from 'react';
 
 import { authClient } from '@/lib/auth.client';
-import { authViewRoutes } from '@/routes/auth';
 import { getSearchParam } from '@/utils';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { cn } from '@deepcrawl/ui/lib/utils';

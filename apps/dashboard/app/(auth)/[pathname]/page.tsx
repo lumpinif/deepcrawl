@@ -1,7 +1,6 @@
 import { AuthCard } from '@/components/auth/auth-card';
 import { authViewRoutes } from '@/routes/auth';
 import { isValidAuthRoute } from '@/utils';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 export function generateStaticParams() {
