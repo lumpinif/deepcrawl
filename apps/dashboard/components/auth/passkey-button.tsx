@@ -44,13 +44,13 @@ export function PasskeyButton({
       value="true"
       name="passkey"
       formNoValidate
-      variant="secondary"
+      variant="authButton"
       disabled={isSubmitting}
       onClick={signInPassKey}
-      className="w-full text-md"
+      className="w-full"
     >
       <KeyIcon />
-      Sign in with Passkey
+      Continue with Passkey
     </Button>
   );
 }

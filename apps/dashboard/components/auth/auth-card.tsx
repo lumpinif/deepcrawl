@@ -7,7 +7,6 @@ import {
   getAuthViewDetailedDescription,
   getAuthViewTitle,
 } from '@/utils';
-// import { AuthForm } from '@daveyplate/better-auth-ui';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -16,9 +15,13 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import type { SocialProvider } from 'better-auth/social-providers';
-import { ArrowLeftIcon, GalleryVerticalEnd } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  GalleryVerticalEnd,
+  RectangleEllipsis,
+} from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthCallback } from './auth-callback';
 import { AuthForm } from './auth-form';
 import { MagicLinkButton } from './magic-link-button';
@@ -51,20 +54,21 @@ export function AuthCard({
   const view = viewProp || getAuthViewByPath(authViewRoutes, path) || 'login';
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [moreAuthOptions, setMoreAuthOptions] = useState(false);
 
-  // REVIEW: what does this do?
-  // useEffect(() => {
-  //     const handlePageHide = () => {
-  //         setIsSubmitting(false)
-  //     }
+  // Preventing Stuck Loading States when the page is hidden or navigated away from
+  useEffect(() => {
+    const handlePageHide = () => {
+      setIsSubmitting(false);
+    };
 
-  //     window.addEventListener("pagehide", handlePageHide)
+    window.addEventListener('pagehide', handlePageHide);
 
-  //     return () => {
-  //         setIsSubmitting(false)
-  //         window.removeEventListener("pagehide", handlePageHide)
-  //     }
-  // }, [])
+    return () => {
+      setIsSubmitting(false);
+      window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, []);
 
   // Handle special views that don't use the standard card layout
   switch (view) {
@@ -78,14 +82,14 @@ export function AuthCard({
 
   return (
     <div className="w-md">
-      <div className="mb-2 flex flex-col items-center gap-y-2">
+      <div className="flex flex-col items-center gap-y-2">
         <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <GalleryVerticalEnd className="size-4" />
         </div>
         <span className="font-bold text-2xl">
           {getAuthViewTitle(view as AuthView)}
         </span>
-        <span className="h-14 select-none text-pretty text-center font-medium text-muted-foreground">
+        <span className="my-2 select-none text-pretty text-center font-medium text-muted-foreground">
           {getAuthViewDetailedDescription(view as AuthView)}
         </span>
       </div>
@@ -96,87 +100,108 @@ export function AuthCard({
                     <OneTap localization={localization} redirectTo={redirectTo} />
                 )} */}
 
-          <div className="grid gap-4">
-            <AuthForm
-              pathname={pathname}
-              redirectTo={redirectTo}
-              callbackURL={callbackURL}
-              isSubmitting={isSubmitting}
-              otpSeparators={otpSeparators}
-              setIsSubmitting={setIsSubmitting}
-            />
+          {(() => {
+            switch (view) {
+              case 'login':
+              case 'signUp':
+              case 'magicLink':
+                return (
+                  <>
+                    {providers?.length && (
+                      <div className="grid gap-2">
+                        <div className="flex w-full flex-col items-center justify-between gap-2">
+                          {providers?.map((provider) => {
+                            const socialProvider = socialProviders.find(
+                              (socialProvider) =>
+                                socialProvider.provider === provider,
+                            );
+                            if (!socialProvider) return null;
 
-            {(() => {
-              switch (view) {
-                case 'login':
-                case 'signUp':
-                case 'magicLink':
-                case 'emailOTP':
-                case 'forgotPassword':
-                  return (
-                    <MagicLinkButton view={view} isSubmitting={isSubmitting} />
-                  );
-                default:
-                  return null;
-              }
-            })()}
-          </div>
+                            return (
+                              <ProviderButton
+                                key={provider}
+                                redirectTo={redirectTo}
+                                provider={socialProvider}
+                                callbackURL={callbackURL}
+                                isSubmitting={isSubmitting}
+                                setIsSubmitting={setIsSubmitting}
+                              />
+                            );
+                          })}
+                        </div>
+
+                        {moreAuthOptions && (
+                          <>
+                            <PasskeyButton
+                              redirectTo={redirectTo}
+                              isSubmitting={isSubmitting}
+                              setIsSubmitting={setIsSubmitting}
+                            />
+                            <MagicLinkButton
+                              view={view}
+                              isSubmitting={isSubmitting}
+                            />
+                          </>
+                        )}
+
+                        {!moreAuthOptions && (
+                          <Button
+                            className="w-full"
+                            variant="authButton"
+                            onClick={() => setMoreAuthOptions(true)}
+                          >
+                            <RectangleEllipsis />
+                            Passkey or Magic Link
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                );
+
+              default:
+                return null;
+            }
+          })()}
 
           {view !== 'resetPassword' && (true || true || true) && (
             <>
-              <div className="flex items-center gap-2">
-                <Separator className="!w-auto grow" />
-
-                <span className="flex-shrink-0 text-muted-foreground text-sm">
-                  Or continue with
-                </span>
-
-                <Separator className="!w-auto grow" />
-              </div>
+              {(() => {
+                switch (view) {
+                  case 'login':
+                  case 'signUp':
+                  case 'magicLink':
+                    return (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <Separator className="!w-auto grow" />
+                          <span className="flex-shrink-0 text-muted-foreground text-sm">
+                            {view === 'login'
+                              ? 'Or continue with'
+                              : view === 'signUp'
+                                ? 'Sign up below'
+                                : view === 'magicLink'
+                                  ? 'Continue with magic link'
+                                  : null}
+                          </span>
+                          <Separator className="!w-auto grow" />
+                        </div>
+                      </>
+                    );
+                  default:
+                    return null;
+                }
+              })()}
 
               <div className="grid gap-4">
-                {providers?.length && (
-                  <div className="flex w-full flex-col items-center justify-between gap-4">
-                    {providers?.map((provider) => {
-                      const socialProvider = socialProviders.find(
-                        (socialProvider) =>
-                          socialProvider.provider === provider,
-                      );
-                      if (!socialProvider) return null;
-
-                      return (
-                        <ProviderButton
-                          key={provider}
-                          redirectTo={redirectTo}
-                          provider={socialProvider}
-                          callbackURL={callbackURL}
-                          isSubmitting={isSubmitting}
-                          setIsSubmitting={setIsSubmitting}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-
-                {(() => {
-                  switch (view) {
-                    case 'login':
-                    case 'magicLink':
-                    case 'emailOTP':
-                    case 'recoverAccount':
-                    case 'twoFactor':
-                    case 'forgotPassword':
-                      return (
-                        <PasskeyButton
-                          redirectTo={redirectTo}
-                          isSubmitting={isSubmitting}
-                          setIsSubmitting={setIsSubmitting}
-                        />
-                      );
-                    default:
-                      return null;
-                  }
-                })()}
+                <AuthForm
+                  pathname={pathname}
+                  redirectTo={redirectTo}
+                  callbackURL={callbackURL}
+                  isSubmitting={isSubmitting}
+                  otpSeparators={otpSeparators}
+                  setIsSubmitting={setIsSubmitting}
+                />
               </div>
             </>
           )}

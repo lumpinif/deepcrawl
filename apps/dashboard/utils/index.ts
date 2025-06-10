@@ -64,16 +64,16 @@ export function getSearchParam(paramName: string) {
  */
 export function getAuthViewTitle(authView: AuthView): string {
   const titleMap: Record<AuthView, string> = {
-    login: 'Login',
-    signUp: 'Sign Up',
-    signOut: 'Sign Out',
+    login: 'Login to Deepcrawl',
+    signUp: 'Sign Up to Deepcrawl',
+    signOut: 'Sign Out of Deepcrawl',
     callback: 'Authentication Callback',
     emailOTP: 'Email Verification',
-    magicLink: 'Magic Link',
+    magicLink: 'Magic Link to Deepcrawl',
     twoFactor: 'Two-Factor Authentication',
-    resetPassword: 'Reset Password',
-    forgotPassword: 'Forgot Password',
-    recoverAccount: 'Recover Account',
+    resetPassword: 'Reset Password for Deepcrawl',
+    forgotPassword: 'Forgot Password for Deepcrawl',
+    recoverAccount: 'Recover Account for Deepcrawl',
   };
 
   return titleMap[authView] || 'Authentication';

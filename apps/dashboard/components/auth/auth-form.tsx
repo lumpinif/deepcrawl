@@ -6,9 +6,11 @@ import { type AuthView, authViewRoutes } from '@/routes/auth';
 import { getAuthViewByPath } from '@/utils';
 import { useRouter } from 'next/navigation';
 import { AuthCallback } from './auth-callback';
+import { ForgotPasswordForm } from './forms/forgot-password-form';
+import { MagicLinkForm } from './forms/magic-link-form';
+import { ResetPasswordForm } from './forms/reset-password-form';
 import { SignInForm } from './forms/sign-in-form';
 import { SignUpForm } from './forms/sign-up-form';
-// import { TwoFactorForm } from './forms/two-factor-form';
 import { SignOut } from './sign-out';
 
 export interface AuthFormProps {
@@ -29,7 +31,7 @@ export function AuthForm({
   pathname,
   redirectTo,
   view: viewProp,
-  otpSeparators = 0,
+  // otpSeparators = 0,
   setIsSubmitting,
 }: AuthFormProps) {
   const router = useRouter();
@@ -78,31 +80,21 @@ export function AuthForm({
           setIsSubmitting={setIsSubmitting}
         />
       ); */
-    /* case 'recoverAccount':
-      return (
-        <RecoverAccountForm
-          className={className}
-          redirectTo={redirectTo}
-          isSubmitting={isSubmitting}
-          setIsSubmitting={setIsSubmitting}
-        />
-      );
+    // case 'recoverAccount':
+    //   return (
+    //     <RecoverAccountForm
+    //       className={className}
+    //       redirectTo={redirectTo}
+    //       isSubmitting={isSubmitting}
+    //       setIsSubmitting={setIsSubmitting}
+    //     />
+    //   );
     case 'magicLink':
       return (
         <MagicLinkForm
           className={className}
-          callbackURL={callbackURL}
           redirectTo={redirectTo}
-          isSubmitting={isSubmitting}
-          setIsSubmitting={setIsSubmitting}
-        />
-      );
-    case 'emailOTP':
-      return (
-        <EmailOTPForm
-          className={className}
           callbackURL={callbackURL}
-          redirectTo={redirectTo}
           isSubmitting={isSubmitting}
           setIsSubmitting={setIsSubmitting}
         />
@@ -116,7 +108,7 @@ export function AuthForm({
         />
       );
     case 'resetPassword':
-      return <ResetPasswordForm className={className} />; */
+      return <ResetPasswordForm className={className} />;
     default:
       return null;
   }

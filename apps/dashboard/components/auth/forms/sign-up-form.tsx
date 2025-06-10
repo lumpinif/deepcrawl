@@ -6,7 +6,6 @@ import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { useCaptcha } from '@/hooks/use-captcha';
 import { useIsHydrated } from '@/hooks/use-hydrated';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
 
@@ -54,9 +53,9 @@ export function SignUpForm({
   setIsSubmitting,
   passwordValidation,
 }: SignUpFormProps) {
-  const isHydrated = useIsHydrated();
-  const { captchaRef, getCaptchaHeaders } = useCaptcha();
   const router = useRouter();
+  const isHydrated = useIsHydrated();
+
   const getRedirectTo = useCallback(
     () => redirectTo || getSearchParam('redirectTo'),
     [redirectTo],

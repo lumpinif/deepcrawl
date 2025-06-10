@@ -15,9 +15,9 @@ export function MagicLinkButton({ isSubmitting, view }: MagicLinkButtonProps) {
   return (
     <Button
       type="button"
-      variant="secondary"
+      className="w-full"
+      variant="authButton"
       disabled={isSubmitting}
-      className="w-full text-md"
       onClick={() =>
         router.push(
           `/${view === 'magicLink' ? authViewRoutes.login : authViewRoutes.magicLink}${window.location.search}`,

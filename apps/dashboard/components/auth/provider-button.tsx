@@ -61,10 +61,10 @@ export function ProviderButton({
 
   return (
     <Button
-      variant="outline"
+      variant="authButton"
       disabled={isSubmitting}
       onClick={doSignInSocial}
-      className={cn('w-full text-md', className)}
+      className={cn('w-full', className)}
     >
       {provider.icon && (
         <>
