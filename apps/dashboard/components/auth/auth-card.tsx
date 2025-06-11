@@ -148,6 +148,7 @@ export function AuthCard({
                           <Button
                             className="w-full"
                             variant="authButton"
+                            disabled={isSubmitting}
                             onClick={() => setMoreAuthOptions(true)}
                           >
                             <RectangleEllipsis />
