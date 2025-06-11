@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:with-auth": "turbo dev --filter=dashboard --filter=deepcrawl_auth",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
