@@ -2,20 +2,29 @@
 
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
 } from 'lucide-react';
+
+import {
+  IconBook,
+  IconChartBar,
+  IconDashboard,
+  IconFolder,
+  IconKey,
+  IconListDetails,
+  IconPlayerPlay,
+  IconSettings,
+  IconUser,
+  IconUsers,
+} from '@tabler/icons-react';
+
 import * as React from 'react';
 
 import { NavMain } from '@/components/sidebar/nav-main';
-import { NavProjects } from '@/components/sidebar/nav-projects';
 // import { NavUser } from '@/components/sidebar/nav-user';
 // import { TeamSwitcher } from '@/components/sidebar/team-switcher';
 import type { Session } from '@deepcrawl/auth/types';
@@ -51,106 +60,33 @@ const data = {
   ],
   navMain: [
     {
+      label: 'Dashboard',
+      title: 'Overview',
+      url: '/',
+      icon: IconDashboard,
+    },
+    {
+      label: 'User',
+      title: 'Account',
+      url: '/account',
+      icon: IconUser,
+    },
+    {
+      title: 'API Keys',
+      url: '/api-keys',
+      icon: IconKey,
+    },
+    {
+      label: 'Playground',
       title: 'Playground',
-      url: '#',
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: 'History',
-          url: '#',
-        },
-        {
-          title: 'Starred',
-          url: '#',
-        },
-        {
-          title: 'Settings',
-          url: '#',
-        },
-      ],
+      url: '/',
+      icon: IconPlayerPlay,
     },
     {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#',
-        },
-        {
-          title: 'Explorer',
-          url: '#',
-        },
-        {
-          title: 'Quantum',
-          url: '#',
-        },
-      ],
-    },
-    {
+      label: 'Resources',
       title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-        {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
+      url: 'https://deepcrawl.com/docs',
+      icon: IconBook,
     },
   ],
 };
@@ -169,22 +105,21 @@ export function AppSidebar({
 }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" {...props} className="overflow-x-hidden">
-      <SidebarHeader className="h-16 border-b group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+      <SidebarHeader className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-in-out group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
         <SidebarMenu className="my-auto">
           <SidebarMenuButton
             asChild
             className="data-[slot=sidebar-menu-button]:!p-1.5 cursor-default hover:bg-transparent active:bg-transparent"
           >
             <Link href="/">
-              <GalleryVerticalEnd className="!size-5" />
+              <GalleryVerticalEnd className="!size-5 group-has-data-[collapsible=icon]/sidebar-wrapper:block md:hidden" />
               <span className="font-semibold text-base">Deepcrawl</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="md:pt-2">
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       {/* <SidebarFooter>
         <NavUser user={user} />
