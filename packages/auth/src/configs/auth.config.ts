@@ -59,6 +59,12 @@ export function createAuthConfig(env: Env) {
     baseURL: env.BETTER_AUTH_URL,
     secret: env.BETTER_AUTH_SECRET,
     database: drizzleAdapter(db, { provider: 'pg', schema: schema }),
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // Cache session data in cookie for 5 minutes
+      },
+    },
     plugins: [
       admin(),
       apiKey(),

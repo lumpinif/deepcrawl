@@ -25,9 +25,27 @@ export function makeQueryClient() {
     }),
     defaultOptions: {
       queries: {
-        // With SSR, we usually want to set some default staleTime
-        // above 0 to avoid refetching immediately on the client
-        staleTime: 60 * 1000,
+        // Optimized stale time for better performance with cookie caching
+        staleTime: 5 * 60 * 1000, // 5 minutes (matches Better Auth cookie cache)
+        // Enable stale-while-revalidate pattern
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: 'always',
+        // Reduce aggressive retries on the server
+        retry: (failureCount, error) => {
+          // Don't retry on 404s
+          if (error?.message?.includes('404')) return false;
+          // Don't retry more than 3 times
+          return failureCount < 3;
+        },
+        // Cache data longer on success
+        gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
+      },
+      mutations: {
+        // Global mutation error handling
+        onError: (error) => {
+          console.error('❌ Mutation Error:', error);
+        },
       },
     },
   });

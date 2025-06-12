@@ -1,6 +1,6 @@
 'use client';
 
-import type { ClientSession } from '@/lib/auth.client-types';
+import type { Session } from '@deepcrawl/auth/types';
 import {
   Avatar,
   AvatarFallback,
@@ -17,7 +17,7 @@ import {
 import { CalendarDays, Mail, Shield, User } from 'lucide-react';
 
 export interface UserAvatarCardProps {
-  session: ClientSession;
+  session: Session;
 }
 
 export function UserAvatarCard({ session }: UserAvatarCardProps) {

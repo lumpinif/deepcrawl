@@ -1,6 +1,6 @@
 'use client';
 
-import type { ClientSession } from '@/lib/auth.client-types';
+import type { Session } from '@deepcrawl/auth/types';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
@@ -13,7 +13,7 @@ import {
 import { Github, Link2, Mail, Plus, Trash2 } from 'lucide-react';
 
 export interface ProvidersManagementCardProps {
-  session: ClientSession;
+  session: Session;
 }
 
 export function ProvidersManagementCard({

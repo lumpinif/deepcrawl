@@ -1,6 +1,6 @@
 'use client';
 
-import type { ClientSession } from '@/lib/auth.client-types';
+import type { Session } from '@deepcrawl/auth/types';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
@@ -13,7 +13,7 @@ import {
 import { AlertCircle, CheckCircle, Mail, Send } from 'lucide-react';
 
 export interface UserEmailCardProps {
-  session: ClientSession;
+  session: Session;
 }
 
 export function UserEmailCard({ session }: UserEmailCardProps) {

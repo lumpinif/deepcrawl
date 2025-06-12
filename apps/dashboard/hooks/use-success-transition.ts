@@ -27,7 +27,7 @@ export function useOnSuccessTransition({
   }, [success, isPending, router, getRedirectTo]);
 
   const onSuccess = useCallback(async () => {
-    refetchSession?.();
+    refetchSession();
     setSuccess(true);
   }, [refetchSession]);
 

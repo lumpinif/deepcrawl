@@ -1,6 +1,6 @@
 'use client';
 
-import type { ClientSession } from '@/lib/auth.client-types';
+import type { Session } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -15,7 +15,7 @@ import { Eye, EyeOff, Key, Save, Shield } from 'lucide-react';
 import { useState } from 'react';
 
 export interface PasswordChangeCardProps {
-  session: ClientSession;
+  session: Session;
 }
 
 export function PasswordChangeCard({ session }: PasswordChangeCardProps) {

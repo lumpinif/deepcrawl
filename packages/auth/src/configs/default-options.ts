@@ -19,12 +19,6 @@ const isDevelopment =
  * Docs: https://www.better-auth.com/docs/reference/options
  */
 export const defaultOptions: BetterAuthOptions = {
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60, // Cache duration in seconds
-    },
-  },
   advanced: {
     cookiePrefix: 'deepcrawl',
     crossSubDomainCookies: {

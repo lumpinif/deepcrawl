@@ -1,6 +1,6 @@
 'use client';
 
-import type { ClientSession } from '@/lib/auth.client-types';
+import type { Session } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -15,7 +15,7 @@ import { Edit3, Save, X } from 'lucide-react';
 import { useState } from 'react';
 
 export interface UserNameCardProps {
-  session: ClientSession;
+  session: Session;
 }
 
 export function UserNameCard({ session }: UserNameCardProps) {
