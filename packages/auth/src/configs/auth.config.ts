@@ -14,9 +14,10 @@ import {
   // customSession
 } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
-import { defaultOptions } from './default-options';
 
+/** Ensure this is the same as the env in the worker */
 interface Env {
+  AUTH_WORKER_NODE_ENV: 'production' | 'development';
   BETTER_AUTH_URL: string;
   BETTER_AUTH_SECRET: string;
   DATABASE_URL: string;
@@ -26,14 +27,22 @@ interface Env {
   GOOGLE_CLIENT_SECRET: string;
 }
 
+interface SecondaryStorage {
+  get: (key: string) => Promise<string | null>;
+  set: (key: string, value: string, ttl?: number) => Promise<void>;
+  delete: (key: string) => Promise<void>;
+}
+
 /** Important: make sure always import this explicitly in workers to resolve process.env issues
  *  Factory function that accepts environment variables from cloudflare env
  */
 export function createAuthConfig(env: Env) {
+  // use this to determine if we are in development or production instead of process.env.NODE_ENV
+  const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
+
   const db = getDrizzleDB({ DATABASE_URL: env.DATABASE_URL });
 
   const config = {
-    ...defaultOptions,
     emailAndPassword: {
       enabled: true,
       autoSignIn: true,
@@ -138,6 +147,40 @@ export function createAuthConfig(env: Env) {
       'https://deepcrawl.dev',
       'https://app.deepcrawl.dev',
     ],
+    advanced: {
+      cookiePrefix: 'deepcrawl',
+      crossSubDomainCookies: {
+        enabled: !isDevelopment, // Only enable in production
+        domain: isDevelopment ? undefined : '.deepcrawl.dev',
+      },
+      defaultCookieAttributes: {
+        secure: !isDevelopment, // false for development (HTTP), true for production (HTTPS)
+        httpOnly: true,
+        sameSite: (isDevelopment ? 'lax' : 'none') as 'lax' | 'none', // 'lax' for dev, 'none' for production cross-origin
+        partitioned: !isDevelopment, // Only in production for cross-origin cookies
+      },
+      // Ensure cookies work in development
+      useSecureCookies: !isDevelopment,
+    },
+    // rateLimit: {
+    // window: 60, // time window in seconds
+    // max: 100, // max requests in the window
+    // customRules: {
+    //     "/sign-in/email": {
+    //         window: 10,
+    //         max: 3,
+    //     },
+    //     "/two-factor/*": async (request)=> {
+    //         // custom function to return rate limit window and max
+    //         return {
+    //             window: 10,
+    //             max: 3,
+    //         }
+    //     }
+    // },
+    //   storage: 'secondary-storage',
+    //   modelName: 'rateLimit', //optional by default "rateLimit" is used
+    // },
   };
 
   return config;
