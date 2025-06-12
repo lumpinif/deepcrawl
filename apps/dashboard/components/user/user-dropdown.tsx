@@ -44,13 +44,13 @@ function UserAvatar({ user }: { user: Session['user'] }) {
 
 export function UserDropdown({
   user: userProp,
-  sessions,
-}: { user: Session['user']; sessions: Session[] }) {
+  deviceSessions,
+}: { user: Session['user']; deviceSessions: Session[] }) {
   const router = useRouter();
   const { data: currentSession } = useSession();
   const [selectOpen, setSelectOpen] = useState(false);
 
-  const hasMultipleSessions = sessions.length > 1;
+  const hasMultipleSessions = deviceSessions.length > 1;
   const user = currentSession?.user ?? userProp;
 
   return (
@@ -105,7 +105,7 @@ export function UserDropdown({
               <DropdownMenuLabel className="px-2 text-muted-foreground text-xs">
                 Switch Account
               </DropdownMenuLabel>
-              {sessions
+              {deviceSessions
                 .filter((s) => s.user.id !== user.id)
                 .map((u, i) => (
                   <button

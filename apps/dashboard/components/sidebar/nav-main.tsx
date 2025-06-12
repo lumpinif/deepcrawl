@@ -30,7 +30,7 @@ export function NavMain({
           {items.map((item, index) => (
             <React.Fragment key={`${item.title}-${index}`}>
               {item.label && (
-                <SidebarGroupLabel key={`${item.label}-${index}`}>
+                <SidebarGroupLabel className="group-has-data-[collapsible=icon]/sidebar-wrapper:-z-50 group-has-data-[collapsible=icon]/sidebar-wrapper:select-none">
                   {item.label}
                 </SidebarGroupLabel>
               )}
