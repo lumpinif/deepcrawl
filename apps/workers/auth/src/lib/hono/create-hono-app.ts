@@ -14,11 +14,17 @@ import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, onError, serveEmojiFavicon } from 'stoker/middlewares';
 
 export const allowedOrigins = [
+  // Development origins
+  'http://localhost:3000', // Dashboard
+  'https://localhost:3000', // Dashboard HTTPS
+  'http://127.0.0.1:3000', // Dashboard alternative
+  'http://localhost:8787', // Auth worker
+  'http://127.0.0.1:8787', // Auth worker alternative
+  // Production origins
   'https://auth.deepcrawl.dev',
   'https://deepcrawl.dev',
+  'https://app.deepcrawl.dev',
   'https://*.deepcrawl.dev',
-  'http://localhost:3000',
-  'http://127.0.0.1:8787',
 ];
 
 export default function createHonoApp() {
