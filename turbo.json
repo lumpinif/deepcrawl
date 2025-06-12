@@ -19,6 +19,18 @@
         "BETTER_AUTH_SECRET"
       ]
     },
+    "db:pre-deploy": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:migrate:prod": {
+      "cache": false
+    },
     "build": {
       "dependsOn": [
         "^build"

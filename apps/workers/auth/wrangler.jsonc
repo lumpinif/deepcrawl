@@ -11,6 +11,9 @@
   // 	"binding": "ASSETS",
   // 	"directory": "./public"
   // },
+  "vars": {
+    "AUTH_WORKER_NODE_ENV": "production"
+  },
   "observability": {
     "enabled": true
   },
@@ -28,6 +31,13 @@
     "upstream_protocol": "https",
     "ip": "localhost",
     "port": 8787
+  },
+  "env": {
+    "development": {
+      "vars": {
+        "AUTH_WORKER_NODE_ENV": "development"
+      }
+    }
   }
   /**
    * Bindings
