@@ -1,10 +1,10 @@
 'use server';
 
+import type { ActiveOrganization } from '@/lib/auth.client-types';
 import { auth } from '@deepcrawl/auth/lib/auth';
 import type { Session } from '@deepcrawl/auth/types';
-import type { ActiveOrganization } from '@/lib/auth.client-types';
-import { headers } from 'next/headers';
 import { revalidateTag, unstable_cache } from 'next/cache';
+import { headers } from 'next/headers';
 
 /**
  * Fetch the current authenticated session
@@ -12,7 +12,7 @@ import { revalidateTag, unstable_cache } from 'next/cache';
  */
 export async function fetchAuthSession(): Promise<Session | null> {
   const requestHeaders = await headers();
-  
+
   return unstable_cache(
     async (headers: Headers) => {
       const session = await auth.api.getSession({
@@ -24,7 +24,7 @@ export async function fetchAuthSession(): Promise<Session | null> {
     {
       tags: ['auth-session'],
       revalidate: 300, // 5 minutes
-    }
+    },
   )(requestHeaders);
 }
 
@@ -34,7 +34,7 @@ export async function fetchAuthSession(): Promise<Session | null> {
  */
 export async function fetchListSessions(): Promise<Session['session'][]> {
   const requestHeaders = await headers();
-  
+
   return unstable_cache(
     async (headers: Headers) => {
       try {
@@ -43,14 +43,18 @@ export async function fetchListSessions(): Promise<Session['session'][]> {
         });
         return JSON.parse(JSON.stringify(result));
       } catch (error) {
-        throw new Error(error instanceof Error ? error.message : 'Failed to fetch active sessions');
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch active sessions',
+        );
       }
     },
     ['list-sessions'],
     {
       tags: ['list-sessions', 'user-sessions'],
       revalidate: 120, // 2 minutes
-    }
+    },
   )(requestHeaders);
 }
 
@@ -60,7 +64,7 @@ export async function fetchListSessions(): Promise<Session['session'][]> {
  */
 export async function fetchDeviceSessions(): Promise<Session['session'][]> {
   const requestHeaders = await headers();
-  
+
   return unstable_cache(
     async (headers: Headers) => {
       try {
@@ -69,14 +73,18 @@ export async function fetchDeviceSessions(): Promise<Session['session'][]> {
         });
         return JSON.parse(JSON.stringify(result));
       } catch (error) {
-        throw new Error(error instanceof Error ? error.message : 'Failed to fetch device sessions');
+        throw new Error(
+          error instanceof Error
+            ? error.message
+            : 'Failed to fetch device sessions',
+        );
       }
     },
     ['device-sessions'],
     {
       tags: ['device-sessions', 'user-sessions'],
       revalidate: 120, // 2 minutes
-    }
+    },
   )(requestHeaders);
 }
 
@@ -86,7 +94,7 @@ export async function fetchDeviceSessions(): Promise<Session['session'][]> {
  */
 export async function fetchOrganization(): Promise<ActiveOrganization | null> {
   const requestHeaders = await headers();
-  
+
   return unstable_cache(
     async (headers: Headers) => {
       const result = await auth.api.getFullOrganization({
@@ -98,7 +106,7 @@ export async function fetchOrganization(): Promise<ActiveOrganization | null> {
     {
       tags: ['organization'],
       revalidate: 300, // 5 minutes
-    }
+    },
   )(requestHeaders);
 }
 
@@ -108,7 +116,7 @@ export async function fetchOrganization(): Promise<ActiveOrganization | null> {
  */
 export async function revalidateSessionCaches() {
   'use server';
-  
+
   // Invalidate all session-related caches
   revalidateTag('user-sessions');
   revalidateTag('list-sessions');

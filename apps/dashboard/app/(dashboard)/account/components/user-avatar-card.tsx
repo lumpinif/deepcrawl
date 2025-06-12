@@ -1,35 +1,60 @@
 'use client';
 
-import type { Session } from '@deepcrawl/auth/types';
+import { useAuthSession } from '@/hooks/auth.hooks';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@deepcrawl/ui/components/ui/avatar';
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
-import { CalendarDays, Mail, Shield, User } from 'lucide-react';
+import { IconUser } from '@tabler/icons-react';
+import { CalendarDays, Loader2, Mail } from 'lucide-react';
 
-export interface UserAvatarCardProps {
-  session: Session;
-}
-
-export function UserAvatarCard({ session }: UserAvatarCardProps) {
+export function UserAvatarCard() {
+  const { data: session, isLoading } = useAuthSession();
   const user = session?.user;
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <IconUser className="h-5 w-5" />
+            User Profile
+          </CardTitle>
+          <CardDescription>Your account information and status</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!user) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>User Profile</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <IconUser className="h-5 w-5" />
+            User Profile
+          </CardTitle>
           <CardDescription>No user data available</CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="py-4 text-center text-muted-foreground">
+            Unable to load user information
+          </div>
+        </CardContent>
       </Card>
     );
   }
@@ -46,7 +71,7 @@ export function UserAvatarCard({ session }: UserAvatarCardProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5" />
+          <IconUser className="h-5 w-5" />
           User Profile
         </CardTitle>
         <CardDescription>Your account information and status</CardDescription>
@@ -54,7 +79,7 @@ export function UserAvatarCard({ session }: UserAvatarCardProps) {
       <CardContent className="space-y-4">
         {/* Avatar and Basic Info */}
         <div className="flex items-center gap-4">
-          <Avatar className="h-20 w-20">
+          <Avatar className="size-20 border shadow-sm dark:border-none">
             <AvatarImage
               src={user.image || undefined}
               alt={user.name || 'User'}
@@ -62,28 +87,21 @@ export function UserAvatarCard({ session }: UserAvatarCardProps) {
             <AvatarFallback className="text-lg">{initials}</AvatarFallback>
           </Avatar>
           <div className="space-y-1">
-            <h3 className="font-semibold text-lg">
-              {user.name || 'No name set'}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-lg">
+                {user.name || 'No name set'}
+              </h3>
+            </div>
             <div className="flex items-center gap-1 text-muted-foreground">
               <Mail className="h-4 w-4" />
               <span className="text-sm">{user.email}</span>
             </div>
           </div>
         </div>
-
-        {/* Status Badges */}
-        <div className="flex flex-wrap gap-2">
-          <Badge variant={user.emailVerified ? 'default' : 'secondary'}>
-            <Shield className="mr-1 h-3 w-3" />
-            {user.emailVerified ? 'Email Verified' : 'Email Unverified'}
-          </Badge>
-          {user.role && <Badge variant="outline">Role: {user.role}</Badge>}
-          {user.banned && <Badge variant="destructive">Banned</Badge>}
-        </div>
-
+      </CardContent>
+      <CardFooter className="flex justify-end">
         {/* Join Date */}
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+        <div className="flex items-center gap-2 text-muted-foreground text-xs">
           <CalendarDays className="h-4 w-4" />
           <span>
             Joined{' '}
@@ -94,7 +112,7 @@ export function UserAvatarCard({ session }: UserAvatarCardProps) {
             })}
           </span>
         </div>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }

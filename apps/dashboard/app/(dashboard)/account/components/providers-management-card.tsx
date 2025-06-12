@@ -1,6 +1,6 @@
 'use client';
 
-import type { Session } from '@deepcrawl/auth/types';
+import { useAuthSession } from '@/hooks/auth.hooks';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
@@ -10,29 +10,54 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
-import { Github, Link2, Mail, Plus, Trash2 } from 'lucide-react';
+import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
+import { Link2, Loader2, Mail, Plus, Trash2 } from 'lucide-react';
 
-export interface ProvidersManagementCardProps {
-  session: Session;
-}
-
-export function ProvidersManagementCard({
-  session,
-}: ProvidersManagementCardProps) {
+export function ProvidersManagementCard() {
+  const { data: session, isLoading } = useAuthSession();
   const user = session?.user;
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Link2 className="h-5 w-5" />
+            Connected Accounts
+          </CardTitle>
+          <CardDescription>
+            Manage your authentication methods and connected accounts
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!user) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Connected Accounts</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Link2 className="h-5 w-5" />
+            Connected Accounts
+          </CardTitle>
           <CardDescription>No user data available</CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="py-4 text-center text-muted-foreground">
+            Unable to load user information
+          </div>
+        </CardContent>
       </Card>
     );
   }
 
-  // Mock connected providers - in a real app, this would come from the session/user data
+  // Connected providers - in a real app, this would come from the session/user data
   const connectedProviders = [
     {
       id: 'email',
@@ -47,7 +72,15 @@ export function ProvidersManagementCard({
       id: 'github',
       name: 'GitHub',
       type: 'oauth',
-      icon: Github,
+      icon: IconBrandGithub,
+      connected: false,
+      primary: false,
+    },
+    {
+      id: 'google',
+      name: 'Google',
+      type: 'oauth',
+      icon: IconBrandGoogle,
       connected: false,
       primary: false,
     },
@@ -55,12 +88,12 @@ export function ProvidersManagementCard({
   ];
 
   const handleConnectProvider = async (providerId: string) => {
-    // TODO: Implement provider connection
+    // TODO: Implement provider connection with Better Auth
     console.log('Connecting provider:', providerId);
   };
 
   const handleDisconnectProvider = async (providerId: string) => {
-    // TODO: Implement provider disconnection
+    // TODO: Implement provider disconnection with Better Auth
     console.log('Disconnecting provider:', providerId);
   };
 
@@ -85,7 +118,7 @@ export function ProvidersManagementCard({
           return (
             <div
               key={provider.id}
-              className="flex items-center justify-between p-3 rounded-lg border"
+              className="flex items-center justify-between rounded-lg border p-3"
             >
               <div className="flex items-center gap-3">
                 <IconComponent className="h-5 w-5 text-muted-foreground" />
@@ -108,7 +141,7 @@ export function ProvidersManagementCard({
                     )}
                   </div>
                   {provider.email && (
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-muted-foreground text-xs">
                       {provider.email}
                     </div>
                   )}
@@ -140,8 +173,8 @@ export function ProvidersManagementCard({
           );
         })}
 
-        <div className="mt-6 p-3 rounded-lg bg-muted/50">
-          <div className="text-sm text-muted-foreground">
+        <div className="mt-6 rounded-lg bg-muted/50 p-3">
+          <div className="text-muted-foreground text-sm">
             <strong>Security tip:</strong> Keep your authentication methods up
             to date and remove any accounts you no longer use. Your primary
             email cannot be disconnected.

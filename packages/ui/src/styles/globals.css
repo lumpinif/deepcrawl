@@ -11,7 +11,7 @@
 
 :root {
   --background: oklch(1 0 0); /* White */
-  --background-subtle: oklch(0.97 0 0 / 0.3);
+  --background-subtle: oklch(0.97 0 0 / 0.3); /* Neutral 100 / 30% */
   --foreground: oklch(0.145 0 0); /* Neutral 950 */
   --card: oklch(1 0 0); /* White */
   --card-foreground: oklch(0.145 0 0); /* Neutral 950 */
@@ -48,9 +48,9 @@
 
 .dark {
   --background: oklch(0 0 0); /* Black */
-  --background-subtle: oklch(0.269 0 0 / 0.3);
+  --background-subtle: oklch(0.269 0 0 / 0.3); /* Neutral 800 / 30% */
   --foreground: oklch(0.985 0 0); /* Zinc 50 */
-  --card: oklch(0 0 0); /* Black */
+  --card: oklch(0.1457 0 0); /* Custom */
   --card-foreground: oklch(0.985 0 0); /* Zinc 50 */
   --popover: oklch(0 0 0); /* Black */
   --popover-foreground: oklch(0.985 0 0); /* Zinc 50 */

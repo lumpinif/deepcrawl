@@ -2,7 +2,7 @@
 
 import { makeQueryClient } from '@/lib/query.client';
 import {
-  QueryClient,
+  type QueryClient,
   QueryClientProvider,
   isServer,
 } from '@tanstack/react-query';
@@ -37,9 +37,7 @@ export function QueryProviders({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryStreamedHydration>
-        {children}
-      </ReactQueryStreamedHydration>
+      <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
       <Toaster
         offset={{ top: -7 }}
         position="top-center"

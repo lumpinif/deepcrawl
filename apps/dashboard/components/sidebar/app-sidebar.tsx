@@ -1,25 +1,13 @@
 'use client';
 
-import {
-  AudioWaveform,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-} from 'lucide-react';
+import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react';
 
 import {
   IconBook,
-  IconChartBar,
   IconDashboard,
-  IconFolder,
   IconKey,
-  IconListDetails,
   IconPlayerPlay,
-  IconSettings,
   IconUser,
-  IconUsers,
 } from '@tabler/icons-react';
 
 import * as React from 'react';

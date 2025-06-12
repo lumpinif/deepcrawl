@@ -1,7 +1,11 @@
 'use client';
 
 import { SpinnerButton } from '@/components/spinner-button';
-import { useListSessions, useRevokeSession } from '@/hooks/auth.hooks';
+import {
+  useAuthSession,
+  useListSessions,
+  useRevokeSession,
+} from '@/hooks/auth.hooks';
 import type { Session } from '@deepcrawl/auth/types';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import {
@@ -15,18 +19,42 @@ import { Loader2, Monitor, Smartphone, Wifi } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
 
-interface SessionsManagementCardProps {
-  currentSession: Session;
-}
-
-export function SessionsManagementCard({
-  currentSession,
-}: SessionsManagementCardProps) {
+export function SessionsManagementCard() {
+  const { data: currentSession } = useAuthSession();
   const { data: listSessions, isLoading } = useListSessions();
   const { mutate: revokeSession, isPending } = useRevokeSession();
   const [revokingSessionId, setRevokingSessionId] = useState<string | null>(
     null,
   );
+
+  // Cleanup: Reset local state if mutation is no longer pending
+  useEffect(() => {
+    if (!isPending && revokingSessionId) {
+      setRevokingSessionId(null);
+    }
+  }, [isPending, revokingSessionId]);
+
+  // Early return if no current session
+  if (!currentSession?.session) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Wifi className="h-5 w-5" />
+            Sessions
+          </CardTitle>
+          <CardDescription>
+            Manage your active sessions and connected devices
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="py-4 text-center text-muted-foreground">
+            Unable to load session information
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleRevokeSession = (session: Session['session']) => {
     setRevokingSessionId(session.id);
@@ -39,13 +67,6 @@ export function SessionsManagementCard({
       },
     });
   };
-
-  // Cleanup: Reset local state if mutation is no longer pending
-  useEffect(() => {
-    if (!isPending && revokingSessionId) {
-      setRevokingSessionId(null);
-    }
-  }, [isPending, revokingSessionId]);
 
   // Sort sessions to show current session first
   const sortedSessions = listSessions
@@ -157,7 +178,6 @@ export function SessionsManagementCard({
             )}
           </div>
         </div>
-
 
         {(!listSessions || listSessions.length === 0) && !isLoading && (
           <div className="py-8 text-center text-muted-foreground">

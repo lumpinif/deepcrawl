@@ -4,4 +4,4 @@ export const userQueryKeys = {
   listSessions: ['user', 'list-sessions'] as const,
   deviceSessions: ['user', 'device-sessions'] as const,
   organization: ['user', 'organization'] as const,
-} as const; 
+} as const;

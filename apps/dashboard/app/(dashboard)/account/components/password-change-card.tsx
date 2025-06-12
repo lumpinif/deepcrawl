@@ -1,6 +1,7 @@
 'use client';
 
-import type { Session } from '@deepcrawl/auth/types';
+import { SpinnerButton } from '@/components/spinner-button';
+import { useAuthSession, useChangePassword } from '@/hooks/auth.hooks';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -11,15 +12,15 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
-import { Eye, EyeOff, Key, Save, Shield } from 'lucide-react';
+import { cn } from '@deepcrawl/ui/lib/utils';
+import { Eye, EyeOff, Key, Loader2, Shield } from 'lucide-react';
 import { useState } from 'react';
 
-export interface PasswordChangeCardProps {
-  session: Session;
-}
-
-export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
+export function PasswordChangeCard() {
+  const { data: session, isLoading } = useAuthSession();
+  const { mutate: changePassword, isPending } = useChangePassword();
   const user = session?.user;
+
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -31,29 +32,64 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
     confirm: '',
   });
 
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Key className="h-5 w-5" />
+            Password Security
+          </CardTitle>
+          <CardDescription>
+            Manage your password and security settings
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (!user) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Password Security</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Key className="h-5 w-5" />
+            Password Security
+          </CardTitle>
           <CardDescription>No user data available</CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="py-4 text-center text-muted-foreground">
+            Unable to load user information
+          </div>
+        </CardContent>
       </Card>
     );
   }
 
   const handlePasswordChange = async () => {
     if (passwords.new !== passwords.confirm) {
-      console.error('Passwords do not match');
       return;
     }
 
-    // TODO: Implement password change with Better Auth
-    console.log('Changing password for user:', user.id);
-
-    // Reset form
-    setPasswords({ current: '', new: '', confirm: '' });
-    setIsChangingPassword(false);
+    changePassword(
+      {
+        currentPassword: passwords.current,
+        newPassword: passwords.new,
+      },
+      {
+        onSuccess: () => {
+          // Reset form
+          setPasswords({ current: '', new: '', confirm: '' });
+          setIsChangingPassword(false);
+        },
+      },
+    );
   };
 
   const handleCancel = () => {
@@ -65,7 +101,7 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
   const isFormValid =
     passwords.current && passwords.new && passwords.confirm && passwordsMatch;
 
-  // Mock password security info - in a real app, this might come from the session
+  // Calculate password age
   const lastPasswordChange = user.updatedAt;
   const passwordAge = Math.floor(
     (Date.now() - new Date(lastPasswordChange).getTime()) /
@@ -85,12 +121,17 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Password Status */}
-        <div className="flex items-center justify-between p-3 rounded-lg border">
+        <div
+          className={cn(
+            'flex items-center justify-between rounded-lg p-3',
+            isChangingPassword && 'bg-background-subtle',
+          )}
+        >
           <div className="flex items-center gap-3">
             <Shield className="h-5 w-5 text-muted-foreground" />
             <div>
               <div className="font-medium text-sm">Password Status</div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-muted-foreground text-xs">
                 Last changed {passwordAge} days ago
               </div>
             </div>
@@ -99,6 +140,7 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
             variant="outline"
             size="sm"
             onClick={() => setIsChangingPassword(!isChangingPassword)}
+            disabled={isPending}
           >
             {isChangingPassword ? 'Cancel' : 'Change Password'}
           </Button>
@@ -106,7 +148,9 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
 
         {/* Password Change Form */}
         {isChangingPassword && (
-          <div className="space-y-4 p-4 border rounded-lg">
+          <div
+            className={cn('space-y-6 rounded-lg p-4', isChangingPassword && '')}
+          >
             <div className="space-y-2">
               <Label htmlFor="current-password">Current Password</Label>
               <div className="relative">
@@ -121,13 +165,16 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
                     }))
                   }
                   placeholder="Enter your current password"
+                  disabled={isPending}
+                  className="!bg-background"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  disabled={isPending}
                 >
                   {showCurrentPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -149,13 +196,16 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
                     setPasswords((prev) => ({ ...prev, new: e.target.value }))
                   }
                   placeholder="Enter your new password"
+                  disabled={isPending}
+                  className="!bg-background"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowNewPassword(!showNewPassword)}
+                  disabled={isPending}
                 >
                   {showNewPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -180,13 +230,16 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
                     }))
                   }
                   placeholder="Confirm your new password"
+                  disabled={isPending}
+                  className="!bg-background"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  disabled={isPending}
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -196,40 +249,45 @@ export function PasswordChangeCard({ session }: PasswordChangeCardProps) {
                 </Button>
               </div>
               {passwords.confirm && !passwordsMatch && (
-                <div className="text-sm text-destructive">
+                <div className="text-destructive text-sm">
                   Passwords do not match
                 </div>
               )}
             </div>
 
-            <div className="flex gap-2 pt-2">
-              <Button
-                onClick={handlePasswordChange}
-                disabled={!isFormValid}
+            <div className="flex gap-2">
+              <SpinnerButton
                 size="sm"
+                className="w-24"
+                isLoading={isPending}
+                onClick={handlePasswordChange}
+                disabled={!isFormValid || isPending}
               >
-                <Save className="mr-1 h-3 w-3" />
-                Update Password
-              </Button>
-              <Button variant="outline" onClick={handleCancel} size="sm">
+                Change Password
+              </SpinnerButton>
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isPending}
+              >
                 Cancel
               </Button>
             </div>
           </div>
         )}
 
-        {/* Security Recommendations */}
-        <div className="p-3 rounded-lg bg-muted/50">
-          <div className="text-sm text-muted-foreground space-y-1">
-            <div className="font-medium">Security recommendations:</div>
-            <ul className="list-disc list-inside space-y-0.5 text-xs">
-              <li>Use a strong, unique password</li>
-              <li>Include numbers, symbols, and mixed case letters</li>
-              <li>Consider using a password manager</li>
-              <li>Change your password if you suspect it's been compromised</li>
+        {/* Password Requirements */}
+        {isChangingPassword && (
+          <div className="space-y-2 text-muted-foreground text-sm">
+            <div className="font-medium">Password Requirements:</div>
+            <ul className="ml-2 list-inside list-disc space-y-1">
+              <li>At least 8 characters long</li>
+              <li>Include uppercase and lowercase letters</li>
+              <li>Include at least one number</li>
+              <li>Include at least one special character</li>
             </ul>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

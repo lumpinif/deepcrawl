@@ -1,10 +1,10 @@
-import { queryOptions } from '@tanstack/react-query';
-import { 
-  fetchAuthSession, 
-  fetchListSessions, 
-  fetchDeviceSessions, 
-  fetchOrganization 
+import {
+  fetchAuthSession,
+  fetchDeviceSessions,
+  fetchListSessions,
+  fetchOrganization,
 } from '@/app/actions/auth';
+import { queryOptions } from '@tanstack/react-query';
 import { userQueryKeys } from './query-keys';
 
 /**
@@ -53,4 +53,4 @@ export const organizationQueryOptions = () =>
     queryFn: fetchOrganization,
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 20 * 60 * 1000, // 20 minutes
-  }); 
+  });

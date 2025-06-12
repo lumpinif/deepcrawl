@@ -2,20 +2,147 @@
 
 import { revalidateSessionCaches } from '@/app/actions/auth';
 import { authClient } from '@/lib/auth.client';
-import { sessionQueryOptions, listSessionsQueryOptions, deviceSessionsQueryOptions, organizationQueryOptions } from '@/lib/query-options';
+import { userQueryKeys } from '@/lib/query-keys';
+import {
+  deviceSessionsQueryOptions,
+  listSessionsQueryOptions,
+  organizationQueryOptions,
+  sessionQueryOptions,
+} from '@/lib/query-options';
 import type { Session } from '@deepcrawl/auth/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { userQueryKeys } from '@/lib/query-keys';
+import { z } from 'zod';
 
 // Type definitions for session data
 type SessionData = Session['session'];
 type SessionsList = SessionData[];
 
+// Validation schemas
+const displayNameSchema = z
+  .string()
+  .min(1, 'Display name is required')
+  .max(32, 'Display name must be 32 characters or less')
+  .trim();
+
 // Use Better Auth's built-in useSession hook instead of custom implementation
-export const useAuthSession = () =>
-  useQuery(sessionQueryOptions());
+export const useAuthSession = () => useQuery(sessionQueryOptions());
+
+/**
+ * Hook for updating user display name with optimistic updates
+ */
+export const useUpdateUserName = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (name: string) => {
+      // Validate input
+      const validatedName = displayNameSchema.parse(name);
+
+      const result = await authClient.updateUser({
+        name: validatedName,
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
+      return result;
+    },
+    onMutate: async (name: string) => {
+      // Validate before optimistic update
+      const validatedName = displayNameSchema.parse(name);
+
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: userQueryKeys.session });
+
+      // Snapshot previous value
+      const previousSession = queryClient.getQueryData<Session>(
+        userQueryKeys.session,
+      );
+
+      // Optimistically update the user name
+      queryClient.setQueryData<Session>(userQueryKeys.session, (old) => {
+        if (!old?.user) return old;
+        return {
+          ...old,
+          user: {
+            ...old.user,
+            name: validatedName,
+            updatedAt: new Date(),
+          },
+        };
+      });
+
+      return { previousSession };
+    },
+    onError: (err, _, context) => {
+      // Rollback on error
+      if (context?.previousSession) {
+        queryClient.setQueryData(
+          userQueryKeys.session,
+          context.previousSession,
+        );
+      }
+
+      // Handle validation errors specifically
+      if (err instanceof z.ZodError) {
+        toast.error(err.errors[0]?.message || 'Invalid display name');
+      } else {
+        toast.error(err.message || 'Failed to update display name');
+      }
+    },
+    onSuccess: async () => {
+      toast.success('Display name updated successfully');
+
+      // Invalidate server-side caches
+      await revalidateSessionCaches();
+    },
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
+    },
+  });
+};
+
+/**
+ * Hook for changing user password
+ */
+export const useChangePassword = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      currentPassword,
+      newPassword,
+    }: { currentPassword: string; newPassword: string }) => {
+      const result = await authClient.changePassword({
+        currentPassword,
+        newPassword,
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
+      return result;
+    },
+    onError: (err) => {
+      toast.error(err.message || 'Failed to change password');
+    },
+    onSuccess: async () => {
+      toast.success('Password changed successfully');
+
+      // Invalidate server-side caches
+      await revalidateSessionCaches();
+    },
+    onSettled: () => {
+      // Refetch session to ensure consistency
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
+    },
+  });
+};
 
 /**
  * Hook for revoking a specific session with optimistic updates
@@ -80,7 +207,7 @@ export const useRevokeSession = () => {
       }
 
       toast.success('Session terminated successfully');
-      
+
       // Invalidate server-side caches
       await revalidateSessionCaches();
     },
@@ -143,7 +270,7 @@ export const useRevokeAllOtherSessions = () => {
     },
     onSuccess: async () => {
       toast.success('All other sessions terminated successfully');
-      
+
       // Invalidate server-side caches
       await revalidateSessionCaches();
     },

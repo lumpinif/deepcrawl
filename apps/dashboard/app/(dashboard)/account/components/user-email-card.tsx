@@ -1,8 +1,7 @@
 'use client';
 
-import type { Session } from '@deepcrawl/auth/types';
+import { useAuthSession } from '@/hooks/auth.hooks';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
-import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,28 +9,54 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
-import { AlertCircle, CheckCircle, Mail, Send } from 'lucide-react';
+import { Loader2, Mail, Shield } from 'lucide-react';
 
-export interface UserEmailCardProps {
-  session: Session;
-}
-
-export function UserEmailCard({ session }: UserEmailCardProps) {
+export function UserEmailCard() {
+  const { data: session, isLoading } = useAuthSession();
   const user = session?.user;
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="h-5 w-5" />
+            Email Address
+          </CardTitle>
+          <CardDescription>
+            Your primary email address for account access and notifications
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!user) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Email Address</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="h-5 w-5" />
+            Email Address
+          </CardTitle>
           <CardDescription>No user data available</CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="py-4 text-center text-muted-foreground">
+            Unable to load user information
+          </div>
+        </CardContent>
       </Card>
     );
   }
 
   const handleResendVerification = async () => {
-    // TODO: Implement email verification resend
+    // TODO: Implement email verification resend with Better Auth
     console.log('Resending verification email to:', user.email);
   };
 
@@ -50,54 +75,21 @@ export function UserEmailCard({ session }: UserEmailCardProps) {
         {/* Email Display */}
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <div className="font-medium">{user.email}</div>
             <div className="flex items-center gap-2">
-              {user.emailVerified ? (
-                <Badge variant="default" className="gap-1">
-                  <CheckCircle className="h-3 w-3" />
-                  Verified
-                </Badge>
-              ) : (
-                <Badge variant="secondary" className="gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  Unverified
-                </Badge>
-              )}
-              <span className="text-sm text-muted-foreground">
+              <span className="text-muted-foreground text-sm">
                 Primary email
               </span>
             </div>
+            <div className="font-medium">{user.email}</div>
           </div>
-
-          {!user.emailVerified && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleResendVerification}
-            >
-              <Send className="mr-1 h-3 w-3" />
-              Resend Verification
-            </Button>
-          )}
+          <Badge
+            variant={user.emailVerified ? 'default' : 'outline'}
+            className="select-none text-muted-foreground text-xs"
+          >
+            <Shield className="mr-1 h-3 w-3" />
+            {user.emailVerified ? 'Email Verified' : 'Email Unverified'}
+          </Badge>
         </div>
-
-        {/* Email Status Info */}
-        {!user.emailVerified && (
-          <div className="rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-900 dark:bg-orange-950">
-            <div className="flex items-start gap-2">
-              <AlertCircle className="mt-0.5 h-4 w-4 text-orange-600 dark:text-orange-400" />
-              <div className="space-y-1">
-                <div className="font-medium text-sm text-orange-800 dark:text-orange-200">
-                  Email verification required
-                </div>
-                <div className="text-sm text-orange-600 dark:text-orange-400">
-                  Please check your inbox and click the verification link to
-                  secure your account.
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
