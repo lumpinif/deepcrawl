@@ -1,6 +1,5 @@
 import { getDrizzleDB, schema } from '@deepcrawl/db';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { nextCookies } from 'better-auth/next-js';
 import {
   admin,
   apiKey,
@@ -95,10 +94,10 @@ export function createAuthConfig(env: Env) {
         // 		invitedByEmail: data.inviter.user.email,
         // 		teamName: data.organization.name,
         // 		inviteLink:
-        // 			process.env.NODE_ENV === "development"
+        // 			isDevelopment
         // 				? `http://localhost:3000/accept-invitation/${data.id}`
         // 				: `${
-        // 						process.env.BETTER_AUTH_URL ||
+        // 						env.BETTER_AUTH_URL ||
         // 						"https://demo.better-auth.com"
         // 					}/accept-invitation/${data.id}`,
         // 	}),
@@ -127,7 +126,6 @@ export function createAuthConfig(env: Env) {
       //     clientSecret: env.GOOGLE_CLIENT_SECRET,
       //   },
       // },
-      nextCookies(), // make sure this is the last plugin in the array
     ],
     account: {
       accountLinking: {
