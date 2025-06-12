@@ -30,6 +30,7 @@
     "files.exclude": {
       "apps/**": true,
       "packages/**": true
-    }
+    },
+    "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css"
   }
 }
