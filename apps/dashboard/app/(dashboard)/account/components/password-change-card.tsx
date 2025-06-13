@@ -119,7 +119,7 @@ export function PasswordChangeCard() {
           Manage your password and security settings
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         {/* Password Status */}
         <div
           className={cn(
@@ -255,10 +255,10 @@ export function PasswordChangeCard() {
               )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex justify-end gap-2">
               <SpinnerButton
                 size="sm"
-                className="w-24"
+                className="min-w-32"
                 isLoading={isPending}
                 onClick={handlePasswordChange}
                 disabled={!isFormValid || isPending}
@@ -266,6 +266,7 @@ export function PasswordChangeCard() {
                 Change Password
               </SpinnerButton>
               <Button
+                size="sm"
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isPending}
@@ -278,13 +279,13 @@ export function PasswordChangeCard() {
 
         {/* Password Requirements */}
         {isChangingPassword && (
-          <div className="space-y-2 text-muted-foreground text-sm">
+          <div className="flex justify-end space-y-1 text-muted-foreground text-xs">
             <div className="font-medium">Password Requirements:</div>
             <ul className="ml-2 list-inside list-disc space-y-1">
               <li>At least 8 characters long</li>
-              <li>Include uppercase and lowercase letters</li>
+              {/* <li>Include uppercase and lowercase letters</li>
               <li>Include at least one number</li>
-              <li>Include at least one special character</li>
+              <li>Include at least one special character</li> */}
             </ul>
           </div>
         )}
