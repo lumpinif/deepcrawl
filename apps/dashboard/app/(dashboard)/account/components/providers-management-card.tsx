@@ -1,7 +1,15 @@
 'use client';
 
-import { useAuthSession } from '@/hooks/auth.hooks';
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
+import { PasskeyCleanupGuide } from '@/components/passkey-cleanup-guide';
+import { SpinnerButton } from '@/components/spinner-button';
+import {
+  useAddPasskey,
+  useAuthSession,
+  useRemovePasskey,
+  useUserPasskeys,
+} from '@/hooks/auth.hooks';
+import { authClient } from '@/lib/auth.client';
+import { getDeviceTypeDescription } from '@/lib/passkey-utils';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -10,11 +18,51 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@deepcrawl/ui/components/ui/dialog';
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
-import { Link2, Loader2, Mail, Plus, Trash2 } from 'lucide-react';
+import {
+  KeyIcon,
+  Loader2,
+  Mail,
+  Monitor,
+  Smartphone,
+  Trash2,
+  UserCheck,
+} from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+
+// Type for provider information
+interface ProviderInfo {
+  id: string;
+  name: string;
+  type: 'oauth' | 'passkeys' | 'email';
+  icon: React.ComponentType<{ className?: string }>;
+  connected: boolean;
+  lastUsed?: string;
+  accountInfo?: string;
+}
 
 export function ProvidersManagementCard() {
   const { data: session, isLoading } = useAuthSession();
+  const { data: passkeys = [], isLoading: isLoadingPasskeys } =
+    useUserPasskeys();
+  const { mutate: addPasskey, isPending: isAddingPasskey } = useAddPasskey();
+  const { mutate: removePasskey } = useRemovePasskey();
+  const [linkingProvider, setLinkingProvider] = useState<string | null>(null);
+  const [isPasskeysDialogOpen, setIsPasskeysDialogOpen] = useState(false);
+  const [passkeyToRemove, setPasskeyToRemove] = useState<{
+    id: string;
+    name: string | null;
+  } | null>(null);
+
   const user = session?.user;
 
   if (isLoading) {
@@ -22,14 +70,15 @@ export function ProvidersManagementCard() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Link2 className="h-5 w-5" />
-            Connected Accounts
+            <UserCheck className="h-5 w-5" />
+            Sign-in Methods
           </CardTitle>
           <CardDescription>
-            Manage your authentication methods and connected accounts
+            Customize how you access your account. Link your Git profiles and
+            set up passkeys for seamless, secure authentication.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
@@ -43,8 +92,8 @@ export function ProvidersManagementCard() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Link2 className="h-5 w-5" />
-            Connected Accounts
+            <UserCheck className="h-5 w-5" />
+            Sign-in Methods
           </CardTitle>
           <CardDescription>No user data available</CardDescription>
         </CardHeader>
@@ -57,92 +106,129 @@ export function ProvidersManagementCard() {
     );
   }
 
-  // Connected providers - in a real app, this would come from the session/user data
-  const connectedProviders = [
+  // Mock provider data based on current session
+  // In a real implementation, this would come from the session/user accounts
+  const providers: ProviderInfo[] = [
     {
       id: 'email',
       name: 'Email',
       type: 'email',
       icon: Mail,
-      connected: true,
-      primary: true,
-      email: user.email,
+      connected: !!user.email,
+      accountInfo: user.email || '',
     },
     {
-      id: 'github',
-      name: 'GitHub',
-      type: 'oauth',
-      icon: IconBrandGithub,
-      connected: false,
-      primary: false,
+      id: 'passkeys',
+      name: 'Passkeys',
+      type: 'passkeys',
+      icon: KeyIcon,
+      connected: passkeys.length > 0,
+      accountInfo: `${passkeys.length} passkeys registered`,
     },
     {
       id: 'google',
       name: 'Google',
       type: 'oauth',
       icon: IconBrandGoogle,
-      connected: false,
-      primary: false,
+      connected: false, // Would check from session.user.accounts
+      lastUsed: 'Jun 6',
+      accountInfo: user.email,
     },
-    // Add more providers as needed based on your Better Auth configuration
+    {
+      id: 'github',
+      name: 'GitHub',
+      type: 'oauth',
+      icon: IconBrandGithub,
+      connected: false, // Would check from session.user.accounts
+      lastUsed: 'Jun 6',
+      accountInfo: 'lumpinif',
+    },
   ];
 
   const handleConnectProvider = async (providerId: string) => {
-    // TODO: Implement provider connection with Better Auth
-    console.log('Connecting provider:', providerId);
+    if (providerId === 'google' || providerId === 'github') {
+      try {
+        setLinkingProvider(providerId);
+        await authClient.linkSocial({
+          provider: providerId as 'google' | 'github',
+          callbackURL: '/account',
+        });
+        toast.success('Social provider linked successfully');
+      } catch (error) {
+        console.error('Failed to link provider:', error);
+        toast.error('Failed to link social provider. Please try again.');
+      } finally {
+        setLinkingProvider(null);
+      }
+    }
+  };
+
+  const handleAddPasskey = () => {
+    addPasskey({});
+  };
+
+  const handleRemovePasskey = (passkey: {
+    id: string;
+    name: string | null;
+  }) => {
+    setPasskeyToRemove(passkey);
+  };
+
+  const confirmRemovePasskey = () => {
+    if (passkeyToRemove) {
+      removePasskey(passkeyToRemove.id);
+      setPasskeyToRemove(null);
+    }
+  };
+
+  const cancelRemovePasskey = () => {
+    setPasskeyToRemove(null);
   };
 
   const handleDisconnectProvider = async (providerId: string) => {
-    // TODO: Implement provider disconnection with Better Auth
-    console.log('Disconnecting provider:', providerId);
+    // TODO: Implement provider disconnection
+    toast.error('Provider disconnection not yet implemented');
   };
-
-  const connectedCount = connectedProviders.filter((p) => p.connected).length;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Link2 className="h-5 w-5" />
-          Connected Accounts
+          <UserCheck className="h-5 w-5" />
+          Sign-in Methods
         </CardTitle>
         <CardDescription>
-          Manage your authentication methods and connected accounts (
-          {connectedCount} connected)
+          Customize how you access your account. Link your Git profiles and set
+          up passkeys for seamless, secure authentication.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {connectedProviders.map((provider) => {
+        {providers.map((provider) => {
           const IconComponent = provider.icon;
+          const isProviderLoading =
+            ((provider.id === 'google' || provider.id === 'github') &&
+              linkingProvider === provider.id) ||
+            (provider.id === 'passkeys' && isAddingPasskey);
 
           return (
             <div
               key={provider.id}
-              className="flex items-center justify-between rounded-lg border p-3"
+              className="flex items-center justify-between rounded-lg border p-4"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex flex-1 items-center gap-3">
                 <IconComponent className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <div className="mb-1 flex items-center gap-2">
                     <span className="font-medium text-sm">{provider.name}</span>
-                    {provider.primary && (
-                      <Badge variant="default" className="text-xs">
-                        Primary
-                      </Badge>
-                    )}
-                    {provider.connected ? (
-                      <Badge variant="outline" className="text-xs">
-                        Connected
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">
-                        Not Connected
-                      </Badge>
+                    {provider.connected && provider.lastUsed && (
+                      <span className="text-muted-foreground text-xs">
+                        Last used {provider.lastUsed}
+                      </span>
                     )}
                   </div>
-                  {provider.email && (
+                  {provider.accountInfo && (
                     <div className="text-muted-foreground text-xs">
-                      {provider.email}
+                      {provider.accountInfo}
                     </div>
                   )}
                 </div>
@@ -150,37 +236,190 @@ export function ProvidersManagementCard() {
 
               <div className="flex items-center gap-2">
                 {provider.connected ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDisconnectProvider(provider.id)}
-                    disabled={provider.primary}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <>
+                    {/* {provider.id === 'email' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDisconnectProvider(provider.id)}
+                        disabled={isProviderLoading}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    )} */}
+                    {provider.id === 'passkeys' && (
+                      <div className="flex gap-2">
+                        <Dialog
+                          open={isPasskeysDialogOpen}
+                          onOpenChange={setIsPasskeysDialogOpen}
+                        >
+                          <DialogTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              Show
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <DialogTitle>Your Passkeys</DialogTitle>
+                                  <DialogDescription>
+                                    Manage your registered passkeys for secure
+                                    authentication.
+                                  </DialogDescription>
+                                </div>
+                                <PasskeyCleanupGuide />
+                              </div>
+                            </DialogHeader>
+                            <div className="space-y-3">
+                              {isLoadingPasskeys ? (
+                                <div className="flex items-center justify-center py-6">
+                                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                  <span className="ml-2 text-muted-foreground text-sm">
+                                    Loading passkeys...
+                                  </span>
+                                </div>
+                              ) : passkeys.length > 0 ? (
+                                passkeys.map((passkey) => {
+                                  const IconComponent =
+                                    passkey.deviceType === 'cross-platform'
+                                      ? Monitor
+                                      : Smartphone;
+                                  return (
+                                    <div
+                                      key={passkey.id}
+                                      className="flex items-center gap-3 rounded-lg border p-3"
+                                    >
+                                      <IconComponent className="h-4 w-4 text-muted-foreground" />
+                                      <div className="flex-1">
+                                        <div className="font-medium text-sm">
+                                          {passkey.name || 'Unnamed Passkey'}
+                                        </div>
+                                        <div className="text-muted-foreground text-xs">
+                                          <div>
+                                            {passkey.createdAt
+                                              ? `Added ${passkey.createdAt.toLocaleDateString()}`
+                                              : 'Creation date unknown'}
+                                            {passkey.backedUp && ' • Backed up'}
+                                          </div>
+                                          <div className="mt-1">
+                                            {getDeviceTypeDescription(
+                                              passkey.deviceType,
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleRemovePasskey(passkey)
+                                        }
+                                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                        <span className="sr-only">
+                                          Remove passkey
+                                        </span>
+                                      </Button>
+                                    </div>
+                                  );
+                                })
+                              ) : (
+                                <div className="py-6 text-center text-muted-foreground text-sm">
+                                  No passkeys registered yet
+                                </div>
+                              )}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                        <SpinnerButton
+                          size="sm"
+                          variant="outline"
+                          className="w-20"
+                          isLoading={isAddingPasskey}
+                          onClick={handleAddPasskey}
+                          disabled={isAddingPasskey}
+                        >
+                          Add
+                        </SpinnerButton>
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleConnectProvider(provider.id)}
-                  >
-                    <Plus className="mr-1 h-3 w-3" />
-                    Connect
-                  </Button>
+                  <>
+                    {provider.id === 'passkeys' ? (
+                      <SpinnerButton
+                        size="sm"
+                        variant="outline"
+                        className="w-20"
+                        isLoading={isAddingPasskey}
+                        onClick={handleAddPasskey}
+                        disabled={isAddingPasskey}
+                      >
+                        Add
+                      </SpinnerButton>
+                    ) : provider.id === 'google' || provider.id === 'github' ? (
+                      <SpinnerButton
+                        size="sm"
+                        variant="outline"
+                        className="w-24"
+                        isLoading={linkingProvider === provider.id}
+                        onClick={() => handleConnectProvider(provider.id)}
+                        disabled={linkingProvider === provider.id}
+                      >
+                        Connect
+                      </SpinnerButton>
+                    ) : null}
+                  </>
                 )}
               </div>
             </div>
           );
         })}
-
-        <div className="mt-6 rounded-lg bg-muted/50 p-3">
-          <div className="text-muted-foreground text-sm">
-            <strong>Security tip:</strong> Keep your authentication methods up
-            to date and remove any accounts you no longer use. Your primary
-            email cannot be disconnected.
-          </div>
-        </div>
       </CardContent>
+
+      {/* Passkey Removal Confirmation Dialog */}
+      <Dialog
+        open={!!passkeyToRemove}
+        onOpenChange={() => setPasskeyToRemove(null)}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Remove passkey?</DialogTitle>
+            <DialogDescription>
+              {passkeys.length === 1 ? (
+                <>
+                  You are about to remove your last passkey. You will only be
+                  able to sign in with a password or email verification.
+                  <br />
+                  <br />
+                  We recommend using passkeys for account sign-in as it is safer
+                  and you do not need to remember password and 8-digit code.
+                </>
+              ) : (
+                <>
+                  Are you sure you want to remove "
+                  {passkeyToRemove?.name || 'Unnamed Passkey'}"?
+                  <br />
+                  <br />
+                  This passkey will no longer work with any device. You should
+                  also remove it from your browser's password manager to prevent
+                  confusion.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <Button variant="outline" onClick={cancelRemovePasskey}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmRemovePasskey}>
+              Remove passkey
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

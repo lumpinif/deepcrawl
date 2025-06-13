@@ -1,8 +1,16 @@
 'use client';
 
-import { revalidateSessionCaches } from '@/app/actions/auth';
-import { getAuthErrorMessage } from '@/lib/auth-errors';
+import {
+  fetchUserPasskeys,
+  removeUserPasskey,
+  updateMostRecentPasskeyName,
+} from '@/app/actions/auth';
+import {
+  getAuthErrorMessage,
+  isWebAuthnCancellationError,
+} from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
+import { generatePasskeyName } from '@/lib/passkey-utils';
 import { userQueryKeys } from '@/lib/query-keys';
 import {
   deviceSessionsQueryOptions,
@@ -19,6 +27,16 @@ import { z } from 'zod';
 // Type definitions for session data
 type SessionData = Session['session'];
 type SessionsList = SessionData[];
+
+// Type definition for passkey data (from fetchUserPasskeys)
+type PasskeyData = {
+  id: string;
+  name: string | null;
+  deviceType: string;
+  createdAt: Date | null;
+  backedUp: boolean;
+  transports: string | null;
+};
 
 // Validation schemas
 const displayNameSchema = z
@@ -96,9 +114,6 @@ export const useUpdateUserName = () => {
     },
     onSuccess: async () => {
       toast.success('Display name updated successfully');
-
-      // Invalidate server-side caches
-      await revalidateSessionCaches();
     },
     onSettled: () => {
       // Always refetch to ensure consistency
@@ -221,9 +236,6 @@ export const useRevokeSession = () => {
       }
 
       toast.success('Session terminated successfully');
-
-      // Invalidate server-side caches
-      await revalidateSessionCaches();
     },
     onSettled: () => {
       // Always refetch to ensure consistency
@@ -284,9 +296,6 @@ export const useRevokeAllOtherSessions = () => {
     },
     onSuccess: async () => {
       toast.success('All other sessions terminated successfully');
-
-      // Invalidate server-side caches
-      await revalidateSessionCaches();
     },
     onSettled: () => {
       // Always refetch to ensure consistency
@@ -315,4 +324,190 @@ export const useDeviceSessions = () => {
  */
 export const useOrganization = () => {
   return useQuery(organizationQueryOptions());
+};
+
+/**
+ * Hook for linking a social provider to current account
+ */
+export const useLinkSocialProvider = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      provider,
+      callbackURL,
+    }: {
+      provider: 'google' | 'github';
+      callbackURL?: string;
+    }) => {
+      const result = await authClient.linkSocial({
+        provider,
+        callbackURL: callbackURL || '/account',
+      });
+
+      if (result?.error) {
+        throw new Error(result.error.message);
+      }
+
+      return result;
+    },
+    onSuccess: () => {
+      toast.success('Social provider linked successfully');
+
+      // Invalidate session to refresh account data
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
+    },
+    onError: (error) => {
+      console.error('Social provider linking failed:', error);
+      toast.error('Failed to link social provider. Please try again.');
+    },
+  });
+};
+
+/**
+ * Hook for unlinking a social provider from current account
+ */
+export const useUnlinkSocialProvider = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (providerId: string) => {
+      // Note: Better Auth doesn't have a direct unlink method in the client
+      // This would need to be implemented via a custom API endpoint
+      // For now, we'll throw an error
+      throw new Error('Provider unlinking not yet implemented');
+    },
+    onSuccess: () => {
+      toast.success('Social provider unlinked successfully');
+
+      // Invalidate session to refresh account data
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
+    },
+    onError: (error) => {
+      console.error('Social provider unlinking failed:', error);
+      toast.error('Failed to unlink social provider. Please try again.');
+    },
+  });
+};
+
+/**
+ * Hook for adding a new passkey to current account
+ */
+export const useAddPasskey = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      authenticatorAttachment,
+    }: {
+      authenticatorAttachment?: 'platform' | 'cross-platform';
+    } = {}) => {
+      // First, create the passkey with Better Auth
+      const result = await authClient.passkey.addPasskey({
+        authenticatorAttachment,
+      });
+
+      if (result?.error) {
+        throw new Error(getAuthErrorMessage(result.error));
+      }
+
+      // Generate a meaningful name based on the device and browser
+      const passkeyName = generatePasskeyName(authenticatorAttachment);
+
+      // Update the most recent passkey name (the one we just created)
+      try {
+        await updateMostRecentPasskeyName(passkeyName);
+      } catch (error) {
+        // Log error but don't fail the entire operation
+        console.warn('Failed to update passkey name:', error);
+      }
+
+      return result;
+    },
+    onSuccess: async () => {
+      toast.success('Passkey added successfully');
+
+      // Invalidate client-side caches - server actions always return fresh data
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
+      await queryClient.invalidateQueries({ queryKey: ['user-passkeys'] });
+
+      // Force refetch to ensure immediate update
+      await queryClient.refetchQueries({ queryKey: ['user-passkeys'] });
+    },
+    onError: (error) => {
+      // Only show error toast for actual errors, not cancellations
+      if (!isWebAuthnCancellationError(error)) {
+        toast.error('Failed to add passkey. Please try again.');
+      }
+      // Silently handle cancellations - user intentionally cancelled
+    },
+  });
+};
+
+/**
+ * Hook for removing a passkey from current account
+ */
+export const useRemovePasskey = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (passkeyId: string) => {
+      const result = await removeUserPasskey(passkeyId);
+      return result;
+    },
+    onMutate: async (passkeyId: string) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['user-passkeys'] });
+
+      // Snapshot previous value for rollback
+      const previousPasskeys = queryClient.getQueryData(['user-passkeys']);
+
+      // Optimistically remove the passkey from the cache
+      queryClient.setQueryData(
+        ['user-passkeys'],
+        (old: PasskeyData[] | undefined) => {
+          if (!old) return old;
+          return old.filter((passkey) => passkey.id !== passkeyId);
+        },
+      );
+
+      return { previousPasskeys, passkeyId };
+    },
+    onError: (error, passkeyId, context) => {
+      // Rollback on error
+      if (context?.previousPasskeys) {
+        queryClient.setQueryData(['user-passkeys'], context.previousPasskeys);
+      }
+
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to remove passkey';
+      toast.error(errorMessage);
+    },
+    onSuccess: async () => {
+      toast.success('Passkey removed successfully', {
+        description:
+          "To prevent confusion, also remove it from your browser's password manager.",
+        duration: 8000, // Show longer for important info
+      });
+
+      // Invalidate related caches to ensure consistency
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
+    },
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ['user-passkeys'] });
+    },
+  });
+};
+
+/**
+ * Hook for fetching user's passkeys with proper error handling and caching
+ */
+export const useUserPasskeys = () => {
+  return useQuery({
+    queryKey: ['user-passkeys'],
+    queryFn: () => fetchUserPasskeys(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+  });
 };

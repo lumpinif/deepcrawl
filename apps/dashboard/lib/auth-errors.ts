@@ -126,3 +126,25 @@ export const getAuthErrorMessage = (error: {
 
   return errorMessage;
 };
+
+/**
+ * Check if an error is a WebAuthn user cancellation/timeout error
+ * These errors should be handled silently as they represent intentional user actions
+ */
+export function isWebAuthnCancellationError(error: unknown): boolean {
+  if (!error) return false;
+
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const lowerMessage = errorMessage.toLowerCase();
+
+  return (
+    lowerMessage.includes('timed out') ||
+    lowerMessage.includes('not allowed') ||
+    lowerMessage.includes('cancelled') ||
+    lowerMessage.includes('aborted') ||
+    lowerMessage.includes('user cancelled') ||
+    errorMessage.includes(
+      'https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client',
+    )
+  );
+}
