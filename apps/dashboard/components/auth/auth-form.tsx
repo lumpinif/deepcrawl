@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation';
 import { AuthCallback } from './auth-callback';
 import { ForgotPasswordForm } from './forms/forgot-password-form';
 import { MagicLinkForm } from './forms/magic-link-form';
-import { ResetPasswordForm } from './forms/reset-password-form';
 import { SignInForm } from './forms/sign-in-form';
 import { SignUpForm } from './forms/sign-up-form';
 import { Logout } from './logout';
