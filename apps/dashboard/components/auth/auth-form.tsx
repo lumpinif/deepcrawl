@@ -107,8 +107,10 @@ export function AuthForm({
           setIsSubmitting={setIsSubmitting}
         />
       );
-    case 'resetPassword':
-      return <ResetPasswordForm className={className} />;
+
+    // we are handling reset password in account settings page
+    // case 'resetPassword':
+    //   return <ResetPasswordForm className={className} />;
     default:
       return null;
   }
