@@ -81,6 +81,7 @@ export function PasswordChangeCard() {
       {
         currentPassword: passwords.current,
         newPassword: passwords.new,
+        revokeOtherSessions: true,
       },
       {
         onSuccess: () => {

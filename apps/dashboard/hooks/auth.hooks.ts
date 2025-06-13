@@ -116,10 +116,16 @@ export const useChangePassword = () => {
     mutationFn: async ({
       currentPassword,
       newPassword,
-    }: { currentPassword: string; newPassword: string }) => {
+      revokeOtherSessions,
+    }: {
+      currentPassword: string;
+      newPassword: string;
+      revokeOtherSessions: boolean;
+    }) => {
       const result = await authClient.changePassword({
         currentPassword,
         newPassword,
+        revokeOtherSessions,
       });
 
       if (result.error) {
