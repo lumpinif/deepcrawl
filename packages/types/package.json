@@ -45,6 +45,6 @@
   "keywords": ["deepcrawl", "api", "types", "typescript", "zod"],
   "dependencies": {
     "@hono/zod-openapi": "^0.19.6",
-    "zod": "^3.24.2"
+    "zod": "^3.25.23"
   }
 }

@@ -5,8 +5,9 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:dashboard": "turbo dev --filter=dashboard --filter=deepcrawl_auth",
     "sherif": "pnpm dlx sherif@latest",
-    "sherif:fix": "pnpm dlx sherif@latest --fix",
+    "sherif:fix": "pnpm dlx sherif@latest --fix -i @types/node",
     "typecheck": "turbo typecheck",
     "check": "turbo check && turbo check && pnpm sherif:fix"
   },
@@ -18,7 +19,7 @@
     "typescript": "5.7.3",
     "wrangler": "^4.19.0"
   },
-  "packageManager": "pnpm@10.6.2",
+  "packageManager": "pnpm@10.11.1",
   "engines": {
     "node": ">=20"
   }

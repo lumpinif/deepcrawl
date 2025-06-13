@@ -1,31 +1,36 @@
 {
   "folders": [
     {
-      "name": "root",
+      "name": "🏠 root",
       "path": "."
     },
     {
-      "name": "workers",
-      "path": "./apps/workers"
-    },
-    {
-      "name": "js-sdk",
-      "path": "./apps/js-sdk"
-    },
-    {
-      "name": "www",
+      "name": "🌐 www",
       "path": "./apps/www"
     },
     {
-      "name": "dashboard",
+      "name": "💼 workers",
+      "path": "./apps/workers"
+    },
+    {
+      "name": "🎛️ dashboard",
       "path": "./apps/dashboard"
     },
     {
-      "name": "packages",
+      "name": "📦 packages",
       "path": "./packages"
+    },
+    {
+      "name": "🔌 js-sdk",
+      "path": "./apps/js-sdk"
     }
   ],
   "settings": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "biome.enabled": false,
+    "files.exclude": {
+      "apps/**": true,
+      "packages/**": true
+    },
+    "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css"
   }
 }

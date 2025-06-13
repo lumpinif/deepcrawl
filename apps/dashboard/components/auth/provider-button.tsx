@@ -1,0 +1,78 @@
+import type { SocialProvider } from 'better-auth/social-providers';
+import { useCallback } from 'react';
+
+import { getAuthErrorMessage } from '@/lib/auth-errors';
+import { authClient } from '@/lib/auth.client';
+import { getSearchParam } from '@/utils';
+import { Button } from '@deepcrawl/ui/components/ui/button';
+import { cn } from '@deepcrawl/ui/lib/utils';
+import { toast } from 'sonner';
+import type { Provider } from './social-providers';
+
+interface ProviderButtonProps {
+  className?: string;
+  callbackURL?: string;
+  isSubmitting: boolean;
+  other?: boolean;
+  provider: Provider;
+  redirectTo?: string;
+  setIsSubmitting: (isSubmitting: boolean) => void;
+}
+
+export function ProviderButton({
+  className,
+  callbackURL: callbackURLProp,
+  isSubmitting,
+  other,
+  provider,
+  redirectTo: redirectToProp,
+  setIsSubmitting,
+}: ProviderButtonProps) {
+  const getRedirectTo = useCallback(
+    () => redirectToProp || getSearchParam('redirectTo'),
+    [redirectToProp],
+  );
+
+  const getCallbackURL = useCallback(
+    () => `${callbackURLProp || `/${getRedirectTo()}`}`,
+    [callbackURLProp, getRedirectTo],
+  );
+
+  const doSignInSocial = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const socialParams = {
+        provider: provider.provider as SocialProvider,
+        callbackURL: getCallbackURL(),
+      };
+
+      const { error } = await authClient.signIn.social(socialParams);
+
+      if (error) {
+        toast.error(getAuthErrorMessage(error));
+        return;
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'An error occurred');
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Button
+      variant="authButton"
+      disabled={isSubmitting}
+      onClick={doSignInSocial}
+      className={cn('w-full', className)}
+    >
+      {provider.icon && (
+        <>
+          <provider.icon variant="color" className="dark:hidden" />
+          <provider.icon className="hidden dark:block" />
+        </>
+      )}
+      Continue with {provider.name}
+    </Button>
+  );
+}

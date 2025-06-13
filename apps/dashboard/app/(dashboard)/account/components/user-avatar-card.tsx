@@ -1,0 +1,118 @@
+'use client';
+
+import { useAuthSession } from '@/hooks/auth.hooks';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@deepcrawl/ui/components/ui/avatar';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@deepcrawl/ui/components/ui/card';
+import { IconUser } from '@tabler/icons-react';
+import { CalendarDays, Loader2, Mail } from 'lucide-react';
+
+export function UserAvatarCard() {
+  const { data: session, isLoading } = useAuthSession();
+  const user = session?.user;
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <IconUser className="h-5 w-5" />
+            User Profile
+          </CardTitle>
+          <CardDescription>Your account information and status</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <IconUser className="h-5 w-5" />
+            User Profile
+          </CardTitle>
+          <CardDescription>No user data available</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="py-4 text-center text-muted-foreground">
+            Unable to load user information
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const initials = user.name
+    ? user.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+    : user.email?.[0]?.toUpperCase() || '?';
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <IconUser className="h-5 w-5" />
+          User Profile
+        </CardTitle>
+        <CardDescription>Your account information and status</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Avatar and Basic Info */}
+        <div className="flex items-center gap-4">
+          <Avatar className="size-20 border shadow-sm dark:border-none">
+            <AvatarImage
+              src={user.image || undefined}
+              alt={user.name || 'User'}
+            />
+            <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+          </Avatar>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-lg">
+                {user.name || 'No name set'}
+              </h3>
+            </div>
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Mail className="h-4 w-4" />
+              <span className="text-sm">{user.email}</span>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-end">
+        {/* Join Date */}
+        <div className="flex items-center gap-2 text-muted-foreground text-xs">
+          <CalendarDays className="h-4 w-4" />
+          <span>
+            Joined{' '}
+            {new Date(user.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </span>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
