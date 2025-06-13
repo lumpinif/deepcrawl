@@ -26,7 +26,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@deepcrawl/ui/components/ui/dialog';
-import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
+import {
+  IconBrandGithub,
+  IconBrandGoogle,
+  IconEdit,
+} from '@tabler/icons-react';
 import {
   KeyIcon,
   Loader2,
@@ -267,8 +271,8 @@ export function ProvidersManagementCard() {
                           onOpenChange={setIsPasskeysDialogOpen}
                         >
                           <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              Show
+                            <Button variant="outline" size="sm">
+                              Manage
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-md">
@@ -409,13 +413,13 @@ export function ProvidersManagementCard() {
                 </>
               ) : (
                 <>
-                  Are you sure you want to remove "
-                  {passkeyToRemove?.name || 'Unnamed Passkey'}"?
+                  Are you sure you want to remove &ldquo;
+                  {passkeyToRemove?.name || 'Unnamed Passkey'}&rdquo;?
                   <br />
                   <br />
                   This passkey will no longer work with any device. You should
-                  also remove it from your browser's password manager to prevent
-                  confusion.
+                  also remove it from your browser&apos;s password manager to
+                  prevent confusion.
                 </>
               )}
             </DialogDescription>

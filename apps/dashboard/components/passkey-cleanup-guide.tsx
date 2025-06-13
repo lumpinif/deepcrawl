@@ -17,19 +17,19 @@ export function PasskeyCleanupGuide() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="h-auto p-1">
-          <span className="flex items-center gap-x-1 text-muted-foreground text-xs cursor-pointer hover:text-foreground hover:underline transition-colors duration-200 ease-out">
+          <span className="flex cursor-pointer items-center gap-x-1 text-muted-foreground text-xs transition-colors duration-200 ease-out hover:text-foreground hover:underline">
             <HelpCircle className="h-4 w-4" />
             Passkeys Cleaning Guide
           </span>
           <span className="sr-only">How to remove passkeys from devices</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Remove Passkeys from Your Devices</DialogTitle>
           <DialogDescription>
             After removing a passkey from your account, you should also remove
-            it from your device's credential manager to prevent confusion.
+            it from your device&apos;s credential manager to prevent confusion.
           </DialogDescription>
         </DialogHeader>
 
@@ -37,11 +37,16 @@ export function PasskeyCleanupGuide() {
           {/* Windows Hello */}
           <div>
             <h3 className="font-semibold text-sm">Windows Hello</h3>
-            <ol className="mt-2 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
+            <ol className="mt-2 list-inside list-decimal space-y-1 text-muted-foreground text-sm">
               <li>Open Windows Settings</li>
-              <li>Go to "Accounts" → "Sign-in options"</li>
-              <li>Under "Passkeys", click "Manage passkeys"</li>
-              <li>Find the passkey and click "Delete"</li>
+              <li>
+                Go to &ldquo;Accounts&rdquo; → &ldquo;Sign-in options&rdquo;
+              </li>
+              <li>
+                Under &ldquo;Passkeys&rdquo;, click &ldquo;Manage
+                passkeys&rdquo;
+              </li>
+              <li>Find the passkey and click &ldquo;Delete&rdquo;</li>
             </ol>
           </div>
 
@@ -52,32 +57,36 @@ export function PasskeyCleanupGuide() {
             <h3 className="font-semibold text-sm">macOS Safari/Keychain</h3>
             <div className="space-y-3">
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
+                <p className="mb-1 font-medium text-muted-foreground text-xs">
                   macOS 15 (Sequoia) and later:
                 </p>
-                <ol className="mt-1 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
-                  <li>Open the "Apple Passwords" app</li>
-                  <li>Click on "Passkeys" in the sidebar</li>
-                  <li>Find the passkey and click "Edit"</li>
-                  <li>Click "Delete" to remove the passkey</li>
+                <ol className="mt-1 list-inside list-decimal space-y-1 text-muted-foreground text-sm">
+                  <li>Open the &ldquo;Apple Passwords&rdquo; app</li>
+                  <li>Click on &ldquo;Passkeys&rdquo; in the sidebar</li>
+                  <li>Find the passkey and click &ldquo;Edit&rdquo;</li>
+                  <li>Click &ldquo;Delete&rdquo; to remove the passkey</li>
                 </ol>
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
+                <p className="mb-1 font-medium text-muted-foreground text-xs">
                   macOS 14 and earlier:
                 </p>
-                <ol className="mt-1 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
-                  <li>Open "System Settings" (or "System Preferences")</li>
-                  <li>Go to "Passwords" in the sidebar</li>
+                <ol className="mt-1 list-inside list-decimal space-y-1 text-muted-foreground text-sm">
+                  <li>
+                    Open &ldquo;System Settings&rdquo; (or &ldquo;System
+                    Preferences&rdquo;)
+                  </li>
+                  <li>Go to &ldquo;Passwords&rdquo; in the sidebar</li>
                   <li>Enter your password or use Touch ID</li>
-                  <li>Find the passkey and click "Edit"</li>
-                  <li>Click "Delete Passkey" and confirm</li>
+                  <li>Find the passkey and click &ldquo;Edit&rdquo;</li>
+                  <li>Click &ldquo;Delete Passkey&rdquo; and confirm</li>
                 </ol>
               </div>
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">
+            <p className="mt-2 text-muted-foreground text-xs">
               Alternative: Open Keychain Access → search for the website → look
-              for "Secure Enclave" entries → right-click and select "Delete"
+              for &ldquo;Secure Enclave&rdquo; entries → right-click and select
+              &ldquo;Delete&rdquo;
             </p>
           </div>
 
@@ -88,25 +97,25 @@ export function PasskeyCleanupGuide() {
             <h3 className="font-semibold text-sm">iOS</h3>
             <div className="space-y-3">
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
+                <p className="mb-1 font-medium text-muted-foreground text-xs">
                   iOS 18 and later:
                 </p>
-                <ol className="mt-1 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
-                  <li>Open the "Apple Passwords" app</li>
-                  <li>Tap on "Passkeys"</li>
+                <ol className="mt-1 list-inside list-decimal space-y-1 text-muted-foreground text-sm">
+                  <li>Open the &ldquo;Apple Passwords&rdquo; app</li>
+                  <li>Tap on &ldquo;Passkeys&rdquo;</li>
                   <li>Find the passkey and tap on it</li>
-                  <li>Tap "Edit" then "Delete"</li>
+                  <li>Tap &ldquo;Edit&rdquo; then &ldquo;Delete&rdquo;</li>
                 </ol>
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
+                <p className="mb-1 font-medium text-muted-foreground text-xs">
                   iOS 17 and earlier:
                 </p>
-                <ol className="mt-1 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
+                <ol className="mt-1 list-inside list-decimal space-y-1 text-muted-foreground text-sm">
                   <li>Open Settings app</li>
-                  <li>Go to "Passwords"</li>
+                  <li>Go to &ldquo;Passwords&rdquo;</li>
                   <li>Search for this website</li>
-                  <li>Tap the entry and select "Delete Passkey"</li>
+                  <li>Tap the entry and select &ldquo;Delete Passkey&rdquo;</li>
                 </ol>
               </div>
             </div>
@@ -117,11 +126,13 @@ export function PasskeyCleanupGuide() {
           {/* Android */}
           <div>
             <h3 className="font-semibold text-sm">Android</h3>
-            <ol className="mt-2 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
+            <ol className="mt-2 list-inside list-decimal space-y-1 text-muted-foreground text-sm">
               <li>Open Chrome app</li>
-              <li>Tap the 3-dot menu → "Settings"</li>
-              <li>Go to "Password Manager" → "Passkeys"</li>
-              <li>Find the passkey and tap "Delete"</li>
+              <li>Tap the 3-dot menu → &ldquo;Settings&rdquo;</li>
+              <li>
+                Go to &ldquo;Password Manager&rdquo; → &ldquo;Passkeys&rdquo;
+              </li>
+              <li>Find the passkey and tap &ldquo;Delete&rdquo;</li>
             </ol>
           </div>
 
@@ -130,18 +141,18 @@ export function PasskeyCleanupGuide() {
           {/* 1Password */}
           <div>
             <h3 className="font-semibold text-sm">1Password</h3>
-            <ol className="mt-2 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
+            <ol className="mt-2 list-inside list-decimal space-y-1 text-muted-foreground text-sm">
               <li>Open 1Password app</li>
               <li>Search for this website</li>
-              <li>Look for "Passkey" items</li>
+              <li>Look for &ldquo;Passkey&rdquo; items</li>
               <li>Delete the passkey item</li>
             </ol>
           </div>
         </div>
 
-        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <p className="text-sm text-muted-foreground">
-            <strong>Note:</strong> Removing passkeys from your device won't
+        <div className="mt-6 rounded-lg bg-muted/50 p-4">
+          <p className="text-muted-foreground text-sm">
+            <strong>Note:</strong> Removing passkeys from your device won&apos;t
             affect other websites where you use passkeys. This only removes the
             credentials for this specific website.
           </p>
