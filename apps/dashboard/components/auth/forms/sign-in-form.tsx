@@ -1,6 +1,5 @@
 'use client';
 
-import type { BetterFetchOption } from '@better-fetch/fetch';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,6 +12,7 @@ import { Checkbox } from '@deepcrawl/ui/components/ui/checkbox';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 
 import { SpinnerButton } from '@/components/spinner-button';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { authViewRoutes } from '@/routes/auth';
 import {
@@ -82,30 +82,27 @@ export function SignInForm({
     rememberMe,
   }: z.infer<typeof formSchema>) {
     try {
-      let response: Record<string, unknown> = {};
-
-      const fetchOptions: BetterFetchOption = {
-        throw: true,
-        // headers: await getCaptchaHeaders('/sign-in/email'),
-      };
-
-      response = await authClient.signIn.email({
+      const { data, error } = await authClient.signIn.email({
         email,
         password,
         rememberMe,
-        fetchOptions,
       });
 
-      if (response.twoFactorRedirect) {
-        router.push(`/${authViewRoutes.twoFactor}${window.location.search}`);
-      } else {
+      if (error) {
+        const errorMessage = getAuthErrorMessage(error);
+
+        form.resetField('password');
+        toast.error(errorMessage);
+        return;
+      }
+
+      if (data) {
         await onSuccess();
       }
     } catch (error) {
       form.resetField('password');
-      toast.error(
-        error instanceof Error ? error.message : 'An unknown error occurred',
-      );
+      console.error('Unexpected sign-in error:', error);
+      toast.error('A network error occurred. Please try again.');
     }
   }
 

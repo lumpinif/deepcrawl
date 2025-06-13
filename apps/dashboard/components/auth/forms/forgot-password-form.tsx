@@ -1,6 +1,7 @@
 'use client';
 
 import { SpinnerButton } from '@/components/spinner-button';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { authViewRoutes } from '@/routes/auth';
 import {
@@ -14,7 +15,6 @@ import {
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { BetterFetchOption } from 'better-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -62,15 +62,15 @@ export function ForgotPasswordForm({
 
   async function forgotPassword({ email }: z.infer<typeof formSchema>) {
     try {
-      const fetchOptions: BetterFetchOption = {
-        throw: true,
-      };
-
-      await authClient.forgetPassword({
+      const { error } = await authClient.forgetPassword({
         email,
         redirectTo: `/${authViewRoutes.resetPassword}`,
-        fetchOptions,
       });
+
+      if (error) {
+        toast.error(getAuthErrorMessage(error));
+        return;
+      }
 
       toast.success('Password reset email sent');
 

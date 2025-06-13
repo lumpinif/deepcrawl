@@ -195,14 +195,20 @@ export const useRevokeSession = () => {
     },
     onSuccess: async (data, sessionToken) => {
       // Get current session to check if user revoked their own session
-      const currentSession = queryClient.getQueryData<SessionData>(
+      const currentSession = queryClient.getQueryData<Session>(
         userQueryKeys.session,
       );
 
-      if (currentSession?.token === sessionToken) {
-        // User revoked their own session, redirect to login
-        toast.success('Session terminated successfully. Please log in again.');
-        router.push('/login');
+      if (currentSession?.session?.token === sessionToken) {
+        // User revoked their own session, redirect to logout for centralized handling
+        toast.success(
+          'Current session signed out successfully. Please log in again.',
+        );
+
+        // Check if we're already on the logout page to prevent double navigation
+        if (window.location.pathname !== '/logout') {
+          router.push('/logout');
+        }
         return;
       }
 

@@ -1,12 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { BetterFetchOption } from 'better-auth/react';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { SpinnerButton } from '@/components/spinner-button';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { getSearchParam } from '@/utils';
 import {
@@ -71,15 +71,15 @@ export function MagicLinkForm({
 
   async function sendMagicLink({ email }: z.infer<typeof formSchema>) {
     try {
-      const fetchOptions: BetterFetchOption = {
-        throw: true,
-      };
-
-      await authClient.signIn.magicLink({
+      const { error } = await authClient.signIn.magicLink({
         email,
         callbackURL: getCallbackURL(),
-        fetchOptions,
       });
+
+      if (error) {
+        toast.error(getAuthErrorMessage(error));
+        return;
+      }
 
       toast.success('Magic link sent to email');
 

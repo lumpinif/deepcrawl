@@ -10,6 +10,7 @@ import { useIsHydrated } from '@/hooks/use-hydrated';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
 
 import { SpinnerButton } from '@/components/spinner-button';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { authViewRoutes } from '@/routes/auth';
 import {
@@ -138,20 +139,19 @@ export function SignUpForm({
     ...additionalFieldValues
   }: z.infer<typeof formSchema>) {
     try {
-      const fetchOptions: BetterFetchOption = {
-        throw: true,
-        // headers: await getCaptchaHeaders('/sign-up/email'),
-      };
-
-      const data = await authClient.signUp.email({
+      const { data, error } = await authClient.signUp.email({
         email,
         password,
         name: name || '',
         ...(username !== undefined && { username }),
         ...additionalFieldValues,
         ...(emailVerification && { callbackURL: getCallbackURL() }),
-        fetchOptions,
       });
+
+      if (error) {
+        toast.error(getAuthErrorMessage(error));
+        return;
+      }
 
       if ('token' in data && data.token) {
         await onSuccess();

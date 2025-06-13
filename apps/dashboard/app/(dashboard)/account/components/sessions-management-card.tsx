@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
 import { Loader2, Monitor, Smartphone, Wifi } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
 
@@ -23,9 +24,12 @@ export function SessionsManagementCard() {
   const { data: currentSession } = useAuthSession();
   const { data: listSessions, isLoading } = useListSessions();
   const { mutate: revokeSession, isPending } = useRevokeSession();
+  const router = useRouter();
   const [revokingSessionId, setRevokingSessionId] = useState<string | null>(
     null,
   );
+  const [signingOutCurrentSession, setSigningOutCurrentSession] =
+    useState(false);
 
   // Cleanup: Reset local state if mutation is no longer pending
   useEffect(() => {
@@ -57,9 +61,22 @@ export function SessionsManagementCard() {
   }
 
   const handleRevokeSession = (session: Session['session']) => {
+    const isCurrentSession = session.id === currentSession.session.id;
+
+    if (isCurrentSession) {
+      // For current session, immediately redirect to logout without calling mutation
+      // The logout component will handle the actual sign out and cache clearing
+      setSigningOutCurrentSession(true);
+
+      // Check if we're already on the logout page to prevent double navigation
+      if (window.location.pathname !== '/logout') {
+        router.push('/logout');
+      }
+      return;
+    }
+
+    // For other sessions, use the mutation approach
     setRevokingSessionId(session.id);
-    // Simply call the mutation with the session token
-    // The hook handles all the optimistic updates, error handling, and success messages
     revokeSession(session.token, {
       onSettled: () => {
         // Clear the revoking state when mutation completes (success or error)
@@ -155,11 +172,19 @@ export function SessionsManagementCard() {
                       size="sm"
                       className="w-24"
                       variant="outline"
-                      isLoading={isPending && revokingSessionId === session.id}
-                      disabled={isPending || revokingSessionId === session.id}
+                      isLoading={
+                        (isPending && revokingSessionId === session.id) ||
+                        (isCurrentSession && signingOutCurrentSession)
+                      }
+                      disabled={
+                        isPending ||
+                        revokingSessionId === session.id ||
+                        (isCurrentSession && signingOutCurrentSession)
+                      }
                       onClick={() => handleRevokeSession(session)}
                     >
-                      {isPending && revokingSessionId === session.id ? (
+                      {(isPending && revokingSessionId === session.id) ||
+                      (isCurrentSession && signingOutCurrentSession) ? (
                         <>
                           <Loader2 size={15} className="mr-2 animate-spin" />
                           {isCurrentSession

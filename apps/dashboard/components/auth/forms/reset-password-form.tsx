@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { SpinnerButton } from '@/components/spinner-button';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { authViewRoutes } from '@/routes/auth';
 import { type PasswordValidation, getPasswordSchema } from '@/utils';
@@ -82,11 +83,15 @@ export function ResetPasswordForm({
       const searchParams = new URLSearchParams(window.location.search);
       const token = searchParams.get('token') as string;
 
-      await authClient.resetPassword({
+      const { error } = await authClient.resetPassword({
         token,
         newPassword,
-        fetchOptions: { throw: true },
       });
+
+      if (error) {
+        toast.error(getAuthErrorMessage(error));
+        return;
+      }
 
       toast.success('Password reset successfully');
 

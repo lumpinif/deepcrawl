@@ -22,6 +22,7 @@ export function PasskeyButton({
     setIsSubmitting?.(true);
 
     try {
+      // throw error as it doesn't have an error return object
       const response = await authClient.signIn.passkey({
         fetchOptions: { credentials: 'include', throw: true },
       });
