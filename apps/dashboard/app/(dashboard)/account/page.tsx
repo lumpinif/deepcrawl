@@ -19,25 +19,21 @@ import { UserEmailCard } from './components/user-email-card';
 import { UserNameCard } from './components/user-name-card';
 
 export default async function AccountPage() {
-  const queryClient = new QueryClient();
+  const session = await fetchAuthSession();
 
-  const [session] = await Promise.all([
-    fetchAuthSession(),
-
-    // Prefetching data for React Query with optimized cache times using queryOptions
-    queryClient.prefetchQuery(sessionQueryOptions()),
-    queryClient.prefetchQuery(deviceSessionsQueryOptions()),
-    queryClient.prefetchQuery(listSessionsQueryOptions()),
-    queryClient.prefetchQuery(organizationQueryOptions()),
-  ]).catch((e) => {
-    console.log(e);
-    throw redirect('/login');
-  });
-
-  // Redirect to login if no session
-  if (!session || !session.user) {
+  if (!session) {
     redirect('/login');
   }
+
+  const queryClient = new QueryClient();
+
+  // Prefetch all user-related data
+  await Promise.all([
+    queryClient.prefetchQuery(sessionQueryOptions()),
+    queryClient.prefetchQuery(listSessionsQueryOptions()),
+    queryClient.prefetchQuery(deviceSessionsQueryOptions()),
+    queryClient.prefetchQuery(organizationQueryOptions()),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
