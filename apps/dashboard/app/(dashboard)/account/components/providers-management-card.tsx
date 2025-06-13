@@ -39,6 +39,19 @@ import {
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+// Helper function to safely format dates from server data
+const formatDate = (date: Date | string | null): string => {
+  if (!date) return 'Creation date unknown';
+
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (Number.isNaN(dateObj.getTime())) return 'Creation date unknown';
+    return dateObj.toLocaleDateString();
+  } catch {
+    return 'Creation date unknown';
+  }
+};
+
 // Type for provider information
 interface ProviderInfo {
   id: string;
@@ -260,16 +273,14 @@ export function ProvidersManagementCard() {
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-md">
                             <DialogHeader>
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <DialogTitle>Your Passkeys</DialogTitle>
-                                  <DialogDescription>
-                                    Manage your registered passkeys for secure
-                                    authentication.
-                                  </DialogDescription>
-                                </div>
+                              <div className="flex items-center gap-x-2">
+                                <DialogTitle>Your Passkeys</DialogTitle>
                                 <PasskeyCleanupGuide />
                               </div>
+                              <DialogDescription className="text-start">
+                                Manage your registered passkeys for secure
+                                authentication.
+                              </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-3">
                               {isLoadingPasskeys ? (
@@ -297,9 +308,8 @@ export function ProvidersManagementCard() {
                                         </div>
                                         <div className="text-muted-foreground text-xs">
                                           <div>
-                                            {passkey.createdAt
-                                              ? `Added ${passkey.createdAt.toLocaleDateString()}`
-                                              : 'Creation date unknown'}
+                                            Added{' '}
+                                            {formatDate(passkey.createdAt)}
                                             {passkey.backedUp && ' • Backed up'}
                                           </div>
                                           <div className="mt-1">
@@ -410,7 +420,7 @@ export function ProvidersManagementCard() {
               )}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+          <div className="flex flex-col-reverse gap-y-2 md:flex-row md:justify-end md:space-x-2 md:space-y-0">
             <Button variant="outline" onClick={cancelRemovePasskey}>
               Cancel
             </Button>

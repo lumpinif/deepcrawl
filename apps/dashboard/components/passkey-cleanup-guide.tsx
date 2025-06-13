@@ -17,7 +17,10 @@ export function PasskeyCleanupGuide() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="h-auto p-1">
-          <HelpCircle className="h-4 w-4" />
+          <span className="flex items-center gap-x-1 text-muted-foreground text-xs cursor-pointer hover:text-foreground hover:underline transition-colors duration-200 ease-out">
+            <HelpCircle className="h-4 w-4" />
+            Passkeys Cleaning Guide
+          </span>
           <span className="sr-only">How to remove passkeys from devices</span>
         </Button>
       </DialogTrigger>
@@ -31,24 +34,6 @@ export function PasskeyCleanupGuide() {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Chrome */}
-          <div>
-            <h3 className="font-semibold text-sm flex items-center gap-2">
-              Chrome
-            </h3>
-            <ol className="mt-2 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Open Chrome Settings (chrome://settings)</li>
-              <li>Go to "Autofill and passwords" → "Password Manager"</li>
-              <li>Click on "Passwords" in the left sidebar</li>
-              <li>
-                Find the passkey for this website and click the 3-dot menu
-              </li>
-              <li>Select "Delete" to remove the passkey</li>
-            </ol>
-          </div>
-
-          <Separator />
-
           {/* Windows Hello */}
           <div>
             <h3 className="font-semibold text-sm">Windows Hello</h3>
@@ -65,15 +50,34 @@ export function PasskeyCleanupGuide() {
           {/* macOS */}
           <div>
             <h3 className="font-semibold text-sm">macOS Safari/Keychain</h3>
-            <ol className="mt-2 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Open "Keychain Access" app</li>
-              <li>Search for this website's domain</li>
-              <li>Look for "Secure Enclave" entries</li>
-              <li>Right-click and select "Delete"</li>
-            </ol>
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-1">
+                  macOS 15 (Sequoia) and later:
+                </p>
+                <ol className="mt-1 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
+                  <li>Open the "Apple Passwords" app</li>
+                  <li>Click on "Passkeys" in the sidebar</li>
+                  <li>Find the passkey and click "Edit"</li>
+                  <li>Click "Delete" to remove the passkey</li>
+                </ol>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-1">
+                  macOS 14 and earlier:
+                </p>
+                <ol className="mt-1 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
+                  <li>Open "System Settings" (or "System Preferences")</li>
+                  <li>Go to "Passwords" in the sidebar</li>
+                  <li>Enter your password or use Touch ID</li>
+                  <li>Find the passkey and click "Edit"</li>
+                  <li>Click "Delete Passkey" and confirm</li>
+                </ol>
+              </div>
+            </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Alternatively: System Settings → Passwords → search for the
-              website
+              Alternative: Open Keychain Access → search for the website → look
+              for "Secure Enclave" entries → right-click and select "Delete"
             </p>
           </div>
 
@@ -82,12 +86,30 @@ export function PasskeyCleanupGuide() {
           {/* iOS */}
           <div>
             <h3 className="font-semibold text-sm">iOS</h3>
-            <ol className="mt-2 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Open Settings app</li>
-              <li>Go to "Passwords"</li>
-              <li>Search for this website</li>
-              <li>Tap the entry and select "Delete Passkey"</li>
-            </ol>
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-1">
+                  iOS 18 and later:
+                </p>
+                <ol className="mt-1 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
+                  <li>Open the "Apple Passwords" app</li>
+                  <li>Tap on "Passkeys"</li>
+                  <li>Find the passkey and tap on it</li>
+                  <li>Tap "Edit" then "Delete"</li>
+                </ol>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-1">
+                  iOS 17 and earlier:
+                </p>
+                <ol className="mt-1 space-y-1 text-sm text-muted-foreground list-decimal list-inside">
+                  <li>Open Settings app</li>
+                  <li>Go to "Passwords"</li>
+                  <li>Search for this website</li>
+                  <li>Tap the entry and select "Delete Passkey"</li>
+                </ol>
+              </div>
+            </div>
           </div>
 
           <Separator />

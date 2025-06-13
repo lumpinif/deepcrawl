@@ -4,6 +4,7 @@ import {
   listSessionsQueryOptions,
   organizationQueryOptions,
   sessionQueryOptions,
+  userPasskeysQueryOptions,
 } from '@/lib/query-options';
 import {
   HydrationBoundary,
@@ -33,6 +34,7 @@ export default async function AccountPage() {
     queryClient.prefetchQuery(listSessionsQueryOptions()),
     queryClient.prefetchQuery(deviceSessionsQueryOptions()),
     queryClient.prefetchQuery(organizationQueryOptions()),
+    queryClient.prefetchQuery(userPasskeysQueryOptions()),
   ]);
 
   return (

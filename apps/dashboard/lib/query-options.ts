@@ -3,6 +3,7 @@ import {
   fetchDeviceSessions,
   fetchListSessions,
   fetchOrganization,
+  fetchUserPasskeys,
 } from '@/app/actions/auth';
 import { queryOptions } from '@tanstack/react-query';
 import { userQueryKeys } from './query-keys';
@@ -53,4 +54,16 @@ export const organizationQueryOptions = () =>
     queryFn: fetchOrganization,
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 20 * 60 * 1000, // 20 minutes
+  });
+
+/**
+ * Query options for user passkeys
+ * Provides full type inference for useQuery, prefetchQuery, etc.
+ */
+export const userPasskeysQueryOptions = () =>
+  queryOptions({
+    queryKey: userQueryKeys.passkeys,
+    queryFn: fetchUserPasskeys,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });

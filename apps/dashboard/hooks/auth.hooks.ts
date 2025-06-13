@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  fetchUserPasskeys,
   removeUserPasskey,
   updateMostRecentPasskeyName,
 } from '@/app/actions/auth';
@@ -17,6 +16,7 @@ import {
   listSessionsQueryOptions,
   organizationQueryOptions,
   sessionQueryOptions,
+  userPasskeysQueryOptions,
 } from '@/lib/query-options';
 import type { Session } from '@deepcrawl/auth/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -29,11 +29,12 @@ type SessionData = Session['session'];
 type SessionsList = SessionData[];
 
 // Type definition for passkey data (from fetchUserPasskeys)
+// Note: createdAt comes as string from server action due to JSON serialization
 type PasskeyData = {
   id: string;
   name: string | null;
   deviceType: string;
-  createdAt: Date | null;
+  createdAt: Date | string | null;
   backedUp: boolean;
   transports: string | null;
 };
@@ -429,10 +430,10 @@ export const useAddPasskey = () => {
 
       // Invalidate client-side caches - server actions always return fresh data
       queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
-      await queryClient.invalidateQueries({ queryKey: ['user-passkeys'] });
+      await queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
 
       // Force refetch to ensure immediate update
-      await queryClient.refetchQueries({ queryKey: ['user-passkeys'] });
+      await queryClient.refetchQueries({ queryKey: userQueryKeys.passkeys });
     },
     onError: (error) => {
       // Only show error toast for actual errors, not cancellations
@@ -457,14 +458,14 @@ export const useRemovePasskey = () => {
     },
     onMutate: async (passkeyId: string) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['user-passkeys'] });
+      await queryClient.cancelQueries({ queryKey: userQueryKeys.passkeys });
 
       // Snapshot previous value for rollback
-      const previousPasskeys = queryClient.getQueryData(['user-passkeys']);
+      const previousPasskeys = queryClient.getQueryData(userQueryKeys.passkeys);
 
       // Optimistically remove the passkey from the cache
       queryClient.setQueryData(
-        ['user-passkeys'],
+        userQueryKeys.passkeys,
         (old: PasskeyData[] | undefined) => {
           if (!old) return old;
           return old.filter((passkey) => passkey.id !== passkeyId);
@@ -476,7 +477,10 @@ export const useRemovePasskey = () => {
     onError: (error, passkeyId, context) => {
       // Rollback on error
       if (context?.previousPasskeys) {
-        queryClient.setQueryData(['user-passkeys'], context.previousPasskeys);
+        queryClient.setQueryData(
+          userQueryKeys.passkeys,
+          context.previousPasskeys,
+        );
       }
 
       const errorMessage =
@@ -495,7 +499,7 @@ export const useRemovePasskey = () => {
     },
     onSettled: () => {
       // Always refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['user-passkeys'] });
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
     },
   });
 };
@@ -504,10 +508,5 @@ export const useRemovePasskey = () => {
  * Hook for fetching user's passkeys with proper error handling and caching
  */
 export const useUserPasskeys = () => {
-  return useQuery({
-    queryKey: ['user-passkeys'],
-    queryFn: () => fetchUserPasskeys(),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
-  });
+  return useQuery(userPasskeysQueryOptions());
 };
