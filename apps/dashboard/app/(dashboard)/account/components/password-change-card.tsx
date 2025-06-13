@@ -12,13 +12,14 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
-import { cn } from '@deepcrawl/ui/lib/utils';
-import { Eye, EyeOff, Key, Loader2, Shield } from 'lucide-react';
+import { Eye, EyeOff, Key, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 export function PasswordChangeCard() {
   const { data: session, isLoading } = useAuthSession();
-  const { mutate: changePassword, isPending } = useChangePassword();
+  const { mutate: changePassword, isPending } = useChangePassword(() => {
+    setIsChangingPassword(false);
+  });
   const user = session?.user;
 
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -72,42 +73,32 @@ export function PasswordChangeCard() {
     );
   }
 
+  const passwordsMatch = passwords.new === passwords.confirm;
+  const isFormValid =
+    passwords.current && passwords.new && passwords.confirm && passwordsMatch;
+
   const handlePasswordChange = async () => {
     if (passwords.new !== passwords.confirm) {
       return;
     }
 
-    changePassword(
-      {
-        currentPassword: passwords.current,
-        newPassword: passwords.new,
-        revokeOtherSessions: true,
-      },
-      {
-        onSuccess: () => {
-          // Reset form
-          setPasswords({ current: '', new: '', confirm: '' });
-          setIsChangingPassword(false);
-        },
-      },
-    );
+    changePassword({
+      currentPassword: passwords.current,
+      newPassword: passwords.new,
+      revokeOtherSessions: false,
+    });
+
+    // Reset form after submission
+    setPasswords({ current: '', new: '', confirm: '' });
   };
 
   const handleCancel = () => {
     setPasswords({ current: '', new: '', confirm: '' });
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
     setIsChangingPassword(false);
   };
-
-  const passwordsMatch = passwords.new === passwords.confirm;
-  const isFormValid =
-    passwords.current && passwords.new && passwords.confirm && passwordsMatch;
-
-  // Calculate password age
-  const lastPasswordChange = user.updatedAt;
-  const passwordAge = Math.floor(
-    (Date.now() - new Date(lastPasswordChange).getTime()) /
-      (1000 * 60 * 60 * 24),
-  );
 
   return (
     <Card>
@@ -121,19 +112,14 @@ export function PasswordChangeCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Password Status */}
-        <div
-          className={cn(
-            'flex items-center justify-between rounded-lg p-3',
-            isChangingPassword && 'bg-background-subtle',
-          )}
-        >
+        {/* Password Management */}
+        <div className="flex items-center justify-between rounded-lg p-3">
           <div className="flex items-center gap-3">
-            <Shield className="h-5 w-5 text-muted-foreground" />
+            <Key className="h-5 w-5 text-muted-foreground" />
             <div>
-              <div className="font-medium text-sm">Password Status</div>
+              <div className="font-medium text-sm">Password Management</div>
               <div className="text-muted-foreground text-xs">
-                Last changed {passwordAge} days ago
+                Update your account password
               </div>
             </div>
           </div>
@@ -149,9 +135,7 @@ export function PasswordChangeCard() {
 
         {/* Password Change Form */}
         {isChangingPassword && (
-          <div
-            className={cn('space-y-6 rounded-lg p-4', isChangingPassword && '')}
-          >
+          <div className="space-y-6 rounded-lg p-4">
             <div className="space-y-2">
               <Label htmlFor="current-password">Current Password</Label>
               <div className="relative">

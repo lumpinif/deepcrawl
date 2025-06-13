@@ -1,6 +1,7 @@
 'use client';
 
 import { revalidateSessionCaches } from '@/app/actions/auth';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { userQueryKeys } from '@/lib/query-keys';
 import {
@@ -109,7 +110,7 @@ export const useUpdateUserName = () => {
 /**
  * Hook for changing user password
  */
-export const useChangePassword = () => {
+export const useChangePassword = (onSuccessCallback?: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -122,30 +123,31 @@ export const useChangePassword = () => {
       newPassword: string;
       revokeOtherSessions: boolean;
     }) => {
-      const result = await authClient.changePassword({
-        currentPassword,
+      const { data, error } = await authClient.changePassword({
         newPassword,
+        currentPassword,
         revokeOtherSessions,
       });
-
-      if (result.error) {
-        throw new Error(result.error.message);
+      if (error) {
+        throw new Error(getAuthErrorMessage(error));
       }
+      return data;
+    },
+    onSuccess: () => {
+      toast.success('Password updated successfully.');
 
-      return result;
-    },
-    onError: (err) => {
-      toast.error(err.message || 'Failed to change password');
-    },
-    onSuccess: async () => {
-      toast.success('Password changed successfully');
+      // Invalidate session queries if other sessions were revoked
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
+      queryClient.invalidateQueries({
+        queryKey: userQueryKeys.deviceSessions,
+      });
 
-      // Invalidate server-side caches
-      await revalidateSessionCaches();
+      // Call the custom callback if provided
+      onSuccessCallback?.();
     },
-    onSettled: () => {
-      // Refetch session to ensure consistency
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
+    onError: (error) => {
+      console.error('Password change failed:', error);
+      toast.error('Failed to update password. Please try again.');
     },
   });
 };
