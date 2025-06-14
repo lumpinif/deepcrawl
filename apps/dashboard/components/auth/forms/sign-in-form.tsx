@@ -25,7 +25,6 @@ import {
 } from '@deepcrawl/ui/components/ui/form';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { PasswordInput } from '../password-input';
 
@@ -46,7 +45,6 @@ export function SignInForm({
   setIsSubmitting,
   passwordValidation,
 }: SignInFormProps) {
-  const router = useRouter();
   const isHydrated = useIsHydrated();
   // const { captchaRef, getCaptchaHeaders } = useCaptcha()
 
