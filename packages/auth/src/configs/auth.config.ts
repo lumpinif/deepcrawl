@@ -31,18 +31,21 @@ interface SecondaryStorage {
 }
 
 export const ALLOWED_ORIGINS = [
-  // Development origins
-  'http://localhost:3000', // Dashboard
-  'https://localhost:3000', // Dashboard HTTPS
-  'http://127.0.0.1:3000', // Dashboard alternative
-  'http://localhost:8787', // Auth worker
-  'http://127.0.0.1:8787', // Auth worker alternative
   // Production origins
   'https://auth.deepcrawl.dev',
   'https://deepcrawl.dev',
   'https://app.deepcrawl.dev',
   'https://dashboard.deepcrawl.dev',
   'https://*.deepcrawl.dev',
+];
+
+export const DEVELOPMENT_ORIGINS = [
+  // Development origins
+  'http://localhost:3000', // Dashboard
+  'https://localhost:3000', // Dashboard HTTPS
+  'http://127.0.0.1:3000', // Dashboard alternative
+  'http://localhost:8787', // Auth worker
+  'http://127.0.0.1:8787', // Auth worker alternative
 ];
 
 /** Important: make sure always import this explicitly in workers to resolve process.env issues
@@ -54,6 +57,12 @@ export function createAuthConfig(env: Env) {
   const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
 
   const db = getDrizzleDB({ DATABASE_URL: env.DATABASE_URL });
+
+  // Build trusted origins based on environment
+  const trustedOrigins = [...ALLOWED_ORIGINS, baseAuthURL];
+  if (isDevelopment) {
+    trustedOrigins.push(...DEVELOPMENT_ORIGINS);
+  }
 
   const config = {
     emailAndPassword: {
@@ -80,7 +89,7 @@ export function createAuthConfig(env: Env) {
     basePath: '/api/auth',
     baseURL: baseAuthURL,
     secret: env.BETTER_AUTH_SECRET,
-    trustedOrigins: ALLOWED_ORIGINS,
+    trustedOrigins,
     database: drizzleAdapter(db, { provider: 'pg', schema: schema }),
     session: {
       cookieCache: {
