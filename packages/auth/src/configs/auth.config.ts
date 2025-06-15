@@ -30,6 +30,21 @@ interface SecondaryStorage {
   delete: (key: string) => Promise<void>;
 }
 
+export const ALLOWED_ORIGINS = [
+  // Development origins
+  'http://localhost:3000', // Dashboard
+  'https://localhost:3000', // Dashboard HTTPS
+  'http://127.0.0.1:3000', // Dashboard alternative
+  'http://localhost:8787', // Auth worker
+  'http://127.0.0.1:8787', // Auth worker alternative
+  // Production origins
+  'https://auth.deepcrawl.dev',
+  'https://deepcrawl.dev',
+  'https://app.deepcrawl.dev',
+  'https://dashboard.deepcrawl.dev',
+  'https://*.deepcrawl.dev',
+];
+
 /** Important: make sure always import this explicitly in workers to resolve process.env issues
  *  Factory function that accepts environment variables from cloudflare env
  */
@@ -65,6 +80,7 @@ export function createAuthConfig(env: Env) {
     basePath: '/api/auth',
     baseURL: baseAuthURL,
     secret: env.BETTER_AUTH_SECRET,
+    trustedOrigins: ALLOWED_ORIGINS,
     database: drizzleAdapter(db, { provider: 'pg', schema: schema }),
     session: {
       cookieCache: {
@@ -121,18 +137,6 @@ export function createAuthConfig(env: Env) {
         trustedProviders: ['google', 'github'],
       },
     },
-    trustedOrigins: [
-      // Development origins
-      'http://localhost:3000',
-      'https://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://localhost:8787',
-      'http://127.0.0.1:8787',
-      // Production origins (add your actual domains)
-      'https://auth.deepcrawl.dev',
-      'https://deepcrawl.dev',
-      'https://app.deepcrawl.dev',
-    ],
     advanced: {
       cookiePrefix: 'deepcrawl',
 
