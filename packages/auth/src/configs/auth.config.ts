@@ -35,8 +35,9 @@ export const ALLOWED_ORIGINS = [
   'https://auth.deepcrawl.dev',
   'https://deepcrawl.dev',
   'https://app.deepcrawl.dev',
-  'https://dashboard.deepcrawl.dev',
   'https://*.deepcrawl.dev',
+  // Add explicit wildcard support for all deepcrawl.dev subdomains
+  '*.deepcrawl.dev',
 ];
 
 export const DEVELOPMENT_ORIGINS = [
@@ -149,21 +150,20 @@ export function createAuthConfig(env: Env) {
     advanced: {
       cookiePrefix: 'deepcrawl',
 
-      // Use secure cookies based on environment
-      useSecureCookies: !isDevelopment,
-
       // Cross-subdomain cookies configuration
       crossSubDomainCookies: {
         enabled: !isDevelopment, // Only enable in production
-        domain: isDevelopment ? undefined : '.deepcrawl.dev',
+        domain: isDevelopment ? undefined : '.deepcrawl.dev', // Leading period is crucial
       },
 
-      // Default cookie attributes for all cookies
+      // FIXED: Default cookie attributes for all cookies
       defaultCookieAttributes: {
         httpOnly: true,
         secure: !isDevelopment, // false for development (HTTP), true for production (HTTPS)
-        sameSite: (isDevelopment ? 'lax' : 'none') as 'lax' | 'none', // 'lax' for dev, 'none' for production cross-origin
-        partitioned: !isDevelopment, // Only in production for cross-origin cookies
+        // Cross-subdomain requires sameSite: 'none' in production
+        sameSite: (isDevelopment ? 'lax' : 'none') as 'lax' | 'none', // 'lax' for dev, 'none' for production cross-subdomain
+        // Partitioned cookies for cross-subdomain in production
+        partitioned: !isDevelopment, // Only in production for cross-subdomain cookies
       },
 
       // IP address tracking for rate limiting and session security
