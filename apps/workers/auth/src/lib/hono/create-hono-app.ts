@@ -5,6 +5,7 @@ import {
   authInstanceMiddleware,
 } from '@/middlewares/auth';
 import type { AppBindings } from '@/types';
+import { ALLOWED_ORIGINS } from '@deepcrawl/auth/configs/auth.config';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
@@ -12,20 +13,6 @@ import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, onError, serveEmojiFavicon } from 'stoker/middlewares';
-
-export const allowedOrigins = [
-  // Development origins
-  'http://localhost:3000', // Dashboard
-  'https://localhost:3000', // Dashboard HTTPS
-  'http://127.0.0.1:3000', // Dashboard alternative
-  'http://localhost:8787', // Auth worker
-  'http://127.0.0.1:8787', // Auth worker alternative
-  // Production origins
-  'https://auth.deepcrawl.dev',
-  'https://deepcrawl.dev',
-  'https://app.deepcrawl.dev',
-  'https://*.deepcrawl.dev',
-];
 
 export default function createHonoApp() {
   const app = new Hono<AppBindings>();
@@ -35,7 +22,7 @@ export default function createHonoApp() {
     cors({
       maxAge: 600,
       credentials: true,
-      origin: allowedOrigins,
+      origin: ALLOWED_ORIGINS,
       exposeHeaders: ['Content-Length'],
       allowMethods: ['POST', 'GET', 'OPTIONS'],
       allowHeaders: ['Content-Type', 'Authorization'],
