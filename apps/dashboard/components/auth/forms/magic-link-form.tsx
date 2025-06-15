@@ -1,14 +1,14 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { SpinnerButton } from '@/components/spinner-button';
+import { useAuthRedirect } from '@/hooks/auth.hooks';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
-import { getSearchParam } from '@/utils';
 import {
   Form,
   FormControl,
@@ -24,7 +24,6 @@ import { useIsHydrated } from '../../../hooks/use-hydrated';
 
 export interface MagicLinkFormProps {
   className?: string;
-  callbackURL?: string;
   isSubmitting?: boolean;
   redirectTo?: string;
   setIsSubmitting?: (value: boolean) => void;
@@ -32,22 +31,12 @@ export interface MagicLinkFormProps {
 
 export function MagicLinkForm({
   className,
-  callbackURL: callbackURLProp,
   isSubmitting,
-  redirectTo: redirectToProp,
+  redirectTo,
   setIsSubmitting,
 }: MagicLinkFormProps) {
   const isHydrated = useIsHydrated();
-
-  const getRedirectTo = useCallback(
-    () => redirectToProp || getSearchParam('redirectTo'),
-    [redirectToProp],
-  );
-
-  const getCallbackURL = useCallback(
-    () => `${callbackURLProp || `/${getRedirectTo()}`}`,
-    [callbackURLProp, getRedirectTo],
-  );
+  const { getFrontendCallbackURL } = useAuthRedirect(redirectTo);
 
   const formSchema = z.object({
     email: z
@@ -69,30 +58,28 @@ export function MagicLinkForm({
     setIsSubmitting?.(form.formState.isSubmitting);
   }, [form.formState.isSubmitting, setIsSubmitting]);
 
-  async function sendMagicLink({ email }: z.infer<typeof formSchema>) {
-    try {
-      const { error } = await authClient.signIn.magicLink({
-        email,
-        callbackURL: getCallbackURL(),
-      });
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { email } = values;
 
-      if (error) {
-        toast.error(getAuthErrorMessage(error));
-        return;
-      }
+    const { error } = await authClient.signIn.magicLink({
+      email,
+      callbackURL: getFrontendCallbackURL(),
+    });
 
-      toast.success('Magic link sent to email');
-
-      form.reset();
-    } catch (error) {
-      toast.error('Error sending magic link');
+    if (error) {
+      toast.error(getAuthErrorMessage(error));
+      return;
     }
-  }
+
+    toast.success('Magic link sent to email');
+
+    form.reset();
+  };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(sendMagicLink)}
+        onSubmit={form.handleSubmit(onSubmit)}
         noValidate={isHydrated}
         className={cn('grid w-full gap-6', className)}
       >

@@ -1,19 +1,15 @@
-import type { SocialProvider } from 'better-auth/social-providers';
-import { useCallback } from 'react';
-
+import { useAuthRedirect } from '@/hooks/auth.hooks';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
-import { getSearchParam } from '@/utils';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { cn } from '@deepcrawl/ui/lib/utils';
+import type { SocialProvider } from 'better-auth/social-providers';
 import { toast } from 'sonner';
 import type { Provider } from './social-providers';
 
 interface ProviderButtonProps {
   className?: string;
-  callbackURL?: string;
   isSubmitting: boolean;
-  other?: boolean;
   provider: Provider;
   redirectTo?: string;
   setIsSubmitting: (isSubmitting: boolean) => void;
@@ -21,22 +17,12 @@ interface ProviderButtonProps {
 
 export function ProviderButton({
   className,
-  callbackURL: callbackURLProp,
   isSubmitting,
-  other,
   provider,
-  redirectTo: redirectToProp,
+  redirectTo,
   setIsSubmitting,
 }: ProviderButtonProps) {
-  const getRedirectTo = useCallback(
-    () => redirectToProp || getSearchParam('redirectTo'),
-    [redirectToProp],
-  );
-
-  const getCallbackURL = useCallback(
-    () => `${callbackURLProp || `/${getRedirectTo()}`}`,
-    [callbackURLProp, getRedirectTo],
-  );
+  const { getFrontendCallbackURL } = useAuthRedirect(redirectTo);
 
   const doSignInSocial = async () => {
     setIsSubmitting(true);
@@ -44,7 +30,7 @@ export function ProviderButton({
     try {
       const socialParams = {
         provider: provider.provider as SocialProvider,
-        callbackURL: getCallbackURL(),
+        callbackURL: getFrontendCallbackURL(),
       };
 
       const { error } = await authClient.signIn.social(socialParams);

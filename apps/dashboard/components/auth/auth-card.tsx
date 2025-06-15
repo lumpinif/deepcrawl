@@ -33,7 +33,6 @@ import { socialProviders } from './social-providers';
 export interface AuthCardProps {
   pathname?: string;
   className?: string;
-  callbackURL?: string;
   redirectTo?: string;
   view?: AuthView;
   providers?: SocialProvider[];
@@ -42,7 +41,6 @@ export interface AuthCardProps {
 
 export function AuthCard({
   className,
-  callbackURL,
   pathname,
   redirectTo,
   view: viewProp,
@@ -122,7 +120,6 @@ export function AuthCard({
                                 key={provider}
                                 redirectTo={redirectTo}
                                 provider={socialProvider}
-                                callbackURL={callbackURL}
                                 isSubmitting={isSubmitting}
                                 setIsSubmitting={setIsSubmitting}
                               />
@@ -198,7 +195,6 @@ export function AuthCard({
                 <AuthForm
                   pathname={pathname}
                   redirectTo={redirectTo}
-                  callbackURL={callbackURL}
                   isSubmitting={isSubmitting}
                   otpSeparators={otpSeparators}
                   setIsSubmitting={setIsSubmitting}

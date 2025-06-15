@@ -5,10 +5,13 @@ import { SpinnerButton } from '@/components/spinner-button';
 import {
   useAddPasskey,
   useAuthSession,
+  useCanUnlinkProvider,
+  useLinkSocialProvider,
+  useLinkedAccounts,
   useRemovePasskey,
+  useUnlinkSocialProvider,
   useUserPasskeys,
 } from '@/hooks/auth.hooks';
-import { authClient } from '@/lib/auth.client';
 import { getDeviceTypeDescription } from '@/lib/passkey-utils';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
@@ -26,11 +29,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@deepcrawl/ui/components/ui/dialog';
-import {
-  IconBrandGithub,
-  IconBrandGoogle,
-  IconEdit,
-} from '@tabler/icons-react';
+import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
 import {
   KeyIcon,
   Loader2,
@@ -40,8 +39,7 @@ import {
   Trash2,
   UserCheck,
 } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
 
 // Helper function to safely format dates from server data
 const formatDate = (date: Date | string | null): string => {
@@ -69,20 +67,39 @@ interface ProviderInfo {
 
 export function ProvidersManagementCard() {
   const { data: session, isLoading } = useAuthSession();
+  const { data: linkedAccounts = [], isLoading: isLoadingAccounts } =
+    useLinkedAccounts();
   const { data: passkeys = [], isLoading: isLoadingPasskeys } =
     useUserPasskeys();
   const { mutate: addPasskey, isPending: isAddingPasskey } = useAddPasskey();
   const { mutate: removePasskey } = useRemovePasskey();
-  const [linkingProvider, setLinkingProvider] = useState<string | null>(null);
+  const { mutate: linkProvider, isPending: isLinkingProvider } =
+    useLinkSocialProvider();
+  const { mutate: unlinkProvider, isPending: isUnlinkingProvider } =
+    useUnlinkSocialProvider();
   const [isPasskeysDialogOpen, setIsPasskeysDialogOpen] = useState(false);
   const [passkeyToRemove, setPasskeyToRemove] = useState<{
     id: string;
     name: string | null;
   } | null>(null);
+  const [processingProvider, setProcessingProvider] = useState<string | null>(
+    null,
+  );
 
   const user = session?.user;
 
-  if (isLoading) {
+  // Get safety check for each provider
+  const googleUnlinkSafety = useCanUnlinkProvider('google');
+  const githubUnlinkSafety = useCanUnlinkProvider('github');
+
+  // Reset processing provider when mutations complete
+  useEffect(() => {
+    if (!isLinkingProvider && !isUnlinkingProvider) {
+      setProcessingProvider(null);
+    }
+  }, [isLinkingProvider, isUnlinkingProvider]);
+
+  if (isLoading || isLoadingAccounts) {
     return (
       <Card>
         <CardHeader>
@@ -123,8 +140,15 @@ export function ProvidersManagementCard() {
     );
   }
 
-  // Mock provider data based on current session
-  // In a real implementation, this would come from the session/user accounts
+  // Check if providers are connected based on linked accounts
+  const isGoogleConnected = linkedAccounts.some(
+    (account) => account.providerId === 'google',
+  );
+  const isGithubConnected = linkedAccounts.some(
+    (account) => account.providerId === 'github',
+  );
+
+  // Provider data with real connection status
   const providers: ProviderInfo[] = [
     {
       id: 'email',
@@ -147,36 +171,34 @@ export function ProvidersManagementCard() {
       name: 'Google',
       type: 'oauth',
       icon: IconBrandGoogle,
-      connected: false, // Would check from session.user.accounts
-      lastUsed: 'Jun 6',
-      accountInfo: user.email,
+      connected: isGoogleConnected,
+      lastUsed: isGoogleConnected ? 'Recently' : undefined,
+      accountInfo: isGoogleConnected ? user.email : undefined,
     },
     {
       id: 'github',
       name: 'GitHub',
       type: 'oauth',
       icon: IconBrandGithub,
-      connected: false, // Would check from session.user.accounts
-      lastUsed: 'Jun 6',
-      accountInfo: 'lumpinif',
+      connected: isGithubConnected,
+      lastUsed: isGithubConnected ? 'Recently' : undefined,
+      accountInfo: isGithubConnected ? 'Connected' : undefined,
     },
   ];
 
   const handleConnectProvider = async (providerId: string) => {
+    setProcessingProvider(providerId);
     if (providerId === 'google' || providerId === 'github') {
-      try {
-        setLinkingProvider(providerId);
-        await authClient.linkSocial({
-          provider: providerId as 'google' | 'github',
-          callbackURL: '/account',
-        });
-        toast.success('Social provider linked successfully');
-      } catch (error) {
-        console.error('Failed to link provider:', error);
-        toast.error('Failed to link social provider. Please try again.');
-      } finally {
-        setLinkingProvider(null);
-      }
+      linkProvider({
+        provider: providerId,
+      });
+    }
+  };
+
+  const handleDisconnectProvider = async (providerId: string) => {
+    setProcessingProvider(providerId);
+    if (providerId === 'google' || providerId === 'github') {
+      unlinkProvider(providerId);
     }
   };
 
@@ -202,11 +224,6 @@ export function ProvidersManagementCard() {
     setPasskeyToRemove(null);
   };
 
-  const handleDisconnectProvider = async (providerId: string) => {
-    // TODO: Implement provider disconnection
-    toast.error('Provider disconnection not yet implemented');
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -222,10 +239,20 @@ export function ProvidersManagementCard() {
       <CardContent className="space-y-4">
         {providers.map((provider) => {
           const IconComponent = provider.icon;
-          const isProviderLoading =
-            ((provider.id === 'google' || provider.id === 'github') &&
-              linkingProvider === provider.id) ||
-            (provider.id === 'passkeys' && isAddingPasskey);
+
+          const canUnlink =
+            provider.id === 'google'
+              ? googleUnlinkSafety.canUnlink
+              : provider.id === 'github'
+                ? githubUnlinkSafety.canUnlink
+                : true;
+
+          const isThisProviderLinking =
+            isLinkingProvider && processingProvider === provider.id;
+          const isThisProviderUnlinking =
+            isUnlinkingProvider && processingProvider === provider.id;
+          const isAnyProviderProcessing =
+            isLinkingProvider || isUnlinkingProvider || isAddingPasskey;
 
           return (
             <div
@@ -254,16 +281,6 @@ export function ProvidersManagementCard() {
               <div className="flex items-center gap-2">
                 {provider.connected ? (
                   <>
-                    {/* {provider.id === 'email' && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDisconnectProvider(provider.id)}
-                        disabled={isProviderLoading}
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    )} */}
                     {provider.id === 'passkeys' && (
                       <div className="flex gap-2">
                         <Dialog
@@ -271,7 +288,11 @@ export function ProvidersManagementCard() {
                           onOpenChange={setIsPasskeysDialogOpen}
                         >
                           <DialogTrigger asChild>
-                            <Button variant="outline" size="sm">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={isAnyProviderProcessing}
+                            >
                               Manage
                             </Button>
                           </DialogTrigger>
@@ -353,11 +374,23 @@ export function ProvidersManagementCard() {
                           className="w-20"
                           isLoading={isAddingPasskey}
                           onClick={handleAddPasskey}
-                          disabled={isAddingPasskey}
+                          disabled={isAnyProviderProcessing || !canUnlink}
                         >
                           Add
                         </SpinnerButton>
                       </div>
+                    )}
+                    {(provider.id === 'google' || provider.id === 'github') && (
+                      <SpinnerButton
+                        size="sm"
+                        variant="outline"
+                        className="w-24"
+                        isLoading={isThisProviderUnlinking}
+                        onClick={() => handleDisconnectProvider(provider.id)}
+                        disabled={isAnyProviderProcessing || !canUnlink}
+                      >
+                        Disconnect
+                      </SpinnerButton>
                     )}
                   </>
                 ) : (
@@ -369,7 +402,7 @@ export function ProvidersManagementCard() {
                         className="w-20"
                         isLoading={isAddingPasskey}
                         onClick={handleAddPasskey}
-                        disabled={isAddingPasskey}
+                        disabled={isAnyProviderProcessing || !canUnlink}
                       >
                         Add
                       </SpinnerButton>
@@ -378,9 +411,9 @@ export function ProvidersManagementCard() {
                         size="sm"
                         variant="outline"
                         className="w-24"
-                        isLoading={linkingProvider === provider.id}
+                        isLoading={isThisProviderLinking}
                         onClick={() => handleConnectProvider(provider.id)}
-                        disabled={linkingProvider === provider.id}
+                        disabled={isAnyProviderProcessing || !canUnlink}
                       >
                         Connect
                       </SpinnerButton>

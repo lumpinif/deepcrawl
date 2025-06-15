@@ -1,6 +1,7 @@
 import { fetchAuthSession } from '@/app/actions/auth';
 import {
   deviceSessionsQueryOptions,
+  linkedAccountsQueryOptions,
   listSessionsQueryOptions,
   organizationQueryOptions,
   sessionQueryOptions,
@@ -28,13 +29,14 @@ export default async function AccountPage() {
 
   const queryClient = new QueryClient();
 
-  // Prefetch all user-related data
+  // Prefetch all user-related data including OAuth accounts
   await Promise.all([
     queryClient.prefetchQuery(sessionQueryOptions()),
     queryClient.prefetchQuery(listSessionsQueryOptions()),
     queryClient.prefetchQuery(deviceSessionsQueryOptions()),
     queryClient.prefetchQuery(organizationQueryOptions()),
     queryClient.prefetchQuery(userPasskeysQueryOptions()),
+    queryClient.prefetchQuery(linkedAccountsQueryOptions()),
   ]);
 
   return (

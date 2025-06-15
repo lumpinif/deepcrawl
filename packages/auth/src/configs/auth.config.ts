@@ -6,11 +6,9 @@ import {
   bearer,
   multiSession,
   oAuthProxy,
-  // twoFactor,
   oneTap,
   openAPI,
   organization,
-  // customSession
 } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 
@@ -37,6 +35,7 @@ interface SecondaryStorage {
  */
 export function createAuthConfig(env: Env) {
   // use this to determine if we are in development or production instead of process.env.NODE_ENV
+  const baseAuthURL = env.BETTER_AUTH_URL;
   const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
 
   const db = getDrizzleDB({ DATABASE_URL: env.DATABASE_URL });
@@ -64,7 +63,7 @@ export function createAuthConfig(env: Env) {
      * @default "/api/auth"
      */
     basePath: '/api/auth',
-    baseURL: env.BETTER_AUTH_URL,
+    baseURL: baseAuthURL,
     secret: env.BETTER_AUTH_SECRET,
     database: drizzleAdapter(db, { provider: 'pg', schema: schema }),
     session: {
@@ -80,7 +79,6 @@ export function createAuthConfig(env: Env) {
       bearer(),
       passkey(),
       openAPI(),
-      oAuthProxy(),
       multiSession(),
       organization({
         // async sendInvitationEmail(data) {
@@ -104,27 +102,17 @@ export function createAuthConfig(env: Env) {
         // });
         // },
       }),
-      // twoFactor({
-      // 	otpOptions: {
-      // 		async sendOTP({ user, otp }) {
-      // 			await resend.emails.send({
-      // 				from,
-      // 				to: user.email,
-      // 				subject: "Your OTP",
-      // 				html: `Your OTP is ${otp}`,
-      // 			});
-      // 		},
-      // 	},
-      //       }),
     ],
     socialProviders: {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
+        // redirectURI: 'https://auth.deepcrawl.dev/api/auth/callback/github',
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
+        // redirectURI: 'https://auth.deepcrawl.dev/api/auth/callback/google',
       },
     },
     account: {
@@ -147,18 +135,29 @@ export function createAuthConfig(env: Env) {
     ],
     advanced: {
       cookiePrefix: 'deepcrawl',
+
+      // Use secure cookies based on environment
+      useSecureCookies: !isDevelopment,
+
+      // Cross-subdomain cookies configuration
       crossSubDomainCookies: {
         enabled: !isDevelopment, // Only enable in production
         domain: isDevelopment ? undefined : '.deepcrawl.dev',
       },
+
+      // Default cookie attributes for all cookies
       defaultCookieAttributes: {
-        secure: !isDevelopment, // false for development (HTTP), true for production (HTTPS)
         httpOnly: true,
+        secure: !isDevelopment, // false for development (HTTP), true for production (HTTPS)
         sameSite: (isDevelopment ? 'lax' : 'none') as 'lax' | 'none', // 'lax' for dev, 'none' for production cross-origin
         partitioned: !isDevelopment, // Only in production for cross-origin cookies
       },
-      // Ensure cookies work in development
-      useSecureCookies: !isDevelopment,
+
+      // IP address tracking for rate limiting and session security
+      ipAddress: {
+        ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for', 'x-real-ip'],
+        disableIpTracking: false,
+      },
     },
     // rateLimit: {
     // window: 60, // time window in seconds

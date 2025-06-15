@@ -33,7 +33,7 @@ export const authClient = createAuthClient({
     // 	},
     // }),
   ],
-  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:8787',
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:8787', // localhost:8787 is where the auth worker is running locally
   basePath: '/api/auth',
   fetchOptions: {
     credentials: 'include',

@@ -5,4 +5,5 @@ export const userQueryKeys = {
   deviceSessions: ['user', 'device-sessions'] as const,
   organization: ['user', 'organization'] as const,
   passkeys: ['user', 'passkeys'] as const,
+  linkedAccounts: ['user', 'linked-accounts'] as const,
 } as const;

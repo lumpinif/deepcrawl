@@ -14,7 +14,6 @@ import { Logout } from './logout';
 
 export interface AuthFormProps {
   className?: string;
-  callbackURL?: string;
   isSubmitting?: boolean;
   pathname?: string;
   redirectTo?: string;
@@ -25,7 +24,6 @@ export interface AuthFormProps {
 
 export function AuthForm({
   className,
-  callbackURL,
   isSubmitting,
   pathname,
   redirectTo,
@@ -93,7 +91,6 @@ export function AuthForm({
         <MagicLinkForm
           className={className}
           redirectTo={redirectTo}
-          callbackURL={callbackURL}
           isSubmitting={isSubmitting}
           setIsSubmitting={setIsSubmitting}
         />

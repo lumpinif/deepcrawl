@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -9,14 +9,11 @@ import { useIsHydrated } from '@/hooks/use-hydrated';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
 
 import { SpinnerButton } from '@/components/spinner-button';
+import { useAuthRedirect } from '@/hooks/auth.hooks';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { authViewRoutes } from '@/routes/auth';
-import {
-  type PasswordValidation,
-  getPasswordSchema,
-  getSearchParam,
-} from '@/utils';
+import { type PasswordValidation, getPasswordSchema } from '@/utils';
 import {
   Form,
   FormControl,
@@ -33,7 +30,6 @@ import { PasswordInput } from '../password-input';
 
 export interface SignUpFormProps {
   className?: string;
-  callbackURL?: string;
   isSubmitting?: boolean;
   redirectTo?: string;
   setIsSubmitting?: (value: boolean) => void;
@@ -46,7 +42,6 @@ const confirmPasswordEnabled = true;
 
 export function SignUpForm({
   className,
-  callbackURL,
   isSubmitting,
   redirectTo,
   setIsSubmitting,
@@ -54,17 +49,7 @@ export function SignUpForm({
 }: SignUpFormProps) {
   const router = useRouter();
   const isHydrated = useIsHydrated();
-
-  const getRedirectTo = useCallback(
-    () => redirectTo || getSearchParam('redirectTo'),
-    [redirectTo],
-  );
-
-  const getCallbackURL = useCallback(
-    () => `${callbackURL || `/${getRedirectTo()}`}`,
-    [callbackURL, getRedirectTo],
-  );
-
+  const { getFrontendCallbackURL } = useAuthRedirect(redirectTo);
   const { onSuccess, isPending: transitionPending } = useOnSuccessTransition({
     redirectTo,
   });
@@ -144,7 +129,7 @@ export function SignUpForm({
         name: name || '',
         ...(username !== undefined && { username }),
         ...additionalFieldValues,
-        ...(emailVerification && { callbackURL: getCallbackURL() }),
+        ...(emailVerification && { callbackURL: getFrontendCallbackURL() }),
       });
 
       if (error) {

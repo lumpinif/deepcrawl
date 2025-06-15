@@ -1,29 +1,26 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
-
-// import { useIsRestoring } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useOnSuccessTransition } from '../../hooks/use-success-transition';
 
 export function AuthCallback({ redirectTo }: { redirectTo?: string }) {
-  // const isRestoring = useIsRestoring();
-  const isRedirecting = useRef(false);
-
-  const { onSuccess } = useOnSuccessTransition({ redirectTo });
+  const { onSuccess, isPending } = useOnSuccessTransition({ redirectTo });
 
   useEffect(() => {
-    if (isRedirecting.current) return;
-
-    isRedirecting.current = true;
+    // Immediately trigger the success transition when this component mounts
+    // This happens when users return from OAuth providers
     onSuccess();
-    return;
-
-    // if (isRestoring) return;
-
-    // isRedirecting.current = true;
-    // onSuccess();
   }, [onSuccess]);
 
-  return <Loader2 className="animate-spin" />;
+  return (
+    <div className="flex min-h-[200px] items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="size-8 animate-spin" />
+        <p className="text-muted-foreground text-sm">
+          {isPending ? 'Completing authentication...' : 'Redirecting...'}
+        </p>
+      </div>
+    </div>
+  );
 }

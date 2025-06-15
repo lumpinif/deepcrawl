@@ -1,6 +1,7 @@
 import {
   fetchAuthSession,
   fetchDeviceSessions,
+  fetchLinkedAccounts,
   fetchListSessions,
   fetchOrganization,
   fetchUserPasskeys,
@@ -64,6 +65,18 @@ export const userPasskeysQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.passkeys,
     queryFn: fetchUserPasskeys,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+/**
+ * Query options for user's linked OAuth accounts
+ * Provides full type inference for useQuery, prefetchQuery, etc.
+ */
+export const linkedAccountsQueryOptions = () =>
+  queryOptions({
+    queryKey: userQueryKeys.linkedAccounts,
+    queryFn: fetchLinkedAccounts,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });

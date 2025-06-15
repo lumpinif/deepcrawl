@@ -149,11 +149,6 @@ export function SessionsManagementCard() {
                             new UAParser(session.userAgent || '').getBrowser()
                               .name
                           }
-                          {isCurrentSession && (
-                            <Badge variant="secondary" className="text-xs">
-                              Current
-                            </Badge>
-                          )}
                         </div>
                         <div className="text-muted-foreground text-xs">
                           Last active:{' '}
@@ -162,6 +157,11 @@ export function SessionsManagementCard() {
                             : 'Unknown'}
                         </div>
                       </div>
+                      {isCurrentSession && (
+                        <Badge variant="secondary" className="text-xs">
+                          Current
+                        </Badge>
+                      )}
                       {session.ipAddress && (
                         <div className="text-muted-foreground text-xs">
                           IP: {session.ipAddress}

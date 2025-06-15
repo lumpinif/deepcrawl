@@ -238,8 +238,8 @@ export async function updatePasskeyName(passkeyId: string, name: string) {
 }
 
 /**
- * Update the most recent passkey name for the current user
- * This is used when we don't have the specific passkey ID from Better Auth
+ * Update the name of the most recently created passkey
+ * No server-side caching - React Query handles client caching
  */
 export async function updateMostRecentPasskeyName(name: string) {
   const requestHeaders = await headers();
@@ -259,7 +259,7 @@ export async function updateMostRecentPasskeyName(name: string) {
       DATABASE_URL: process.env.DATABASE_URL,
     });
 
-    // Get the most recent passkey for this user (by creation date)
+    // Get the most recent passkey for this user
     const mostRecentPasskey = await db
       .select({ id: schema.passkey.id })
       .from(schema.passkey)
@@ -267,29 +267,65 @@ export async function updateMostRecentPasskeyName(name: string) {
       .orderBy(desc(schema.passkey.createdAt))
       .limit(1);
 
-    if (mostRecentPasskey.length === 0) {
+    if (mostRecentPasskey.length === 0 || !mostRecentPasskey[0]) {
       throw new Error('No passkeys found for user');
     }
 
-    // Update the name of the most recent passkey
-    const passkeyId = mostRecentPasskey[0]?.id;
-    if (!passkeyId) {
-      throw new Error('Invalid passkey ID');
-    }
-
+    // Update the passkey name
     const result = await db
       .update(schema.passkey)
       .set({ name })
-      .where(eq(schema.passkey.id, passkeyId))
+      .where(eq(schema.passkey.id, mostRecentPasskey[0].id))
       .returning({ id: schema.passkey.id, name: schema.passkey.name });
 
     if (result.length === 0 || !result[0]) {
       throw new Error('Failed to update passkey name');
     }
 
-    return { success: true, id: result[0].id, name: result[0].name };
+    return { success: true, passkey: result[0] };
   } catch (error) {
     console.error('Failed to update most recent passkey name:', error);
     throw error instanceof Error ? error : new Error('Unknown error occurred');
+  }
+}
+
+/**
+ * Fetch user's linked OAuth accounts
+ * No server-side caching - React Query handles client caching
+ */
+export async function fetchLinkedAccounts() {
+  const requestHeaders = await headers();
+
+  try {
+    // Always get fresh session - no caching complexity
+    const session = await auth.api.getSession({
+      headers: requestHeaders,
+    });
+
+    if (!session?.user?.id) {
+      return [];
+    }
+
+    // Direct database query - no caching layer
+    const db = getDrizzleDB({
+      DATABASE_URL: process.env.DATABASE_URL,
+    });
+
+    const linkedAccounts = await db
+      .select({
+        id: schema.account.id,
+        providerId: schema.account.providerId,
+        accountId: schema.account.accountId,
+        createdAt: schema.account.createdAt,
+        updatedAt: schema.account.updatedAt,
+      })
+      .from(schema.account)
+      .where(eq(schema.account.userId, session.user.id))
+      .orderBy(desc(schema.account.createdAt));
+
+    return linkedAccounts;
+  } catch (error) {
+    console.error('Failed to fetch linked accounts:', error);
+    return [];
   }
 }

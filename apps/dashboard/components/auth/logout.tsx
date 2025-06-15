@@ -13,7 +13,7 @@ export function Logout() {
   const signingOut = useRef(false);
   const queryClient = useQueryClient();
 
-  const { onSuccess } = useOnSuccessTransition({
+  const { onSuccess, isPending } = useOnSuccessTransition({
     redirectTo: `/${authViewRoutes.login}`,
   });
 
@@ -34,5 +34,14 @@ export function Logout() {
     });
   }, [onSuccess, queryClient]);
 
-  return <Loader2 className="animate-spin" />;
+  return (
+    <div className="flex min-h-[200px] items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="size-8 animate-spin" />
+        <p className="animate-pulse text-muted-foreground text-sm">
+          {isPending ? 'Goodbye' : 'Logging out'}
+        </p>
+      </div>
+    </div>
+  );
 }

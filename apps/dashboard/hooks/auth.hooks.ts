@@ -13,14 +13,17 @@ import { generatePasskeyName } from '@/lib/passkey-utils';
 import { userQueryKeys } from '@/lib/query-keys';
 import {
   deviceSessionsQueryOptions,
+  linkedAccountsQueryOptions,
   listSessionsQueryOptions,
   organizationQueryOptions,
   sessionQueryOptions,
   userPasskeysQueryOptions,
 } from '@/lib/query-options';
+import { getSearchParam } from '@/utils';
 import type { Session } from '@deepcrawl/auth/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -46,8 +49,83 @@ const displayNameSchema = z
   .max(32, 'Display name must be 32 characters or less')
   .trim();
 
+// Hooks with query options
 // Use Better Auth's built-in useSession hook instead of custom implementation
 export const useAuthSession = () => useQuery(sessionQueryOptions());
+
+/**
+ * Hook for getting active sessions with proper error handling and full type inference
+ */
+export const useListSessions = () => {
+  return useQuery(listSessionsQueryOptions());
+};
+
+/**
+ * Hook for getting device sessions with proper error handling and full type inference
+ */
+export const useDeviceSessions = () => {
+  return useQuery(deviceSessionsQueryOptions());
+};
+
+/**
+ * Hook for getting organization data with proper error handling and full type inference
+ */
+export const useOrganization = () => {
+  return useQuery(organizationQueryOptions());
+};
+
+/**
+ * Hook for fetching user's passkeys with proper error handling and caching
+ */
+export const useUserPasskeys = () => {
+  return useQuery(userPasskeysQueryOptions());
+};
+
+/**
+ * Hook for fetching user's linked OAuth accounts with proper error handling and caching
+ */
+export const useLinkedAccounts = () => {
+  return useQuery(linkedAccountsQueryOptions());
+};
+
+/**
+ * Hook to check if a user can safely unlink a specific provider without getting locked out
+ */
+export const useCanUnlinkProvider = (providerId: string) => {
+  const { data: session } = useAuthSession();
+  const { data: linkedAccounts = [] } = useLinkedAccounts();
+  const { data: passkeys = [] } = useUserPasskeys();
+
+  // Check available authentication methods
+  const hasPassword = !!session?.user?.emailVerified; // Users with verified email can use email auth
+  const hasPasskeys = passkeys.length > 0;
+  const otherOAuthAccounts = linkedAccounts.filter(
+    (account) => account.providerId !== providerId,
+  );
+  const hasOtherOAuth = otherOAuthAccounts.length > 0;
+
+  // User can unlink if they have at least one other authentication method
+  const canUnlink = hasPassword || hasPasskeys || hasOtherOAuth;
+
+  // Provide detailed information about why they can't unlink
+  const reasons = [];
+  if (!hasPassword) reasons.push('set up a password');
+  if (!hasPasskeys) reasons.push('add a passkey');
+  if (!hasOtherOAuth) reasons.push('link another social account');
+
+  return {
+    canUnlink,
+    hasPassword,
+    hasPasskeys,
+    hasOtherOAuth,
+    totalAuthMethods:
+      (hasPassword ? 1 : 0) + passkeys.length + linkedAccounts.length,
+    suggestedActions: reasons,
+    warningMessage: canUnlink
+      ? null
+      : `To unlink this account, please ${reasons.slice(0, -1).join(', ')}${reasons.length > 1 ? ' or ' : ''}${reasons[reasons.length - 1]} first.`,
+  };
+};
 
 /**
  * Hook for updating user display name with optimistic updates
@@ -307,43 +385,28 @@ export const useRevokeAllOtherSessions = () => {
 };
 
 /**
- * Hook for getting active sessions with proper error handling and full type inference
- */
-export const useListSessions = () => {
-  return useQuery(listSessionsQueryOptions());
-};
-
-/**
- * Hook for getting device sessions with proper error handling and full type inference
- */
-export const useDeviceSessions = () => {
-  return useQuery(deviceSessionsQueryOptions());
-};
-
-/**
- * Hook for getting organization data with proper error handling and full type inference
- */
-export const useOrganization = () => {
-  return useQuery(organizationQueryOptions());
-};
-
-/**
  * Hook for linking a social provider to current account
  */
 export const useLinkSocialProvider = () => {
-  const queryClient = useQueryClient();
+  const { getFrontendCallbackURL } = useAuthRedirect('account');
 
   return useMutation({
     mutationFn: async ({
       provider,
-      callbackURL,
+      redirectTo = 'account',
     }: {
       provider: 'google' | 'github';
-      callbackURL?: string;
+      redirectTo?: string;
     }) => {
+      // Add a parameter to indicate this is a linking flow
+      const callbackURL = getFrontendCallbackURL(redirectTo);
+      const linkingURL = new URL(callbackURL);
+      linkingURL.searchParams.set('linking', 'true');
+      const linkingCallbackURL = linkingURL.toString();
+
       const result = await authClient.linkSocial({
         provider,
-        callbackURL: callbackURL || '/account',
+        callbackURL: linkingCallbackURL,
       });
 
       if (result?.error) {
@@ -352,12 +415,8 @@ export const useLinkSocialProvider = () => {
 
       return result;
     },
-    onSuccess: () => {
-      toast.success('Social provider linked successfully');
-
-      // Invalidate session to refresh account data
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
-    },
+    // Remove onSuccess - OAuth redirects mean we won't be here when linking completes
+    // The success state will be handled after the user returns from OAuth provider
     onError: (error) => {
       console.error('Social provider linking failed:', error);
       toast.error('Failed to link social provider. Please try again.');
@@ -367,26 +426,35 @@ export const useLinkSocialProvider = () => {
 
 /**
  * Hook for unlinking a social provider from current account
+ * Includes safety checks to prevent account lockout
  */
 export const useUnlinkSocialProvider = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (providerId: string) => {
-      // Note: Better Auth doesn't have a direct unlink method in the client
-      // This would need to be implemented via a custom API endpoint
-      // For now, we'll throw an error
-      throw new Error('Provider unlinking not yet implemented');
+      // Use Better Auth's built-in unlinkAccount method
+      const result = await authClient.unlinkAccount({
+        providerId,
+      });
+
+      if (result?.error) {
+        throw new Error(result.error.message);
+      }
+
+      return result;
+    },
+    onError: (error) => {
+      toast.error(
+        error.message || 'Failed to unlink social provider. Please try again.',
+      );
     },
     onSuccess: () => {
       toast.success('Social provider unlinked successfully');
 
-      // Invalidate session to refresh account data
+      // Invalidate both session and linked accounts to refresh data
       queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
-    },
-    onError: (error) => {
-      console.error('Social provider unlinking failed:', error);
-      toast.error('Failed to unlink social provider. Please try again.');
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.linkedAccounts });
     },
   });
 };
@@ -505,8 +573,65 @@ export const useRemovePasskey = () => {
 };
 
 /**
- * Hook for fetching user's passkeys with proper error handling and caching
+ * Custom hook for handling auth redirect URLs
  */
-export const useUserPasskeys = () => {
-  return useQuery(userPasskeysQueryOptions());
-};
+export function useAuthRedirect(redirectTo?: string) {
+  const getRedirectTo = useCallback(
+    () => redirectTo || getSearchParam('redirectTo') || '', // Default to home page
+    [redirectTo],
+  );
+
+  const getFrontendCallbackURL = useCallback(
+    (redirectToParam?: string) => {
+      const redirectPath = redirectToParam || getRedirectTo();
+
+      // Get the current frontend origin (where the Next.js app is running)
+      // This is critical for client-server separated architecture
+      const frontendOrigin =
+        typeof window !== 'undefined'
+          ? window.location.origin
+          : process.env.NODE_ENV === 'production'
+            ? 'https://deepcrawl.dev' // Production frontend URL
+            : 'http://localhost:3000'; // Development frontend URL
+
+      // Use URL constructor for robust URL construction
+      try {
+        const url = new URL(frontendOrigin);
+
+        if (redirectPath) {
+          // Handle both absolute and relative paths
+          if (redirectPath.startsWith('http')) {
+            // If it's a full URL, extract just the pathname and search
+            const redirectUrl = new URL(redirectPath);
+            url.pathname = redirectUrl.pathname;
+            url.search = redirectUrl.search;
+          } else {
+            // Ensure the path starts with a slash and doesn't have double slashes
+            const normalizedPath = redirectPath.startsWith('/')
+              ? redirectPath
+              : `/${redirectPath}`;
+            url.pathname = normalizedPath;
+          }
+        }
+
+        return url.toString();
+      } catch (error) {
+        console.warn(
+          'URL construction failed in getFrontendCallbackURL:',
+          error,
+        );
+        // Fallback to simple string concatenation
+        const normalizedPath = redirectPath?.startsWith('/')
+          ? redirectPath
+          : `/${redirectPath || ''}`;
+        return `${frontendOrigin}${normalizedPath}`;
+      }
+    },
+    [getRedirectTo],
+  );
+
+  return {
+    getRedirectTo,
+    getFrontendCallbackURL,
+  };
+}

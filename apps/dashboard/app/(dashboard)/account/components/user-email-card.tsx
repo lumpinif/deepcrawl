@@ -9,7 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
-import { Loader2, Mail, Shield } from 'lucide-react';
+import { cn } from '@deepcrawl/ui/lib/utils';
+import { IconShieldLockFilled, IconShieldOff } from '@tabler/icons-react';
+import { Loader2, Mail } from 'lucide-react';
 
 export function UserEmailCard() {
   const { data: session, isLoading } = useAuthSession();
@@ -83,11 +85,14 @@ export function UserEmailCard() {
             <div className="font-medium">{user.email}</div>
           </div>
           <Badge
-            variant={user.emailVerified ? 'default' : 'outline'}
-            className="select-none text-muted-foreground text-xs"
+            variant="outline"
+            className={cn(
+              'select-none text-muted-foreground text-xs',
+              user.emailVerified && 'text-green-600',
+            )}
           >
-            <Shield className="mr-1 h-3 w-3" />
-            {user.emailVerified ? 'Email Verified' : 'Email Unverified'}
+            {user.emailVerified ? <IconShieldLockFilled /> : <IconShieldOff />}
+            {user.emailVerified ? 'Verified' : 'Unverified'}
           </Badge>
         </div>
       </CardContent>
