@@ -14,10 +14,9 @@ import { toast } from 'sonner';
 
 export const authClient = createAuthClient({
   basePath: '/api/auth',
-  baseURL:
-    process.env.BETTER_AUTH_URL || process.env.NODE_ENV === 'production'
-      ? 'https://auth.deepcrawl.dev'
-      : 'http://localhost:8787',
+  baseURL: process.env.NODE_ENV === 'production'
+    ? 'https://auth.deepcrawl.dev'
+    : 'http://localhost:8787',
   plugins: [
     organizationClient(),
     twoFactorClient({
@@ -43,6 +42,14 @@ export const authClient = createAuthClient({
     onError(e) {
       if (e.error.status === 429) {
         toast.error('Too many requests. Please try again later.');
+      }
+      // Add debugging for production
+      if (process.env.NODE_ENV === 'production') {
+        console.error('Auth Client Error:', {
+          status: e.error.status,
+          message: e.error.message,
+          baseURL: process.env.NODE_ENV === 'production' ? 'https://auth.deepcrawl.dev' : 'http://localhost:8787',
+        });
       }
     },
   },
