@@ -13,6 +13,11 @@ import { createAuthClient } from 'better-auth/react';
 import { toast } from 'sonner';
 
 export const authClient = createAuthClient({
+  basePath: '/api/auth',
+  baseURL:
+    process.env.BETTER_AUTH_URL || process.env.NODE_ENV === 'production'
+      ? 'https://auth.deepcrawl.dev'
+      : 'http://localhost:8787',
   plugins: [
     organizationClient(),
     twoFactorClient({
@@ -33,8 +38,6 @@ export const authClient = createAuthClient({
     // 	},
     // }),
   ],
-  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:8787', // localhost:8787 is where the auth worker is running locally
-  basePath: '/api/auth',
   fetchOptions: {
     credentials: 'include',
     onError(e) {
