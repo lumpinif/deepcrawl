@@ -4,12 +4,8 @@ import {
   authContextMiddleware,
   authInstanceMiddleware,
 } from '@/middlewares/auth';
+import { deepCrawlCors } from '@/middlewares/cors';
 import type { AppBindings } from '@/types';
-import {
-  ALLOWED_ORIGINS,
-  DEVELOPMENT_ORIGINS,
-} from '@deepcrawl/auth/configs/auth.config';
-import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { requestId } from 'hono/request-id';
@@ -20,24 +16,10 @@ import { notFound, onError, serveEmojiFavicon } from 'stoker/middlewares';
 export default function createHonoApp() {
   const app = new Hono<AppBindings>();
 
-  app.use('*', async (c, next) => {
-    const isDevelopment = c.env.AUTH_WORKER_NODE_ENV === 'development';
-    const allowedOrigins = ALLOWED_ORIGINS;
-    const origin = isDevelopment
-      ? [...allowedOrigins, ...DEVELOPMENT_ORIGINS]
-      : allowedOrigins;
+  // Apply custom CORS middleware first (must be before routes)
+  app.use('*', deepCrawlCors);
 
-    cors({
-      origin,
-      maxAge: 600,
-      credentials: true,
-      exposeHeaders: ['Content-Length'],
-      allowMethods: ['POST', 'GET', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'Authorization'],
-    });
-    await next();
-  });
-
+  // Apply other middleware in order
   app
     .use(logger())
     .use('*', requestId())
