@@ -1,6 +1,4 @@
-import { betterFetch } from '@better-fetch/fetch';
-import type { Session } from '@deepcrawl/auth/types';
-import { getCookieCache, getSessionCookie } from 'better-auth/cookies';
+import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
 import { authViewRoutes } from './routes/auth';
 
@@ -8,24 +6,6 @@ export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request, {
     cookiePrefix: 'deepcrawl',
   });
-
-  const betterAuthURL = process.env.BETTER_AUTH_URL;
-  console.log('🚀 ~ middleware ~ betterAuthURL:', betterAuthURL);
-
-  const { data: session } = await betterFetch<Session>(
-    `${betterAuthURL}/api/auth/get-session`,
-    {
-      baseURL: betterAuthURL,
-      headers: {
-        credentials: 'include',
-        cookie: request.headers.get('cookie') || '', // Forward the cookies from the request
-      },
-    },
-  );
-  console.log('🚀 ~ middleware ~ betterFetch session:', session);
-
-  const cookieCache = await getCookieCache(request);
-  console.log('🚀 ~ middleware ~ cookieCache:', cookieCache);
 
   const { pathname } = request.nextUrl;
 
@@ -36,28 +16,30 @@ export async function middleware(request: NextRequest) {
   );
 
   // Enhanced debugging for production issues
-  const allCookies = request.cookies.getAll();
-  const deepcrawlCookies = allCookies.filter((cookie) =>
-    cookie.name.startsWith('deepcrawl'),
-  );
+  // const allCookies = request.cookies.getAll();
+  // const deepcrawlCookies = allCookies.filter((cookie) =>
+  //   cookie.name.startsWith('deepcrawl'),
+  // );
 
-  console.log('🔍 Middleware Debug:', {
-    path: pathname,
-    host: request.headers.get('host'),
-    origin: request.headers.get('origin'),
-    userAgent: `${request.headers.get('user-agent')?.substring(0, 50)}...`,
-    sessionCookie: sessionCookie ? '✅ Found' : '❌ Not found',
-    isPublicAuthRoute: publicAuthRoutes.includes(pathname),
-    allCookiesCount: allCookies.length,
-    deepcrawlCookiesCount: deepcrawlCookies.length,
-    deepcrawlCookieNames: deepcrawlCookies.map((c) => c.name),
-    // Show first few characters of cookie values for debugging (don't log full values for security)
-    deepcrawlCookieValues: deepcrawlCookies.map((c) => ({
-      name: c.name,
-      valuePreview: `${c.value.substring(0, 20)}...`,
-      length: c.value.length,
-    })),
-  });
+  // if (process.env.NODE_ENV === 'development') {
+  // console.log('🔍 Middleware Debug:', {
+  //   path: pathname,
+  //   host: request.headers.get('host'),
+  //   origin: request.headers.get('origin'),
+  //   userAgent: `${request.headers.get('user-agent')?.substring(0, 50)}...`,
+  //   sessionCookie: sessionCookie ? '✅ Found' : '❌ Not found',
+  //   isPublicAuthRoute: publicAuthRoutes.includes(pathname),
+  //   allCookiesCount: allCookies.length,
+  //   deepcrawlCookiesCount: deepcrawlCookies.length,
+  //   deepcrawlCookieNames: deepcrawlCookies.map((c) => c.name),
+  //   // Show first few characters of cookie values for debugging (don't log full values for security)
+  //   deepcrawlCookieValues: deepcrawlCookies.map((c) => ({
+  //     name: c.name,
+  //     valuePreview: `${c.value.substring(0, 20)}...`,
+  //       length: c.value.length,
+  //     })),
+  //   });
+  // }
 
   // Handle logout route - requires session
   if (pathname === '/logout') {
