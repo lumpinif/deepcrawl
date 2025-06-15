@@ -9,14 +9,26 @@
     "DATABASE_URL",
     "DATABASE_URL_PROD",
     "BETTER_AUTH_URL",
-    "BETTER_AUTH_SECRET"
+    "BETTER_AUTH_SECRET",
+    "AUTH_WORKER_NODE_ENV",
+    "GITHUB_CLIENT_ID",
+    "GITHUB_CLIENT_SECRET",
+    "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "WORKER_NODE_ENV",
+    "NODE_ENV"
   ],
   "tasks": {
     "auth:generate": {
       "env": [
         "DATABASE_URL",
         "BETTER_AUTH_URL",
-        "BETTER_AUTH_SECRET"
+        "BETTER_AUTH_SECRET",
+        "AUTH_WORKER_NODE_ENV",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET"
       ]
     },
     "db:pre-deploy": {
@@ -42,6 +54,19 @@
       "outputs": [
         ".next/**",
         "!.next/cache/**"
+      ],
+      "env": [
+        "DATABASE_URL",
+        "DATABASE_URL_PROD",
+        "BETTER_AUTH_URL",
+        "BETTER_AUTH_SECRET",
+        "AUTH_WORKER_NODE_ENV",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "WORKER_NODE_ENV",
+        "NODE_ENV"
       ],
       "cache": true
     },
