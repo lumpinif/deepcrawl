@@ -19,7 +19,7 @@
     "typescript": "5.7.3",
     "wrangler": "^4.19.0"
   },
-  "packageManager": "pnpm@10.11.1",
+  "packageManager": "pnpm@10.12.1",
   "engines": {
     "node": ">=20"
   }
