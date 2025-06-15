@@ -6,7 +6,7 @@ export const authViewRoutes = {
   emailOTP: 'email-otp',
   magicLink: 'magic-link',
   twoFactor: 'two-factor',
-  // resetPassword: 'reset-password',
+  resetPassword: 'reset-password',
   forgotPassword: 'forgot-password',
   // recoverAccount: 'recover-account',
 };
