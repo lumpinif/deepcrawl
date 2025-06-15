@@ -103,9 +103,15 @@ export function createAuthConfig(env: Env) {
       apiKey(),
       oneTap(),
       bearer(),
-      passkey(),
       openAPI(),
       multiSession(),
+      passkey({
+        rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
+        rpName: 'DeepCrawl Auth',
+        origin: isDevelopment
+          ? 'http://localhost:3000'
+          : 'https://app.deepcrawl.dev',
+      }),
       organization({
         // async sendInvitationEmail(data) {
         // await resend.emails.send({
