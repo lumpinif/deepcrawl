@@ -150,20 +150,18 @@ export function createAuthConfig(env: Env) {
     advanced: {
       cookiePrefix: 'deepcrawl',
 
-      // Cross-subdomain cookies configuration
-      crossSubDomainCookies: {
-        enabled: !isDevelopment, // Only enable in production
-        domain: isDevelopment ? undefined : '.deepcrawl.dev', // Leading period is crucial
-      },
+      // TEMPORARY: Disable cross-subdomain cookies for testing
+      // crossSubDomainCookies: {
+      //   enabled: !isDevelopment, // Only enable in production
+      //   domain: isDevelopment ? undefined : '.deepcrawl.dev', // Leading period is crucial
+      // },
 
-      // FIXED: Default cookie attributes for all cookies
+      // Simplified cookie attributes for testing
       defaultCookieAttributes: {
         httpOnly: true,
         secure: !isDevelopment, // false for development (HTTP), true for production (HTTPS)
-        // Cross-subdomain requires sameSite: 'none' in production
-        sameSite: (isDevelopment ? 'lax' : 'none') as 'lax' | 'none', // 'lax' for dev, 'none' for production cross-subdomain
-        // Partitioned cookies for cross-subdomain in production
-        partitioned: !isDevelopment, // Only in production for cross-subdomain cookies
+        sameSite: 'lax' as const, // Use lax for both dev and production (simpler)
+        path: '/',
       },
 
       // IP address tracking for rate limiting and session security
