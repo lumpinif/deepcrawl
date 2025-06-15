@@ -45,17 +45,16 @@ export const authClient = createAuthClient({
         toast.error('Too many requests. Please try again later.');
       }
       // Enhanced debugging for production issues
-      console.error('❌ Auth Client Error:', {
-        status: e.error.status,
-        message: e.error.message,
-        url: e.error.url,
-        baseURL:
-          process.env.NODE_ENV === 'production'
-            ? 'https://auth.deepcrawl.dev'
-            : 'http://localhost:8787',
-        environment: process.env.NODE_ENV,
-        timestamp: new Date().toISOString(),
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ Auth Client Error:', {
+          status: e.error.status,
+          message: e.error.message,
+          url: e.error.url,
+          baseURL: process.env.BETTER_AUTH_URL,
+          environment: process.env.NODE_ENV,
+          timestamp: new Date().toISOString(),
+        });
+      }
     },
   },
 });
