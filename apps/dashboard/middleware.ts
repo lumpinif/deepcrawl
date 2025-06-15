@@ -16,13 +16,13 @@ export async function middleware(request: NextRequest) {
   );
 
   // logging in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 Middleware Debug:', {
-      path: pathname,
-      sessionCookie: sessionCookie ? '✅ Found' : '❌ Not found',
-      isPublicAuthRoute: publicAuthRoutes.includes(pathname),
-    });
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  console.log('🔍 Middleware Debug:', {
+    path: pathname,
+    sessionCookie: sessionCookie ? '✅ Found' : '❌ Not found',
+    isPublicAuthRoute: publicAuthRoutes.includes(pathname),
+  });
+  // }
 
   // Handle logout route - requires session
   if (pathname === '/logout') {
