@@ -32,7 +32,7 @@ import { useState } from 'react';
 
 function UserAvatar({ user }: { user: Session['user'] }) {
   return (
-    <Avatar className="h-8 w-8 cursor-pointer rounded-full">
+    <Avatar className="h-8 w-8 cursor-pointer rounded-full ring-0 ring-transparent">
       <AvatarImage src={user.image || ''} alt={user.name} />
       <AvatarFallback className="rounded-full">
         {user.name?.charAt(0).toUpperCase() ||
@@ -55,13 +55,13 @@ export function UserDropdown({
 
   return (
     <DropdownMenu modal={false}>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="outline-none ring-0 ring-transparent">
         <UserAvatar user={user} />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
         side="bottom"
-        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg rounded-xl dark:bg-background-subtle dark:text-muted-foreground dark:backdrop-blur-sm"
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl dark:bg-background-subtle dark:text-muted-foreground dark:backdrop-blur-sm"
       >
         <DropdownMenuLabel className="text-xs">
           Current Account
@@ -100,7 +100,7 @@ export function UserDropdown({
               side="left"
               align="start"
               sideOffset={12}
-              className="flex w-(--radix-dropdown-menu-trigger-width) w-full min-w-56 flex-col gap-2 rounded-lg bg-background-subtle p-2 backdrop-blur-sm"
+              className="flex w-(--radix-dropdown-menu-trigger-width) min-w-56 flex-col gap-2 rounded-lg bg-background-subtle p-2 backdrop-blur-sm"
             >
               <DropdownMenuLabel className="px-2 text-muted-foreground text-xs">
                 Switch Account
@@ -149,7 +149,7 @@ export function UserDropdown({
 
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={'/settings'}>Account Settings</Link>
+            <Link href={'/account'}>Account Settings</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 

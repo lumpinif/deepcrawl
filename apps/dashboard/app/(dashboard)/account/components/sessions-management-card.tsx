@@ -192,7 +192,7 @@ export function SessionsManagementCard() {
                             : 'Terminating...'}
                         </>
                       ) : isCurrentSession ? (
-                        'Sign Out'
+                        'Log Out'
                       ) : (
                         'Terminate'
                       )}

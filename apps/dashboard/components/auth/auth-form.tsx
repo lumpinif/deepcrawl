@@ -67,25 +67,7 @@ export function AuthForm({
           setIsSubmitting={setIsSubmitting}
         />
       );
-    /* case 'twoFactor':
-      return (
-        <TwoFactorForm
-          className={className}
-          otpSeparators={otpSeparators}
-          redirectTo={redirectTo}
-          isSubmitting={isSubmitting}
-          setIsSubmitting={setIsSubmitting}
-        />
-      ); */
-    // case 'recoverAccount':
-    //   return (
-    //     <RecoverAccountForm
-    //       className={className}
-    //       redirectTo={redirectTo}
-    //       isSubmitting={isSubmitting}
-    //       setIsSubmitting={setIsSubmitting}
-    //     />
-    //   );
+
     case 'magicLink':
       return (
         <MagicLinkForm
@@ -103,10 +85,6 @@ export function AuthForm({
           setIsSubmitting={setIsSubmitting}
         />
       );
-
-    // we are handling reset password in account settings page
-    // case 'resetPassword':
-    //   return <ResetPasswordForm className={className} />;
     default:
       return null;
   }

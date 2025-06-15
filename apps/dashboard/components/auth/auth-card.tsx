@@ -32,7 +32,6 @@ import { socialProviders } from './social-providers';
 
 export interface AuthCardProps {
   pathname?: string;
-  className?: string;
   redirectTo?: string;
   view?: AuthView;
   providers?: SocialProvider[];
@@ -40,7 +39,6 @@ export interface AuthCardProps {
 }
 
 export function AuthCard({
-  className,
   pathname,
   redirectTo,
   view: viewProp,
@@ -162,46 +160,42 @@ export function AuthCard({
             }
           })()}
 
-          {view !== 'resetPassword' && (true || true || true) && (
-            <>
-              {(() => {
-                switch (view) {
-                  case 'login':
-                  case 'signUp':
-                  case 'magicLink':
-                    return (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <Separator className="!w-auto grow" />
-                          <span className="flex-shrink-0 text-muted-foreground text-sm">
-                            {view === 'login'
-                              ? 'Or continue with'
-                              : view === 'signUp'
-                                ? 'Sign up below'
-                                : view === 'magicLink'
-                                  ? 'Or continue with magic link'
-                                  : null}
-                          </span>
-                          <Separator className="!w-auto grow" />
-                        </div>
-                      </>
-                    );
-                  default:
-                    return null;
-                }
-              })()}
+          {(() => {
+            switch (view) {
+              case 'login':
+              case 'signUp':
+              case 'magicLink':
+                return (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <Separator className="!w-auto grow" />
+                      <span className="flex-shrink-0 text-muted-foreground text-sm">
+                        {view === 'login'
+                          ? 'Or continue with'
+                          : view === 'signUp'
+                            ? 'Sign up below'
+                            : view === 'magicLink'
+                              ? 'Or continue with magic link'
+                              : null}
+                      </span>
+                      <Separator className="!w-auto grow" />
+                    </div>
+                  </>
+                );
+              default:
+                return null;
+            }
+          })()}
 
-              <div className="grid gap-4">
-                <AuthForm
-                  pathname={pathname}
-                  redirectTo={redirectTo}
-                  isSubmitting={isSubmitting}
-                  otpSeparators={otpSeparators}
-                  setIsSubmitting={setIsSubmitting}
-                />
-              </div>
-            </>
-          )}
+          <div className="grid gap-4">
+            <AuthForm
+              pathname={pathname}
+              redirectTo={redirectTo}
+              isSubmitting={isSubmitting}
+              otpSeparators={otpSeparators}
+              setIsSubmitting={setIsSubmitting}
+            />
+          </div>
         </CardContent>
 
         <CardFooter className="justify-center gap-1.5 text-muted-foreground text-sm">
