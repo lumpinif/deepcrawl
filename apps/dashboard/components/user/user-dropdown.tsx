@@ -18,7 +18,8 @@ import {
   DropdownMenuTrigger,
 } from '@deepcrawl/ui/components/ui/dropdown-menu';
 
-import { authClient, useSession } from '@/lib/auth.client';
+import { useAuthSession } from '@/hooks/auth.hooks';
+import { authClient } from '@/lib/auth.client';
 import { ThemeGroupToggle } from '@deepcrawl/ui/components/theme/toggle';
 
 import {
@@ -47,7 +48,7 @@ export function UserDropdown({
   deviceSessions,
 }: { user: Session['user']; deviceSessions: Session[] }) {
   const router = useRouter();
-  const { data: currentSession } = useSession();
+  const { data: currentSession } = useAuthSession();
   const [selectOpen, setSelectOpen] = useState(false);
 
   const hasMultipleSessions = deviceSessions.length > 1;

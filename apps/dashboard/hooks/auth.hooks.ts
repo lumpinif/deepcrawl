@@ -50,7 +50,6 @@ const displayNameSchema = z
   .trim();
 
 // Hooks with query options
-// Use Better Auth's built-in useSession hook instead of custom implementation
 export const useAuthSession = () => useQuery(sessionQueryOptions());
 
 /**

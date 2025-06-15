@@ -1,4 +1,4 @@
-import { useSession } from '@/lib/auth.client';
+import { useAuthSession } from '@/hooks/auth.hooks';
 import { userQueryKeys } from '@/lib/query-keys';
 import { getSearchParam } from '@/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -51,7 +51,7 @@ export function useOnSuccessTransition({
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
 
-  const { refetch: refetchSession } = useSession();
+  const { refetch: refetchSession } = useAuthSession();
 
   useEffect(() => {
     if (!success || isPending) return;

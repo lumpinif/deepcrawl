@@ -1,9 +1,9 @@
 'use client';
 
-import { authClient } from '@/lib/auth.client';
+import { useAuthSession } from '@/hooks/auth.hooks';
 
 export default function SessionPage() {
-  const { data: session, error, isPending } = authClient.useSession();
+  const { data: session, error, isPending } = useAuthSession();
 
   if (isPending) return <div>Loading session...</div>;
 
