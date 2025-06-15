@@ -7,7 +7,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "check": "biome check --write && pnpm typecheck",
-    "auth:generate": "dotenv -e ../../.env -- pnpm dlx @better-auth/cli@latest generate --output ../db/src/db/schema.ts -y && pnpm biome format --write ../db/src/db/schema.ts"
+    "auth:generate": "pnpm dlx @better-auth/cli@latest generate --output ../db/src/db/schema.ts -y && pnpm biome format --write ../db/src/db/schema.ts"
   },
   "exports": {
     ".": {
@@ -22,7 +22,6 @@
   "devDependencies": {
     "@deepcrawl/db": "workspace:*",
     "@deepcrawl/typescript-config": "workspace:*",
-    "@types/node": "^20",
-    "dotenv-cli": "^8.0.0"
+    "@types/node": "^20"
   }
 }
