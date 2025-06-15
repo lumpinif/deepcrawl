@@ -71,7 +71,7 @@
     "@deepcrawl/typescript-config": "workspace:*",
     "@deepcrawl/ui": "workspace:*",
     "@eslint/eslintrc": "^3",
-    "@tanstack/react-query-devtools": "^5.80.6",
+    "@tanstack/react-query-devtools": "^5.80.7",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^22",
     "@types/react": "^19",
