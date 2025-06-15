@@ -16,6 +16,7 @@ import type { AppBindings, AppOpenAPI } from './types';
 const allowedOrigins = [
   'https://api.deepcrawl.dev',
   'https://deepcrawl.dev',
+  'https://app.deepcrawl.dev',
   'http://localhost:3000',
   'http://127.0.0.1:8787',
 ];
