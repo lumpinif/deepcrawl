@@ -1,4 +1,6 @@
-import { getSessionCookie } from 'better-auth/cookies';
+import { betterFetch } from '@better-fetch/fetch';
+import type { Session } from '@deepcrawl/auth/types';
+import { getCookieCache, getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
 import { authViewRoutes } from './routes/auth';
 
@@ -6,6 +8,24 @@ export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request, {
     cookiePrefix: 'deepcrawl',
   });
+
+  const betterAuthURL = process.env.BETTER_AUTH_URL;
+  console.log('🚀 ~ middleware ~ betterAuthURL:', betterAuthURL);
+
+  const { data: session } = await betterFetch<Session>(
+    `${betterAuthURL}/api/auth/get-session`,
+    {
+      baseURL: betterAuthURL,
+      headers: {
+        credentials: 'include',
+        cookie: request.headers.get('cookie') || '', // Forward the cookies from the request
+      },
+    },
+  );
+  console.log('🚀 ~ middleware ~ betterFetch session:', session);
+
+  const cookieCache = await getCookieCache(request);
+  console.log('🚀 ~ middleware ~ cookieCache:', cookieCache);
 
   const { pathname } = request.nextUrl;
 
