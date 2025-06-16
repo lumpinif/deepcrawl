@@ -45,7 +45,7 @@
     "@tanstack/react-query-next-experimental": "^5.80.7",
     "@tanstack/react-table": "^8.21.3",
     "@wojtekmaj/react-recaptcha-v3": "^0.1.4",
-    "better-auth": "^1.2.8",
+    "better-auth": "^1.2.9",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",

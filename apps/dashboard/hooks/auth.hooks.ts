@@ -63,7 +63,9 @@ export const useListSessions = () => {
  * Hook for getting device sessions with proper error handling and full type inference
  */
 export const useDeviceSessions = () => {
-  return useQuery(deviceSessionsQueryOptions());
+  const result = useQuery(deviceSessionsQueryOptions());
+
+  return result;
 };
 
 /**
@@ -85,6 +87,138 @@ export const useUserPasskeys = () => {
  */
 export const useLinkedAccounts = () => {
   return useQuery(linkedAccountsQueryOptions());
+};
+
+/**
+ * Hook for setting the active session in multi-session environment
+ */
+export const useSetActiveSession = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: async (sessionToken: string) => {
+      const result = await authClient.multiSession.setActive({
+        sessionToken,
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
+      // Force refresh the session to ensure client-side cache is updated
+      // await authClient.getSession();
+
+      return result;
+    },
+    onSuccess: async () => {
+      // Invalidate and refetch all session-related queries immediately
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: userQueryKeys.session }),
+        queryClient.invalidateQueries({
+          queryKey: userQueryKeys.deviceSessions,
+        }),
+        queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions }),
+      ]);
+
+      // Force immediate refetch to ensure data is fresh
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: userQueryKeys.session }),
+        queryClient.refetchQueries({ queryKey: userQueryKeys.deviceSessions }),
+      ]);
+
+      // Refresh the page to ensure all components reflect the new active session
+      router.refresh();
+
+      toast.success('Account switched successfully');
+    },
+    onError: (error) => {
+      console.error('Failed to switch account:', error);
+      toast.error('Failed to switch account. Please try again.');
+    },
+  });
+};
+
+/**
+ * Hook for revoking a device session in multi-session environment
+ */
+export const useRevokeDeviceSession = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: async (sessionToken: string) => {
+      const result = await authClient.multiSession.revoke({
+        sessionToken,
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
+      return result;
+    },
+    onMutate: async (sessionToken: string) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: userQueryKeys.deviceSessions,
+      });
+
+      // Snapshot previous value
+      const previousDeviceSessions = queryClient.getQueryData<Session[]>(
+        userQueryKeys.deviceSessions,
+      );
+
+      // Optimistically update to remove the session
+      queryClient.setQueryData<Session[]>(
+        userQueryKeys.deviceSessions,
+        (old) => {
+          if (!old) return old;
+          return old.filter(
+            (sessionData) => sessionData.session.token !== sessionToken,
+          );
+        },
+      );
+
+      return { previousDeviceSessions, sessionToken };
+    },
+    onError: (err, sessionToken, context) => {
+      // Rollback on error
+      if (context?.previousDeviceSessions) {
+        queryClient.setQueryData(
+          userQueryKeys.deviceSessions,
+          context.previousDeviceSessions,
+        );
+      }
+      toast.error(err.message || 'Failed to remove account');
+    },
+    onSuccess: async (data, sessionToken) => {
+      // Get current session to check if user revoked their own session
+      const currentSession = queryClient.getQueryData<Session>(
+        userQueryKeys.session,
+      );
+
+      if (currentSession?.session?.token === sessionToken) {
+        // User revoked their own session, redirect to logout for centralized handling
+        toast.success(
+          'Current account signed out successfully. Please log in again.',
+        );
+
+        // Check if we're already on the logout page to prevent double navigation
+        if (window.location.pathname !== '/logout') {
+          router.push('/logout');
+        }
+        return;
+      }
+
+      toast.success('Account removed successfully');
+    },
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
+    },
+  });
 };
 
 /**

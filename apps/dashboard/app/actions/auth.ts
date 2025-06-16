@@ -65,13 +65,14 @@ export async function fetchListSessions(): Promise<Session['session'][]> {
  * Fetch all device sessions for the current user
  * No server-side caching - React Query handles client caching
  */
-export async function fetchDeviceSessions(): Promise<Session['session'][]> {
+export async function fetchDeviceSessions(): Promise<Session[]> {
   const requestHeaders = await headers();
 
   try {
     const result = await auth.api.listDeviceSessions({
       headers: requestHeaders,
     });
+
     return JSON.parse(JSON.stringify(result));
   } catch (error) {
     throw new Error(

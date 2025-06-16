@@ -1,4 +1,5 @@
 import { getDrizzleDB, schema } from '@deepcrawl/db';
+import type { BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
   admin,
@@ -48,6 +49,20 @@ export const DEVELOPMENT_ORIGINS = [
   'http://localhost:8787', // Auth worker
   'http://127.0.0.1:8787', // Auth worker alternative
 ];
+
+export const MAX_SESSIONS = 2;
+
+const crossSubDomainConfigs = {
+  crossSubDomainCookies: {
+    enabled: true,
+    domain: '.deepcrawl.dev',
+  },
+  defaultCookieAttributes: {
+    secure: true,
+    sameSite: 'none',
+    partitioned: true,
+  },
+} satisfies BetterAuthOptions['advanced'];
 
 /** Important: make sure always import this explicitly in workers to resolve process.env issues
  *  Factory function that accepts environment variables from cloudflare env
@@ -104,7 +119,9 @@ export function createAuthConfig(env: Env) {
       oneTap(),
       bearer(),
       openAPI(),
-      multiSession(),
+      multiSession({
+        maximumSessions: MAX_SESSIONS,
+      }),
       passkey({
         rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
         rpName: 'DeepCrawl Auth',
@@ -156,23 +173,14 @@ export function createAuthConfig(env: Env) {
     advanced: {
       cookiePrefix: 'deepcrawl',
 
-      crossSubDomainCookies: {
-        enabled: !isDevelopment,
-        domain: isDevelopment ? undefined : '.deepcrawl.dev', // Domain with a leading period
-      },
-
-      defaultCookieAttributes: {
-        httpOnly: true,
-        secure: !isDevelopment, // false for development (HTTP), true for production (HTTPS)
-        sameSite: (isDevelopment ? 'lax' : 'none') as 'lax' | 'none', // Allows CORS-based cookie sharing across subdomains in production
-        partitioned: !isDevelopment, // New browser standards will mandate this for foreign cookies
-      },
-
       // IP address tracking for rate limiting and session security
       ipAddress: {
         ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for', 'x-real-ip'],
         disableIpTracking: false,
       },
+
+      // Only enable cross-subdomain in production
+      ...(isDevelopment ? {} : crossSubDomainConfigs),
     },
     // rateLimit: {
     // window: 60, // time window in seconds

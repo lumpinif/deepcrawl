@@ -13,6 +13,7 @@ import {
   dehydrate,
 } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
+import { MultipleAccountsManagementCard } from './components/multiple-accounts-management-card';
 import { PasswordChangeCard } from './components/password-change-card';
 import { ProvidersManagementCard } from './components/providers-management-card';
 import { SessionsManagementCard } from './components/sessions-management-card';
@@ -52,6 +53,9 @@ export default async function AccountPage() {
           </div>
 
           <UserEmailCard />
+
+          {/* Multiple Accounts Section */}
+          <MultipleAccountsManagementCard />
 
           {/* Security Section */}
           <PasswordChangeCard />

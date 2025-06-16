@@ -18,7 +18,7 @@
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/db": "workspace:*",
     "@neondatabase/serverless": "^1.0.0",
-    "better-auth": "^1.2.8",
+    "better-auth": "^1.2.9",
     "drizzle-orm": "^0.44.1",
     "hono": "^4.7.10",
     "stoker": "^1.4.2",

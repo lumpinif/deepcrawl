@@ -18,8 +18,11 @@ import {
   DropdownMenuTrigger,
 } from '@deepcrawl/ui/components/ui/dropdown-menu';
 
-import { useAuthSession } from '@/hooks/auth.hooks';
-import { authClient } from '@/lib/auth.client';
+import {
+  useAuthSession,
+  useDeviceSessions,
+  useSetActiveSession,
+} from '@/hooks/auth.hooks';
 import { ThemeGroupToggle } from '@deepcrawl/ui/components/theme/toggle';
 
 import {
@@ -28,7 +31,6 @@ import {
   PopoverTrigger,
 } from '@deepcrawl/ui/components/ui/popover';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 function UserAvatar({ user }: { user: Session['user'] }) {
@@ -45,14 +47,26 @@ function UserAvatar({ user }: { user: Session['user'] }) {
 
 export function UserDropdown({
   user: userProp,
-  deviceSessions,
+  deviceSessions: deviceSessionsProps,
 }: { user: Session['user']; deviceSessions: Session[] }) {
-  const router = useRouter();
   const { data: currentSession } = useAuthSession();
+  const { data: deviceSessionsQuery } = useDeviceSessions();
+  const { mutate: setActiveSession } = useSetActiveSession();
   const [selectOpen, setSelectOpen] = useState(false);
 
-  const hasMultipleSessions = deviceSessions.length > 1;
+  // Use React Query data if available (fresh), fallback to server props (SSR/initial load)
+  const deviceSessions = deviceSessionsQuery ?? deviceSessionsProps;
+
+  // Determine current user: prioritize React Query session, fallback to server props
   const user = currentSession?.user ?? userProp;
+
+  // Filter to show only other accounts (not current user) - following Better Auth demo pattern
+  const otherSessions = deviceSessions
+    ? deviceSessions.filter((s) => s.user.id !== user?.id)
+    : [];
+
+  // Calculate hasMultipleSessions based on other sessions
+  const hasMultipleSessions = otherSessions.length > 0;
 
   return (
     <DropdownMenu modal={false}>
@@ -106,29 +120,26 @@ export function UserDropdown({
               <DropdownMenuLabel className="px-2 text-muted-foreground text-xs">
                 Switch Account
               </DropdownMenuLabel>
-              {deviceSessions
-                .filter((s) => s.user.id !== user.id)
-                .map((u, i) => (
-                  <button
-                    type="button"
-                    key={i}
-                    onClick={() => {
-                      authClient.multiSession.setActive({
-                        sessionToken: u.session.token,
-                      });
-                      router.refresh();
-                    }}
-                    className="flex items-center gap-2 rounded-sm px-1 py-1.5 text-left text-sm outline-none hover:bg-accent"
-                  >
-                    <UserAvatar user={u.user} />
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">
-                        {u.user.name}
-                      </span>
-                      <span className="truncate text-xs">{u.user.email}</span>
-                    </div>
-                  </button>
-                ))}
+              {otherSessions.map((sessionData, i) => (
+                <button
+                  type="button"
+                  key={sessionData.session.id || i}
+                  onClick={() => {
+                    setActiveSession(sessionData.session.token);
+                  }}
+                  className="flex items-center gap-2 rounded-sm px-1 py-1.5 text-left text-sm outline-none hover:bg-accent"
+                >
+                  <UserAvatar user={sessionData.user} />
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium">
+                      {sessionData.user.name}
+                    </span>
+                    <span className="truncate text-xs">
+                      {sessionData.user.email}
+                    </span>
+                  </div>
+                </button>
+              ))}
             </PopoverContent>
           </Popover>
         </DropdownMenuGroup>

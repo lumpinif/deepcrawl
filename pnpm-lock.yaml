@@ -120,8 +120,8 @@ importers:
         specifier: ^0.1.4
         version: 0.1.4(@types/react@19.1.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       better-auth:
-        specifier: ^1.2.8
-        version: 1.2.8
+        specifier: ^1.2.9
+        version: 1.2.9
       canvas-confetti:
         specifier: ^1.9.3
         version: 1.9.3
@@ -236,8 +236,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       better-auth:
-        specifier: ^1.2.8
-        version: 1.2.8
+        specifier: ^1.2.9
+        version: 1.2.9
       drizzle-orm:
         specifier: ^0.44.1
         version: 0.44.1(@cloudflare/workers-types@4.20250531.0)(@neondatabase/serverless@1.0.0)(@types/pg@8.15.2)(kysely@0.28.2)(pg@8.16.0)
@@ -349,8 +349,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       better-auth:
-        specifier: ^1.2.8
-        version: 1.2.8
+        specifier: ^1.2.9
+        version: 1.2.9
       drizzle-orm:
         specifier: ^0.44.1
         version: 0.44.1(@cloudflare/workers-types@4.20250531.0)(@neondatabase/serverless@1.0.0)(@types/pg@8.15.2)(kysely@0.28.2)(pg@8.16.0)
@@ -414,8 +414,8 @@ importers:
   packages/auth:
     dependencies:
       better-auth:
-        specifier: ^1.2.8
-        version: 1.2.8
+        specifier: ^1.2.9
+        version: 1.2.9
     devDependencies:
       '@deepcrawl/db':
         specifier: workspace:*
@@ -3015,8 +3015,8 @@ packages:
     resolution: {integrity: sha512-4Bcg1P8xhUuqcii/S0Z9wiHIrQVPMermM1any+MX5GeGD7faD3/msQUDGLol9wOcz4/jbg/WJnGqoJF6LiBdtg==}
     engines: {node: '>=10.0.0'}
 
-  better-auth@1.2.8:
-    resolution: {integrity: sha512-y8ry7ZW3/3ZIr82Eo1zUDtMzdoQlFnwNuZ0+b0RxoNZgqmvgTIc/0tCDC7NDJerqSu4UCzer0dvYxBsv3WMIGg==}
+  better-auth@1.2.9:
+    resolution: {integrity: sha512-WLqBXDzuaCQetQctLGC5oTfGmL32zUvxnM4Y+LZkhwseMaZWq5EKI+c/ZATgz2YkFt7726q659PF8CfB9P1VuA==}
 
   better-call@1.0.9:
     resolution: {integrity: sha512-Qfm0gjk0XQz0oI7qvTK1hbqTsBY4xV2hsHAxF8LZfUYl3RaECCIifXuVqtPpZJWvlCCMlQSvkvhhyuApGUba6g==}
@@ -9030,7 +9030,7 @@ snapshots:
 
   basic-ftp@5.0.5: {}
 
-  better-auth@1.2.8:
+  better-auth@1.2.9:
     dependencies:
       '@better-auth/utils': 0.2.5
       '@better-fetch/fetch': 1.1.18
