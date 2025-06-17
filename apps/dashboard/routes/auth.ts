@@ -8,6 +8,7 @@ export const authViewRoutes = {
   twoFactor: 'two-factor',
   resetPassword: 'reset-password',
   forgotPassword: 'forgot-password',
+  verifyEmail: 'verify-email',
   // recoverAccount: 'recover-account',
 };
 

@@ -11,6 +11,7 @@ import { MagicLinkForm } from './forms/magic-link-form';
 import { ResetPasswordForm } from './forms/reset-password-form';
 import { SignInForm } from './forms/sign-in-form';
 import { SignUpForm } from './forms/sign-up-form';
+import { VerifyEmailForm } from './forms/verify-email-form';
 import { Logout } from './logout';
 
 export interface AuthFormProps {
@@ -88,6 +89,8 @@ export function AuthForm({
       );
     case 'resetPassword':
       return <ResetPasswordForm className={className} />;
+    case 'verifyEmail':
+      return <VerifyEmailForm className={className} />;
     default:
       return null;
   }

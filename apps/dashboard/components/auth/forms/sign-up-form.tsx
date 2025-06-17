@@ -141,7 +141,7 @@ export function SignUpForm({
         await onSuccess();
       } else {
         router.push(`${authViewRoutes.login}${window.location.search}`);
-        toast.success('Sign up successful');
+        toast.success('Please check your email to verify your account.');
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'An error occurred');

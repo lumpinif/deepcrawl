@@ -22,20 +22,21 @@ export async function middleware(request: NextRequest) {
   // );
 
   // if (process.env.NODE_ENV === 'development') {
-  // console.log('🔍 Middleware Debug:', {
-  //   path: pathname,
-  //   host: request.headers.get('host'),
-  //   origin: request.headers.get('origin'),
-  //   userAgent: `${request.headers.get('user-agent')?.substring(0, 50)}...`,
-  //   sessionCookie: sessionCookie ? '✅ Found' : '❌ Not found',
-  //   isPublicAuthRoute: publicAuthRoutes.includes(pathname),
-  //   allCookiesCount: allCookies.length,
-  //   deepcrawlCookiesCount: deepcrawlCookies.length,
-  //   deepcrawlCookieNames: deepcrawlCookies.map((c) => c.name),
-  //   // Show first few characters of cookie values for debugging (don't log full values for security)
-  //   deepcrawlCookieValues: deepcrawlCookies.map((c) => ({
-  //     name: c.name,
-  //     valuePreview: `${c.value.substring(0, 20)}...`,
+  //   console.log('🔍 Middleware Debug:', {
+  //     path: pathname,
+  //     host: request.headers.get('host'),
+  //     origin: request.headers.get('origin'),
+  //     userAgent: `${request.headers.get('user-agent')?.substring(0, 50)}...`,
+  //     sessionCookie: sessionCookie ? '✅ Found' : '❌ Not found',
+  //     isPublicAuthRoute: publicAuthRoutes.includes(pathname),
+  //     publicAuthRoutes,
+  //     allCookiesCount: allCookies.length,
+  //     deepcrawlCookiesCount: deepcrawlCookies.length,
+  //     deepcrawlCookieNames: deepcrawlCookies.map((c) => c.name),
+  //     // Show first few characters of cookie values for debugging (don't log full values for security)
+  //     deepcrawlCookieValues: deepcrawlCookies.map((c) => ({
+  //       name: c.name,
+  //       valuePreview: `${c.value.substring(0, 20)}...`,
   //       length: c.value.length,
   //     })),
   //   });

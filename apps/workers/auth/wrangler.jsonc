@@ -5,14 +5,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "deepcrawl_auth",
-  "main": "src/index.ts",
+  "main": "src/index.tsx",
   "compatibility_date": "2025-05-31",
   // "assets": {
   // 	"binding": "ASSETS",
   // 	"directory": "./public"
   // },
   "vars": {
-    "AUTH_WORKER_NODE_ENV": "production"
+    "AUTH_WORKER_NODE_ENV": "production",
+    "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
   },
   "observability": {
     "enabled": true
@@ -35,7 +36,8 @@
   "env": {
     "development": {
       "vars": {
-        "AUTH_WORKER_NODE_ENV": "development"
+        "AUTH_WORKER_NODE_ENV": "development",
+        "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
       }
     }
   }

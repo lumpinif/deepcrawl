@@ -12,6 +12,14 @@ import {
   organization,
 } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
+import EmailVerification from '../templates/email-verification';
+import OrganizationInvitation from '../templates/organization-invitation';
+import PasswordReset from '../templates/password-reset';
+import {
+  createResendClient,
+  sendEmail,
+  validateEmailConfig,
+} from '../utils/email';
 
 /** Ensure this is the same as the env in the worker */
 interface Env {
@@ -23,6 +31,9 @@ interface Env {
   GITHUB_CLIENT_SECRET: string;
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  // Email configuration
+  RESEND_API_KEY?: string;
+  FROM_EMAIL?: string;
 }
 
 interface SecondaryStorage {
@@ -74,6 +85,13 @@ export function createAuthConfig(env: Env) {
 
   const db = getDrizzleDB({ DATABASE_URL: env.DATABASE_URL });
 
+  // Email configuration
+  const fromEmail = env.FROM_EMAIL || 'DeepCrawl <noreply@deepcrawl.dev>';
+  const emailEnabled = validateEmailConfig(env.RESEND_API_KEY, fromEmail);
+  const resend = env.RESEND_API_KEY
+    ? createResendClient(env.RESEND_API_KEY)
+    : null;
+
   // Build trusted origins based on environment
   const trustedOrigins = [...ALLOWED_ORIGINS, baseAuthURL];
   if (isDevelopment) {
@@ -81,21 +99,6 @@ export function createAuthConfig(env: Env) {
   }
 
   const config = {
-    emailAndPassword: {
-      enabled: true,
-      autoSignIn: true,
-      // async sendResetPassword({ user, url }) {
-      // 	await resend.emails.send({
-      // 		from,
-      // 		to: user.email,
-      // 		subject: "Reset your password",
-      // 		react: reactResetPasswordEmail({
-      // 			username: user.email,
-      // 			resetLink: url,
-      // 		}),
-      // 	});
-      // },
-    },
     appName: 'DeepCrawl',
     /**
      * Base path for Better Auth.
@@ -130,28 +133,121 @@ export function createAuthConfig(env: Env) {
           : 'https://app.deepcrawl.dev',
       }),
       organization({
-        // async sendInvitationEmail(data) {
-        // await resend.emails.send({
-        // 	from,
-        // 	to: data.email,
-        // 	subject: "You've been invited to join an organization",
-        // 	react: reactInvitationEmail({
-        // 		username: data.email,
-        // 		invitedByUsername: data.inviter.user.name,
-        // 		invitedByEmail: data.inviter.user.email,
-        // 		teamName: data.organization.name,
-        // 		inviteLink:
-        // 			isDevelopment
-        // 				? `http://localhost:3000/accept-invitation/${data.id}`
-        // 				: `${
-        // 						env.BETTER_AUTH_URL ||
-        // 						"https://demo.better-auth.com"
-        // 					}/accept-invitation/${data.id}`,
-        // 	}),
-        // });
-        // },
+        async sendInvitationEmail(data) {
+          if (!emailEnabled || !resend) {
+            console.log('[Auth Configs] ~ sendInvitationEmail ~ data:', data);
+            return;
+          }
+
+          const inviteLink = isDevelopment
+            ? `http://localhost:3000/accept-invitation/${data.id}`
+            : `https://app.deepcrawl.dev/accept-invitation/${data.id}`;
+
+          try {
+            await sendEmail(resend, {
+              to: data.email,
+              subject: `You've been invited to join ${data.organization.name} - DeepCrawl`,
+              template: OrganizationInvitation({
+                invitedEmail: data.email,
+                inviterName: data.inviter.user.name || 'Someone',
+                inviterEmail: data.inviter.user.email,
+                organizationName: data.organization.name,
+                invitationUrl: inviteLink,
+              }),
+              from: fromEmail,
+            });
+            console.log('✅ Organization invitation sent to:', data.email);
+          } catch (error) {
+            console.error('❌ Failed to send organization invitation:', error);
+            // Fallback: log the invitation link for development
+            console.log('🔗 Invitation link:', inviteLink);
+          }
+        },
       }),
     ],
+    emailAndPassword: {
+      enabled: true,
+      autoSignIn: false,
+      requireEmailVerification: true,
+      async sendResetPassword({ user, url }) {
+        if (!emailEnabled || !resend) {
+          console.log('[Auth Configs] ~ sendResetPassword ~ url:', url);
+          console.log('[Auth Configs] ~ sendResetPassword ~ user:', user);
+          return;
+        }
+
+        try {
+          await sendEmail(resend, {
+            to: user.email,
+            subject: 'Reset your password - DeepCrawl',
+            template: PasswordReset({
+              username: user.name || user.email,
+              resetUrl: url,
+            }),
+            from: fromEmail,
+          });
+          console.log('✅ Password reset email sent to:', user.email);
+        } catch (error) {
+          console.error('❌ Failed to send password reset email:', error);
+          // Fallback: log the URL for development
+          console.log('🔗 Password reset URL:', url);
+        }
+      },
+    },
+    emailVerification: {
+      sendVerificationEmail: async ({ user, url, token }, request) => {
+        if (!emailEnabled || !resend) {
+          console.log('[Auth Configs] ~ sendVerificationEmail ~ url:', url);
+          console.log('[Auth Configs] ~ sendVerificationEmail ~ user:', user);
+          console.log('[Auth Configs] ~ sendVerificationEmail ~ token:', token);
+          console.warn('⚠️ Email verification not sent - Resend not configured');
+          return;
+        }
+
+        // Create custom verification URL that redirects to the main app
+        const verificationBaseUrl = url.split('?')[0]; // Get base URL without query params
+        const appRedirectUrl = isDevelopment
+          ? 'http://localhost:3000/verify-email'
+          : 'https://app.deepcrawl.dev/verify-email';
+
+        // Construct the verification URL with a callback to the main app
+        const customVerificationUrl = `${verificationBaseUrl}?token=${token}&callbackURL=${encodeURIComponent(appRedirectUrl)}`;
+
+        try {
+          await sendEmail(resend, {
+            to: user.email,
+            subject: 'Verify your email address - DeepCrawl',
+            template: EmailVerification({
+              username: user.name || user.email,
+              verificationUrl: customVerificationUrl,
+            }),
+            from: fromEmail,
+          });
+          console.log('✅ Verification email sent to:', user.email);
+          console.log('🔗 Verification URL redirects to:', appRedirectUrl);
+        } catch (error) {
+          console.error('❌ Failed to send verification email:', error);
+          console.error(
+            '📧 Email config - API Key:',
+            env.RESEND_API_KEY ? 'Set' : 'Missing',
+          );
+          console.error('📧 Email config - From Email:', fromEmail);
+          // Fallback: log the URL for development
+          console.log('🔗 Verification URL:', customVerificationUrl);
+
+          // In development, make the error more visible
+          if (isDevelopment) {
+            console.error(
+              '🚨 DEVELOPMENT NOTICE: Email verification failed but account was created',
+            );
+            console.error(
+              '🚨 User can verify using this URL:',
+              customVerificationUrl,
+            );
+          }
+        }
+      },
+    },
     socialProviders: {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
@@ -201,7 +297,7 @@ export function createAuthConfig(env: Env) {
     //   storage: 'secondary-storage',
     //   modelName: 'rateLimit', //optional by default "rateLimit" is used
     // },
-  };
+  } satisfies BetterAuthOptions;
 
   return config;
 }

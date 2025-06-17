@@ -72,6 +72,34 @@ export function AuthCard({
       return <Logout />;
     case 'callback':
       return <AuthCallback redirectTo={redirectTo} />;
+    case 'verifyEmail':
+      // Email verification is a special view that doesn't need social providers
+      return (
+        <div className="w-md">
+          <div className="flex flex-col items-center gap-y-2">
+            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <GalleryVerticalEnd className="size-4" />
+            </div>
+            <span className="font-bold text-2xl">
+              {getAuthViewTitle(view as AuthView)}
+            </span>
+            <span className="my-2 select-none text-pretty text-center font-medium text-muted-foreground">
+              {getAuthViewDetailedDescription(view as AuthView)}
+            </span>
+          </div>
+          <Card className="w-full border-none">
+            <CardContent className="grid gap-6">
+              <AuthForm
+                pathname={pathname}
+                redirectTo={redirectTo}
+                isSubmitting={isSubmitting}
+                otpSeparators={otpSeparators}
+                setIsSubmitting={setIsSubmitting}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      );
     default:
       break;
   }

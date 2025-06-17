@@ -16,6 +16,9 @@ const authConfigs = createAuthConfig({
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env
     .NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
+  // Email configuration - add these for Next.js email functionality
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  FROM_EMAIL: process.env.FROM_EMAIL,
 });
 
 /**

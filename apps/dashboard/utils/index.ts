@@ -73,6 +73,7 @@ export function getAuthViewTitle(authView: AuthView): string {
     twoFactor: 'Two-Factor Authentication',
     resetPassword: 'Reset Password for Deepcrawl',
     forgotPassword: 'Forgot Password for Deepcrawl',
+    verifyEmail: 'Verify Your Email',
     // recoverAccount: 'Recover Account for Deepcrawl',
   };
 
@@ -93,6 +94,7 @@ export function getAuthViewDescriptionTitle(authView: AuthView): string {
     twoFactor: 'Two-factor authentication',
     resetPassword: 'Reset your password',
     forgotPassword: 'Forgot your password?',
+    verifyEmail: 'Check your inbox',
     // recoverAccount: 'Recover your account',
   };
 
@@ -113,6 +115,8 @@ export function getAuthViewDetailedDescription(authView: AuthView): string {
     twoFactor: 'Enter your two-factor authentication code to complete sign in.',
     resetPassword: 'Create a new password for your account.',
     forgotPassword: "Enter your email address and we'll send you a reset link.",
+    verifyEmail:
+      'Click the verification link in your email to complete account setup.',
     // recoverAccount: "Let's help you regain access to your account.",
   };
 
