@@ -1,4 +1,4 @@
-import { betterAuth } from 'better-auth';
+import { type BetterAuthOptions, betterAuth } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import { createAuthConfig } from '../configs';
 
@@ -19,7 +19,7 @@ const authConfigs = createAuthConfig({
   // Email configuration - add these for Next.js email functionality
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   FROM_EMAIL: process.env.FROM_EMAIL,
-});
+}) satisfies BetterAuthOptions;
 
 /**
  *  Auth instance for Next.js Server Components
@@ -31,6 +31,6 @@ export const auth = betterAuth({
   ...authConfigs,
   plugins: [
     ...authConfigs.plugins,
-    nextCookies(), // This plugin is Next.js specific
+    nextCookies(), // This plugin is Next.js specific - make sure this is the last plugin in the array
   ],
 });

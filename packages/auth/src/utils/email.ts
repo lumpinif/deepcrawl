@@ -38,11 +38,13 @@ export async function sendEmail(resend: Resend, options: SendEmailOptions) {
       replyTo,
     });
 
-    console.log('📧 Email sent successfully:', {
-      to,
-      subject,
-      id: result.data?.id,
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📧 Email sent successfully:', {
+        to,
+        subject,
+        id: result.data?.id,
+      });
+    }
     return result;
   } catch (error) {
     console.error('❌ Failed to send email:', error);

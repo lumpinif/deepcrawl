@@ -92,7 +92,7 @@ export function VerifyEmailForm({ className }: VerifyEmailFormProps) {
             <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold">Verifying your email...</h3>
+            <h3 className="font-semibold text-lg">Verifying your email...</h3>
             <p className="text-muted-foreground text-sm">
               Please wait while we verify your email address.
             </p>
@@ -106,7 +106,7 @@ export function VerifyEmailForm({ className }: VerifyEmailFormProps) {
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-green-600">
+            <h3 className="font-semibold text-green-600 text-lg">
               Email verified successfully!
             </h3>
             <p className="text-muted-foreground text-sm">
@@ -122,11 +122,12 @@ export function VerifyEmailForm({ className }: VerifyEmailFormProps) {
             <XCircle className="h-8 w-8 text-red-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-red-600">
+            <h3 className="font-semibold text-lg text-red-600">
               Verification failed
             </h3>
             <p className="text-muted-foreground text-sm">
-              We couldn't verify your email address. The link may be invalid.
+              We couldn&apos;t verify your email address. The link may be
+              invalid.
             </p>
           </div>
           <Button onClick={handleBackToLogin} className="w-full">
@@ -141,7 +142,7 @@ export function VerifyEmailForm({ className }: VerifyEmailFormProps) {
             <Mail className="h-8 w-8 text-orange-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-orange-600">
+            <h3 className="font-semibold text-lg text-orange-600">
               Verification link expired
             </h3>
             <p className="text-muted-foreground text-sm">

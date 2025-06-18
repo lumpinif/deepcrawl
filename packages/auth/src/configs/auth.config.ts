@@ -6,7 +6,7 @@ import {
   apiKey,
   bearer,
   multiSession,
-  // oAuthProxy,
+  oAuthProxy,
   oneTap,
   openAPI,
   organization,
@@ -36,11 +36,12 @@ interface Env {
   FROM_EMAIL?: string;
 }
 
-interface SecondaryStorage {
-  get: (key: string) => Promise<string | null>;
-  set: (key: string, value: string, ttl?: number) => Promise<void>;
-  delete: (key: string) => Promise<void>;
-}
+// Secondary storage interface for potential future use with rate limiting
+// interface SecondaryStorage {
+//   get: (key: string) => Promise<string | null>;
+//   set: (key: string, value: string, ttl?: number) => Promise<void>;
+//   delete: (key: string) => Promise<void>;
+// }
 
 export const ALLOWED_ORIGINS = [
   // Production origins
@@ -57,11 +58,11 @@ export const DEVELOPMENT_ORIGINS = [
   'http://localhost:3000', // Dashboard
   'https://localhost:3000', // Dashboard HTTPS
   'http://127.0.0.1:3000', // Dashboard alternative
-  'http://localhost:8787', // Auth worker
-  'http://127.0.0.1:8787', // Auth worker alternative
+  'http://localhost:8787', // Auth worker (legacy)
+  'http://127.0.0.1:8787', // Auth worker alternative (legacy)
 ];
 
-export const MAX_SESSIONS = 2;
+export const MAX_SESSIONS = 3; // better-auth issue: 3 is allowing max 2 sessions
 
 const crossSubDomainConfigs = {
   crossSubDomainCookies: {
@@ -125,6 +126,7 @@ export function createAuthConfig(env: Env) {
       multiSession({
         maximumSessions: MAX_SESSIONS,
       }),
+      oAuthProxy(),
       passkey({
         rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
         rpName: 'DeepCrawl Auth',
@@ -135,7 +137,9 @@ export function createAuthConfig(env: Env) {
       organization({
         async sendInvitationEmail(data) {
           if (!emailEnabled || !resend) {
-            console.log('[Auth Configs] ~ sendInvitationEmail ~ data:', data);
+            if (isDevelopment) {
+              console.log('[Auth Configs] ~ sendInvitationEmail ~ data:', data);
+            }
             return;
           }
 
@@ -156,11 +160,15 @@ export function createAuthConfig(env: Env) {
               }),
               from: fromEmail,
             });
-            console.log('✅ Organization invitation sent to:', data.email);
+            if (isDevelopment) {
+              console.log('✅ Organization invitation sent to:', data.email);
+            }
           } catch (error) {
             console.error('❌ Failed to send organization invitation:', error);
-            // Fallback: log the invitation link for development
-            console.log('🔗 Invitation link:', inviteLink);
+            if (isDevelopment) {
+              // Fallback: log the invitation link for development
+              console.log('🔗 Invitation link:', inviteLink);
+            }
           }
         },
       }),
@@ -171,8 +179,10 @@ export function createAuthConfig(env: Env) {
       requireEmailVerification: true,
       async sendResetPassword({ user, url }) {
         if (!emailEnabled || !resend) {
-          console.log('[Auth Configs] ~ sendResetPassword ~ url:', url);
-          console.log('[Auth Configs] ~ sendResetPassword ~ user:', user);
+          if (isDevelopment) {
+            console.log('[Auth Configs] ~ sendResetPassword ~ url:', url);
+            console.log('[Auth Configs] ~ sendResetPassword ~ user:', user);
+          }
           return;
         }
 
@@ -186,20 +196,29 @@ export function createAuthConfig(env: Env) {
             }),
             from: fromEmail,
           });
-          console.log('✅ Password reset email sent to:', user.email);
+          if (isDevelopment) {
+            console.log('✅ Password reset email sent to:', user.email);
+          }
         } catch (error) {
           console.error('❌ Failed to send password reset email:', error);
-          // Fallback: log the URL for development
-          console.log('🔗 Password reset URL:', url);
+          if (isDevelopment) {
+            // Fallback: log the URL for development
+            console.log('🔗 Password reset URL:', url);
+          }
         }
       },
     },
     emailVerification: {
-      sendVerificationEmail: async ({ user, url, token }, request) => {
+      sendVerificationEmail: async ({ user, url, token }, _request) => {
         if (!emailEnabled || !resend) {
-          console.log('[Auth Configs] ~ sendVerificationEmail ~ url:', url);
-          console.log('[Auth Configs] ~ sendVerificationEmail ~ user:', user);
-          console.log('[Auth Configs] ~ sendVerificationEmail ~ token:', token);
+          if (isDevelopment) {
+            console.log('[Auth Configs] ~ sendVerificationEmail ~ url:', url);
+            console.log('[Auth Configs] ~ sendVerificationEmail ~ user:', user);
+            console.log(
+              '[Auth Configs] ~ sendVerificationEmail ~ token:',
+              token,
+            );
+          }
           console.warn('⚠️ Email verification not sent - Resend not configured');
           return;
         }
@@ -223,20 +242,22 @@ export function createAuthConfig(env: Env) {
             }),
             from: fromEmail,
           });
-          console.log('✅ Verification email sent to:', user.email);
-          console.log('🔗 Verification URL redirects to:', appRedirectUrl);
+          if (isDevelopment) {
+            console.log('✅ Verification email sent to:', user.email);
+            console.log('🔗 Verification URL redirects to:', appRedirectUrl);
+          }
         } catch (error) {
           console.error('❌ Failed to send verification email:', error);
-          console.error(
-            '📧 Email config - API Key:',
-            env.RESEND_API_KEY ? 'Set' : 'Missing',
-          );
           console.error('📧 Email config - From Email:', fromEmail);
-          // Fallback: log the URL for development
-          console.log('🔗 Verification URL:', customVerificationUrl);
-
-          // In development, make the error more visible
           if (isDevelopment) {
+            console.error(
+              '📧 Email config - API Key:',
+              env.RESEND_API_KEY ? 'Set' : 'Missing',
+            );
+            // Fallback: log the URL for development
+            console.log('🔗 Verification URL:', customVerificationUrl);
+
+            // In development, make the error more visible
             console.error(
               '🚨 DEVELOPMENT NOTICE: Email verification failed but account was created',
             );
@@ -275,7 +296,7 @@ export function createAuthConfig(env: Env) {
         disableIpTracking: false,
       },
 
-      // Only enable cross-subdomain in production
+      // Enable cross-subdomain in production only, but ensure multi-session works in dev
       ...(isDevelopment ? {} : crossSubDomainConfigs),
     },
     // rateLimit: {

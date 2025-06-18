@@ -1,6 +1,7 @@
 'use client';
 
 import { SpinnerButton } from '@/components/spinner-button';
+import { useAuthRedirect } from '@/hooks/auth.hooks';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { authViewRoutes } from '@/routes/auth';
@@ -35,6 +36,7 @@ export function ForgotPasswordForm({
 }: ForgotPasswordFormProps) {
   const router = useRouter();
   const isHydrated = useIsHydrated();
+  const { getFrontendCallbackURL } = useAuthRedirect();
 
   const formSchema = z.object({
     email: z
@@ -64,7 +66,7 @@ export function ForgotPasswordForm({
     try {
       const { error } = await authClient.forgetPassword({
         email,
-        redirectTo: `/${authViewRoutes.resetPassword}`,
+        redirectTo: getFrontendCallbackURL(authViewRoutes.resetPassword),
       });
 
       if (error) {

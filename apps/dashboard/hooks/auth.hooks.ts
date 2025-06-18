@@ -724,7 +724,9 @@ export function useAuthRedirect(redirectTo?: string) {
         typeof window !== 'undefined'
           ? window.location.origin
           : process.env.NODE_ENV === 'production'
-            ? 'https://app.deepcrawl.dev' // Production frontend URL
+            ? process.env.NEXT_PUBLIC_APP_URL ||
+              process.env.BETTER_AUTH_URL ||
+              'https://app.deepcrawl.dev' // Production frontend URL
             : 'http://localhost:3000'; // Development frontend URL
 
       // Use URL constructor for robust URL construction
