@@ -4,8 +4,10 @@ import { SpinnerButton } from '@/components/spinner-button';
 import {
   useAuthSession,
   useListSessions,
+  useRevokeAllOtherSessions,
   useRevokeSession,
 } from '@/hooks/auth.hooks';
+
 import type { Session } from '@deepcrawl/auth/types';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import {
@@ -24,6 +26,8 @@ export function SessionsManagementCard() {
   const { data: currentSession } = useAuthSession();
   const { data: listSessions, isLoading } = useListSessions();
   const { mutate: revokeSession, isPending } = useRevokeSession();
+  const { mutate: revokeAllOtherSessions, isPending: isRevokingOtherSessions } =
+    useRevokeAllOtherSessions();
   const router = useRouter();
   const [revokingSessionId, setRevokingSessionId] = useState<string | null>(
     null,
@@ -97,16 +101,22 @@ export function SessionsManagementCard() {
       })
     : [];
 
+  const handleRevokeOtherSessions = () => {
+    revokeAllOtherSessions();
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Wifi className="h-5 w-5" />
-          Sessions
-        </CardTitle>
-        <CardDescription>
-          Manage your active sessions and connected devices
-        </CardDescription>
+      <CardHeader className="flex w-full justify-between">
+        <div>
+          <CardTitle className="flex items-center gap-2">
+            <Wifi className="h-5 w-5" />
+            Sessions
+          </CardTitle>
+          <CardDescription>
+            Manage your active sessions and connected devices
+          </CardDescription>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Active Sessions Section */}
@@ -168,35 +178,54 @@ export function SessionsManagementCard() {
                         </div>
                       )}
                     </div>
-                    <SpinnerButton
-                      size="sm"
-                      className="w-24"
-                      variant="outline"
-                      isLoading={
-                        (isPending && revokingSessionId === session.id) ||
-                        (isCurrentSession && signingOutCurrentSession)
-                      }
-                      disabled={
-                        isPending ||
-                        revokingSessionId === session.id ||
-                        (isCurrentSession && signingOutCurrentSession)
-                      }
-                      onClick={() => handleRevokeSession(session)}
-                    >
-                      {(isPending && revokingSessionId === session.id) ||
-                      (isCurrentSession && signingOutCurrentSession) ? (
-                        <>
-                          <Loader2 size={15} className="mr-2 animate-spin" />
-                          {isCurrentSession
-                            ? 'Signing Out...'
-                            : 'Terminating...'}
-                        </>
-                      ) : isCurrentSession ? (
-                        'Log Out'
-                      ) : (
-                        'Terminate'
-                      )}
-                    </SpinnerButton>
+
+                    <div className="flex items-center gap-x-2">
+                      {isCurrentSession &&
+                        listSessions &&
+                        listSessions.length > 1 && (
+                          <SpinnerButton
+                            variant="outline"
+                            onClick={handleRevokeOtherSessions}
+                            isLoading={isRevokingOtherSessions}
+                            disabled={
+                              isRevokingOtherSessions ||
+                              !listSessions ||
+                              listSessions.length <= 1
+                            }
+                          >
+                            Revoke other sessions
+                          </SpinnerButton>
+                        )}
+                      <SpinnerButton
+                        size="sm"
+                        className="w-24"
+                        variant="outline"
+                        isLoading={
+                          (isPending && revokingSessionId === session.id) ||
+                          (isCurrentSession && signingOutCurrentSession)
+                        }
+                        disabled={
+                          isPending ||
+                          revokingSessionId === session.id ||
+                          (isCurrentSession && signingOutCurrentSession)
+                        }
+                        onClick={() => handleRevokeSession(session)}
+                      >
+                        {(isPending && revokingSessionId === session.id) ||
+                        (isCurrentSession && signingOutCurrentSession) ? (
+                          <>
+                            <Loader2 size={15} className="mr-2 animate-spin" />
+                            {isCurrentSession
+                              ? 'Signing Out...'
+                              : 'Terminating...'}
+                          </>
+                        ) : isCurrentSession ? (
+                          'Log Out'
+                        ) : (
+                          'Terminate'
+                        )}
+                      </SpinnerButton>
+                    </div>
                   </div>
                 );
               })
