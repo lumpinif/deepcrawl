@@ -223,13 +223,14 @@ export function createAuthConfig(env: Env) {
           return;
         }
 
-        // Create custom verification URL that redirects to the main app
+        // Better Auth handles verification automatically and adds error/success parameters
+        // Use a clean callback URL - Better Auth will add ?error= or redirect successfully
         const verificationBaseUrl = url.split('?')[0]; // Get base URL without query params
         const appRedirectUrl = isDevelopment
           ? 'http://localhost:3000/verify-email'
           : 'https://app.deepcrawl.dev/verify-email';
 
-        // Construct the verification URL with a callback to the main app
+        // Construct the verification URL - Better Auth will add appropriate parameters on redirect
         const customVerificationUrl = `${verificationBaseUrl}?token=${token}&callbackURL=${encodeURIComponent(appRedirectUrl)}`;
 
         try {
@@ -268,6 +269,8 @@ export function createAuthConfig(env: Env) {
           }
         }
       },
+      autoSignInAfterVerification: true,
+      expiresIn: 3600, // 1 hour
     },
     socialProviders: {
       github: {

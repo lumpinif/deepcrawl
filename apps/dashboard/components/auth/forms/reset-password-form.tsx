@@ -73,7 +73,8 @@ export function ResetPasswordForm({
     const token = searchParams.get('token');
 
     if (!token || token === 'INVALID_TOKEN') {
-      router.push(`/${authViewRoutes.login}${window.location.search}`);
+      // Redirect to login without carrying over the invalid token
+      router.push(`/${authViewRoutes.login}`);
       toast.error('Invalid token');
     }
   }, [router]);
@@ -95,7 +96,8 @@ export function ResetPasswordForm({
 
       toast.success('Password reset successfully');
 
-      router.push(`/${authViewRoutes.login}${window.location.search}`);
+      // Clean up URL and redirect to login without the token for security
+      router.push(`/${authViewRoutes.login}`);
     } catch (error) {
       toast.error('Error resetting password');
 
