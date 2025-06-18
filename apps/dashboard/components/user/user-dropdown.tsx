@@ -144,8 +144,8 @@ export function UserDropdown({
           </Popover>
         </DropdownMenuGroup>
 
+        {/* 
         <DropdownMenuSeparator />
-
         <DropdownMenuGroup>
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link
@@ -155,7 +155,7 @@ export function UserDropdown({
               Add Account
             </Link>
           </DropdownMenuItem>
-        </DropdownMenuGroup>
+        </DropdownMenuGroup> */}
 
         <DropdownMenuSeparator />
 
