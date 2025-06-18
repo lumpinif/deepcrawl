@@ -9,6 +9,7 @@ export const authViewRoutes = {
   resetPassword: 'reset-password',
   forgotPassword: 'forgot-password',
   verifyEmail: 'verify-email',
+  acceptInvitation: 'accept-invitation',
   // recoverAccount: 'recover-account',
 };
 

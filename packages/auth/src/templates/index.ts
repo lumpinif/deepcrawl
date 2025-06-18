@@ -6,3 +6,6 @@ export type { PasswordResetProps } from './password-reset';
 
 export { default as OrganizationInvitation } from './organization-invitation';
 export type { OrganizationInvitationProps } from './organization-invitation';
+
+export { default as MagicLink } from './magic-link';
+export type { MagicLinkProps } from './magic-link';

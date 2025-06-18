@@ -14,7 +14,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
-import { IconUser } from '@tabler/icons-react';
+import { cn } from '@deepcrawl/ui/lib/utils';
+import {
+  IconShieldLockFilled,
+  IconShieldOff,
+  IconUser,
+} from '@tabler/icons-react';
 import { CalendarDays, Loader2, Mail } from 'lucide-react';
 
 export function UserAvatarCard() {
@@ -68,13 +73,28 @@ export function UserAvatarCard() {
     : user.email?.[0]?.toUpperCase() || '?';
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <IconUser className="h-5 w-5" />
-          User Profile
-        </CardTitle>
-        <CardDescription>Your account information and status</CardDescription>
+    <Card className="group/user-avatar-card">
+      <CardHeader className="flex w-full justify-between">
+        <div className="flex flex-col gap-1.5">
+          <CardTitle className="flex items-center gap-2">
+            <IconUser className="h-5 w-5" />
+            User Profile
+          </CardTitle>
+          <CardDescription>Your account information and status</CardDescription>
+        </div>
+        <span
+          title={user.emailVerified ? 'Verified' : 'Unverified'}
+          className={cn(
+            'flex select-none items-center gap-1 border-none text-muted-foreground/10 text-xs shadow-none transition-colors duration-200 ease-out group-hover/user-avatar-card:text-muted-foreground/20',
+            user.emailVerified && 'group-hover/user-avatar-card:text-green-600',
+          )}
+        >
+          {user.emailVerified ? (
+            <IconShieldLockFilled className="size-4 md:size-5" />
+          ) : (
+            <IconShieldOff className="size-4 md:size-5" />
+          )}
+        </span>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Avatar and Basic Info */}

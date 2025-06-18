@@ -18,7 +18,6 @@ import { PasswordChangeCard } from './components/password-change-card';
 import { ProvidersManagementCard } from './components/providers-management-card';
 import { SessionsManagementCard } from './components/sessions-management-card';
 import { UserAvatarCard } from './components/user-avatar-card';
-import { UserEmailCard } from './components/user-email-card';
 import { UserNameCard } from './components/user-name-card';
 
 export default async function AccountPage() {
@@ -52,14 +51,12 @@ export default async function AccountPage() {
             <UserNameCard />
           </div>
 
-          <UserEmailCard />
+          <ProvidersManagementCard />
 
           {/* Multiple Accounts Section */}
           <MultipleAccountsManagementCard />
-
           {/* Security Section */}
           <PasswordChangeCard />
-          <ProvidersManagementCard />
           <SessionsManagementCard />
         </div>
       </div>

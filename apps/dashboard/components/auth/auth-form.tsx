@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 
 import { type AuthView, authViewRoutes } from '@/routes/auth';
 import { getAuthViewByPath } from '@/utils';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthCallback } from './auth-callback';
 import { ForgotPasswordForm } from './forms/forgot-password-form';
 import { MagicLinkForm } from './forms/magic-link-form';
 import { ResetPasswordForm } from './forms/reset-password-form';
 import { SignInForm } from './forms/sign-in-form';
 import { SignUpForm } from './forms/sign-up-form';
-import { VerifyEmailForm } from './forms/verify-email-form';
+import { UnifiedVerificationForm } from './forms/unified-verification-form';
 import { Logout } from './logout';
 
 export interface AuthFormProps {
@@ -34,6 +34,7 @@ export function AuthForm({
   setIsSubmitting,
 }: AuthFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const path = pathname?.split('/').pop();
 
@@ -45,6 +46,9 @@ export function AuthForm({
   }, [path, router]);
 
   const view = viewProp || getAuthViewByPath(authViewRoutes, path) || 'login';
+
+  // Check if we're in a verification flow (has token parameter)
+  const hasToken = searchParams.has('token');
 
   switch (view) {
     case 'logout':
@@ -71,6 +75,10 @@ export function AuthForm({
       );
 
     case 'magicLink':
+      // If magic link has a token, show verification form instead of request form
+      if (hasToken) {
+        return <UnifiedVerificationForm className={className} />;
+      }
       return (
         <MagicLinkForm
           className={className}
@@ -90,7 +98,8 @@ export function AuthForm({
     case 'resetPassword':
       return <ResetPasswordForm className={className} />;
     case 'verifyEmail':
-      return <VerifyEmailForm className={className} />;
+    case 'acceptInvitation':
+      return <UnifiedVerificationForm className={className} />;
     default:
       return null;
   }

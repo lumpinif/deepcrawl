@@ -21,9 +21,11 @@ export {
 // Email templates
 export {
   EmailVerification,
+  MagicLink,
   PasswordReset,
   OrganizationInvitation,
   type EmailVerificationProps,
+  type MagicLinkProps,
   type PasswordResetProps,
   type OrganizationInvitationProps,
 } from './templates';

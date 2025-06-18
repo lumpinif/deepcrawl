@@ -21,6 +21,7 @@ import {
   RectangleEllipsis,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AuthCallback } from './auth-callback';
 import { AuthForm } from './auth-form';
@@ -48,6 +49,7 @@ export function AuthCard({
   const isHydrated = useIsHydrated();
   const path = pathname?.split('/').pop();
   const view = viewProp || getAuthViewByPath(authViewRoutes, path) || 'login';
+  const searchParams = useSearchParams();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moreAuthOptions, setMoreAuthOptions] = useState(false);
@@ -66,40 +68,15 @@ export function AuthCard({
     };
   }, []);
 
+  // Check if we're in a verification flow (has token parameter)
+  const hasToken = searchParams.has('token');
+
   // Handle special views that don't use the standard card layout
   switch (view) {
     case 'logout':
       return <Logout />;
     case 'callback':
       return <AuthCallback redirectTo={redirectTo} />;
-    case 'verifyEmail':
-      // Email verification is a special view that doesn't need social providers
-      return (
-        <div className="w-md">
-          <div className="flex flex-col items-center gap-y-2">
-            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            <span className="font-bold text-2xl">
-              {getAuthViewTitle(view as AuthView)}
-            </span>
-            <span className="my-2 select-none text-pretty text-center font-medium text-muted-foreground">
-              {getAuthViewDetailedDescription(view as AuthView)}
-            </span>
-          </div>
-          <Card className="w-full border-none">
-            <CardContent className="grid gap-6">
-              <AuthForm
-                pathname={pathname}
-                redirectTo={redirectTo}
-                isSubmitting={isSubmitting}
-                otpSeparators={otpSeparators}
-                setIsSubmitting={setIsSubmitting}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      );
     default:
       break;
   }
@@ -111,10 +88,16 @@ export function AuthCard({
           <GalleryVerticalEnd className="size-4" />
         </div>
         <span className="font-bold text-2xl">
-          {getAuthViewTitle(view as AuthView)}
+          {/* Show different title for magic link verification */}
+          {view === 'magicLink' && hasToken
+            ? 'Signing you in...'
+            : getAuthViewTitle(view as AuthView)}
         </span>
         <span className="my-2 select-none text-pretty text-center font-medium text-muted-foreground">
-          {getAuthViewDetailedDescription(view as AuthView)}
+          {/* Show different description for magic link verification */}
+          {view === 'magicLink' && hasToken
+            ? 'Please wait while we sign you in via magic link.'
+            : getAuthViewDetailedDescription(view as AuthView)}
         </span>
       </div>
       <Card className="w-full border-none">
@@ -129,6 +112,10 @@ export function AuthCard({
               case 'login':
               case 'signUp':
               case 'magicLink':
+                // Hide all login methods when magic link has token (verification in progress)
+                if (view === 'magicLink' && hasToken) {
+                  return null;
+                }
                 return (
                   <>
                     {providers?.length && (
@@ -193,6 +180,10 @@ export function AuthCard({
               case 'login':
               case 'signUp':
               case 'magicLink':
+                // Hide separator when magic link has token (verification in progress)
+                if (view === 'magicLink' && hasToken) {
+                  return null;
+                }
                 return (
                   <>
                     <div className="flex items-center gap-2">
@@ -232,6 +223,10 @@ export function AuthCard({
               case 'login':
               case 'magicLink':
               case 'emailOTP':
+                // Hide footer navigation when magic link has token (verification in progress)
+                if (view === 'magicLink' && hasToken) {
+                  return null;
+                }
                 return (
                   <>
                     Don&apos;t have an account?

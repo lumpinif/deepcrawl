@@ -5,14 +5,16 @@ import {
   admin,
   apiKey,
   bearer,
-  multiSession,
   // oAuthProxy,
+  magicLink,
+  multiSession,
   oneTap,
   openAPI,
   organization,
 } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
 import EmailVerification from '../templates/email-verification';
+import MagicLink from '../templates/magic-link';
 import OrganizationInvitation from '../templates/organization-invitation';
 import PasswordReset from '../templates/password-reset';
 import { assertValidAuthConfiguration } from '../utils/config-validator';
@@ -138,6 +140,35 @@ export function createAuthConfig(env: Env) {
       multiSession({
         maximumSessions: MAX_SESSIONS,
       }),
+      magicLink({
+        sendMagicLink: async ({ email, token, url }, request) => {
+          if (!emailEnabled || !resend) {
+            console.warn('⚠️ Magic link email not sent - Resend not configured');
+            return;
+          }
+
+          // Use custom callback URL instead of built-in URL
+          const customUrl = isDevelopment
+            ? `http://localhost:3000/magic-link?token=${token}`
+            : `https://app.deepcrawl.dev/magic-link?token=${token}`;
+
+          try {
+            await sendEmail(resend, {
+              to: email,
+              subject: 'Sign in to your DeepCrawl account',
+              template: MagicLink({
+                username: email.split('@')[0], // Use email prefix as fallback username
+                magicLinkUrl: customUrl, // Use custom URL for better UX
+              }),
+              from: fromEmail,
+            });
+          } catch (error) {
+            console.error('❌ Failed to send magic link email:', error);
+          }
+        },
+        expiresIn: 300, // 5 minutes
+        disableSignUp: false, // Allow new users to sign up via magic link
+      }),
       passkey({
         rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
         rpName: 'DeepCrawl Auth',
@@ -152,8 +183,8 @@ export function createAuthConfig(env: Env) {
           }
 
           const inviteLink = isDevelopment
-            ? `http://localhost:3000/accept-invitation/${data.id}`
-            : `https://app.deepcrawl.dev/accept-invitation/${data.id}`;
+            ? `http://localhost:3000/accept-invitation?invitationId=${data.id}`
+            : `https://app.deepcrawl.dev/accept-invitation?invitationId=${data.id}`;
 
           try {
             await sendEmail(resend, {
@@ -210,15 +241,10 @@ export function createAuthConfig(env: Env) {
           return;
         }
 
-        // Better Auth handles verification automatically and adds error/success parameters
-        // Use a clean callback URL - Better Auth will add ?error= or redirect successfully
-        const verificationBaseUrl = url.split('?')[0]; // Get base URL without query params
-        const appRedirectUrl = isDevelopment
-          ? 'http://localhost:3000/verify-email'
-          : 'https://app.deepcrawl.dev/verify-email';
-
-        // Construct the verification URL - Better Auth will add appropriate parameters on redirect
-        const customVerificationUrl = `${verificationBaseUrl}?token=${token}&callbackURL=${encodeURIComponent(appRedirectUrl)}`;
+        // Use custom callback URL instead of built-in URL
+        const customUrl = isDevelopment
+          ? `http://localhost:3000/verify-email?token=${token}`
+          : `https://app.deepcrawl.dev/verify-email?token=${token}`;
 
         try {
           await sendEmail(resend, {
@@ -226,7 +252,7 @@ export function createAuthConfig(env: Env) {
             subject: 'Verify your email address - DeepCrawl',
             template: EmailVerification({
               username: user.name || user.email,
-              verificationUrl: customVerificationUrl,
+              verificationUrl: customUrl, // Use custom URL for better UX
             }),
             from: fromEmail,
           });

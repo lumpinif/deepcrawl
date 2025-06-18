@@ -7,6 +7,7 @@ Authentication package for DeepCrawl using Better Auth with email functionality 
 - ✅ **Multi-session support** - Users can be logged into multiple accounts simultaneously
 - ✅ **Email verification** - Beautiful HTML emails for email verification
 - ✅ **Password reset** - Secure password reset flow with styled emails  
+- ✅ **Magic link authentication** - Passwordless login via email
 - ✅ **Organization invitations** - Team invitation emails
 - ✅ **Cross-domain cookies** - Works across deepcrawl.dev subdomains
 - ✅ **Social auth** - GitHub and Google OAuth
@@ -69,6 +70,7 @@ import {
   createResendClient, 
   sendEmail, 
   EmailVerification,
+  MagicLink,
   PasswordReset,
   OrganizationInvitation 
 } from '@deepcrawl/auth';
@@ -94,6 +96,16 @@ await sendEmail(resend, {
     resetUrl: 'https://app.deepcrawl.dev/reset?token=abc123',
   }),
 });
+
+// Send magic link email
+await sendEmail(resend, {
+  to: 'user@example.com',
+  subject: 'Sign in to your account',
+  template: MagicLink({
+    username: 'John Doe',
+    magicLinkUrl: 'https://auth.deepcrawl.dev/api/auth/magic-link/verify?token=abc123',
+  }),
+});
 ```
 
 ## Email Templates
@@ -114,6 +126,14 @@ Used for password reset requests.
 - `username` (optional): User's display name  
 - `resetUrl`: URL to reset the password
 
+### MagicLink
+
+Used for magic link authentication (passwordless login).
+
+**Props:**
+- `username` (optional): User's display name
+- `magicLinkUrl`: URL to sign in via magic link
+
 ### OrganizationInvitation
 
 Used for organization/team invitations.
@@ -124,6 +144,14 @@ Used for organization/team invitations.
 - `inviterEmail` (optional): Email of person sending invite
 - `organizationName`: Name of the organization
 - `invitationUrl`: URL to accept the invitation
+
+## Key Features
+
+### Better Auth URL Handling
+- **Simplified Configuration**: Uses Better Auth's pre-constructed URLs directly
+- **No Manual URL Construction**: Better Auth handles token embedding and callback URLs automatically
+- **Automatic Redirects**: Better Auth manages post-verification redirects and error handling
+- **Environment Aware**: Configuration adapts automatically to development/production environments
 
 ## Development vs Production
 

@@ -32,6 +32,7 @@ import {
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
 import {
   KeyIcon,
+  Link,
   Loader2,
   Mail,
   Monitor,
@@ -58,7 +59,7 @@ const formatDate = (date: Date | string | null): string => {
 interface ProviderInfo {
   id: string;
   name: string;
-  type: 'oauth' | 'passkeys' | 'email';
+  type: 'oauth' | 'passkeys' | 'email' | 'magic-link';
   icon: React.ComponentType<{ className?: string }>;
   connected: boolean;
   lastUsed?: string;
@@ -148,15 +149,30 @@ export function ProvidersManagementCard() {
     (account) => account.providerId === 'github',
   );
 
+  // Magic Link detection: If user has verified email but no OAuth accounts or passkeys,
+  // they likely used magic link or email verification
+  const hasMagicLinkCapability = !!user.emailVerified;
+  const magicLinkAccountInfo = hasMagicLinkCapability
+    ? `${user.email} • ${user.emailVerified ? 'Verified' : 'Unverified'}`
+    : 'Email verification required';
+
   // Provider data with real connection status
   const providers: ProviderInfo[] = [
     {
       id: 'email',
-      name: 'Email',
+      name: 'Email & Password',
       type: 'email',
       icon: Mail,
       connected: !!user.email,
       accountInfo: user.email || '',
+    },
+    {
+      id: 'magic-link',
+      name: 'Magic Link',
+      type: 'magic-link',
+      icon: Link,
+      connected: hasMagicLinkCapability,
+      accountInfo: magicLinkAccountInfo,
     },
     {
       id: 'passkeys',
@@ -281,6 +297,11 @@ export function ProvidersManagementCard() {
               <div className="flex items-center gap-2">
                 {provider.connected ? (
                   <>
+                    {provider.id === 'magic-link' && (
+                      <Button variant="outline" size="sm" disabled>
+                        Enabled
+                      </Button>
+                    )}
                     {provider.id === 'passkeys' && (
                       <div className="flex gap-2">
                         <Dialog
