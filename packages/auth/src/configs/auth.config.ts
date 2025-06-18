@@ -15,6 +15,7 @@ import { passkey } from 'better-auth/plugins/passkey';
 import EmailVerification from '../templates/email-verification';
 import OrganizationInvitation from '../templates/organization-invitation';
 import PasswordReset from '../templates/password-reset';
+import { assertValidAuthConfiguration } from '../utils/config-validator';
 import {
   createResendClient,
   sendEmail,
@@ -34,6 +35,8 @@ interface Env {
   // Email configuration
   RESEND_API_KEY?: string;
   FROM_EMAIL?: string;
+  // Auth worker configuration - defaults to true (use auth worker), set to false to use Next.js API routes
+  NEXT_PUBLIC_USE_AUTH_WORKER?: boolean;
 }
 
 // Secondary storage interface for potential future use with rate limiting
@@ -45,7 +48,7 @@ interface Env {
 
 export const ALLOWED_ORIGINS = [
   // Production origins
-  'https://auth.deepcrawl.dev',
+  'https://auth.deepcrawl.dev', // Auth worker (legacy)
   'https://deepcrawl.dev',
   'https://app.deepcrawl.dev',
   'https://*.deepcrawl.dev',
@@ -83,6 +86,15 @@ export function createAuthConfig(env: Env) {
   // use this to determine if we are in development or production instead of process.env.NODE_ENV
   const baseAuthURL = env.BETTER_AUTH_URL;
   const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
+
+  // Validate auth configuration consistency
+  const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
+  assertValidAuthConfiguration({
+    useAuthWorker,
+    betterAuthUrl: baseAuthURL,
+    isDevelopment,
+    context: 'server',
+  });
 
   const db = getDrizzleDB({ DATABASE_URL: env.DATABASE_URL });
 
@@ -126,7 +138,6 @@ export function createAuthConfig(env: Env) {
       multiSession({
         maximumSessions: MAX_SESSIONS,
       }),
-      oAuthProxy(),
       passkey({
         rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
         rpName: 'DeepCrawl Auth',
@@ -137,9 +148,6 @@ export function createAuthConfig(env: Env) {
       organization({
         async sendInvitationEmail(data) {
           if (!emailEnabled || !resend) {
-            if (isDevelopment) {
-              console.log('[Auth Configs] ~ sendInvitationEmail ~ data:', data);
-            }
             return;
           }
 
@@ -160,18 +168,16 @@ export function createAuthConfig(env: Env) {
               }),
               from: fromEmail,
             });
-            if (isDevelopment) {
-              console.log('✅ Organization invitation sent to:', data.email);
-            }
           } catch (error) {
             console.error('❌ Failed to send organization invitation:', error);
-            if (isDevelopment) {
-              // Fallback: log the invitation link for development
-              console.log('🔗 Invitation link:', inviteLink);
-            }
           }
         },
       }),
+      // disable oAuthProxy as it is not working
+      // oAuthProxy({
+      //   productionURL: 'https://app.deepcrawl.dev',
+      //   currentURL: 'http://localhost:3000',
+      // }),
     ],
     emailAndPassword: {
       enabled: true,
@@ -179,10 +185,6 @@ export function createAuthConfig(env: Env) {
       requireEmailVerification: true,
       async sendResetPassword({ user, url }) {
         if (!emailEnabled || !resend) {
-          if (isDevelopment) {
-            console.log('[Auth Configs] ~ sendResetPassword ~ url:', url);
-            console.log('[Auth Configs] ~ sendResetPassword ~ user:', user);
-          }
           return;
         }
 
@@ -196,29 +198,14 @@ export function createAuthConfig(env: Env) {
             }),
             from: fromEmail,
           });
-          if (isDevelopment) {
-            console.log('✅ Password reset email sent to:', user.email);
-          }
         } catch (error) {
           console.error('❌ Failed to send password reset email:', error);
-          if (isDevelopment) {
-            // Fallback: log the URL for development
-            console.log('🔗 Password reset URL:', url);
-          }
         }
       },
     },
     emailVerification: {
       sendVerificationEmail: async ({ user, url, token }, _request) => {
         if (!emailEnabled || !resend) {
-          if (isDevelopment) {
-            console.log('[Auth Configs] ~ sendVerificationEmail ~ url:', url);
-            console.log('[Auth Configs] ~ sendVerificationEmail ~ user:', user);
-            console.log(
-              '[Auth Configs] ~ sendVerificationEmail ~ token:',
-              token,
-            );
-          }
           console.warn('⚠️ Email verification not sent - Resend not configured');
           return;
         }
@@ -243,30 +230,9 @@ export function createAuthConfig(env: Env) {
             }),
             from: fromEmail,
           });
-          if (isDevelopment) {
-            console.log('✅ Verification email sent to:', user.email);
-            console.log('🔗 Verification URL redirects to:', appRedirectUrl);
-          }
         } catch (error) {
           console.error('❌ Failed to send verification email:', error);
           console.error('📧 Email config - From Email:', fromEmail);
-          if (isDevelopment) {
-            console.error(
-              '📧 Email config - API Key:',
-              env.RESEND_API_KEY ? 'Set' : 'Missing',
-            );
-            // Fallback: log the URL for development
-            console.log('🔗 Verification URL:', customVerificationUrl);
-
-            // In development, make the error more visible
-            console.error(
-              '🚨 DEVELOPMENT NOTICE: Email verification failed but account was created',
-            );
-            console.error(
-              '🚨 User can verify using this URL:',
-              customVerificationUrl,
-            );
-          }
         }
       },
       autoSignInAfterVerification: true,
@@ -276,12 +242,18 @@ export function createAuthConfig(env: Env) {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
-        // redirectURI: 'https://auth.deepcrawl.dev/api/auth/callback/github',
+        // disable for oAuthProxy as it is not working
+        // redirectURI: useAuthWorker
+        //   ? 'https://auth.deepcrawl.dev/api/auth/callback/github'
+        //   : 'https://app.deepcrawl.dev/api/auth/callback/github',
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
-        // redirectURI: 'https://auth.deepcrawl.dev/api/auth/callback/google',
+        // disable for oAuthProxy as it is not working
+        // redirectURI: useAuthWorker
+        //   ? 'https://auth.deepcrawl.dev/api/auth/callback/google'
+        //   : 'https://app.deepcrawl.dev/api/auth/callback/google',
       },
     },
     account: {
@@ -299,8 +271,13 @@ export function createAuthConfig(env: Env) {
         disableIpTracking: false,
       },
 
-      // Enable cross-subdomain in production only, but ensure multi-session works in dev
-      ...(isDevelopment ? {} : crossSubDomainConfigs),
+      // Enable cross-subdomain in production when using auth worker (default behavior)
+      // Only disable when explicitly using Next.js API routes (NEXT_PUBLIC_USE_AUTH_WORKER='false')
+      ...(isDevelopment
+        ? {}
+        : env.NEXT_PUBLIC_USE_AUTH_WORKER === false
+          ? {} // Disable crossSubDomainConfigs when explicitly using Next.js API routes
+          : crossSubDomainConfigs), // Default: enable crossSubDomainConfigs for auth worker
     },
     // rateLimit: {
     // window: 60, // time window in seconds

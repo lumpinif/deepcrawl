@@ -1,4 +1,5 @@
 import type { auth } from '@deepcrawl/auth/lib/auth';
+import { assertValidAuthConfiguration } from '@deepcrawl/auth/utils/config-validator';
 import {
   adminClient,
   genericOAuthClient,
@@ -13,27 +14,40 @@ import { createAuthClient } from 'better-auth/react';
 import { toast } from 'sonner';
 
 // Support both integrated Next.js auth and external worker for backward compatibility
+// Default to using external auth worker (NEXT_PUBLIC_USE_AUTH_WORKER defaults to true)
+// Only use Next.js API routes when explicitly set to 'false'
 const getAuthBaseURL = () => {
-  // Check if we should use external auth worker (legacy mode)
-  const useExternalWorker = process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'true';
+  // Check if we should use Next.js API routes (only when explicitly set to 'false')
+  const useNextJSAuth = process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'false';
+  const isDevelopment = process.env.NODE_ENV === 'development';
 
-  if (useExternalWorker) {
-    // Legacy external worker mode
-    return process.env.NODE_ENV === 'production'
-      ? 'https://auth.deepcrawl.dev'
-      : 'http://localhost:8787';
+  let baseURL: string;
+
+  if (useNextJSAuth) {
+    // Next.js integrated auth mode (when explicitly disabled worker)
+    if (process.env.NODE_ENV === 'production') {
+      // enfore to use nextjs app url for production
+      baseURL = process.env.NEXT_PUBLIC_APP_URL || 'https://app.deepcrawl.dev';
+    } else {
+      baseURL = 'http://localhost:3000';
+    }
+  } else {
+    // Default: external auth worker mode
+    baseURL =
+      process.env.NODE_ENV === 'production'
+        ? 'https://auth.deepcrawl.dev'
+        : 'http://localhost:8787';
   }
 
-  // Default: integrated Next.js auth mode (recommended)
-  if (process.env.NODE_ENV === 'production') {
-    return (
-      process.env.NEXT_PUBLIC_APP_URL ||
-      process.env.BETTER_AUTH_URL ||
-      'https://app.deepcrawl.dev'
-    );
-  }
+  // Validate configuration consistency
+  assertValidAuthConfiguration({
+    useAuthWorker: !useNextJSAuth,
+    betterAuthUrl: baseURL,
+    isDevelopment,
+    context: 'client',
+  });
 
-  return 'http://localhost:3000';
+  return baseURL;
 };
 
 export const authClient = createAuthClient({
@@ -73,9 +87,9 @@ export const authClient = createAuthClient({
           url: e.error.url,
           baseURL: getAuthBaseURL(),
           authMode:
-            process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'true'
-              ? 'external-worker'
-              : 'nextjs-integrated',
+            process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'false'
+              ? 'nextjs-integrated'
+              : 'external-worker',
           environment: process.env.NODE_ENV,
           timestamp: new Date().toISOString(),
         });

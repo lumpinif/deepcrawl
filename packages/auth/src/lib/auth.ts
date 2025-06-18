@@ -19,6 +19,9 @@ const authConfigs = createAuthConfig({
   // Email configuration - add these for Next.js email functionality
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   FROM_EMAIL: process.env.FROM_EMAIL,
+  // Default to true (use auth worker) unless explicitly set to 'false'
+  NEXT_PUBLIC_USE_AUTH_WORKER:
+    process.env.NEXT_PUBLIC_USE_AUTH_WORKER !== 'false',
 }) satisfies BetterAuthOptions;
 
 /**

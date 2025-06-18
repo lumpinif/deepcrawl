@@ -24,8 +24,8 @@ export default async function DashboardLayout({
     // auth.api.getFullOrganization({
     // 	headers: await headers(),
     // }),
-  ]).catch((e) => {
-    console.log(e);
+  ]).catch(() => {
+    // Auth failed - redirect to login
     throw redirect('/login');
   });
 

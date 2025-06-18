@@ -4,6 +4,12 @@ export * from './lib';
 // Auth configuration
 export { createAuthConfig } from './configs/auth.config';
 
+// Configuration validation utilities
+export {
+  validateAuthConfiguration,
+  assertValidAuthConfiguration,
+} from './utils/config-validator';
+
 // Email utilities
 export {
   createResendClient,

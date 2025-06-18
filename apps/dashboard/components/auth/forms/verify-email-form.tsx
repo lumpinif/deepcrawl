@@ -52,24 +52,6 @@ export function VerifyEmailForm({ className }: VerifyEmailFormProps) {
     const error = searchParams.get('error');
     const status = searchParams.get('status');
 
-    // Debug logging to understand the session and URL state
-    console.log('[VerifyEmailForm] State check:', {
-      session: session?.user
-        ? {
-            id: session.user.id,
-            email: session.user.email,
-            emailVerified: session.user.emailVerified,
-            name: session.user.name,
-          }
-        : null,
-      urlParams: { error, status },
-      isLoading,
-      hasShownSuccessToast,
-      sessionCheckRetries,
-      hasTriedRefresh,
-      isInitialLoad,
-    });
-
     // Handle Better Auth error states first
     if (error) {
       switch (error) {
@@ -120,9 +102,6 @@ export function VerifyEmailForm({ className }: VerifyEmailFormProps) {
       } else {
         // User is logged in but email is not verified
         if (!hasTriedRefresh) {
-          console.log(
-            '[VerifyEmailForm] User signed in but email not verified, refreshing session...',
-          );
           queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
           setHasTriedRefresh(true);
           setState('checking');
@@ -315,8 +294,8 @@ export function VerifyEmailForm({ className }: VerifyEmailFormProps) {
               Session not found
             </h3>
             <p className="text-muted-foreground text-sm">
-              Your email may have been verified, but we couldn't detect your
-              session. Try refreshing the page or signing in again.
+              Your email may have been verified, but we couldn&apos;t detect
+              your session. Try refreshing the page or signing in again.
             </p>
           </div>
           <div className="space-y-2">

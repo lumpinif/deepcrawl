@@ -57,11 +57,6 @@ export function UserEmailCard() {
     );
   }
 
-  const handleResendVerification = async () => {
-    // TODO: Implement email verification resend with Better Auth
-    console.log('Resending verification email to:', user.email);
-  };
-
   return (
     <Card>
       <CardHeader>
