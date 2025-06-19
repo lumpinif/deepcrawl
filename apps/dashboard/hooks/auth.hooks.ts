@@ -459,10 +459,11 @@ export const useRevokeSession = () => {
 
 /**
  * Hook for revoking all other sessions (keeping current one)
+ * Note: Optimistic updates disabled to prevent UI flickering and maintain loading state
  */
 export const useRevokeAllOtherSessions = () => {
   const queryClient = useQueryClient();
-  const { data: currentSession } = useAuthSession();
+  // const { data: currentSession } = useAuthSession();
 
   return useMutation({
     mutationFn: async () => {
@@ -474,36 +475,29 @@ export const useRevokeAllOtherSessions = () => {
 
       return result;
     },
-    onMutate: async () => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: userQueryKeys.listSessions });
+    // onMutate: async () => {
+    //   // Cancel outgoing refetches
+    //   await queryClient.cancelQueries({ queryKey: userQueryKeys.listSessions });
 
-      // Snapshot previous value
-      const previousSessions = queryClient.getQueryData<SessionsList>(
-        userQueryKeys.listSessions,
-      );
+    //   // Snapshot previous value
+    //   const previousSessions = queryClient.getQueryData<SessionsList>(
+    //     userQueryKeys.listSessions,
+    //   );
 
-      // Optimistically update to keep only current session
-      queryClient.setQueryData<SessionsList>(
-        userQueryKeys.listSessions,
-        (old) => {
-          if (!old || !currentSession?.session) return old;
-          return old.filter(
-            (session) => session.id === currentSession.session.id,
-          );
-        },
-      );
+    //   // Optimistically update to keep only current session
+    //   queryClient.setQueryData<SessionsList>(
+    //     userQueryKeys.listSessions,
+    //     (old) => {
+    //       if (!old || !currentSession?.session) return old;
+    //       return old.filter(
+    //         (session) => session.id === currentSession.session.id,
+    //       );
+    //     },
+    //   );
 
-      return { previousSessions };
-    },
-    onError: (err, variables, context) => {
-      // Rollback on error
-      if (context?.previousSessions) {
-        queryClient.setQueryData(
-          userQueryKeys.listSessions,
-          context.previousSessions,
-        );
-      }
+    //   return { previousSessions };
+    // },
+    onError: (err) => {
       toast.error(err.message || 'Failed to revoke sessions');
     },
     onSuccess: async () => {
@@ -691,7 +685,7 @@ export const useRemovePasskey = () => {
     onSuccess: async () => {
       toast.success('Passkey removed successfully', {
         description:
-          "To prevent confusion, also remove it from your browser's password manager.",
+          "To prevent confusion, also remove it from your machine's password manager.",
         duration: 8000, // Show longer for important info
       });
 

@@ -1,6 +1,10 @@
 import { KeyIcon } from 'lucide-react';
 
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
+import {
+  getAuthErrorMessage,
+  isWebAuthnCancellationError,
+} from '@/lib/auth-errors';
 import { authClient } from '@/lib/auth.client';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { toast } from 'sonner';
@@ -22,20 +26,38 @@ export function PasskeyButton({
     setIsSubmitting?.(true);
 
     try {
-      // throw error as it doesn't have an error return object
+      // Use throw: false to get error object instead of throwing
       const response = await authClient.signIn.passkey({
-        fetchOptions: { credentials: 'include', throw: true },
+        fetchOptions: { credentials: 'include', throw: false },
       });
 
       if (response?.error) {
-        toast.error(response.error.message);
-
+        // Use centralized error handling like sign-in form
+        const errorMessage = getAuthErrorMessage(response.error);
+        toast.error(errorMessage);
         setIsSubmitting?.(false);
-      } else {
-        onSuccess();
+        return;
+      }
+
+      if (response?.data) {
+        await onSuccess();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'An error occurred');
+      // Only show error toast for actual errors, not cancellations
+      if (!isWebAuthnCancellationError(error)) {
+        // Handle unexpected errors that still throw despite throw: false
+        const errorMessage =
+          error instanceof Error
+            ? getAuthErrorMessage({
+                message: error.message,
+                status: 400,
+                statusText: 'Bad Request',
+              })
+            : 'An unexpected error occurred. Please try again.';
+
+        toast.error(errorMessage);
+      }
+      // Silently handle WebAuthn cancellations - user intentionally cancelled
       setIsSubmitting?.(false);
     }
   };

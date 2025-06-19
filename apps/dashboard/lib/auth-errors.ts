@@ -105,11 +105,41 @@ const BASE_ERROR_CODES = {
   },
 } satisfies ErrorTypes;
 
+// Extended error codes for Better Auth's built-in errors that need better UX messages
+// These follow the same structure as BASE_ERROR_CODES but for plugin-defined errors
+const ENHANCED_ERROR_CODES = {
+  PASSKEY_NOT_FOUND: {
+    en: 'Passkey not found. Please try a different authentication method.',
+    es: 'Clave de acceso no encontrada. Intenta con otro método de autenticación.',
+  },
+  AUTHENTICATION_FAILED: {
+    en: 'Authentication failed. Please check your credentials and try again.',
+    es: 'La autenticación falló. Verifica tus credenciales e intenta de nuevo.',
+  },
+  CHALLENGE_NOT_FOUND: {
+    en: 'Authentication challenge not found. Please try again.',
+    es: 'Desafío de autenticación no encontrado. Intenta de nuevo.',
+  },
+  FAILED_TO_VERIFY_REGISTRATION: {
+    en: 'Failed to verify passkey registration. Please try again.',
+    es: 'Error al verificar el registro de la clave de acceso. Intenta de nuevo.',
+  },
+} as const;
+
 export const getErrorMessageFromCode = (code: string, lang: 'en' | 'es') => {
   if (code in BASE_ERROR_CODES) {
     return BASE_ERROR_CODES[code as keyof typeof BASE_ERROR_CODES][lang];
   }
   return 'An unexpected error occurred. Please try again.';
+};
+
+export const getEnhancedErrorMessage = (code: string, lang: 'en' | 'es') => {
+  if (code in ENHANCED_ERROR_CODES) {
+    return ENHANCED_ERROR_CODES[code as keyof typeof ENHANCED_ERROR_CODES][
+      lang
+    ];
+  }
+  return null;
 };
 
 export const getAuthErrorMessage = (error: {
@@ -118,6 +148,47 @@ export const getAuthErrorMessage = (error: {
   status: number;
   statusText: string;
 }) => {
+  // First try to get enhanced error message by code (Better Auth plugin error codes)
+  if (error?.code) {
+    const enhancedMessage = getEnhancedErrorMessage(error.code, 'en');
+    if (enhancedMessage) {
+      return enhancedMessage;
+    }
+  }
+
+  // Then try to get enhanced message by exact message match (for Better Auth plugin errors)
+  if (error?.message) {
+    const messageText = error.message;
+
+    // Direct lookup - no duplication, just check if we have an enhanced version
+    const enhancedCode = Object.keys(ENHANCED_ERROR_CODES).find(
+      (code) =>
+        ENHANCED_ERROR_CODES[code as keyof typeof ENHANCED_ERROR_CODES].en
+          .toLowerCase()
+          .includes(messageText.toLowerCase()) ||
+        messageText
+          .toLowerCase()
+          .includes(code.toLowerCase().replace(/_/g, ' ')),
+    ) as keyof typeof ENHANCED_ERROR_CODES;
+
+    if (enhancedCode) {
+      return getEnhancedErrorMessage(enhancedCode, 'en');
+    }
+
+    // Handle case-insensitive partial matches for common auth errors
+    const lowerMessage = messageText.toLowerCase();
+    if (
+      lowerMessage.includes('invalid credentials') ||
+      lowerMessage.includes('authentication failed')
+    ) {
+      return getEnhancedErrorMessage('AUTHENTICATION_FAILED', 'en');
+    }
+    if (lowerMessage.includes('passkey not found')) {
+      return getEnhancedErrorMessage('PASSKEY_NOT_FOUND', 'en');
+    }
+  }
+
+  // Fallback to standard error handling - no duplication
   const errorMessage =
     error?.message ||
     (error?.code && getErrorMessageFromCode(error.code, 'en')) ||
