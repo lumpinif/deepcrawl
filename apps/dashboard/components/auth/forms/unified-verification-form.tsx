@@ -219,7 +219,9 @@ export function UnifiedVerificationForm({
         status: error.status || 400,
         statusText: 'Bad Request',
       });
-      setErrorMessage(fallbackMessage);
+      setErrorMessage(
+        fallbackMessage || 'An unknown verification error occurred.',
+      );
     }
   };
 

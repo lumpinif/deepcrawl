@@ -147,7 +147,7 @@ export const getAuthErrorMessage = (error: {
   message?: string | undefined;
   status: number;
   statusText: string;
-}) => {
+}): string => {
   // First try to get enhanced error message by code (Better Auth plugin error codes)
   if (error?.code) {
     const enhancedMessage = getEnhancedErrorMessage(error.code, 'en');
@@ -172,7 +172,10 @@ export const getAuthErrorMessage = (error: {
     ) as keyof typeof ENHANCED_ERROR_CODES;
 
     if (enhancedCode) {
-      return getEnhancedErrorMessage(enhancedCode, 'en');
+      const enhancedMessage = getEnhancedErrorMessage(enhancedCode, 'en');
+      if (enhancedMessage) {
+        return enhancedMessage;
+      }
     }
 
     // Handle case-insensitive partial matches for common auth errors
@@ -181,10 +184,22 @@ export const getAuthErrorMessage = (error: {
       lowerMessage.includes('invalid credentials') ||
       lowerMessage.includes('authentication failed')
     ) {
-      return getEnhancedErrorMessage('AUTHENTICATION_FAILED', 'en');
+      const enhancedMessage = getEnhancedErrorMessage(
+        'AUTHENTICATION_FAILED',
+        'en',
+      );
+      if (enhancedMessage) {
+        return enhancedMessage;
+      }
     }
     if (lowerMessage.includes('passkey not found')) {
-      return getEnhancedErrorMessage('PASSKEY_NOT_FOUND', 'en');
+      const enhancedMessage = getEnhancedErrorMessage(
+        'PASSKEY_NOT_FOUND',
+        'en',
+      );
+      if (enhancedMessage) {
+        return enhancedMessage;
+      }
     }
   }
 
