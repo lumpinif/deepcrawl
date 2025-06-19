@@ -5,9 +5,9 @@ import {
   admin,
   apiKey,
   bearer,
-  // oAuthProxy,
   magicLink,
   multiSession,
+  oAuthProxy,
   oneTap,
   openAPI,
   organization,
@@ -58,13 +58,51 @@ export const ALLOWED_ORIGINS = [
   '*.deepcrawl.dev',
 ];
 
+/**
+ * Helper function to generate network origins for mobile testing
+ * Usage: Add your computer's local IP address to enable mobile device testing
+ */
+const generateNetworkOrigins = (
+  baseIP: string,
+  ports: number[] = [3000, 8787],
+) => {
+  return ports.flatMap((port) => [
+    `http://${baseIP}:${port}`,
+    `https://${baseIP}:${port}`, // For HTTPS testing
+  ]);
+};
+
 export const DEVELOPMENT_ORIGINS = [
-  // Development origins
+  // Local development origins
   'http://localhost:3000', // Dashboard
   'https://localhost:3000', // Dashboard HTTPS
   'http://127.0.0.1:3000', // Dashboard alternative
   'http://localhost:8787', // Auth worker (legacy)
   'http://127.0.0.1:8787', // Auth worker alternative (legacy)
+
+  // 🔧 TO ADD YOUR NETWORK CONFIGURATION:
+  // 1. Find your computer's IP address:
+  //    - Windows: Run `ipconfig` and look for IPv4 Address
+  //    - Mac: Run `ifconfig | grep "inet "` or check System Preferences > Network
+  //    - Linux: Run `ip addr show` or `hostname -I`
+  //
+  // 2. Uncomment and replace YOUR_COMPUTER_IP with your actual IP:
+  // ...generateNetworkOrigins('YOUR_COMPUTER_IP'), // e.g., '192.168.1.100'
+
+  ...generateNetworkOrigins('192.18.0.1'),
+  ...generateNetworkOrigins('192.168.50.198'),
+
+  // 3. Common network examples (uncomment if they match your setup):
+  ...generateNetworkOrigins('192.168.1.100'), // Common home network IP
+  ...generateNetworkOrigins('192.168.0.100'), // Alternative common range
+  // ...generateNetworkOrigins('10.0.0.100'),    // Corporate network range
+  // ...generateNetworkOrigins('172.16.0.100'),  // Docker/container range
+
+  // 📱 TESTING FROM YOUR IPHONE:
+  // 1. Make sure your iPhone is on the same Wi-Fi network
+  // 2. Add your computer's IP using generateNetworkOrigins() above
+  // 3. On your iPhone, navigate to: http://YOUR_COMPUTER_IP:3000
+  // 4. The auth should now work seamlessly across devices!
 ];
 
 export const MAX_SESSIONS = 3; // better-auth issue: 3 is allowing max 2 sessions
@@ -91,6 +129,11 @@ export function createAuthConfig(env: Env) {
 
   // Validate auth configuration consistency
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
+  // disable oAuthProxy for auth worker
+  // const useOAuthProxy = !useAuthWorker && isDevelopment;
+  // oAuthProxy is not working in development currently
+  const useOAuthProxy = false;
+
   assertValidAuthConfiguration({
     useAuthWorker,
     betterAuthUrl: baseAuthURL,
@@ -132,6 +175,14 @@ export function createAuthConfig(env: Env) {
       },
     },
     plugins: [
+      ...(useOAuthProxy
+        ? [
+            oAuthProxy({
+              currentURL: 'http://localhost:3000',
+              productionURL: 'https://app.deepcrawl.dev',
+            }),
+          ]
+        : []),
       admin(),
       apiKey(),
       oneTap(),
@@ -204,11 +255,6 @@ export function createAuthConfig(env: Env) {
           }
         },
       }),
-      // disable oAuthProxy as it is not working
-      // oAuthProxy({
-      //   productionURL: 'https://app.deepcrawl.dev',
-      //   currentURL: 'http://localhost:3000',
-      // }),
     ],
     emailAndPassword: {
       enabled: true,
@@ -268,18 +314,16 @@ export function createAuthConfig(env: Env) {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
-        // disable for oAuthProxy as it is not working
-        // redirectURI: useAuthWorker
-        //   ? 'https://auth.deepcrawl.dev/api/auth/callback/github'
-        //   : 'https://app.deepcrawl.dev/api/auth/callback/github',
+        redirectURI: useOAuthProxy
+          ? 'https://app.deepcrawl.dev/api/auth/callback/github'
+          : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
-        // disable for oAuthProxy as it is not working
-        // redirectURI: useAuthWorker
-        //   ? 'https://auth.deepcrawl.dev/api/auth/callback/google'
-        //   : 'https://app.deepcrawl.dev/api/auth/callback/google',
+        redirectURI: useOAuthProxy
+          ? 'https://app.deepcrawl.dev/api/auth/callback/google'
+          : undefined,
       },
     },
     account: {
