@@ -27,21 +27,20 @@ export function PasskeyButton({
 
     try {
       // Use throw: false to get error object instead of throwing
-      const response = await authClient.signIn.passkey({
-        fetchOptions: { credentials: 'include', throw: false },
+      await authClient.signIn.passkey({
+        fetchOptions: {
+          credentials: 'include',
+          onSuccess: async (context) => {
+            if (context?.data) {
+              await onSuccess();
+            }
+          },
+          onError: async (context) => {
+            const errorMessage = getAuthErrorMessage(context.error);
+            toast.error(errorMessage);
+          },
+        },
       });
-
-      if (response?.error) {
-        // Use centralized error handling like sign-in form
-        const errorMessage = getAuthErrorMessage(response.error);
-        toast.error(errorMessage);
-        setIsSubmitting?.(false);
-        return;
-      }
-
-      if (response?.data) {
-        await onSuccess();
-      }
     } catch (error) {
       // Only show error toast for actual errors, not cancellations
       if (!isWebAuthnCancellationError(error)) {
@@ -57,7 +56,7 @@ export function PasskeyButton({
 
         toast.error(errorMessage);
       }
-      // Silently handle WebAuthn cancellations - user intentionally cancelled
+    } finally {
       setIsSubmitting?.(false);
     }
   };
