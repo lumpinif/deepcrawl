@@ -2,6 +2,7 @@ import type { auth } from '@deepcrawl/auth/lib/auth';
 import { assertValidAuthConfiguration } from '@deepcrawl/auth/utils/config-validator';
 import {
   adminClient,
+  apiKeyClient,
   genericOAuthClient,
   inferAdditionalFields,
   magicLinkClient,
@@ -61,6 +62,7 @@ export const authClient = createAuthClient({
       },
     }),
     adminClient(),
+    apiKeyClient(),
     passkeyClient(),
     magicLinkClient(),
     multiSessionClient(),
