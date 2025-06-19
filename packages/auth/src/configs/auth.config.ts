@@ -178,16 +178,36 @@ export function createAuthConfig(env: Env) {
       ...(useOAuthProxy
         ? [
             oAuthProxy({
-              currentURL: 'http://localhost:3000',
+              currentURL: 'http://198.18.0.1:3000',
               productionURL: 'https://app.deepcrawl.dev',
             }),
           ]
         : []),
       admin(),
-      apiKey(),
       oneTap(),
       bearer(),
       openAPI(),
+      apiKey({
+        rateLimit: {
+          enabled: true,
+          timeWindow: 1000 * 60 * 60 * 24, // 1 day
+          maxRequests: 100, // 100 requests per day
+        },
+        /* An API Key can represent a valid session, so we automatically mock a session for the user if we find a valid API key in the request headers. QUESTION: Should we disable this? */
+        // disableSessionForAPIKeys: true,
+        enableMetadata: true,
+        permissions: {
+          defaultPermissions: async (userId, ctx) => {
+            // Fetch user role or other data to determine permissions
+            return {
+              // api.deepcrawl.dev services endpoints
+              // Permissions follow a resource-based structure
+              read: ['GET', 'POST', 'PUT', 'DELETE'],
+              links: ['GET', 'POST', 'PUT', 'DELETE'],
+            };
+          },
+        },
+      }),
       multiSession({
         maximumSessions: MAX_SESSIONS,
       }),
