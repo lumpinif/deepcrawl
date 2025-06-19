@@ -6,30 +6,20 @@
     "**/tsconfig*.json"
   ],
   "globalEnv": [
-    "DATABASE_URL",
-    "DATABASE_URL_PROD",
+    "NEXT_PUBLIC_USE_AUTH_WORKER",
     "BETTER_AUTH_URL",
     "BETTER_AUTH_SECRET",
-    "AUTH_WORKER_NODE_ENV",
+    "DATABASE_URL",
     "GITHUB_CLIENT_ID",
     "GITHUB_CLIENT_SECRET",
     "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
     "GOOGLE_CLIENT_SECRET",
-    "WORKER_NODE_ENV",
-    "NODE_ENV"
+    "RESEND_API_KEY",
+    "FROM_EMAIL"
   ],
   "tasks": {
     "auth:generate": {
-      "env": [
-        "DATABASE_URL",
-        "BETTER_AUTH_URL",
-        "BETTER_AUTH_SECRET",
-        "AUTH_WORKER_NODE_ENV",
-        "GITHUB_CLIENT_ID",
-        "GITHUB_CLIENT_SECRET",
-        "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
-        "GOOGLE_CLIENT_SECRET"
-      ]
+      "cache": false
     },
     "db:sync": {
       "cache": false
@@ -60,19 +50,6 @@
       "outputs": [
         ".next/**",
         "!.next/cache/**"
-      ],
-      "env": [
-        "DATABASE_URL",
-        "DATABASE_URL_PROD",
-        "BETTER_AUTH_URL",
-        "BETTER_AUTH_SECRET",
-        "AUTH_WORKER_NODE_ENV",
-        "GITHUB_CLIENT_ID",
-        "GITHUB_CLIENT_SECRET",
-        "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
-        "GOOGLE_CLIENT_SECRET",
-        "WORKER_NODE_ENV",
-        "NODE_ENV"
       ],
       "cache": true
     },
