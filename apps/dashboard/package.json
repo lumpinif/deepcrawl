@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:auth-worker": "turbo dev --filter=dashboard --filter=deepcrawl_auth",
+    "clean": "rimraf .next .turbo",
+    "clean:node": "tsx scripts/clean.ts",
     "build": "next build",
+    "build:clean": "pnpm clean && pnpm clean:node && next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
@@ -79,6 +82,7 @@
     "eslint": "^9.20.1",
     "eslint-config-next": "15.3.3",
     "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
     "tailwind-scrollbar": "^4.0.2",
     "typescript": "5.7.3"
   }
