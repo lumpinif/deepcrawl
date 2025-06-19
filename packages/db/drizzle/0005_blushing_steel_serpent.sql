@@ -1,0 +1,1 @@
+ALTER TABLE "apikey" ALTER COLUMN "rate_limit_max" SET DEFAULT 100;
