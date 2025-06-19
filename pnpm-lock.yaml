@@ -150,10 +150,10 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0
       react-dom:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
       react-google-recaptcha:
         specifier: ^3.1.0
@@ -202,7 +202,7 @@ importers:
         specifier: ^22
         version: 22.15.29
       '@types/react':
-        specifier: ^19
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
         specifier: ^19
@@ -392,10 +392,10 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0
       react-dom:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
     devDependencies:
       '@deepcrawl/eslint-config':
@@ -408,7 +408,7 @@ importers:
         specifier: ^20
         version: 20.8.3
       '@types/react':
-        specifier: ^19
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
         specifier: ^19
@@ -608,10 +608,10 @@ importers:
         specifier: ^8.5.4
         version: 8.5.4
       react:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0
       react-dom:
-        specifier: ^19.0.0
+        specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
       react-hook-form:
         specifier: ^7.57.0
@@ -654,7 +654,7 @@ importers:
         specifier: ^20
         version: 20.8.3
       '@types/react':
-        specifier: ^19
+        specifier: ^19.1.5
         version: 19.1.5
       '@types/react-dom':
         specifier: ^19

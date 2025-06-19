@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 /**
  * Recursively remove a directory and its contents
@@ -22,17 +22,16 @@ function removeDir(dirPath: string) {
  */
 function clean() {
   console.log('🚀 Starting clean process... \n');
-  
- 
-    console.log('🔥 Full cleaning mode \n');
-    const dirsToClean = ['.next', '.turbo'];
-    dirsToClean.forEach(dir => {
-      const fullPath = path.resolve(process.cwd(), dir);
-      removeDir(fullPath);
-    });
-  
+
+  console.log('🔥 Full cleaning mode \n');
+  const dirsToClean = ['.next', '.turbo'];
+  dirsToClean.forEach((dir) => {
+    const fullPath = path.resolve(process.cwd(), dir);
+    removeDir(fullPath);
+  });
+
   console.log('✨ Clean process completed! \n');
 }
 
 // Run the clean function
-clean(); 
+clean();
