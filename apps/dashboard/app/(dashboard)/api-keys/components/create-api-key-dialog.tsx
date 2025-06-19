@@ -112,8 +112,8 @@ export function CreateApiKeyDialog({
                 Important Security Notice
               </h4>
               <p className="mt-1 text-sm">
-                Make sure to copy it to a safe location. If you lose it,
-                you&apos;ll need to create a new one.
+                This is only shown once. Make sure to copy it to a safe
+                location. If you lose it, you&apos;ll need to create a new one.
               </p>
             </div>
           </div>
