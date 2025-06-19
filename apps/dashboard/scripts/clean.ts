@@ -25,10 +25,10 @@ function clean() {
 
   console.log('🔥 Full cleaning mode \n');
   const dirsToClean = ['.next', '.turbo'];
-  dirsToClean.forEach((dir) => {
+  for (const dir of dirsToClean) {
     const fullPath = path.resolve(process.cwd(), dir);
     removeDir(fullPath);
-  });
+  }
 
   console.log('✨ Clean process completed! \n');
 }
