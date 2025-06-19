@@ -7,12 +7,15 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "check": "biome check . --write && pnpm typecheck",
-    "db:push": "pnpm drizzle-kit push",
-    "db:studio": "pnpm drizzle-kit studio",
-    "db:generate": "pnpm drizzle-kit generate",
-    "db:migrate": "pnpm drizzle-kit migrate",
-    "db:migrate:prod": "pnpm drizzle-kit migrate --config=drizzle.prod.config.ts",
-    "db:pre-deploy": "pnpm run db:generate && pnpm run db:migrate:prod"
+    "db:push": "dotenv -e ../../apps/dashboard/.env.development.local -- pnpm drizzle-kit push",
+    "db:push:prod": "dotenv -e ../../apps/dashboard/.env -- pnpm drizzle-kit push",
+    "db:studio": "dotenv -e ../../apps/dashboard/.env.development.local -- pnpm drizzle-kit studio",
+    "db:generate": "dotenv -e ../../apps/dashboard/.env.development.local -- pnpm drizzle-kit generate",
+    "db:generate:prod": "dotenv -e ../../apps/dashboard/.env -- pnpm drizzle-kit generate",
+    "db:migrate": "dotenv -e ../../apps/dashboard/.env.development.local -- pnpm drizzle-kit migrate",
+    "db:migrate:prod": "dotenv -e ../../apps/dashboard/.env -- pnpm drizzle-kit migrate",
+    "db:sync": "pnpm run db:generate && pnpm run db:migrate",
+    "db:sync:prod": "pnpm run db:generate:prod && pnpm run db:migrate:prod"
   },
   "exports": {
     ".": {
@@ -24,6 +27,7 @@
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
     "@types/node": "^20",
+    "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.31.1"
   },
   "dependencies": {

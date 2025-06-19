@@ -31,10 +31,16 @@
         "GOOGLE_CLIENT_SECRET"
       ]
     },
-    "db:pre-deploy": {
+    "db:sync": {
+      "cache": false
+    },
+    "db:sync:prod": {
       "cache": false
     },
     "db:generate": {
+      "cache": false
+    },
+    "db:generate:prod": {
       "cache": false
     },
     "db:migrate": {

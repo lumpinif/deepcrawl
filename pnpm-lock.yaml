@@ -466,6 +466,9 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.8.3
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
       drizzle-kit:
         specifier: ^0.31.1
         version: 0.31.1
