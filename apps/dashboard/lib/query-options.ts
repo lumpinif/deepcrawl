@@ -1,4 +1,5 @@
 import {
+  fetchApiKeys,
   fetchAuthSession,
   fetchDeviceSessions,
   fetchLinkedAccounts,
@@ -79,4 +80,16 @@ export const linkedAccountsQueryOptions = () =>
     queryFn: fetchLinkedAccounts,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+/**
+ * Query options for user's API keys
+ * Provides full type inference for useQuery, prefetchQuery, etc.
+ */
+export const apiKeysQueryOptions = () =>
+  queryOptions({
+    queryKey: userQueryKeys.apiKeys,
+    queryFn: fetchApiKeys,
+    staleTime: 2 * 60 * 1000, // 2 minutes (API keys change less frequently)
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });

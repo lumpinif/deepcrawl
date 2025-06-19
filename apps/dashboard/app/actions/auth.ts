@@ -330,3 +330,139 @@ export async function fetchLinkedAccounts() {
     return [];
   }
 }
+
+/**
+ * Fetch user's API keys
+ * No server-side caching - React Query handles client caching
+ */
+export async function fetchApiKeys() {
+  const requestHeaders = await headers();
+
+  try {
+    const result = await auth.api.listApiKeys({
+      headers: requestHeaders,
+    });
+
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error('Failed to fetch API keys:', error);
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to fetch API keys',
+    );
+  }
+}
+
+/**
+ * Create a new API key
+ * Uses server-side API with userId from session and server-only properties
+ */
+export async function createApiKey({
+  name,
+  expiresIn,
+  prefix,
+  metadata,
+}: {
+  name?: string;
+  expiresIn?: number;
+  prefix?: string;
+  metadata?: Record<string, unknown>;
+}) {
+  const requestHeaders = await headers();
+
+  try {
+    // Get current session to extract userId
+    const session = await auth.api.getSession({
+      headers: requestHeaders,
+    });
+
+    if (!session?.user?.id) {
+      throw new Error('Unauthorized: No valid session found');
+    }
+
+    const result = await auth.api.createApiKey({
+      body: {
+        name,
+        expiresIn,
+        prefix: prefix || 'dc_',
+        metadata,
+        userId: session.user.id, // Required for server-side creation
+        // Server-only properties with default values
+        rateLimitEnabled: true,
+        rateLimitTimeWindow: 1000 * 60 * 60 * 24, // 24 hours
+        rateLimitMax: 100, // 100 requests per day
+        // Note: permissions will use defaultPermissions from auth config
+      },
+    });
+
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error('Failed to create API key:', error);
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to create API key',
+    );
+  }
+}
+
+/**
+ * Update an API key
+ * Uses server-side API with server-only properties
+ */
+export async function updateApiKey({
+  keyId,
+  name,
+  enabled,
+  expiresIn,
+  metadata,
+}: {
+  keyId: string;
+  name?: string;
+  enabled?: boolean;
+  expiresIn?: number;
+  metadata?: Record<string, unknown>;
+}) {
+  const requestHeaders = await headers();
+
+  try {
+    const result = await auth.api.updateApiKey({
+      headers: requestHeaders,
+      body: {
+        keyId,
+        name,
+        enabled,
+        expiresIn,
+        metadata,
+      },
+    });
+
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error('Failed to update API key:', error);
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to update API key',
+    );
+  }
+}
+
+/**
+ * Delete an API key
+ * Uses server-side API
+ */
+export async function deleteApiKey(keyId: string) {
+  const requestHeaders = await headers();
+
+  try {
+    const result = await auth.api.deleteApiKey({
+      headers: requestHeaders,
+      body: {
+        keyId,
+      },
+    });
+
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error('Failed to delete API key:', error);
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to delete API key',
+    );
+  }
+}

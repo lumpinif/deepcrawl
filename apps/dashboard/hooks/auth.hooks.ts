@@ -1,7 +1,10 @@
 'use client';
 
 import {
+  createApiKey,
+  deleteApiKey,
   removeUserPasskey,
+  updateApiKey,
   updateMostRecentPasskeyName,
 } from '@/app/actions/auth';
 import {
@@ -12,6 +15,7 @@ import { authClient } from '@/lib/auth.client';
 import { generatePasskeyName } from '@/lib/passkey-utils';
 import { userQueryKeys } from '@/lib/query-keys';
 import {
+  apiKeysQueryOptions,
   deviceSessionsQueryOptions,
   linkedAccountsQueryOptions,
   listSessionsQueryOptions,
@@ -20,7 +24,7 @@ import {
   userPasskeysQueryOptions,
 } from '@/lib/query-options';
 import { getSearchParam } from '@/utils';
-import type { Session } from '@deepcrawl/auth/types';
+import type { ApiKey, Session } from '@deepcrawl/auth/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
@@ -695,6 +699,175 @@ export const useRemovePasskey = () => {
     onSettled: () => {
       // Always refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
+    },
+  });
+};
+
+/**
+ * Hook for fetching user's API keys
+ */
+export const useApiKeys = () => {
+  return useQuery(apiKeysQueryOptions());
+};
+
+/**
+ * Hook for creating a new API key
+ */
+export const useCreateApiKey = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      name,
+      expiresIn,
+      prefix,
+      metadata,
+    }: {
+      name?: string;
+      expiresIn?: number;
+      prefix?: string;
+      metadata?: Record<string, unknown>;
+    }) => {
+      return await createApiKey({ name, expiresIn, prefix, metadata });
+    },
+    onSuccess: () => {
+      // Invalidate and refetch API keys
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
+      toast.success('API key created successfully');
+    },
+    onError: (error) => {
+      console.error('Failed to create API key:', error);
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to create API key',
+      );
+    },
+  });
+};
+
+/**
+ * Hook for updating an API key with optimistic updates
+ */
+export const useUpdateApiKey = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      keyId,
+      name,
+      enabled,
+      expiresIn,
+      metadata,
+    }: {
+      keyId: string;
+      name?: string;
+      enabled?: boolean;
+      expiresIn?: number;
+      metadata?: Record<string, unknown>;
+    }) => {
+      return await updateApiKey({ keyId, name, enabled, expiresIn, metadata });
+    },
+    onMutate: async ({ keyId, name, enabled, expiresIn, metadata }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: userQueryKeys.apiKeys });
+
+      // Snapshot previous value
+      const previousApiKeys = queryClient.getQueryData<ApiKey[]>(
+        userQueryKeys.apiKeys,
+      );
+
+      // Optimistically update the API key
+      queryClient.setQueryData<ApiKey[]>(userQueryKeys.apiKeys, (old) => {
+        if (!old) return old;
+        return old.map((apiKey) =>
+          apiKey.id === keyId
+            ? {
+                ...apiKey,
+                ...(name !== undefined && { name }),
+                ...(enabled !== undefined && { enabled }),
+                ...(expiresIn !== undefined && {
+                  expiresAt: expiresIn
+                    ? new Date(Date.now() + expiresIn * 1000)
+                    : null,
+                }),
+                ...(metadata !== undefined && { metadata }),
+              }
+            : apiKey,
+        );
+      });
+
+      return { previousApiKeys, keyId };
+    },
+    onError: (error, variables, context) => {
+      // Rollback on error
+      if (context?.previousApiKeys) {
+        queryClient.setQueryData(
+          userQueryKeys.apiKeys,
+          context.previousApiKeys,
+        );
+      }
+
+      console.error('Failed to update API key:', error);
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to update API key',
+      );
+    },
+    onSuccess: () => {
+      toast.success('API key updated successfully');
+    },
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
+    },
+  });
+};
+
+/**
+ * Hook for deleting an API key with optimistic updates
+ */
+export const useDeleteApiKey = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (keyId: string) => {
+      return await deleteApiKey(keyId);
+    },
+    onMutate: async (keyId: string) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: userQueryKeys.apiKeys });
+
+      // Snapshot previous value
+      const previousApiKeys = queryClient.getQueryData<ApiKey[]>(
+        userQueryKeys.apiKeys,
+      );
+
+      // Optimistically remove the API key
+      queryClient.setQueryData<ApiKey[]>(userQueryKeys.apiKeys, (old) => {
+        if (!old) return old;
+        return old.filter((apiKey) => apiKey.id !== keyId);
+      });
+
+      return { previousApiKeys, keyId };
+    },
+    onError: (error, keyId, context) => {
+      // Rollback on error
+      if (context?.previousApiKeys) {
+        queryClient.setQueryData(
+          userQueryKeys.apiKeys,
+          context.previousApiKeys,
+        );
+      }
+
+      console.error('Failed to delete API key:', error);
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to delete API key',
+      );
+    },
+    onSuccess: () => {
+      toast.success('API key deleted successfully');
+    },
+    onSettled: () => {
+      // Always refetch to ensure consistency
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
     },
   });
 };

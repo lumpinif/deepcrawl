@@ -188,6 +188,9 @@ export function createAuthConfig(env: Env) {
       bearer(),
       openAPI(),
       apiKey({
+        startingCharactersConfig: {
+          charactersLength: 10, // default 6
+        },
         rateLimit: {
           enabled: true,
           timeWindow: 1000 * 60 * 60 * 24, // 1 day
