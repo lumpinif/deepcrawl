@@ -184,6 +184,7 @@ export function SessionsManagementCard() {
                         listSessions &&
                         listSessions.length > 1 && (
                           <SpinnerButton
+                            size="sm"
                             variant="outline"
                             onClick={handleRevokeOtherSessions}
                             isLoading={isRevokingOtherSessions}
