@@ -1,4 +1,5 @@
 import { fetchAuthSession } from '@/app/actions/auth';
+import { PageContainer } from '@/components/page-container';
 import {
   deviceSessionsQueryOptions,
   linkedAccountsQueryOptions,
@@ -41,7 +42,7 @@ export default async function AccountPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="container mx-auto max-w-4xl py-8">
+      <PageContainer>
         <h1 className="mb-8 font-bold text-3xl">Account Settings</h1>
 
         <div className="flex flex-col gap-6">
@@ -56,7 +57,7 @@ export default async function AccountPage() {
           <PasswordChangeCard />
           <SessionsManagementCard />
         </div>
-      </div>
+      </PageContainer>
     </HydrationBoundary>
   );
 }

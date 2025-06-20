@@ -13,6 +13,7 @@ import { AlertDialogTitle } from '@deepcrawl/ui/components/ui/alert-dialog';
 import { AlertDialogFooter } from '@deepcrawl/ui/components/ui/alert-dialog';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
+import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 
 import {
   DropdownMenu,
@@ -77,7 +78,7 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
 
   const formatExpirationDate = (expiresAt: Date | null) => {
     if (!expiresAt) {
-      return <Badge variant="secondary">Never expires</Badge>;
+      return <Badge variant="secondary">Never</Badge>;
     }
 
     const now = new Date();
@@ -115,7 +116,8 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
 
   return (
     <>
-      <Table className="bg-background">
+      {/* Desktop Table View */}
+      <Table className="hidden bg-background md:table">
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
@@ -188,6 +190,103 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
         </TableBody>
       </Table>
 
+      {/* Mobile Card View */}
+      <div className="space-y-4 md:hidden">
+        {apiKeys.map((apiKey) => (
+          <Card key={apiKey.id} className="bg-background">
+            <CardContent>
+              <div className="space-y-3">
+                {/* Header with name and actions */}
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-sm">
+                    {apiKey.name || 'Unnamed Key'}
+                  </h3>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEdit(apiKey.id)}>
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => toggleEnabled(apiKey.id, apiKey.enabled)}
+                      >
+                        {apiKey.enabled ? 'Disable' : 'Enable'}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(apiKey.id)}
+                        className="text-red-500"
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* API Key */}
+                <div className="flex items-center justify-between">
+                  <p className="font-medium text-muted-foreground text-xs">
+                    API Key
+                  </p>
+                  <code className="block w-fit overflow-hidden rounded bg-muted px-2 py-1 font-mono text-xs">
+                    {apiKey.start ? `${apiKey.start || ''}...` : '•••••••••'}
+                  </code>
+                </div>
+
+                {/* Status and Expiration */}
+                <div className="flex w-full items-center justify-between">
+                  <p className="font-medium text-muted-foreground text-xs">
+                    Status
+                  </p>
+                  <Badge
+                    variant={apiKey.enabled ? 'default' : 'secondary'}
+                    className="text-xs"
+                  >
+                    {apiKey.enabled ? 'Active' : 'Disabled'}
+                  </Badge>
+                </div>
+
+                <div className="flex w-full items-center justify-between">
+                  <p className="font-medium text-muted-foreground text-xs">
+                    Expiration
+                  </p>
+                  <div className="text-xs">
+                    {formatExpirationDate(apiKey.expiresAt)}
+                  </div>
+                </div>
+
+                <div className="flex w-full items-center justify-between">
+                  <p className="font-medium text-muted-foreground text-xs">
+                    Usage
+                  </p>
+                  <p className="text-xs">
+                    {apiKey.remaining !== null ? (
+                      <span>{apiKey.remaining} remaining</span>
+                    ) : (
+                      <span className="text-muted-foreground">Unlimited</span>
+                    )}
+                  </p>
+                </div>
+
+                <div className="flex w-full items-center justify-between">
+                  <p className="font-medium text-muted-foreground text-xs">
+                    Last Request
+                  </p>
+                  <p className="text-xs">
+                    {formatLastUsed(apiKey.lastRequest)}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
       <AlertDialog
         open={deleteDialogOpen}
         onOpenChange={(open) => {
@@ -210,7 +309,7 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
               access for any applications using it.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="max-sm:flex-col max-sm:gap-2">
             <Button
               variant="outline"
               onClick={() => {
@@ -218,6 +317,7 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
                 setSelectedKeyId(null);
               }}
               disabled={deleteApiKey.isPending}
+              className="max-sm:w-full"
             >
               Cancel
             </Button>
