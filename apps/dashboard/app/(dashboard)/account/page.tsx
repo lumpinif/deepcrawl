@@ -44,18 +44,15 @@ export default async function AccountPage() {
       <div className="container mx-auto max-w-4xl py-8">
         <h1 className="mb-8 font-bold text-3xl">Account Settings</h1>
 
-        <div className="grid gap-6">
-          {/* User Profile Section */}
+        <div className="flex flex-col gap-6">
           <div className="grid gap-6 lg:grid-cols-2">
             <UserAvatarCard />
             <UserNameCard />
           </div>
 
           <ProvidersManagementCard />
-
-          {/* Multiple Accounts Section */}
           <MultipleAccountsManagementCard />
-          {/* Security Section */}
+
           <PasswordChangeCard />
           <SessionsManagementCard />
         </div>

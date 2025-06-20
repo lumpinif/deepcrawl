@@ -122,7 +122,7 @@ export function SessionsManagementCard() {
         {/* Active Sessions Section */}
         <div>
           <h4 className="mb-3 font-medium text-sm">
-            Current Sessions ({listSessions?.length || 0})
+            Connected Sessions ({listSessions?.length || 0})
           </h4>
           <div className="space-y-3">
             {isLoading ? (
@@ -141,45 +141,51 @@ export function SessionsManagementCard() {
                 return (
                   <div
                     key={session.id || index}
-                    className={`flex items-center justify-between rounded-lg border p-3 ${
+                    className={`flex items-center justify-between rounded-lg border p-3 max-sm:flex-col max-sm:items-start max-sm:gap-y-2 ${
                       isCurrentSession && 'bg-background-subtle'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      {new UAParser(session.userAgent || '').getDevice()
-                        .type === 'mobile' ? (
-                        <Smartphone />
-                      ) : (
-                        <Monitor size={16} />
-                      )}
-                      <div>
-                        <div className="flex items-center gap-2 font-medium text-sm">
-                          {new UAParser(session.userAgent || '').getOS().name},{' '}
-                          {
-                            new UAParser(session.userAgent || '').getBrowser()
-                              .name
-                          }
-                        </div>
-                        <div className="text-muted-foreground text-xs">
-                          Last active:{' '}
-                          {session.updatedAt
-                            ? new Date(session.updatedAt).toLocaleDateString()
-                            : 'Unknown'}
+                    <div className="flex items-center gap-3 max-sm:w-full max-sm:justify-between">
+                      <div className="flex items-center gap-x-2">
+                        {new UAParser(session.userAgent || '').getDevice()
+                          .type === 'mobile' ? (
+                          <Smartphone />
+                        ) : (
+                          <Monitor size={16} />
+                        )}
+
+                        <div>
+                          <div className="flex items-center gap-2 font-medium text-sm">
+                            {new UAParser(session.userAgent || '').getOS().name}
+                            ,{' '}
+                            {
+                              new UAParser(session.userAgent || '').getBrowser()
+                                .name
+                            }
+                          </div>
+                          <div className="text-muted-foreground text-xs">
+                            Last active:{' '}
+                            {session.updatedAt
+                              ? new Date(session.updatedAt).toLocaleDateString()
+                              : 'Unknown'}
+                          </div>
                         </div>
                       </div>
-                      {isCurrentSession && (
-                        <Badge variant="secondary" className="text-xs">
-                          Current
-                        </Badge>
-                      )}
-                      {session.ipAddress && (
-                        <div className="text-muted-foreground text-xs">
-                          IP: {session.ipAddress}
-                        </div>
-                      )}
+                      <div className="flex flex-row-reverse items-center gap-x-2 max-sm:flex-col max-sm:items-end max-sm:gap-y-1">
+                        {isCurrentSession && (
+                          <Badge variant="secondary" className="py-0 text-xs">
+                            Current
+                          </Badge>
+                        )}
+                        {session.ipAddress && (
+                          <div className="text-muted-foreground text-xs">
+                            IP: {session.ipAddress}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-x-2">
+                    <div className="flex items-center gap-x-2 max-sm:w-full max-sm:justify-end">
                       {isCurrentSession &&
                         listSessions &&
                         listSessions.length > 1 && (

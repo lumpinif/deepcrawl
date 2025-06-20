@@ -12,6 +12,7 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import { Eye, EyeOff, Key, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -113,29 +114,40 @@ export function PasswordChangeCard() {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Password Management */}
-        <div className="flex items-center justify-between rounded-lg p-3">
-          <div className="flex items-center gap-3">
-            <Key className="h-5 w-5 text-muted-foreground" />
+        <div
+          className={cn(
+            'flex items-center justify-between rounded-lg p-3 max-sm:flex-col max-sm:gap-y-2',
+            isChangingPassword && 'max-sm:hidden',
+          )}
+        >
+          <div className="flex items-center gap-3 max-sm:hidden">
             <div>
-              <div className="font-medium text-sm">Password Management</div>
+              <div className="font-medium text-sm">
+                {isChangingPassword
+                  ? 'Changing Password'
+                  : 'Password Management'}
+              </div>
               <div className="text-muted-foreground text-xs">
                 Update your account password
               </div>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsChangingPassword(!isChangingPassword)}
-            disabled={isPending}
-          >
-            {isChangingPassword ? 'Cancel' : 'Change Password'}
-          </Button>
+          {!isChangingPassword && (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={isPending}
+              className="max-sm:w-full"
+              onClick={() => setIsChangingPassword(!isChangingPassword)}
+            >
+              Change Password
+            </Button>
+          )}
         </div>
 
         {/* Password Change Form */}
         {isChangingPassword && (
-          <div className="space-y-6 rounded-lg p-4">
+          <div className="space-y-6 rounded-lg p-3">
             <div className="space-y-2">
               <Label htmlFor="current-password">Current Password</Label>
               <div className="relative">
@@ -240,10 +252,10 @@ export function PasswordChangeCard() {
               )}
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 max-sm:w-full">
               <SpinnerButton
                 size="sm"
-                className="min-w-32"
+                className="min-w-32 max-sm:flex-1"
                 isLoading={isPending}
                 onClick={handlePasswordChange}
                 disabled={!isFormValid || isPending}
@@ -264,7 +276,7 @@ export function PasswordChangeCard() {
 
         {/* Password Requirements */}
         {isChangingPassword && (
-          <div className="flex justify-end space-y-1 text-muted-foreground text-xs">
+          <div className="flex justify-end space-y-1 text-muted-foreground text-xs max-sm:justify-center">
             <div className="font-medium">Password Requirements:</div>
             <ul className="ml-2 list-inside list-disc space-y-1">
               <li>At least 8 characters long</li>

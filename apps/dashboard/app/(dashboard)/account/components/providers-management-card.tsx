@@ -153,7 +153,7 @@ export function ProvidersManagementCard() {
   // they likely used magic link or email verification
   const hasMagicLinkCapability = !!user.emailVerified;
   const magicLinkAccountInfo = hasMagicLinkCapability
-    ? `${user.email} • ${user.emailVerified ? 'Verified' : 'Unverified'}`
+    ? `${user.email}`
     : 'Email verification required';
 
   // Provider data with real connection status
@@ -248,8 +248,8 @@ export function ProvidersManagementCard() {
           Sign-in Methods
         </CardTitle>
         <CardDescription>
-          Customize how you access your account. Link your Git profiles and set
-          up passkeys for seamless, secure authentication.
+          Customize how you access your account. Set up passkeys for seamless,
+          secure authentication or oAuth providers for easy sign-in.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -273,7 +273,7 @@ export function ProvidersManagementCard() {
           return (
             <div
               key={provider.id}
-              className="flex items-center justify-between rounded-lg border p-4"
+              className="flex justify-between rounded-lg border p-4 max-sm:flex-col max-sm:gap-y-2 sm:items-center"
             >
               <div className="flex flex-1 items-center gap-3">
                 <IconComponent className="h-5 w-5 text-muted-foreground" />
@@ -294,16 +294,21 @@ export function ProvidersManagementCard() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 max-sm:w-full max-sm:flex-col">
                 {provider.connected ? (
                   <>
                     {provider.id === 'magic-link' && (
-                      <Button variant="outline" size="sm" disabled>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-24 max-sm:w-full"
+                        disabled
+                      >
                         Enabled
                       </Button>
                     )}
                     {provider.id === 'passkeys' && (
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 max-sm:w-full max-sm:flex-col">
                         <Dialog
                           open={isPasskeysDialogOpen}
                           onOpenChange={setIsPasskeysDialogOpen}
@@ -312,6 +317,7 @@ export function ProvidersManagementCard() {
                             <Button
                               size="sm"
                               variant="outline"
+                              className="w-24 max-sm:w-full"
                               disabled={isAnyProviderProcessing}
                             >
                               Manage
@@ -392,7 +398,7 @@ export function ProvidersManagementCard() {
                         <SpinnerButton
                           size="sm"
                           variant="outline"
-                          className="w-20"
+                          className="w-24 max-sm:w-full"
                           isLoading={isAddingPasskey}
                           onClick={handleAddPasskey}
                           disabled={isAnyProviderProcessing || !canUnlink}
@@ -405,7 +411,7 @@ export function ProvidersManagementCard() {
                       <SpinnerButton
                         size="sm"
                         variant="outline"
-                        className="w-24"
+                        className="w-24 max-sm:w-full"
                         isLoading={isThisProviderUnlinking}
                         onClick={() => handleDisconnectProvider(provider.id)}
                         disabled={isAnyProviderProcessing || !canUnlink}
@@ -420,7 +426,7 @@ export function ProvidersManagementCard() {
                       <SpinnerButton
                         size="sm"
                         variant="outline"
-                        className="w-20"
+                        className="w-20 max-sm:w-full"
                         isLoading={isAddingPasskey}
                         onClick={handleAddPasskey}
                         disabled={isAnyProviderProcessing || !canUnlink}
@@ -431,7 +437,7 @@ export function ProvidersManagementCard() {
                       <SpinnerButton
                         size="sm"
                         variant="outline"
-                        className="w-24"
+                        className="w-24 max-sm:w-full"
                         isLoading={isThisProviderLinking}
                         onClick={() => handleConnectProvider(provider.id)}
                         disabled={isAnyProviderProcessing || !canUnlink}

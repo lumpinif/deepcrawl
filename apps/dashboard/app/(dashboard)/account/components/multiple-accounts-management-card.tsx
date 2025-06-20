@@ -14,7 +14,6 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@deepcrawl/ui/components/ui/avatar';
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -81,6 +80,28 @@ export function MultipleAccountsManagementCard() {
       setRemovingSessionToken(null);
     }
   }, [isSwitching, isRemoving, switchingSessionToken, removingSessionToken]);
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Multiple Accounts
+          </CardTitle>
+          <CardDescription>
+            Manage multiple accounts and switch between them seamlessly. Maximum{' '}
+            {MAX_SESSIONS} accounts allowed.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // Early return if no current session
   if (!currentSession?.session) {
@@ -172,9 +193,6 @@ export function MultipleAccountsManagementCard() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 font-medium text-sm">
                   {currentSession.user.name || currentSession.user.email}
-                  <Badge variant="secondary" className="text-xs">
-                    Current
-                  </Badge>
                 </div>
                 <div className="text-muted-foreground text-xs">
                   {currentSession.user.email}
@@ -295,7 +313,12 @@ export function MultipleAccountsManagementCard() {
               You can add up to {MAX_SESSIONS - 1} more accounts to switch
               between them easily.
             </p>
-            <Button asChild size="sm" variant="outline">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="max-sm:w-full"
+            >
               <Link href="/login">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Account

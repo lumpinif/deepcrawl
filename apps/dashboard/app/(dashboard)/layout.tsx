@@ -55,11 +55,9 @@ export default async function DashboardLayout({
           user={session.user}
           deviceSessions={JSON.parse(JSON.stringify(listDeviceSessions))}
         />
-        <div className="relative z-50 flex h-full flex-1 flex-col overflow-y-auto overflow-x-hidden">
-          <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 p-4 md:gap-6 md:py-6">
-            {children}
-          </ScrollArea>
-        </div>
+        <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 p-4 pb-0 md:gap-6 md:py-6">
+          {children}
+        </ScrollArea>
       </SidebarInset>
     </>
   );
