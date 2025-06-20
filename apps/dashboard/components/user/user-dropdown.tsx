@@ -31,7 +31,8 @@ import {
   PopoverTrigger,
 } from '@deepcrawl/ui/components/ui/popover';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
 
 function UserAvatar({ user }: { user: Session['user'] }) {
   return (
@@ -49,6 +50,7 @@ export function UserDropdown({
   user: userProp,
   deviceSessions: deviceSessionsProps,
 }: { user: Session['user']; deviceSessions: Session[] }) {
+  const router = useRouter();
   const { data: currentSession } = useAuthSession();
   const { data: deviceSessionsQuery } = useDeviceSessions();
   const { mutate: setActiveSession } = useSetActiveSession();
@@ -67,6 +69,10 @@ export function UserDropdown({
 
   // Calculate hasMultipleSessions based on other sessions
   const hasMultipleSessions = otherSessions.length > 0;
+
+  const handleHoverToPrefetchAccount = useCallback(() => {
+    router.prefetch('/account');
+  }, [router]);
 
   return (
     <DropdownMenu modal={false}>
@@ -160,7 +166,13 @@ export function UserDropdown({
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem
+            asChild
+            onFocus={handleHoverToPrefetchAccount}
+            onMouseOver={handleHoverToPrefetchAccount}
+            onMouseEnter={handleHoverToPrefetchAccount}
+            onPointerEnter={handleHoverToPrefetchAccount}
+          >
             <Link href={'/account'}>Account Settings</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

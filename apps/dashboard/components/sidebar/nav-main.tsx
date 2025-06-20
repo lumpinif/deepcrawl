@@ -44,6 +44,7 @@ export function NavMain({
               <SidebarMenuItem
                 key={item.title}
                 onFocus={() => handleHoverToPrefetch(item.url)}
+                onMouseOver={() => handleHoverToPrefetch(item.url)}
                 onMouseEnter={() => handleHoverToPrefetch(item.url)}
                 onPointerEnter={() => handleHoverToPrefetch(item.url)}
               >
