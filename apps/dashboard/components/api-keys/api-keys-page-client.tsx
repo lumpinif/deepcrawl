@@ -4,7 +4,6 @@ import { useApiKeys } from '@/hooks/auth.hooks';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
-import { useIsMobile } from '@deepcrawl/ui/hooks/use-mobile';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { ApiKeysTable } from './api-keys-table';
@@ -12,7 +11,7 @@ import { CreateApiKeyDialog } from './create-api-key-dialog';
 
 export function ApiKeysPageClient() {
   const { data: apiKeys, isLoading, error } = useApiKeys();
-  const isMobile = useIsMobile();
+
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   if (error) {
@@ -54,21 +53,21 @@ export function ApiKeysPageClient() {
         services. Keep your keys secure and never share them publicly.
       </p>
 
-      {isMobile ? (
+      <div className="block sm:hidden">
         <ApiKeysTable apiKeys={apiKeys || []} />
-      ) : (
-        <Card className="bg-background">
-          <CardContent className="overflow-x-auto">
-            {isLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : (
-              <ApiKeysTable apiKeys={apiKeys || []} />
-            )}
-          </CardContent>
-        </Card>
-      )}
+      </div>
+
+      <Card className="hidden bg-background sm:block">
+        <CardContent className="overflow-x-auto">
+          {isLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : (
+            <ApiKeysTable apiKeys={apiKeys || []} />
+          )}
+        </CardContent>
+      </Card>
 
       <CreateApiKeyDialog
         open={showCreateDialog}
