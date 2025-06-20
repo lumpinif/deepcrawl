@@ -91,6 +91,7 @@ export const DEVELOPMENT_ORIGINS = [
 
   ...generateNetworkOrigins('192.18.0.1'),
   ...generateNetworkOrigins('192.168.50.198'),
+  ...generateNetworkOrigins('192.168.50.74'),
 
   // 3. Common network examples (uncomment if they match your setup):
   ...generateNetworkOrigins('192.168.1.100'), // Common home network IP

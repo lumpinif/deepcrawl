@@ -120,7 +120,6 @@ export function SessionsManagementCard() {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Active Sessions Section */}
-        <div>
           <h4 className="mb-3 font-medium text-sm">
             Connected Sessions ({listSessions?.length || 0})
           </h4>
@@ -192,6 +191,7 @@ export function SessionsManagementCard() {
                           <SpinnerButton
                             size="sm"
                             variant="outline"
+                            className="!max-sm:flex-1 max-sm:w-fit"
                             onClick={handleRevokeOtherSessions}
                             isLoading={isRevokingOtherSessions}
                             disabled={
@@ -205,8 +205,8 @@ export function SessionsManagementCard() {
                         )}
                       <SpinnerButton
                         size="sm"
-                        className="w-24"
                         variant="outline"
+                        className="w-24 max-sm:flex-1 max-sm:w-fit"
                         isLoading={
                           (isPending && revokingSessionId === session.id) ||
                           (isCurrentSession && signingOutCurrentSession)
@@ -237,7 +237,6 @@ export function SessionsManagementCard() {
                 );
               })
             )}
-          </div>
         </div>
 
         {(!listSessions || listSessions.length === 0) && !isLoading && (
