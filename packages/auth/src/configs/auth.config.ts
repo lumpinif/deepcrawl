@@ -105,7 +105,7 @@ export const DEVELOPMENT_ORIGINS = [
   // 4. The auth should now work seamlessly across devices!
 ];
 
-export const MAX_SESSIONS = 3; // better-auth issue: 3 is allowing max 2 sessions
+export const MAX_SESSIONS = 2;
 
 const crossSubDomainConfigs = {
   crossSubDomainCookies: {
@@ -212,7 +212,7 @@ export function createAuthConfig(env: Env) {
         },
       }),
       multiSession({
-        maximumSessions: MAX_SESSIONS,
+        maximumSessions: MAX_SESSIONS + 1, // better-auth issue: 3 is actually allowing max 2 sessions
       }),
       magicLink({
         sendMagicLink: async ({ email, token, url }, request) => {
