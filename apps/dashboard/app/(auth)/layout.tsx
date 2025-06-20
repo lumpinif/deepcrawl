@@ -7,10 +7,8 @@ export default function AuthLayout({
 }) {
   return (
     <>
-      <div className="flex h-svh max-h-svh flex-1 flex-col overflow-hidden">
-        <div className="container mx-auto flex flex-1 flex-col items-center justify-center">
-          {children}
-        </div>
+      <div className="container mx-auto flex min-h-svh flex-col items-center justify-center max-sm:mt-2 max-sm:overflow-y-auto max-sm:p-4">
+        {children}
       </div>
     </>
   );

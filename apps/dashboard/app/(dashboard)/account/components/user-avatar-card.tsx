@@ -99,7 +99,7 @@ export function UserAvatarCard() {
       <CardContent className="space-y-4">
         {/* Avatar and Basic Info */}
         <div className="flex items-center gap-4">
-          <Avatar className="size-20 border shadow-sm dark:border-none">
+          <Avatar className="size-20 border shadow-sm max-sm:size-16 dark:border-none">
             <AvatarImage
               src={user.image || undefined}
               alt={user.name || 'User'}

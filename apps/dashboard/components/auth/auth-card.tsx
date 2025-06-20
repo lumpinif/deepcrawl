@@ -82,7 +82,7 @@ export function AuthCard({
   }
 
   return (
-    <div className="w-md">
+    <div className="w-full md:w-md">
       <div className="flex flex-col items-center gap-y-2">
         <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <GalleryVerticalEnd className="size-4" />

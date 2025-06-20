@@ -76,7 +76,7 @@ export function UserDropdown({
       <DropdownMenuContent
         align="end"
         side="bottom"
-        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl dark:bg-background-subtle dark:text-muted-foreground dark:backdrop-blur-sm"
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl dark:text-muted-foreground"
       >
         <DropdownMenuLabel className="text-xs">
           Current Account
@@ -115,7 +115,7 @@ export function UserDropdown({
               side="left"
               align="start"
               sideOffset={12}
-              className="flex w-(--radix-dropdown-menu-trigger-width) min-w-56 flex-col gap-2 rounded-lg bg-background-subtle p-2 backdrop-blur-sm"
+              className="flex w-(--radix-dropdown-menu-trigger-width) min-w-56 flex-col gap-2 rounded-lg p-2"
             >
               <DropdownMenuLabel className="px-2 text-muted-foreground text-xs">
                 Switch Account

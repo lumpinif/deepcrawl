@@ -20,7 +20,7 @@ export default async function AuthPage({
   return (
     <>
       <AuthCard pathname={pathname} />
-      <div className="fixed right-0 bottom-0 left-0 py-12 text-center text-muted-foreground text-sm dark:text-muted-foreground/80">
+      <div className="block py-12 text-center text-muted-foreground text-sm sm:fixed sm:right-0 sm:bottom-0 sm:left-0 dark:text-muted-foreground/80">
         <a
           target="_blank"
           href="/terms-of-service"
