@@ -61,10 +61,6 @@ const displayNameSchema = z
 // Hooks with query options
 export const useAuthSession = () => useQuery(sessionQueryOptions());
 
-// Suspense-friendly version (throws on cache-miss)
-export const useSuspenseAuthSession = () =>
-  useSuspenseQuery(sessionQueryOptions());
-
 /**
  * Hook for getting active sessions with proper error handling and full type inference
  */
@@ -171,38 +167,9 @@ export const useRevokeDeviceSession = () => {
 
       return result;
     },
-    onMutate: async (sessionToken: string) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({
-        queryKey: userQueryKeys.deviceSessions,
-      });
-
-      // Snapshot previous value
-      const previousDeviceSessions = queryClient.getQueryData<Session[]>(
-        userQueryKeys.deviceSessions,
-      );
-
-      // Optimistically update to remove the session
-      queryClient.setQueryData<Session[]>(
-        userQueryKeys.deviceSessions,
-        (old) => {
-          if (!old) return old;
-          return old.filter(
-            (sessionData) => sessionData.session.token !== sessionToken,
-          );
-        },
-      );
-
-      return { previousDeviceSessions, sessionToken };
-    },
-    onError: (err, sessionToken, context) => {
-      // Rollback on error
-      if (context?.previousDeviceSessions) {
-        queryClient.setQueryData(
-          userQueryKeys.deviceSessions,
-          context.previousDeviceSessions,
-        );
-      }
+    // Removed optimistic updates for security-critical session termination
+    // Users should see loading states to confirm the operation is in progress
+    onError: (err) => {
       toast.error(err.message || 'Failed to remove account');
     },
     onSuccess: async (data, sessionToken) => {
@@ -411,34 +378,9 @@ export const useRevokeSession = () => {
 
       return result;
     },
-    onMutate: async (sessionToken: string) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: userQueryKeys.listSessions });
-
-      // Snapshot previous value
-      const previousSessions = queryClient.getQueryData<SessionsList>(
-        userQueryKeys.listSessions,
-      );
-
-      // Optimistically update to remove the session
-      queryClient.setQueryData<SessionsList>(
-        userQueryKeys.listSessions,
-        (old) => {
-          if (!old) return old;
-          return old.filter((session) => session.token !== sessionToken);
-        },
-      );
-
-      return { previousSessions, sessionToken };
-    },
-    onError: (err, sessionToken, context) => {
-      // Rollback on error
-      if (context?.previousSessions) {
-        queryClient.setQueryData(
-          userQueryKeys.listSessions,
-          context.previousSessions,
-        );
-      }
+    // Removed optimistic updates for security-critical session termination
+    // Users should see loading states to confirm the operation is in progress
+    onError: (err) => {
       toast.error(err.message || 'Failed to revoke session');
     },
     onSuccess: async (data, sessionToken) => {
