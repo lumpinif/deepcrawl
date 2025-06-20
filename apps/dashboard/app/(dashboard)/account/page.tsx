@@ -8,12 +8,18 @@ import {
   sessionQueryOptions,
   userPasskeysQueryOptions,
 } from '@/lib/query-options';
-import {
-  HydrationBoundary,
-  QueryClient,
-  dehydrate,
-} from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/query.client';
+import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import {
+  MultipleAccountsManagementCardSkeleton,
+  PasswordChangeCardSkeleton,
+  ProvidersManagementCardSkeleton,
+  SessionsManagementCardSkeleton,
+  UserAvatarCardSkeleton,
+  UserNameCardSkeleton,
+} from './components/account-skeletons';
 import { MultipleAccountsManagementCard } from './components/multiple-accounts-management-card';
 import { PasswordChangeCard } from './components/password-change-card';
 import { ProvidersManagementCard } from './components/providers-management-card';
@@ -28,17 +34,15 @@ export default async function AccountPage() {
     redirect('/login');
   }
 
-  const queryClient = new QueryClient();
+  const queryClient = getQueryClient();
 
   // Prefetch all user-related data including OAuth accounts
-  await Promise.all([
-    queryClient.prefetchQuery(sessionQueryOptions()),
-    queryClient.prefetchQuery(listSessionsQueryOptions()),
-    queryClient.prefetchQuery(deviceSessionsQueryOptions()),
-    queryClient.prefetchQuery(organizationQueryOptions()),
-    queryClient.prefetchQuery(userPasskeysQueryOptions()),
-    queryClient.prefetchQuery(linkedAccountsQueryOptions()),
-  ]);
+  queryClient.prefetchQuery(sessionQueryOptions());
+  queryClient.prefetchQuery(listSessionsQueryOptions());
+  queryClient.prefetchQuery(deviceSessionsQueryOptions());
+  queryClient.prefetchQuery(organizationQueryOptions());
+  queryClient.prefetchQuery(userPasskeysQueryOptions());
+  queryClient.prefetchQuery(linkedAccountsQueryOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
@@ -47,15 +51,29 @@ export default async function AccountPage() {
 
         <div className="flex flex-col gap-6">
           <div className="grid gap-6 lg:grid-cols-2">
-            <UserAvatarCard />
-            <UserNameCard />
+            <Suspense fallback={<UserAvatarCardSkeleton />}>
+              <UserAvatarCard />
+            </Suspense>
+            <Suspense fallback={<UserNameCardSkeleton />}>
+              <UserNameCard />
+            </Suspense>
           </div>
 
-          <ProvidersManagementCard />
-          <MultipleAccountsManagementCard />
+          <Suspense fallback={<ProvidersManagementCardSkeleton />}>
+            <ProvidersManagementCard />
+          </Suspense>
 
-          <PasswordChangeCard />
-          <SessionsManagementCard />
+          <Suspense fallback={<MultipleAccountsManagementCardSkeleton />}>
+            <MultipleAccountsManagementCard />
+          </Suspense>
+
+          <Suspense fallback={<PasswordChangeCardSkeleton />}>
+            <PasswordChangeCard />
+          </Suspense>
+
+          <Suspense fallback={<SessionsManagementCardSkeleton />}>
+            <SessionsManagementCard />
+          </Suspense>
         </div>
       </PageContainer>
     </HydrationBoundary>

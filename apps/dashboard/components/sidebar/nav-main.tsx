@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
 } from '@deepcrawl/ui/components/ui/sidebar';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export function NavMain({
   items,
@@ -23,6 +24,12 @@ export function NavMain({
     label?: string;
   }[];
 }) {
+  const router = useRouter();
+
+  const handleHoverToPrefetch = (url: string) => {
+    router.prefetch(url);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -34,7 +41,12 @@ export function NavMain({
                   {item.label}
                 </SidebarGroupLabel>
               )}
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem
+                key={item.title}
+                onFocus={() => handleHoverToPrefetch(item.url)}
+                onMouseEnter={() => handleHoverToPrefetch(item.url)}
+                onPointerEnter={() => handleHoverToPrefetch(item.url)}
+              >
                 <SidebarMenuButton tooltip={item.title} asChild>
                   <Link href={item.url}>
                     {item.icon && <item.icon />}

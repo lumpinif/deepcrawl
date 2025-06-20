@@ -37,7 +37,7 @@ export async function fetchAuthSession(): Promise<Session | null> {
     headers: requestHeaders,
   });
 
-  return session;
+  return JSON.parse(JSON.stringify(session));
 }
 
 /**

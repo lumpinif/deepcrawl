@@ -25,7 +25,12 @@ import {
 } from '@/lib/query-options';
 import { getSearchParam } from '@/utils';
 import type { ApiKey, Session } from '@deepcrawl/auth/types';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
@@ -55,6 +60,10 @@ const displayNameSchema = z
 
 // Hooks with query options
 export const useAuthSession = () => useQuery(sessionQueryOptions());
+
+// Suspense-friendly version (throws on cache-miss)
+export const useSuspenseAuthSession = () =>
+  useSuspenseQuery(sessionQueryOptions());
 
 /**
  * Hook for getting active sessions with proper error handling and full type inference
@@ -709,6 +718,11 @@ export const useRemovePasskey = () => {
 export const useApiKeys = () => {
   return useQuery(apiKeysQueryOptions());
 };
+
+/**
+ * Suspense-friendly version (throws on cache-miss)
+ */
+export const useSuspenseApiKeys = () => useSuspenseQuery(apiKeysQueryOptions());
 
 /**
  * Hook for creating a new API key
