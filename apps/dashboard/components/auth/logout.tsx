@@ -35,7 +35,7 @@ export function Logout() {
   }, [onSuccess, queryClient]);
 
   return (
-    <div className="flex max-sm:h-[calc(100svh-(--spacing(32)))] sm:min-h-svh items-center justify-center">
+    <div className="flex items-center justify-center max-sm:h-[calc(100svh-(--spacing(32)))] sm:min-h-svh">
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="size-8 animate-spin" />
         <p className="animate-pulse text-muted-foreground text-sm">

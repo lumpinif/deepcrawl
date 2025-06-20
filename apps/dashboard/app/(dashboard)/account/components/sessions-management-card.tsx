@@ -120,123 +120,121 @@ export function SessionsManagementCard() {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Active Sessions Section */}
-          <h4 className="mb-3 font-medium text-sm">
-            Connected Sessions ({listSessions?.length || 0})
-          </h4>
-          <div className="space-y-3">
-            {isLoading ? (
-              <div className="py-4 text-center text-muted-foreground">
-                <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin" />
-                Loading sessions...
-              </div>
-            ) : !listSessions || listSessions.length === 0 ? (
-              <div className="py-4 text-center text-muted-foreground">
-                No active sessions found
-              </div>
-            ) : (
-              sortedSessions.map((session, index) => {
-                const isCurrentSession =
-                  session.id === currentSession.session.id;
-                return (
-                  <div
-                    key={session.id || index}
-                    className={`flex items-center justify-between rounded-lg border p-3 max-sm:flex-col max-sm:items-start max-sm:gap-y-2 ${
-                      isCurrentSession && 'bg-background-subtle'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 max-sm:w-full max-sm:justify-between">
-                      <div className="flex items-center gap-x-2">
-                        {new UAParser(session.userAgent || '').getDevice()
-                          .type === 'mobile' ? (
-                          <Smartphone />
-                        ) : (
-                          <Monitor size={16} />
-                        )}
+        <h4 className="mb-3 font-medium text-sm">
+          Connected Sessions ({listSessions?.length || 0})
+        </h4>
+        <div className="space-y-3">
+          {isLoading ? (
+            <div className="py-4 text-center text-muted-foreground">
+              <Loader2 className="mx-auto mb-2 h-6 w-6 animate-spin" />
+              Loading sessions...
+            </div>
+          ) : !listSessions || listSessions.length === 0 ? (
+            <div className="py-4 text-center text-muted-foreground">
+              No active sessions found
+            </div>
+          ) : (
+            sortedSessions.map((session, index) => {
+              const isCurrentSession = session.id === currentSession.session.id;
+              return (
+                <div
+                  key={session.id || index}
+                  className={`flex items-center justify-between rounded-lg border p-3 max-sm:flex-col max-sm:items-start max-sm:gap-y-2 ${
+                    isCurrentSession && 'bg-background-subtle'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 max-sm:w-full max-sm:justify-between">
+                    <div className="flex items-center gap-x-2">
+                      {new UAParser(session.userAgent || '').getDevice()
+                        .type === 'mobile' ? (
+                        <Smartphone />
+                      ) : (
+                        <Monitor size={16} />
+                      )}
 
-                        <div>
-                          <div className="flex items-center gap-2 font-medium text-sm">
-                            {new UAParser(session.userAgent || '').getOS().name}
-                            ,{' '}
-                            {
-                              new UAParser(session.userAgent || '').getBrowser()
-                                .name
-                            }
-                          </div>
-                          <div className="text-muted-foreground text-xs">
-                            Last active:{' '}
-                            {session.updatedAt
-                              ? new Date(session.updatedAt).toLocaleDateString()
-                              : 'Unknown'}
-                          </div>
+                      <div>
+                        <div className="flex items-center gap-2 font-medium text-sm">
+                          {new UAParser(session.userAgent || '').getOS().name},{' '}
+                          {
+                            new UAParser(session.userAgent || '').getBrowser()
+                              .name
+                          }
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          Last active:{' '}
+                          {session.updatedAt
+                            ? new Date(session.updatedAt).toLocaleDateString()
+                            : 'Unknown'}
                         </div>
                       </div>
-                      <div className="flex flex-row-reverse items-center gap-x-2 max-sm:flex-col max-sm:items-end max-sm:gap-y-1">
-                        {isCurrentSession && (
-                          <Badge variant="secondary" className="py-0 text-xs">
-                            Current
-                          </Badge>
-                        )}
-                        {session.ipAddress && (
-                          <div className="text-muted-foreground text-xs">
-                            IP: {session.ipAddress}
-                          </div>
-                        )}
-                      </div>
                     </div>
-
-                    <div className="flex items-center gap-x-2 max-sm:w-full max-sm:justify-end">
-                      {isCurrentSession &&
-                        listSessions &&
-                        listSessions.length > 1 && (
-                          <SpinnerButton
-                            size="sm"
-                            variant="outline"
-                            className="!max-sm:flex-1 max-sm:w-fit"
-                            onClick={handleRevokeOtherSessions}
-                            isLoading={isRevokingOtherSessions}
-                            disabled={
-                              isRevokingOtherSessions ||
-                              !listSessions ||
-                              listSessions.length <= 1
-                            }
-                          >
-                            Revoke other sessions
-                          </SpinnerButton>
-                        )}
-                      <SpinnerButton
-                        size="sm"
-                        variant="outline"
-                        className="w-24 max-sm:flex-1 max-sm:w-fit"
-                        isLoading={
-                          (isPending && revokingSessionId === session.id) ||
-                          (isCurrentSession && signingOutCurrentSession)
-                        }
-                        disabled={
-                          isPending ||
-                          revokingSessionId === session.id ||
-                          (isCurrentSession && signingOutCurrentSession)
-                        }
-                        onClick={() => handleRevokeSession(session)}
-                      >
-                        {(isPending && revokingSessionId === session.id) ||
-                        (isCurrentSession && signingOutCurrentSession) ? (
-                          <>
-                            <Loader2 size={15} className="mr-2 animate-spin" />
-                            {isCurrentSession
-                              ? 'Signing Out...'
-                              : 'Terminating...'}
-                          </>
-                        ) : isCurrentSession ? (
-                          'Log Out'
-                        ) : (
-                          'Terminate'
-                        )}
-                      </SpinnerButton>
+                    <div className="flex flex-row-reverse items-center gap-x-2 max-sm:flex-col max-sm:items-end max-sm:gap-y-1">
+                      {isCurrentSession && (
+                        <Badge variant="secondary" className="py-0 text-xs">
+                          Current
+                        </Badge>
+                      )}
+                      {session.ipAddress && (
+                        <div className="text-muted-foreground text-xs">
+                          IP: {session.ipAddress}
+                        </div>
+                      )}
                     </div>
                   </div>
-                );
-              })
-            )}
+
+                  <div className="flex items-center gap-x-2 max-sm:w-full max-sm:justify-end">
+                    {isCurrentSession &&
+                      listSessions &&
+                      listSessions.length > 1 && (
+                        <SpinnerButton
+                          size="sm"
+                          variant="outline"
+                          className="!max-sm:flex-1 max-sm:w-fit"
+                          onClick={handleRevokeOtherSessions}
+                          isLoading={isRevokingOtherSessions}
+                          disabled={
+                            isRevokingOtherSessions ||
+                            !listSessions ||
+                            listSessions.length <= 1
+                          }
+                        >
+                          Revoke other sessions
+                        </SpinnerButton>
+                      )}
+                    <SpinnerButton
+                      size="sm"
+                      variant="outline"
+                      className="w-24 max-sm:w-fit max-sm:flex-1"
+                      isLoading={
+                        (isPending && revokingSessionId === session.id) ||
+                        (isCurrentSession && signingOutCurrentSession)
+                      }
+                      disabled={
+                        isPending ||
+                        revokingSessionId === session.id ||
+                        (isCurrentSession && signingOutCurrentSession)
+                      }
+                      onClick={() => handleRevokeSession(session)}
+                    >
+                      {(isPending && revokingSessionId === session.id) ||
+                      (isCurrentSession && signingOutCurrentSession) ? (
+                        <>
+                          <Loader2 size={15} className="mr-2 animate-spin" />
+                          {isCurrentSession
+                            ? 'Signing Out...'
+                            : 'Terminating...'}
+                        </>
+                      ) : isCurrentSession ? (
+                        'Log Out'
+                      ) : (
+                        'Terminate'
+                      )}
+                    </SpinnerButton>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         {(!listSessions || listSessions.length === 0) && !isLoading && (
