@@ -3,33 +3,79 @@
 import { navigationItems } from '@/lib/navigation-config';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export default function AppNavTabs() {
   const router = useRouter();
   const pathname = usePathname();
 
   // Find the active index based on the current pathname
-  const getActiveIndex = () => {
+  const getActiveIndex = useCallback(() => {
     const index = navigationItems.findIndex((item) => item.url === pathname);
     return index >= 0 ? index : 0; // Default to first tab if not found
-  };
+  }, [pathname]);
 
   const [activeIndex, setActiveIndex] = useState(getActiveIndex());
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [hoverStyle, setHoverStyle] = useState({});
   const [activeStyle, setActiveStyle] = useState({ left: '0px', width: '0px' });
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const rafIdRef = useRef<number | null>(null);
 
-  const setTabRef = (index: number) => (el: HTMLAnchorElement | null) => {
-    tabRefs.current[index] = el;
-  };
+  // Memoized tab ref setter
+  const setTabRef = useCallback(
+    (index: number) => (el: HTMLAnchorElement | null) => {
+      tabRefs.current[index] = el;
+    },
+    [],
+  );
+
+  // Optimized style updater with RAF management
+  const updateActiveStyle = useCallback((targetIndex: number) => {
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+    }
+
+    rafIdRef.current = requestAnimationFrame(() => {
+      const activeElement = tabRefs.current[targetIndex];
+      if (activeElement) {
+        const { offsetLeft, offsetWidth } = activeElement;
+        setActiveStyle({
+          left: `${offsetLeft}px`,
+          width: `${offsetWidth}px`,
+        });
+      }
+      rafIdRef.current = null;
+    });
+  }, []);
+
+  // Memoized event handlers
+  const handleMouseEnter = useCallback(
+    (index: number, url: string) => {
+      setHoveredIndex(index);
+      router.prefetch(url);
+    },
+    [router],
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredIndex(null);
+  }, []);
+
+  const handlePrefetch = useCallback(
+    (url: string) => {
+      router.prefetch(url);
+    },
+    [router],
+  );
 
   // Update active index when pathname changes
   useEffect(() => {
     const newActiveIndex = getActiveIndex();
-    setActiveIndex(newActiveIndex);
-  }, [pathname]);
+    if (newActiveIndex !== activeIndex) {
+      setActiveIndex(newActiveIndex);
+    }
+  }, [pathname, getActiveIndex, activeIndex]);
 
   // Handle hover style positioning
   useEffect(() => {
@@ -47,43 +93,55 @@ export default function AppNavTabs() {
 
   // Update active indicator position when activeIndex changes
   useEffect(() => {
-    const updateActiveStyle = () => {
-      const activeElement = tabRefs.current[activeIndex];
-      if (activeElement) {
-        const { offsetLeft, offsetWidth } = activeElement;
-        setActiveStyle({
-          left: `${offsetLeft}px`,
-          width: `${offsetWidth}px`,
-        });
-      }
-    };
+    updateActiveStyle(activeIndex);
+  }, [activeIndex, updateActiveStyle]);
 
-    // Use requestAnimationFrame to ensure DOM is ready
-    requestAnimationFrame(updateActiveStyle);
-  }, [activeIndex]);
-
-  // Initial positioning after component mounts
+  // Cleanup RAF on unmount
   useEffect(() => {
-    const initializeActiveStyle = () => {
-      const activeElement = tabRefs.current[activeIndex];
-      if (activeElement) {
-        const { offsetLeft, offsetWidth } = activeElement;
-        setActiveStyle({
-          left: `${offsetLeft}px`,
-          width: `${offsetWidth}px`,
-        });
+    return () => {
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
       }
     };
+  }, []);
 
-    // Double requestAnimationFrame to ensure all refs are set and layout is complete
-    requestAnimationFrame(() => {
-      requestAnimationFrame(initializeActiveStyle);
-    });
-  }, []); // Only run once on mount
+  // Memoized hover style with opacity
+  const computedHoverStyle = useMemo(
+    () => ({
+      ...hoverStyle,
+      opacity: hoveredIndex !== null ? 1 : 0,
+    }),
+    [hoverStyle, hoveredIndex],
+  );
 
-  const handleHoverToPrefetch = (url: string) => {
-    router.prefetch(url);
-  };
+  // Memoized navigation items to prevent unnecessary re-renders
+  const renderedTabs = useMemo(
+    () =>
+      navigationItems.map((item, index) => (
+        <Link
+          key={`${item.url}-${index}`} // More stable key
+          href={item.url}
+          ref={setTabRef(index)}
+          className={`h-[30px] cursor-pointer border-none bg-transparent px-3 py-2 transition-colors duration-300 ${
+            index === activeIndex ? 'text-primary' : 'text-muted-foreground'
+          }`}
+          onMouseEnter={() => handleMouseEnter(index, item.url)}
+          onMouseLeave={handleMouseLeave}
+          onFocus={() => handlePrefetch(item.url)}
+        >
+          <div className="flex h-full items-center justify-center whitespace-nowrap text-sm leading-5">
+            {item.title}
+          </div>
+        </Link>
+      )),
+    [
+      activeIndex,
+      setTabRef,
+      handleMouseEnter,
+      handleMouseLeave,
+      handlePrefetch,
+    ],
+  );
 
   return (
     <div className="scrollbar-none sticky top-0 z-10 overflow-x-auto border-b bg-background-subtle px-4">
@@ -91,10 +149,7 @@ export default function AppNavTabs() {
         {/* Hover Highlight */}
         <div
           className="absolute flex h-[30px] items-center rounded-[6px] bg-accent transition-all duration-200 ease-out"
-          style={{
-            ...hoverStyle,
-            opacity: hoveredIndex !== null ? 1 : 0,
-          }}
+          style={computedHoverStyle}
         />
 
         {/* Active Indicator */}
@@ -105,28 +160,7 @@ export default function AppNavTabs() {
 
         {/* Tabs */}
         <div className="relative flex items-center space-x-1">
-          {navigationItems.map((item, index) => (
-            <Link
-              key={index}
-              href={item.url}
-              ref={setTabRef(index)}
-              className={`h-[30px] cursor-pointer border-none bg-transparent px-3 py-2 transition-colors duration-300 ${
-                index === activeIndex ? 'text-primary' : 'text-muted-foreground'
-              }`}
-              onMouseEnter={() => {
-                setHoveredIndex(index);
-                handleHoverToPrefetch(item.url);
-              }}
-              onMouseLeave={() => setHoveredIndex(null)}
-              onFocus={() => handleHoverToPrefetch(item.url)}
-              onMouseOver={() => handleHoverToPrefetch(item.url)}
-              onPointerEnter={() => handleHoverToPrefetch(item.url)}
-            >
-              <div className="flex h-full items-center justify-center whitespace-nowrap text-sm leading-5">
-                {item.title}
-              </div>
-            </Link>
-          ))}
+          {renderedTabs}
         </div>
       </div>
     </div>

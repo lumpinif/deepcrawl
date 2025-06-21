@@ -1,14 +1,16 @@
 'use client';
 
 import type { NavigationMode } from '@/lib/types';
+import { LayoutPanelLeftIcon } from '@deepcrawl/ui/components/icons/layout-panel-left';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
-import { LayoutGrid, PanelLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
+import { LayoutPanelTopIcon } from '@deepcrawl/ui/components/icons/layout-panel-top';
 
 interface LayoutToggleProps {
   currentMode: NavigationMode;
@@ -34,15 +36,15 @@ export function LayoutToggle({ currentMode }: LayoutToggleProps) {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          variant="ghost"
           size="icon"
+          variant="ghost"
           onClick={toggleMode}
-          className="h-9 w-9"
+          className="hidden h-9 w-9 text-muted-foreground md:flex"
         >
           {currentMode === 'sidebar' ? (
-            <LayoutGrid className="h-4 w-4" />
+            <LayoutPanelTopIcon className="h-4 w-4" />
           ) : (
-            <PanelLeft className="h-4 w-4" />
+            <LayoutPanelLeftIcon className="h-4 w-4" />
           )}
           <span className="sr-only">{tooltipContent}</span>
         </Button>
