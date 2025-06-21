@@ -1,5 +1,6 @@
 import type { NavigationMode } from '@/lib/types';
 import type { Session } from '@deepcrawl/auth/types';
+import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { SidebarTrigger } from '@deepcrawl/ui/components/ui/sidebar';
 import { cn } from '@deepcrawl/ui/lib/utils';
@@ -52,8 +53,17 @@ export async function SiteHeader({
           </Link>
         )}
         {user && (
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-1">
+            <ThemeToggle />
+            <Separator
+              orientation="vertical"
+              className="data-[orientation=vertical]:h-4"
+            />
             <LayoutToggle currentMode={navigationMode} />
+            <Separator
+              orientation="vertical"
+              className="mr-1 data-[orientation=vertical]:h-4"
+            />
             <UserDropdown user={user} deviceSessions={deviceSessions} />
           </div>
         )}

@@ -39,7 +39,7 @@ export function LayoutToggle({ currentMode }: LayoutToggleProps) {
           size="icon"
           variant="ghost"
           onClick={toggleMode}
-          className="hidden h-9 w-9 text-muted-foreground md:flex"
+          className="h-9 w-9 text-muted-foreground"
         >
           {currentMode === 'sidebar' ? (
             <LayoutPanelTopIcon className="h-4 w-4" />
