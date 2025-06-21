@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   // experimental: {
   //   useCache: true,
   // },
+  experimental: {
+    viewTransition: true,
+  },
 };
 
 export default nextConfig;

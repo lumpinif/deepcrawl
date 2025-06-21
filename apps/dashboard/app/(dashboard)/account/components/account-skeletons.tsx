@@ -59,11 +59,9 @@ export function UserNameCardSkeleton() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Edit3 className="h-5 w-5" />
-            Display Name
-          </div>
+        <CardTitle className="flex items-center gap-2">
+          <Edit3 className="h-5 w-5" />
+          Display Name
         </CardTitle>
         <CardDescription>
           Please enter your full name, or a display name you are comfortable
@@ -215,16 +213,14 @@ export function PasswordChangeCardSkeleton() {
 export function SessionsManagementCardSkeleton() {
   return (
     <Card>
-      <CardHeader className="flex w-full justify-between">
-        <div>
-          <CardTitle className="flex items-center gap-2">
-            <Wifi className="h-5 w-5" />
-            Sessions
-          </CardTitle>
-          <CardDescription>
-            Manage your active sessions and connected devices
-          </CardDescription>
-        </div>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Wifi className="h-5 w-5" />
+          Sessions
+        </CardTitle>
+        <CardDescription>
+          Manage your active sessions and connected devices
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <Skeleton className="h-4 w-40" />

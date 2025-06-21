@@ -1,8 +1,8 @@
 'use client';
 
-import type { Icon } from '@tabler/icons-react';
 import React from 'react';
 
+import type { NavigationItem } from '@/lib/navigation-config';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -12,17 +12,13 @@ import {
   SidebarMenuItem,
 } from '@deepcrawl/ui/components/ui/sidebar';
 import Link from 'next/link';
+
 import { useRouter } from 'next/navigation';
 
 export function NavMain({
   items,
 }: {
-  items: {
-    title: string;
-    url: string;
-    icon?: Icon;
-    label?: string;
-  }[];
+  items: NavigationItem[];
 }) {
   const router = useRouter();
 

@@ -1,5 +1,6 @@
 import { TailwindIndicator } from '@deepcrawl/ui/components/theme/tailwind-indicator';
 import { SidebarProvider } from '@deepcrawl/ui/components/ui/sidebar';
+import { TooltipProvider } from '@deepcrawl/ui/components/ui/tooltip';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { cookies } from 'next/headers';
 import type { ReactNode } from 'react';
@@ -23,12 +24,14 @@ export async function Providers({ children }: { children: ReactNode }) {
       defaultTheme="system"
       disableTransitionOnChange
     >
-      <SidebarProvider
-        defaultWidth={sidebarWidth}
-        defaultOpen={defaultSidebarOpen}
-      >
-        <QueryProviders>{children}</QueryProviders>
-      </SidebarProvider>
+      <TooltipProvider delayDuration={0}>
+        <SidebarProvider
+          defaultWidth={sidebarWidth}
+          defaultOpen={defaultSidebarOpen}
+        >
+          <QueryProviders>{children}</QueryProviders>
+        </SidebarProvider>
+      </TooltipProvider>
       <TailwindIndicator />
     </NextThemesProvider>
   );

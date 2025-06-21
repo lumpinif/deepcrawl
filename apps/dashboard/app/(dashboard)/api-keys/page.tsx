@@ -3,7 +3,6 @@ import {
   ApiKeysPageClient,
   ApiKeysPageSkeleton,
 } from '@/components/api-keys/api-keys-page-client';
-import { PageContainer } from '@/components/page-container';
 import { apiKeysQueryOptions } from '@/lib/query-options';
 import { getQueryClient } from '@/lib/query.client';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
@@ -24,11 +23,9 @@ export default async function ApiKeysPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <PageContainer>
-        <Suspense fallback={<ApiKeysPageSkeleton />}>
-          <ApiKeysPageClient />
-        </Suspense>
-      </PageContainer>
+      <Suspense fallback={<ApiKeysPageSkeleton />}>
+        <ApiKeysPageClient />
+      </Suspense>
     </HydrationBoundary>
   );
 }

@@ -6,6 +6,7 @@ import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import { PageHeader } from '../page-elements';
 import { ApiKeysTable } from './api-keys-table';
 import { CreateApiKeyDialog } from './create-api-key-dialog';
 
@@ -13,12 +14,11 @@ export function ApiKeysPageSkeleton() {
   return (
     <div className="space-y-6 max-sm:space-y-4">
       <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4">
-        <div className="max-sm:w-full">
-          <h1 className="font-bold text-3xl">Your API Keys</h1>
-          <p className="text-muted-foreground text-sm max-sm:mt-2">
-            Manage your API keys for accessing DeepCrawl services.
-          </p>
-        </div>
+        <PageHeader
+          className="max-sm:w-full"
+          title="Your API Keys"
+          description="Manage your API keys for accessing DeepCrawl services."
+        />
         <Button disabled className="max-sm:w-full">
           <Plus className="size-4" />
           New API Key
@@ -78,12 +78,11 @@ export function ApiKeysPageClient() {
   return (
     <div className="space-y-6 max-sm:space-y-4">
       <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4">
-        <div className="max-sm:w-full">
-          <h1 className="font-bold text-3xl">Your API Keys</h1>
-          <p className="text-muted-foreground text-sm max-sm:mt-2">
-            Manage your API keys for accessing DeepCrawl services.
-          </p>
-        </div>
+        <PageHeader
+          title="Your API Keys"
+          className="max-sm:w-full"
+          description="Manage your API keys for accessing DeepCrawl services."
+        />
         <Button
           onClick={() => setShowCreateDialog(true)}
           className="max-sm:w-full"

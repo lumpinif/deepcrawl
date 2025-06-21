@@ -1,18 +1,11 @@
 'use client';
 
-import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react';
-
-import {
-  IconBook,
-  IconDashboard,
-  IconKey,
-  IconPlayerPlay,
-  IconUser,
-} from '@tabler/icons-react';
+import { GalleryVerticalEnd } from 'lucide-react';
 
 import * as React from 'react';
 
 import { NavMain } from '@/components/sidebar/nav-main';
+import { navigationItems } from '@/lib/navigation-config';
 // import { NavUser } from '@/components/sidebar/nav-user';
 // import { TeamSwitcher } from '@/components/sidebar/team-switcher';
 import type { Session } from '@deepcrawl/auth/types';
@@ -27,61 +20,9 @@ import {
 } from '@deepcrawl/ui/components/ui/sidebar';
 import Link from 'next/link';
 
-// This is sample data.
-const data = {
-  teams: [
-    {
-      name: 'Acme Inc',
-      logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
-    },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
-    },
-    {
-      name: 'Evil Corp.',
-      logo: Command,
-      plan: 'Free',
-    },
-  ],
-  navMain: [
-    {
-      label: 'Dashboard',
-      title: 'Overview',
-      url: '/',
-      icon: IconDashboard,
-    },
-    {
-      label: 'User',
-      title: 'Account',
-      url: '/account',
-      icon: IconUser,
-    },
-    {
-      title: 'API Keys',
-      url: '/api-keys',
-      icon: IconKey,
-    },
-    {
-      label: 'Playground',
-      title: 'Playground',
-      url: '/',
-      icon: IconPlayerPlay,
-    },
-    {
-      label: 'Resources',
-      title: 'Documentation',
-      url: 'https://deepcrawl.com/docs',
-      icon: IconBook,
-    },
-  ],
-};
-
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  session: Session;
-  deviceSessions: Session[];
+  session?: Session;
+  deviceSessions?: Session[];
 }
 
 export function AppSidebar({
@@ -105,7 +46,7 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="md:pt-2">
-        <NavMain items={data.navMain} />
+        <NavMain items={navigationItems} />
       </SidebarContent>
       {/* <SidebarFooter>
         <NavUser user={user} />

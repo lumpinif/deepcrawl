@@ -1,5 +1,5 @@
 import { fetchAuthSession } from '@/app/actions/auth';
-import { PageContainer } from '@/components/page-container';
+import { PageHeader } from '@/components/page-elements';
 import {
   deviceSessionsQueryOptions,
   linkedAccountsQueryOptions,
@@ -46,36 +46,33 @@ export default async function AccountPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <PageContainer>
-        <h1 className="mb-8 font-bold text-3xl">Account Settings</h1>
-
-        <div className="flex flex-col gap-6">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <Suspense fallback={<UserAvatarCardSkeleton />}>
-              <UserAvatarCard />
-            </Suspense>
-            <Suspense fallback={<UserNameCardSkeleton />}>
-              <UserNameCard />
-            </Suspense>
-          </div>
-
-          <Suspense fallback={<ProvidersManagementCardSkeleton />}>
-            <ProvidersManagementCard />
+      <PageHeader title="Account Settings" />
+      <div className="flex flex-col gap-6">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Suspense fallback={<UserAvatarCardSkeleton />}>
+            <UserAvatarCard />
           </Suspense>
-
-          <Suspense fallback={<MultipleAccountsManagementCardSkeleton />}>
-            <MultipleAccountsManagementCard />
-          </Suspense>
-
-          <Suspense fallback={<PasswordChangeCardSkeleton />}>
-            <PasswordChangeCard />
-          </Suspense>
-
-          <Suspense fallback={<SessionsManagementCardSkeleton />}>
-            <SessionsManagementCard />
+          <Suspense fallback={<UserNameCardSkeleton />}>
+            <UserNameCard />
           </Suspense>
         </div>
-      </PageContainer>
+
+        <Suspense fallback={<ProvidersManagementCardSkeleton />}>
+          <ProvidersManagementCard />
+        </Suspense>
+
+        <Suspense fallback={<MultipleAccountsManagementCardSkeleton />}>
+          <MultipleAccountsManagementCard />
+        </Suspense>
+
+        <Suspense fallback={<PasswordChangeCardSkeleton />}>
+          <PasswordChangeCard />
+        </Suspense>
+
+        <Suspense fallback={<SessionsManagementCardSkeleton />}>
+          <SessionsManagementCard />
+        </Suspense>
+      </div>
     </HydrationBoundary>
   );
 }
