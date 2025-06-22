@@ -730,7 +730,75 @@
             ]
           }
         },
-        "required": ["url", "lastUpdated"]
+        "required": ["url", "lastUpdated"],
+        "example": {
+          "url": "https://example.com/about",
+          "rootUrl": "https://example.com",
+          "name": "About Us",
+          "totalUrls": 150,
+          "executionTime": "1.2s",
+          "lastUpdated": "2024-01-15T10:30:00.000Z",
+          "lastVisited": "2024-01-15T10:30:00.000Z",
+          "metadata": {
+            "title": "About Us - Example Company",
+            "description": "Learn more about our company history and mission.",
+            "language": "en",
+            "canonical": "https://example.com/about",
+            "robots": "index,follow",
+            "author": "Example Company",
+            "keywords": ["about", "company", "history"],
+            "favicon": "https://example.com/favicon.ico",
+            "ogTitle": "About Us - Example Company",
+            "ogDescription": "Learn more about our company history and mission.",
+            "ogImage": "https://example.com/og-about.jpg",
+            "ogUrl": "https://example.com/about",
+            "twitterCard": "summary_large_image",
+            "twitterTitle": "About Us - Example Company",
+            "twitterDescription": "Learn more about our company history and mission.",
+            "twitterImage": "https://example.com/twitter-about.jpg",
+            "isIframeAllowed": true
+          },
+          "extractedLinks": {
+            "internal": [
+              "https://example.com/about/team",
+              "https://example.com/about/history",
+              "https://example.com/contact"
+            ],
+            "external": [
+              "https://partner-company.com",
+              "https://industry-association.org"
+            ],
+            "media": {
+              "images": [
+                "https://example.com/images/office-photo.jpg",
+                "https://example.com/images/team-photo.jpg"
+              ],
+              "videos": ["https://example.com/videos/company-intro.mp4"],
+              "documents": ["https://example.com/files/company-brochure.pdf"]
+            }
+          },
+          "children": [
+            {
+              "url": "https://example.com/about/team",
+              "name": "Our Team",
+              "lastUpdated": "2024-01-15T10:35:00.000Z",
+              "children": []
+            },
+            {
+              "url": "https://example.com/about/history",
+              "name": "Company History",
+              "lastUpdated": "2024-01-15T10:36:00.000Z",
+              "children": [
+                {
+                  "url": "https://example.com/about/history/founding",
+                  "name": "Company Founding",
+                  "lastUpdated": "2024-01-15T10:37:00.000Z",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
       },
       "LinksPostSuccessResponse": {
         "type": "object",
@@ -943,28 +1011,33 @@
           "tree": {
             "type": ["boolean", "null"],
             "default": true,
-            "description": "Whether to build a site map tree."
+            "description": "Whether to build a site map tree.",
+            "example": true
           },
           "metadata": {
             "type": ["boolean", "null"],
             "default": true,
-            "description": "Whether to extract metadata from the page."
+            "description": "Whether to extract metadata from the page.",
+            "example": true
           },
           "cleanedHtml": {
             "type": ["boolean", "null"],
             "default": false,
-            "description": "Whether to return cleaned HTML."
+            "description": "Whether to return cleaned HTML.",
+            "example": false
           },
           "robots": {
             "type": ["boolean", "null"],
             "default": false,
-            "description": "Whether to fetch and parse robots.txt."
+            "description": "Whether to fetch and parse robots.txt.",
+            "example": false
           },
           "sitemapXML": {
             "type": ["boolean", "null"],
             "default": false,
             "description": "( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.",
-            "deprecated": true
+            "deprecated": true,
+            "example": false
           },
           "folderFirst": {
             "type": ["boolean", "null"],
@@ -1134,7 +1207,8 @@
             "schema": {
               "type": ["boolean", "null"],
               "default": true,
-              "description": "Whether to build a site map tree."
+              "description": "Whether to build a site map tree.",
+              "example": true
             },
             "required": false,
             "name": "tree",
@@ -1144,7 +1218,8 @@
             "schema": {
               "type": ["boolean", "null"],
               "default": true,
-              "description": "Whether to extract metadata from the page."
+              "description": "Whether to extract metadata from the page.",
+              "example": true
             },
             "required": false,
             "name": "metadata",
@@ -1154,7 +1229,8 @@
             "schema": {
               "type": ["boolean", "null"],
               "default": false,
-              "description": "Whether to return cleaned HTML."
+              "description": "Whether to return cleaned HTML.",
+              "example": false
             },
             "required": false,
             "name": "cleanedHtml",
@@ -1164,7 +1240,8 @@
             "schema": {
               "type": ["boolean", "null"],
               "default": false,
-              "description": "Whether to fetch and parse robots.txt."
+              "description": "Whether to fetch and parse robots.txt.",
+              "example": false
             },
             "required": false,
             "name": "robots",
@@ -1175,7 +1252,8 @@
               "type": ["boolean", "null"],
               "default": false,
               "description": "( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.",
-              "deprecated": true
+              "deprecated": true,
+              "example": false
             },
             "required": false,
             "name": "sitemapXML",

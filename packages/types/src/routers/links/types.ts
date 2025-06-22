@@ -160,6 +160,7 @@ export const LinksOptionsSchema = z
     tree: z.coerce.boolean().optional().default(true).openapi({
       default: true,
       description: 'Whether to build a site map tree.',
+      example: true,
     }),
 
     /**
@@ -170,6 +171,7 @@ export const LinksOptionsSchema = z
     metadata: z.coerce.boolean().optional().default(true).openapi({
       default: true,
       description: 'Whether to extract metadata from the page.',
+      example: true,
     }),
 
     /**
@@ -179,6 +181,7 @@ export const LinksOptionsSchema = z
     cleanedHtml: z.coerce.boolean().optional().default(false).openapi({
       default: false,
       description: 'Whether to return cleaned HTML.',
+      example: false,
     }),
 
     /**
@@ -188,6 +191,7 @@ export const LinksOptionsSchema = z
     robots: z.coerce.boolean().optional().default(false).openapi({
       default: false,
       description: 'Whether to fetch and parse robots.txt.',
+      example: false,
     }),
 
     /**
@@ -199,6 +203,7 @@ export const LinksOptionsSchema = z
       deprecated: true,
       description:
         '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
+      example: false,
     }),
 
     ...TreeOptionsSchema.shape,
@@ -412,7 +417,76 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
         ],
       }),
   })
-  .openapi('LinksTree');
+  .openapi('LinksTree', {
+    example: {
+      url: 'https://example.com/about',
+      rootUrl: 'https://example.com',
+      name: 'About Us',
+      totalUrls: 150,
+      executionTime: '1.2s',
+      lastUpdated: '2024-01-15T10:30:00.000Z',
+      lastVisited: '2024-01-15T10:30:00.000Z',
+      metadata: {
+        title: 'About Us - Example Company',
+        description: 'Learn more about our company history and mission.',
+        language: 'en',
+        canonical: 'https://example.com/about',
+        robots: 'index,follow',
+        author: 'Example Company',
+        keywords: ['about', 'company', 'history'],
+        favicon: 'https://example.com/favicon.ico',
+        ogTitle: 'About Us - Example Company',
+        ogDescription: 'Learn more about our company history and mission.',
+        ogImage: 'https://example.com/og-about.jpg',
+        ogUrl: 'https://example.com/about',
+        twitterCard: 'summary_large_image',
+        twitterTitle: 'About Us - Example Company',
+        twitterDescription: 'Learn more about our company history and mission.',
+        twitterImage: 'https://example.com/twitter-about.jpg',
+        isIframeAllowed: true,
+      },
+      extractedLinks: {
+        internal: [
+          'https://example.com/about/team',
+          'https://example.com/about/history',
+          'https://example.com/contact',
+        ],
+        external: [
+          'https://partner-company.com',
+          'https://industry-association.org',
+        ],
+        media: {
+          images: [
+            'https://example.com/images/office-photo.jpg',
+            'https://example.com/images/team-photo.jpg',
+          ],
+          videos: ['https://example.com/videos/company-intro.mp4'],
+          documents: ['https://example.com/files/company-brochure.pdf'],
+        },
+      },
+      children: [
+        {
+          url: 'https://example.com/about/team',
+          name: 'Our Team',
+          lastUpdated: '2024-01-15T10:35:00.000Z',
+          children: [],
+        },
+        {
+          url: 'https://example.com/about/history',
+          name: 'Company History',
+          lastUpdated: '2024-01-15T10:36:00.000Z',
+          children: [
+            {
+              url: 'https://example.com/about/history/founding',
+              name: 'Company Founding',
+              lastUpdated: '2024-01-15T10:37:00.000Z',
+              children: [],
+            },
+          ],
+        },
+      ],
+    },
+  });
 
 const LinksPostResponseBaseSchema = z.object({
   success: z.boolean(),
