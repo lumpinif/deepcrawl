@@ -5,24 +5,20 @@
       "path": "."
     },
     {
-      "name": "🌐 www",
-      "path": "./apps/www"
-    },
-    {
-      "name": "💼 workers",
+      "name": "⚒️ workers",
       "path": "./apps/workers"
     },
     {
-      "name": "🎛️ dashboard",
+      "name": "🖥️ app",
       "path": "./apps/dashboard"
-    },
-    {
-      "name": "📦 packages",
-      "path": "./packages"
     },
     {
       "name": "🔌 js-sdk",
       "path": "./apps/js-sdk"
+    },
+    {
+      "name": "📦 packages",
+      "path": "./packages"
     }
   ],
   "settings": {
