@@ -6,19 +6,66 @@ import { z } from '@hono/zod-openapi';
  */
 export const MetadataOptionsSchema = z
   .object({
-    title: z.boolean().optional().default(true),
-    description: z.boolean().optional().default(true),
-    language: z.boolean().optional().default(true),
-    canonical: z.boolean().optional().default(true),
-    robots: z.boolean().optional().default(true),
-    author: z.boolean().optional().default(true),
-    keywords: z.boolean().optional().default(true),
-    favicon: z.boolean().optional().default(true),
-    openGraph: z.boolean().optional().default(true),
-    twitter: z.boolean().optional().default(true),
-    isIframeAllowed: z.boolean().optional().default(true),
+    title: z.boolean().optional().default(true).openapi({
+      description: 'Extract page title from title tag or meta title',
+      example: true,
+    }),
+    description: z.boolean().optional().default(true).openapi({
+      description: 'Extract meta description content',
+      example: true,
+    }),
+    language: z.boolean().optional().default(true).openapi({
+      description: 'Extract page language from html lang attribute',
+      example: true,
+    }),
+    canonical: z.boolean().optional().default(true).openapi({
+      description: 'Extract canonical URL from link rel="canonical"',
+      example: true,
+    }),
+    robots: z.boolean().optional().default(true).openapi({
+      description: 'Extract robots directives from meta robots',
+      example: false,
+    }),
+    author: z.boolean().optional().default(true).openapi({
+      description: 'Extract author information from meta author',
+      example: true,
+    }),
+    keywords: z.boolean().optional().default(true).openapi({
+      description: 'Extract meta keywords and convert to array',
+      example: true,
+    }),
+    favicon: z.boolean().optional().default(true).openapi({
+      description: 'Extract favicon URL from link rel="icon" or similar',
+      example: true,
+    }),
+    openGraph: z.boolean().optional().default(true).openapi({
+      description: 'Extract Open Graph metadata (og:* properties)',
+      example: true,
+    }),
+    twitter: z.boolean().optional().default(true).openapi({
+      description: 'Extract Twitter Card metadata (twitter:* properties)',
+      example: false,
+    }),
+    isIframeAllowed: z.boolean().optional().default(true).openapi({
+      description: 'Check if iframe embedding is allowed',
+      example: true,
+    }),
   })
-  .openapi('MetadataOptions');
+  .openapi('MetadataOptions', {
+    example: {
+      title: true,
+      description: true,
+      language: true,
+      canonical: true,
+      robots: false,
+      author: true,
+      keywords: true,
+      favicon: true,
+      openGraph: true,
+      twitter: false,
+      isIframeAllowed: true,
+    },
+  });
 
 /**
  * Schema for page metadata extracted from a webpage.
@@ -27,36 +74,131 @@ export const MetadataOptionsSchema = z
 export const PageMetadataSchema = z
   .object({
     // Basic metadata
-    title: z.string().optional(),
-    description: z.string().optional(),
-    language: z.string().optional(),
-    canonical: z.string().url().optional(),
-    robots: z.string().optional(),
-    author: z.string().optional(),
-    keywords: z.array(z.string()).optional(),
-    lastModified: z.string().optional().nullable(),
-    favicon: z.string().url().optional(),
+    title: z.string().optional().openapi({
+      description: 'Page title from title tag or meta title',
+      example: 'Example Website - Home Page',
+    }),
+    description: z.string().optional().openapi({
+      description: 'Page description from meta description',
+      example: 'This is an example website demonstrating metadata extraction.',
+    }),
+    language: z.string().optional().openapi({
+      description: 'Page language from html lang attribute',
+      example: 'en',
+    }),
+    canonical: z.string().url().optional().openapi({
+      description: 'Canonical URL from link rel="canonical"',
+      example: 'https://example.com/',
+    }),
+    robots: z.string().optional().openapi({
+      description: 'Robots directives from meta robots',
+      example: 'index, follow',
+    }),
+    author: z.string().optional().openapi({
+      description: 'Author information from meta author',
+      example: 'John Doe',
+    }),
+    keywords: z
+      .array(z.string())
+      .optional()
+      .openapi({
+        description: 'Keywords array from meta keywords',
+        example: ['example', 'metadata', 'extraction'],
+      }),
+    lastModified: z.string().optional().nullable().openapi({
+      description: 'Last modified date from HTTP headers',
+      example: '2023-04-15T14:32:21Z',
+    }),
+    favicon: z.string().url().optional().openapi({
+      description: 'Favicon URL from link rel="icon" or similar',
+      example: 'https://example.com/favicon.ico',
+    }),
 
     // OpenGraph metadata (flattened)
-    ogTitle: z.string().optional(),
-    ogDescription: z.string().optional(),
-    ogImage: z.string().url().optional(),
-    ogUrl: z.string().url().optional(),
-    ogType: z.string().optional(),
-    ogSiteName: z.string().optional(),
+    ogTitle: z.string().optional().openapi({
+      description: 'OpenGraph title from meta property="og:title"',
+      example: 'Example Website',
+    }),
+    ogDescription: z.string().optional().openapi({
+      description: 'OpenGraph description from meta property="og:description"',
+      example: 'Learn about our services',
+    }),
+    ogImage: z.string().url().optional().openapi({
+      description: 'OpenGraph image URL from meta property="og:image"',
+      example: 'https://example.com/images/og-image.jpg',
+    }),
+    ogUrl: z.string().url().optional().openapi({
+      description: 'OpenGraph URL from meta property="og:url"',
+      example: 'https://example.com/',
+    }),
+    ogType: z.string().optional().openapi({
+      description: 'OpenGraph type from meta property="og:type"',
+      example: 'website',
+    }),
+    ogSiteName: z.string().optional().openapi({
+      description: 'OpenGraph site name from meta property="og:site_name"',
+      example: 'Example Website',
+    }),
 
     // Twitter Card metadata (flattened)
-    twitterCard: z.string().optional(),
-    twitterSite: z.string().optional(),
-    twitterCreator: z.string().optional(),
-    twitterTitle: z.string().optional(),
-    twitterDescription: z.string().optional(),
-    twitterImage: z.string().url().optional(),
+    twitterCard: z.string().optional().openapi({
+      description: 'Twitter card type from meta name="twitter:card"',
+      example: 'summary_large_image',
+    }),
+    twitterSite: z.string().optional().openapi({
+      description: 'Twitter site username from meta name="twitter:site"',
+      example: '@examplesite',
+    }),
+    twitterCreator: z.string().optional().openapi({
+      description: 'Twitter creator username from meta name="twitter:creator"',
+      example: '@johndoe',
+    }),
+    twitterTitle: z.string().optional().openapi({
+      description: 'Twitter title from meta name="twitter:title"',
+      example: 'Example Website - Official Site',
+    }),
+    twitterDescription: z.string().optional().openapi({
+      description: 'Twitter description from meta name="twitter:description"',
+      example: 'The best example website on the internet',
+    }),
+    twitterImage: z.string().url().optional().openapi({
+      description: 'Twitter image URL from meta name="twitter:image"',
+      example: 'https://example.com/images/twitter-card.jpg',
+    }),
 
     // iframe allowed
-    isIframeAllowed: z.boolean().optional(),
+    isIframeAllowed: z.boolean().optional().openapi({
+      description: 'Whether iframe embedding is allowed',
+      example: true,
+    }),
   })
-  .openapi('PageMetadata');
+  .openapi('PageMetadata', {
+    example: {
+      title: 'Example Website - Home Page',
+      description:
+        'This is an example website demonstrating metadata extraction.',
+      language: 'en',
+      canonical: 'https://example.com/',
+      robots: 'index, follow',
+      author: 'John Doe',
+      keywords: ['example', 'metadata', 'extraction'],
+      lastModified: '2023-04-15T14:32:21Z',
+      favicon: 'https://example.com/favicon.ico',
+      ogTitle: 'Example Website',
+      ogDescription: 'Learn about our services',
+      ogImage: 'https://example.com/images/og-image.jpg',
+      ogUrl: 'https://example.com/',
+      ogType: 'website',
+      ogSiteName: 'Example Website',
+      twitterCard: 'summary_large_image',
+      twitterSite: '@examplesite',
+      twitterCreator: '@johndoe',
+      twitterTitle: 'Example Website - Official Site',
+      twitterDescription: 'The best example website on the internet',
+      twitterImage: 'https://example.com/images/twitter-card.jpg',
+      isIframeAllowed: true,
+    },
+  });
 
 /**
  * Options for controlling which metadata fields should be extracted.

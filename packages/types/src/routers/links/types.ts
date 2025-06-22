@@ -1,3 +1,4 @@
+import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
 import { HTMLCleaningOptionsSchema } from '@deepcrawl/types/services/html-cleaning/types';
 import {
   ExtractedLinksSchema,
@@ -175,14 +176,29 @@ export const LinksOptionsSchema = z
 
     ...ContentOptionsSchema.shape,
   })
-  .openapi('LinksOptions');
+  .openapi('LinksOptions', {
+    example: {
+      url: 'https://example.com',
+    },
+  });
 
 export const SkippedUrlSchema = z
   .object({
-    url: z.string(),
-    reason: z.string(),
+    url: z.string().openapi({
+      description: 'The URL that was skipped during processing',
+      example: 'https://example.com/private-page',
+    }),
+    reason: z.string().openapi({
+      description: 'The reason why this URL was skipped',
+      example: 'Blocked by robots.txt',
+    }),
   })
-  .openapi('SkippedUrl');
+  .openapi('SkippedUrl', {
+    example: {
+      url: 'https://example.com/private-page',
+      reason: 'Blocked by robots.txt',
+    },
+  });
 
 export const VisitedUrlSchema = z
   .object({
@@ -193,45 +209,178 @@ export const VisitedUrlSchema = z
 
 export const SkippedLinksSchema = z
   .object({
-    internal: z.array(SkippedUrlSchema).optional(),
-    external: z.array(SkippedUrlSchema).optional(),
+    internal: z.array(SkippedUrlSchema).optional().openapi({
+      description: 'Internal URLs that were skipped during processing',
+    }),
+    external: z.array(SkippedUrlSchema).optional().openapi({
+      description: 'External URLs that were skipped during processing',
+    }),
     media: z
       .object({
-        images: z.array(SkippedUrlSchema).optional(),
-        videos: z.array(SkippedUrlSchema).optional(),
-        documents: z.array(SkippedUrlSchema).optional(),
+        images: z.array(SkippedUrlSchema).optional().openapi({
+          description: 'Image URLs that were skipped during processing',
+        }),
+        videos: z.array(SkippedUrlSchema).optional().openapi({
+          description: 'Video URLs that were skipped during processing',
+        }),
+        documents: z.array(SkippedUrlSchema).optional().openapi({
+          description: 'Document URLs that were skipped during processing',
+        }),
       })
-      .optional(),
-    other: z.array(SkippedUrlSchema).optional(),
+      .optional()
+      .openapi({
+        description: 'Media URLs that were skipped during processing',
+      }),
+    other: z.array(SkippedUrlSchema).optional().openapi({
+      description: 'Other URLs that were skipped during processing',
+    }),
   })
-  .openapi('SkippedLinks');
+  .openapi('SkippedLinks', {
+    example: {
+      internal: [
+        {
+          url: 'https://example.com/admin',
+          reason: 'Blocked by robots.txt',
+        },
+        {
+          url: 'https://example.com/private',
+          reason: 'Requires authentication',
+        },
+      ],
+      external: [
+        {
+          url: 'https://external-site.com/blocked',
+          reason: 'External domain excluded',
+        },
+      ],
+      media: {
+        images: [
+          {
+            url: 'https://example.com/large-image.jpg',
+            reason: 'File size exceeds limit',
+          },
+        ],
+        videos: [
+          {
+            url: 'https://example.com/video.mp4',
+            reason: 'Media extraction disabled',
+          },
+        ],
+        documents: [
+          {
+            url: 'https://example.com/document.pdf',
+            reason: 'PDF processing disabled',
+          },
+        ],
+      },
+      other: [
+        {
+          url: 'mailto:contact@example.com',
+          reason: 'Non-HTTP protocol',
+        },
+      ],
+    },
+  });
 
-export const baseLinksTreeSchema = z
+// Define the type first to avoid circular reference
+export type LinksTree = {
+  url: string;
+  rootUrl?: string;
+  name?: string;
+  totalUrls?: number;
+  executionTime?: string;
+  lastUpdated: string;
+  lastVisited?: string | null;
+  error?: string;
+  metadata?: z.infer<typeof PageMetadataSchema>;
+  cleanedHtml?: string;
+  extractedLinks?: z.infer<typeof ExtractedLinksSchema>;
+  skippedUrls?: z.infer<typeof SkippedLinksSchema>;
+  children?: LinksTree[];
+};
+
+export const LinksTreeSchema: z.ZodType<LinksTree> = z
   .object({
-    url: z.string(),
-    rootUrl: z.string().optional(),
-    name: z.string().optional(),
-    totalUrls: z.number().optional(),
-    executionTime: z.string().optional(),
-    lastUpdated: z.string(),
-    lastVisited: z.string().nullable().optional(),
-    error: z.string().optional(),
-    metadata: PageMetadataSchema.optional(),
-    cleanedHtml: z.string().optional(),
-    extractedLinks: ExtractedLinksSchema.optional(),
-    skippedUrls: SkippedLinksSchema.optional(),
-  })
-  .openapi('LinksTreeBase');
-
-export const LinksTreeSchema: z.ZodType<LinksTree> = baseLinksTreeSchema
-  .extend({
+    // Inline all properties for better OpenAPI documentation display
+    url: z.string().openapi({
+      description: 'The URL of this page',
+      example: 'https://example.com/about',
+    }),
+    rootUrl: z.string().optional().openapi({
+      description: 'The root URL of the website being crawled',
+      example: 'https://example.com',
+    }),
+    name: z.string().optional().openapi({
+      description: 'The display name or title of this page',
+      example: 'About Us',
+    }),
+    totalUrls: z.number().optional().openapi({
+      description: 'Total number of URLs discovered in the entire tree',
+      example: 150,
+    }),
+    executionTime: z.string().optional().openapi({
+      description: 'Time taken to process this page',
+      example: '1.2s',
+    }),
+    lastUpdated: z.string().openapi({
+      description: 'ISO timestamp when this page was last crawled',
+      example: '2024-01-15T10:30:00.000Z',
+    }),
+    lastVisited: z.string().nullable().optional().openapi({
+      description:
+        'ISO timestamp when this page was last visited (null if never visited)',
+      example: '2024-01-15T10:30:00.000Z',
+    }),
+    error: z.string().optional().openapi({
+      description: 'Error message if there was an issue processing this page',
+      example: 'Failed to fetch: 404 Not Found',
+    }),
+    metadata: PageMetadataSchema.optional().openapi({
+      description:
+        'Extracted metadata from the page (title, description, etc.)',
+    }),
+    cleanedHtml: z.string().optional().openapi({
+      description: 'Cleaned HTML content of the page',
+    }),
+    extractedLinks: ExtractedLinksSchema.optional().openapi({
+      description: 'Links found on this page, categorized by type',
+    }),
+    skippedUrls: SkippedLinksSchema.optional().openapi({
+      description: 'URLs that were skipped during processing with reasons',
+    }),
+    // Add the recursive children property
     children: z
-      .lazy(() => LinksTreeSchema.array())
+      .array(z.lazy(() => LinksTreeSchema))
       .optional()
       .openapi({
         type: 'array',
-        items: { $ref: '#/components/schemas/LinksTree' },
-        description: 'Children of this node',
+        title: 'Array of LinksTree',
+        items: {
+          $ref: '#/components/schemas/LinksTree',
+          title: 'LinksTree',
+        },
+        description:
+          'Array of child LinksTree nodes, each representing a page found under this URL. This creates a recursive tree structure for the entire website hierarchy.',
+        example: [
+          {
+            url: 'https://example.com/about/team',
+            name: 'Team',
+            lastUpdated: '2024-01-15T10:35:00.000Z',
+            children: [],
+          },
+          {
+            url: 'https://example.com/about/history',
+            name: 'History',
+            lastUpdated: '2024-01-15T10:36:00.000Z',
+            children: [
+              {
+                url: 'https://example.com/about/history/founding',
+                name: 'Company Founding',
+                lastUpdated: '2024-01-15T10:37:00.000Z',
+              },
+            ],
+          },
+        ],
       }),
   })
   .openapi('LinksTree');
@@ -249,21 +398,35 @@ const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
 
 export const LinksPostSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
   PartialScrapedDataSchema,
-).extend({
-  success: z.literal(true),
-  cached: z.boolean(),
-  executionTime: z.string().optional(),
-  ancestors: z.array(z.string()).optional(),
-  skippedUrls: SkippedLinksSchema.optional(),
-  extractedLinks: ExtractedLinksSchema.optional(),
-  tree: LinksTreeSchema.nullable().optional(),
-});
+)
+  .extend({
+    success: z.literal(true).openapi({ type: 'boolean', example: true }),
+    cached: z.boolean(),
+    executionTime: z.string().optional(),
+    ancestors: z.array(z.string()).optional(),
+    skippedUrls: SkippedLinksSchema.optional(),
+    extractedLinks: ExtractedLinksSchema.optional(),
+    tree: z
+      .union([LinksTreeSchema, z.null()])
+      .optional()
+      .openapi({
+        anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }],
+      }),
+  })
+  .openapi('LinksPostSuccessResponse');
 
-export const LinksPostErrorResponseSchema = LinksPostResponseBaseSchema.extend({
-  success: z.literal(false),
-  error: z.string(),
-  tree: LinksTreeSchema.nullable().optional(),
-});
+export const LinksPostErrorResponseSchema = BaseErrorResponseSchema.extend({
+  timestamp: z.string().openapi({
+    description: 'ISO timestamp when the error occurred',
+    example: '2024-01-15T10:30:00.000Z',
+  }),
+  tree: z
+    .union([LinksTreeSchema, z.null()])
+    .optional()
+    .openapi({
+      anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }],
+    }),
+}).openapi('LinksPostErrorResponse');
 
 /**
  * @name    can be imported as LinksTree or Tree
@@ -339,9 +502,6 @@ export const LinksPostErrorResponseSchema = LinksPostResponseBaseSchema.extend({
  * };
  * ```
  */
-export type LinksTree = z.infer<typeof baseLinksTreeSchema> & {
-  children?: LinksTree[];
-};
 
 type PartialExceptUrl<T extends z.infer<typeof LinksOptionsSchema>> = {
   url: T['url'];

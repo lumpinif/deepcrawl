@@ -8,196 +8,865 @@
     }
   ],
   "security": [{ "Bearer": [] }],
+  "tags": [
+    { "name": "Deepcrawl API Root", "description": "Root API endpoints" },
+    {
+      "name": "Deepcrawl Read URL API",
+      "description": "API endpoints for reading and extracting content from URLs"
+    },
+    {
+      "name": "Deepcrawl Links Extractor API",
+      "description": "API endpoints for extracting links and building sitemaps"
+    }
+  ],
+  "x-speakeasy-retries": {
+    "strategy": "backoff",
+    "backoff": {
+      "initialInterval": 500,
+      "maxInterval": 60000,
+      "maxElapsedTime": 3600000,
+      "exponent": 1.5
+    },
+    "statusCodes": ["5XX"],
+    "retryConnectionErrors": true
+  },
   "components": {
     "securitySchemes": { "Bearer": { "type": "http", "scheme": "bearer" } },
     "schemas": {
+      "BaseErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "targetUrl": {
+            "type": "string",
+            "description": "The URL that was being processed when the error occurred",
+            "example": "https://example.com/article"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message describing what went wrong",
+            "example": "Failed to fetch: 404 Not Found"
+          }
+        },
+        "required": ["success", "targetUrl", "error"],
+        "example": {
+          "success": false,
+          "targetUrl": "https://example.com/article",
+          "error": "Failed to fetch: 404 Not Found"
+        }
+      },
+      "PageMetadata": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Page title from title tag or meta title",
+            "example": "Example Website - Home Page"
+          },
+          "description": {
+            "type": "string",
+            "description": "Page description from meta description",
+            "example": "This is an example website demonstrating metadata extraction."
+          },
+          "language": {
+            "type": "string",
+            "description": "Page language from html lang attribute",
+            "example": "en"
+          },
+          "canonical": {
+            "type": "string",
+            "format": "uri",
+            "description": "Canonical URL from link rel=\"canonical\"",
+            "example": "https://example.com/"
+          },
+          "robots": {
+            "type": "string",
+            "description": "Robots directives from meta robots",
+            "example": "index, follow"
+          },
+          "author": {
+            "type": "string",
+            "description": "Author information from meta author",
+            "example": "John Doe"
+          },
+          "keywords": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Keywords array from meta keywords",
+            "example": ["example", "metadata", "extraction"]
+          },
+          "lastModified": {
+            "type": ["string", "null"],
+            "description": "Last modified date from HTTP headers",
+            "example": "2023-04-15T14:32:21Z"
+          },
+          "favicon": {
+            "type": "string",
+            "format": "uri",
+            "description": "Favicon URL from link rel=\"icon\" or similar",
+            "example": "https://example.com/favicon.ico"
+          },
+          "ogTitle": {
+            "type": "string",
+            "description": "OpenGraph title from meta property=\"og:title\"",
+            "example": "Example Website"
+          },
+          "ogDescription": {
+            "type": "string",
+            "description": "OpenGraph description from meta property=\"og:description\"",
+            "example": "Learn about our services"
+          },
+          "ogImage": {
+            "type": "string",
+            "format": "uri",
+            "description": "OpenGraph image URL from meta property=\"og:image\"",
+            "example": "https://example.com/images/og-image.jpg"
+          },
+          "ogUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "OpenGraph URL from meta property=\"og:url\"",
+            "example": "https://example.com/"
+          },
+          "ogType": {
+            "type": "string",
+            "description": "OpenGraph type from meta property=\"og:type\"",
+            "example": "website"
+          },
+          "ogSiteName": {
+            "type": "string",
+            "description": "OpenGraph site name from meta property=\"og:site_name\"",
+            "example": "Example Website"
+          },
+          "twitterCard": {
+            "type": "string",
+            "description": "Twitter card type from meta name=\"twitter:card\"",
+            "example": "summary_large_image"
+          },
+          "twitterSite": {
+            "type": "string",
+            "description": "Twitter site username from meta name=\"twitter:site\"",
+            "example": "@examplesite"
+          },
+          "twitterCreator": {
+            "type": "string",
+            "description": "Twitter creator username from meta name=\"twitter:creator\"",
+            "example": "@johndoe"
+          },
+          "twitterTitle": {
+            "type": "string",
+            "description": "Twitter title from meta name=\"twitter:title\"",
+            "example": "Example Website - Official Site"
+          },
+          "twitterDescription": {
+            "type": "string",
+            "description": "Twitter description from meta name=\"twitter:description\"",
+            "example": "The best example website on the internet"
+          },
+          "twitterImage": {
+            "type": "string",
+            "format": "uri",
+            "description": "Twitter image URL from meta name=\"twitter:image\"",
+            "example": "https://example.com/images/twitter-card.jpg"
+          },
+          "isIframeAllowed": {
+            "type": "boolean",
+            "description": "Whether iframe embedding is allowed",
+            "example": true
+          }
+        },
+        "example": {
+          "title": "Example Website - Home Page",
+          "description": "This is an example website demonstrating metadata extraction.",
+          "language": "en",
+          "canonical": "https://example.com/",
+          "robots": "index, follow",
+          "author": "John Doe",
+          "keywords": ["example", "metadata", "extraction"],
+          "lastModified": "2023-04-15T14:32:21Z",
+          "favicon": "https://example.com/favicon.ico",
+          "ogTitle": "Example Website",
+          "ogDescription": "Learn about our services",
+          "ogImage": "https://example.com/images/og-image.jpg",
+          "ogUrl": "https://example.com/",
+          "ogType": "website",
+          "ogSiteName": "Example Website",
+          "twitterCard": "summary_large_image",
+          "twitterSite": "@examplesite",
+          "twitterCreator": "@johndoe",
+          "twitterTitle": "Example Website - Official Site",
+          "twitterDescription": "The best example website on the internet",
+          "twitterImage": "https://example.com/images/twitter-card.jpg",
+          "isIframeAllowed": true
+        }
+      },
+      "MetaFiles": {
+        "type": "object",
+        "properties": {
+          "robots": {
+            "type": "string",
+            "description": "Content of the robots.txt file",
+            "example": "User-agent: *\nAllow: /"
+          },
+          "sitemapXML": {
+            "type": "string",
+            "description": "Content of the sitemap.xml file",
+            "example": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">...</urlset>"
+          }
+        },
+        "example": {
+          "robots": "User-agent: *\nAllow: /",
+          "sitemapXML": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">...</urlset>"
+        }
+      },
       "Metrics": {
         "type": "object",
         "properties": {
-          "readableDuration": { "type": "string" },
-          "duration": { "type": "number" },
-          "startTime": { "type": "number" },
-          "endTime": { "type": "number" }
+          "readableDuration": {
+            "type": "string",
+            "description": "Human-readable representation of the operation duration",
+            "example": "1.2s"
+          },
+          "duration": {
+            "type": "number",
+            "description": "Duration of the operation in milliseconds",
+            "example": 1200
+          },
+          "startTime": {
+            "type": "number",
+            "description": "Timestamp in milliseconds when the operation started",
+            "example": 1704067800000
+          },
+          "endTime": {
+            "type": "number",
+            "description": "Timestamp in milliseconds when the operation finished",
+            "example": 1704067801200
+          }
         },
-        "required": ["readableDuration", "duration", "startTime", "endTime"]
+        "required": ["readableDuration", "duration", "startTime", "endTime"],
+        "description": "Metrics for the read operation.",
+        "example": {
+          "readableDuration": "1.2s",
+          "duration": 1200,
+          "startTime": 1704067800000,
+          "endTime": 1704067801200
+        }
+      },
+      "MetadataOptions": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract page title from title tag or meta title",
+            "example": true
+          },
+          "description": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract meta description content",
+            "example": true
+          },
+          "language": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract page language from html lang attribute",
+            "example": true
+          },
+          "canonical": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract canonical URL from link rel=\"canonical\"",
+            "example": true
+          },
+          "robots": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract robots directives from meta robots",
+            "example": false
+          },
+          "author": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract author information from meta author",
+            "example": true
+          },
+          "keywords": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract meta keywords and convert to array",
+            "example": true
+          },
+          "favicon": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract favicon URL from link rel=\"icon\" or similar",
+            "example": true
+          },
+          "openGraph": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract Open Graph metadata (og:* properties)",
+            "example": true
+          },
+          "twitter": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract Twitter Card metadata (twitter:* properties)",
+            "example": false
+          },
+          "isIframeAllowed": {
+            "type": "boolean",
+            "default": true,
+            "description": "Check if iframe embedding is allowed",
+            "example": true
+          }
+        },
+        "description": "Options for metadata extraction.",
+        "example": {
+          "title": true,
+          "description": true,
+          "language": true,
+          "canonical": true,
+          "robots": false,
+          "author": true,
+          "keywords": true,
+          "favicon": true,
+          "openGraph": true,
+          "twitter": false,
+          "isIframeAllowed": true
+        }
       },
       "ReadOptions": {
         "type": "object",
         "properties": {
-          "url": { "type": "string" },
-          "metadata": { "type": ["boolean", "null"], "default": true },
-          "markdown": { "type": ["boolean", "null"], "default": true },
-          "cleanedHtml": { "type": ["boolean", "null"], "default": true },
-          "robots": { "type": ["boolean", "null"], "default": false },
-          "rawHtml": { "type": ["boolean", "null"], "default": false },
-          "metadataOptions": {
-            "type": "object",
-            "properties": {
-              "title": { "type": "boolean", "default": true },
-              "description": { "type": "boolean", "default": true },
-              "language": { "type": "boolean", "default": true },
-              "canonical": { "type": "boolean", "default": true },
-              "robots": { "type": "boolean", "default": true },
-              "author": { "type": "boolean", "default": true },
-              "keywords": { "type": "boolean", "default": true },
-              "favicon": { "type": "boolean", "default": true },
-              "openGraph": { "type": "boolean", "default": true },
-              "twitter": { "type": "boolean", "default": true },
-              "isIframeAllowed": { "type": "boolean", "default": true }
-            }
+          "url": {
+            "type": "string",
+            "description": "The URL to read and extract content from",
+            "example": "https://example.com"
+          },
+          "metadata": {
+            "type": ["boolean", "null"],
+            "default": true,
+            "description": "Whether to extract metadata from the page.",
+            "example": true
+          },
+          "markdown": {
+            "type": ["boolean", "null"],
+            "default": true,
+            "description": "Whether to extract markdown from the page.",
+            "example": true
+          },
+          "cleanedHtml": {
+            "type": ["boolean", "null"],
+            "default": false,
+            "description": "Whether to return cleaned HTML.",
+            "example": false
+          },
+          "robots": {
+            "type": ["boolean", "null"],
+            "default": false,
+            "description": "Whether to fetch and parse robots.txt.",
+            "example": false
+          },
+          "rawHtml": {
+            "type": ["boolean", "null"],
+            "default": false,
+            "description": "Whether to return raw HTML.",
+            "example": false
+          },
+          "metadataOptions": { "$ref": "#/components/schemas/MetadataOptions" }
+        },
+        "required": ["url"],
+        "example": { "url": "https://example.com" }
+      },
+      "SkippedUrl": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The URL that was skipped during processing",
+            "example": "https://example.com/private-page"
+          },
+          "reason": {
+            "type": "string",
+            "description": "The reason why this URL was skipped",
+            "example": "Blocked by robots.txt"
           }
         },
-        "required": ["url"]
+        "required": ["url", "reason"],
+        "example": {
+          "url": "https://example.com/private-page",
+          "reason": "Blocked by robots.txt"
+        }
       },
       "SkippedLinks": {
         "type": "object",
         "properties": {
           "internal": {
             "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "url": { "type": "string" },
-                "reason": { "type": "string" }
-              },
-              "required": ["url", "reason"]
-            }
+            "items": { "$ref": "#/components/schemas/SkippedUrl" },
+            "description": "Internal URLs that were skipped during processing"
           },
           "external": {
             "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "url": { "type": "string" },
-                "reason": { "type": "string" }
-              },
-              "required": ["url", "reason"]
-            }
+            "items": { "$ref": "#/components/schemas/SkippedUrl" },
+            "description": "External URLs that were skipped during processing"
           },
           "media": {
             "type": "object",
             "properties": {
               "images": {
                 "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": { "type": "string" },
-                    "reason": { "type": "string" }
-                  },
-                  "required": ["url", "reason"]
-                }
+                "items": { "$ref": "#/components/schemas/SkippedUrl" },
+                "description": "Image URLs that were skipped during processing"
               },
               "videos": {
                 "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": { "type": "string" },
-                    "reason": { "type": "string" }
-                  },
-                  "required": ["url", "reason"]
-                }
+                "items": { "$ref": "#/components/schemas/SkippedUrl" },
+                "description": "Video URLs that were skipped during processing"
               },
               "documents": {
                 "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": { "type": "string" },
-                    "reason": { "type": "string" }
-                  },
-                  "required": ["url", "reason"]
-                }
+                "items": { "$ref": "#/components/schemas/SkippedUrl" },
+                "description": "Document URLs that were skipped during processing"
               }
-            }
+            },
+            "description": "Media URLs that were skipped during processing"
           },
           "other": {
             "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "url": { "type": "string" },
-                "reason": { "type": "string" }
-              },
-              "required": ["url", "reason"]
-            }
+            "items": { "$ref": "#/components/schemas/SkippedUrl" },
+            "description": "Other URLs that were skipped during processing"
           }
+        },
+        "example": {
+          "internal": [
+            {
+              "url": "https://example.com/admin",
+              "reason": "Blocked by robots.txt"
+            },
+            {
+              "url": "https://example.com/private",
+              "reason": "Requires authentication"
+            }
+          ],
+          "external": [
+            {
+              "url": "https://external-site.com/blocked",
+              "reason": "External domain excluded"
+            }
+          ],
+          "media": {
+            "images": [
+              {
+                "url": "https://example.com/large-image.jpg",
+                "reason": "File size exceeds limit"
+              }
+            ],
+            "videos": [
+              {
+                "url": "https://example.com/video.mp4",
+                "reason": "Media extraction disabled"
+              }
+            ],
+            "documents": [
+              {
+                "url": "https://example.com/document.pdf",
+                "reason": "PDF processing disabled"
+              }
+            ]
+          },
+          "other": [
+            {
+              "url": "mailto:contact@example.com",
+              "reason": "Non-HTTP protocol"
+            }
+          ]
         }
       },
       "ExtractedLinks": {
         "type": "object",
         "properties": {
-          "internal": { "type": "array", "items": { "type": "string" } },
-          "external": { "type": "array", "items": { "type": "string" } },
+          "internal": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Array of internal links from the same domain",
+            "example": [
+              "https://example.com/about",
+              "https://example.com/contact",
+              "https://example.com/services"
+            ]
+          },
+          "external": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Array of external links from other domains",
+            "example": [
+              "https://github.com/example/repo",
+              "https://twitter.com/example",
+              "https://linkedin.com/company/example"
+            ]
+          },
           "media": {
             "type": "object",
             "properties": {
-              "images": { "type": "array", "items": { "type": "string" } },
-              "videos": { "type": "array", "items": { "type": "string" } },
-              "documents": { "type": "array", "items": { "type": "string" } }
-            }
+              "images": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Array of image file URLs",
+                "example": [
+                  "https://example.com/images/logo.png",
+                  "https://example.com/images/banner.jpg"
+                ]
+              },
+              "videos": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Array of video file URLs",
+                "example": [
+                  "https://example.com/videos/intro.mp4",
+                  "https://example.com/videos/demo.webm"
+                ]
+              },
+              "documents": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Array of document file URLs",
+                "example": [
+                  "https://example.com/docs/whitepaper.pdf",
+                  "https://example.com/docs/manual.docx"
+                ]
+              }
+            },
+            "description": "Media files categorized by type"
+          }
+        },
+        "example": {
+          "internal": [
+            "https://example.com/about",
+            "https://example.com/contact",
+            "https://example.com/services"
+          ],
+          "external": [
+            "https://github.com/example/repo",
+            "https://twitter.com/example",
+            "https://linkedin.com/company/example"
+          ],
+          "media": {
+            "images": [
+              "https://example.com/images/logo.png",
+              "https://example.com/images/banner.jpg"
+            ],
+            "videos": [
+              "https://example.com/videos/intro.mp4",
+              "https://example.com/videos/demo.webm"
+            ],
+            "documents": [
+              "https://example.com/docs/whitepaper.pdf",
+              "https://example.com/docs/manual.docx"
+            ]
           }
         }
       },
-      "LinksTreeBase": {
+      "LinksTree": {
         "type": "object",
         "properties": {
-          "url": { "type": "string" },
-          "rootUrl": { "type": "string" },
-          "name": { "type": "string" },
-          "totalUrls": { "type": "number" },
-          "executionTime": { "type": "string" },
-          "lastUpdated": { "type": "string" },
-          "lastVisited": { "type": ["string", "null"] },
-          "error": { "type": "string" },
-          "metadata": {
-            "type": "object",
-            "properties": {
-              "title": { "type": "string" },
-              "description": { "type": "string" },
-              "language": { "type": "string" },
-              "canonical": { "type": "string", "format": "uri" },
-              "robots": { "type": "string" },
-              "author": { "type": "string" },
-              "keywords": { "type": "array", "items": { "type": "string" } },
-              "lastModified": { "type": ["string", "null"] },
-              "favicon": { "type": "string", "format": "uri" },
-              "ogTitle": { "type": "string" },
-              "ogDescription": { "type": "string" },
-              "ogImage": { "type": "string", "format": "uri" },
-              "ogUrl": { "type": "string", "format": "uri" },
-              "ogType": { "type": "string" },
-              "ogSiteName": { "type": "string" },
-              "twitterCard": { "type": "string" },
-              "twitterSite": { "type": "string" },
-              "twitterCreator": { "type": "string" },
-              "twitterTitle": { "type": "string" },
-              "twitterDescription": { "type": "string" },
-              "twitterImage": { "type": "string", "format": "uri" },
-              "isIframeAllowed": { "type": "boolean" }
-            }
+          "url": {
+            "type": "string",
+            "description": "The URL of this page",
+            "example": "https://example.com/about"
           },
-          "cleanedHtml": { "type": "string" },
-          "extractedLinks": { "$ref": "#/components/schemas/ExtractedLinks" },
-          "skippedUrls": { "$ref": "#/components/schemas/SkippedLinks" }
+          "rootUrl": {
+            "type": "string",
+            "description": "The root URL of the website being crawled",
+            "example": "https://example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name or title of this page",
+            "example": "About Us"
+          },
+          "totalUrls": {
+            "type": "number",
+            "description": "Total number of URLs discovered in the entire tree",
+            "example": 150
+          },
+          "executionTime": {
+            "type": "string",
+            "description": "Time taken to process this page",
+            "example": "1.2s"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "description": "ISO timestamp when this page was last crawled",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "lastVisited": {
+            "type": ["string", "null"],
+            "description": "ISO timestamp when this page was last visited (null if never visited)",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message if there was an issue processing this page",
+            "example": "Failed to fetch: 404 Not Found"
+          },
+          "metadata": {
+            "allOf": [
+              { "$ref": "#/components/schemas/PageMetadata" },
+              {
+                "description": "Extracted metadata from the page (title, description, etc.)"
+              }
+            ]
+          },
+          "cleanedHtml": {
+            "type": "string",
+            "description": "Cleaned HTML content of the page"
+          },
+          "extractedLinks": {
+            "allOf": [
+              { "$ref": "#/components/schemas/ExtractedLinks" },
+              { "description": "Links found on this page, categorized by type" }
+            ]
+          },
+          "skippedUrls": {
+            "allOf": [
+              { "$ref": "#/components/schemas/SkippedLinks" },
+              {
+                "description": "URLs that were skipped during processing with reasons"
+              }
+            ]
+          },
+          "children": {
+            "type": "array",
+            "description": "Array of child LinksTree nodes, each representing a page found under this URL. This creates a recursive tree structure for the entire website hierarchy.",
+            "title": "Array of LinksTree",
+            "items": {
+              "$ref": "#/components/schemas/LinksTree",
+              "title": "LinksTree"
+            },
+            "example": [
+              {
+                "url": "https://example.com/about/team",
+                "name": "Team",
+                "lastUpdated": "2024-01-15T10:35:00.000Z",
+                "children": []
+              },
+              {
+                "url": "https://example.com/about/history",
+                "name": "History",
+                "lastUpdated": "2024-01-15T10:36:00.000Z",
+                "children": [
+                  {
+                    "url": "https://example.com/about/history/founding",
+                    "name": "Company Founding",
+                    "lastUpdated": "2024-01-15T10:37:00.000Z"
+                  }
+                ]
+              }
+            ]
+          }
         },
         "required": ["url", "lastUpdated"]
       },
-      "LinksTree": {
-        "allOf": [
-          { "$ref": "#/components/schemas/LinksTreeBase" },
-          {
-            "type": ["object", "null"],
-            "properties": {
-              "children": {
-                "type": "array",
-                "description": "Children of this node",
-                "items": { "$ref": "#/components/schemas/LinksTree" }
-              }
-            }
+      "LinksPostSuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "targetUrl": { "type": "string" },
+          "timestamp": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "metadata": { "$ref": "#/components/schemas/PageMetadata" },
+          "cleanedHtml": { "type": "string" },
+          "metaFiles": { "$ref": "#/components/schemas/MetaFiles" },
+          "cached": { "type": "boolean" },
+          "executionTime": { "type": "string" },
+          "ancestors": { "type": "array", "items": { "type": "string" } },
+          "skippedUrls": { "$ref": "#/components/schemas/SkippedLinks" },
+          "extractedLinks": { "$ref": "#/components/schemas/ExtractedLinks" },
+          "tree": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/LinksTree" },
+              { "type": "null" }
+            ]
           }
-        ]
+        },
+        "required": ["success", "targetUrl", "timestamp", "cached"]
+      },
+      "LinksPostErrorResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/BaseErrorResponse" },
+          {
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "description": "ISO timestamp when the error occurred",
+                "example": "2024-01-15T10:30:00.000Z"
+              },
+              "tree": {
+                "anyOf": [
+                  { "$ref": "#/components/schemas/LinksTree" },
+                  { "type": "null" }
+                ]
+              }
+            },
+            "required": ["timestamp"]
+          }
+        ],
+        "example": {
+          "success": false,
+          "targetUrl": "https://example.com/article",
+          "error": "Failed to fetch: 404 Not Found"
+        }
+      },
+      "LinkExtractionOptions": {
+        "type": "object",
+        "properties": {
+          "includeExternal": {
+            "type": "boolean",
+            "description": "Whether to include links from other domains",
+            "example": false
+          },
+          "includeMedia": {
+            "type": "boolean",
+            "description": "Whether to include media files (images, videos, docs)",
+            "example": true
+          },
+          "excludePatterns": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Array of regex patterns to exclude URLs",
+            "example": ["^/admin/", "\\.pdf$", "/private/"]
+          },
+          "removeQueryParams": {
+            "type": "boolean",
+            "description": "Whether to remove query parameters from URLs",
+            "example": true
+          }
+        },
+        "additionalProperties": false,
+        "example": {
+          "includeExternal": false,
+          "includeMedia": true,
+          "excludePatterns": ["^/admin/", "\\.pdf$", "/private/"],
+          "removeQueryParams": true
+        }
+      },
+      "HTMLCleaningOptions": {
+        "type": "object",
+        "properties": {
+          "allowedHTMLTags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "HTML tags to preserve in the output (whitelist)",
+            "example": [
+              "p",
+              "h1",
+              "h2",
+              "h3",
+              "ul",
+              "ol",
+              "li",
+              "a",
+              "strong",
+              "em"
+            ]
+          },
+          "disallowedHTMLTags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "HTML tags to remove from the output (blacklist)",
+            "example": ["script", "style", "iframe", "form", "button"]
+          },
+          "extractMainContent": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to extract only the main content area, removing navigation, footers, etc.",
+            "example": true
+          },
+          "documentBaseUrl": {
+            "type": "string",
+            "description": "Base URL for resolving relative URLs (deprecated, use baseUrl parameter instead)",
+            "example": "https://example.com",
+            "deprecated": true
+          },
+          "removeBase64Images": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to remove base64 encoded images to reduce payload size",
+            "example": true
+          }
+        },
+        "additionalProperties": false,
+        "example": {
+          "allowedHTMLTags": [
+            "p",
+            "h1",
+            "h2",
+            "h3",
+            "ul",
+            "ol",
+            "li",
+            "a",
+            "strong",
+            "em"
+          ],
+          "disallowedHTMLTags": ["script", "style", "iframe", "form", "button"],
+          "extractMainContent": true,
+          "documentBaseUrl": "https://example.com",
+          "removeBase64Images": true
+        }
+      },
+      "LinksOptions": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "The URL to extract links from."
+          },
+          "tree": {
+            "type": ["boolean", "null"],
+            "default": true,
+            "description": "Whether to build a site map tree."
+          },
+          "metadata": {
+            "type": ["boolean", "null"],
+            "default": true,
+            "description": "Whether to extract metadata from the page."
+          },
+          "cleanedHtml": {
+            "type": ["boolean", "null"],
+            "default": false,
+            "description": "Whether to return cleaned HTML."
+          },
+          "robots": {
+            "type": ["boolean", "null"],
+            "default": false,
+            "description": "Whether to fetch and parse robots.txt."
+          },
+          "sitemapXML": {
+            "type": ["boolean", "null"],
+            "default": false,
+            "description": "( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.",
+            "deprecated": true
+          },
+          "folderFirst": { "type": ["boolean", "null"] },
+          "linksOrder": { "type": "string", "enum": ["page", "alphabetical"] },
+          "extractedLinks": { "type": ["boolean", "null"] },
+          "subdomainAsRootUrl": { "type": ["boolean", "null"] },
+          "metadataOptions": { "$ref": "#/components/schemas/MetadataOptions" },
+          "linksOptions": {
+            "$ref": "#/components/schemas/LinkExtractionOptions"
+          },
+          "cleanedHtmlOptions": {
+            "$ref": "#/components/schemas/HTMLCleaningOptions"
+          }
+        },
+        "required": ["url"],
+        "example": { "url": "https://example.com" }
       }
     },
     "parameters": {}
@@ -206,6 +875,7 @@
     "/": {
       "get": {
         "tags": ["Deepcrawl API Root"],
+        "operationId": "getApiRoot",
         "security": [],
         "responses": {
           "200": {
@@ -220,12 +890,21 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BaseErrorResponse" }
+              }
+            }
           }
         }
       }
     },
     "/read": {
       "get": {
+        "operationId": "getMarkdown",
         "description": "Directly return page markdown content from the request URL.",
         "tags": ["Deepcrawl Read URL API"],
         "parameters": [
@@ -249,21 +928,14 @@
             "description": "Bad request error",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "enum": [false] },
-                    "targetUrl": { "type": "string" },
-                    "error": { "type": "string" }
-                  },
-                  "required": ["success", "targetUrl", "error"]
-                }
+                "schema": { "$ref": "#/components/schemas/BaseErrorResponse" }
               }
             }
           }
         }
       },
       "post": {
+        "operationId": "readUrl",
         "description": "Returning full result object from the request URL.",
         "tags": ["Deepcrawl Read URL API"],
         "requestBody": {
@@ -284,7 +956,8 @@
                       }
                     }
                   }
-                ]
+                ],
+                "example": { "url": "https://example.com" }
               }
             }
           }
@@ -297,60 +970,29 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": { "type": "boolean", "enum": [true] },
+                    "success": { "type": "boolean", "example": true },
+                    "cached": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application."
+                    },
                     "targetUrl": { "type": "string" },
                     "title": { "type": "string" },
                     "description": { "type": "string" },
-                    "metadata": {
-                      "type": "object",
-                      "properties": {
-                        "title": { "type": "string" },
-                        "description": { "type": "string" },
-                        "language": { "type": "string" },
-                        "canonical": { "type": "string", "format": "uri" },
-                        "robots": { "type": "string" },
-                        "author": { "type": "string" },
-                        "keywords": {
-                          "type": "array",
-                          "items": { "type": "string" }
-                        },
-                        "lastModified": { "type": ["string", "null"] },
-                        "favicon": { "type": "string", "format": "uri" },
-                        "ogTitle": { "type": "string" },
-                        "ogDescription": { "type": "string" },
-                        "ogImage": { "type": "string", "format": "uri" },
-                        "ogUrl": { "type": "string", "format": "uri" },
-                        "ogType": { "type": "string" },
-                        "ogSiteName": { "type": "string" },
-                        "twitterCard": { "type": "string" },
-                        "twitterSite": { "type": "string" },
-                        "twitterCreator": { "type": "string" },
-                        "twitterTitle": { "type": "string" },
-                        "twitterDescription": { "type": "string" },
-                        "twitterImage": { "type": "string", "format": "uri" },
-                        "isIframeAllowed": { "type": "boolean" }
-                      }
-                    },
+                    "metadata": { "$ref": "#/components/schemas/PageMetadata" },
                     "cleanedHtml": { "type": "string" },
-                    "metaFiles": {
-                      "type": "object",
-                      "properties": {
-                        "robots": { "type": "string" },
-                        "sitemapXML": { "type": "string" }
-                      }
+                    "metaFiles": { "$ref": "#/components/schemas/MetaFiles" },
+                    "markdown": {
+                      "type": "string",
+                      "description": "Markdown content of the page."
                     },
-                    "cached": { "type": "boolean" },
-                    "markdown": { "type": "string" },
-                    "rawHtml": { "type": "string" },
+                    "rawHtml": {
+                      "type": "string",
+                      "description": "Raw HTML content of the page."
+                    },
                     "metrics": { "$ref": "#/components/schemas/Metrics" }
                   },
-                  "required": [
-                    "success",
-                    "targetUrl",
-                    "title",
-                    "description",
-                    "cached"
-                  ]
+                  "required": ["success", "targetUrl", "title", "description"]
                 }
               }
             }
@@ -359,15 +1001,7 @@
             "description": "Internal server error",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "enum": [false] },
-                    "targetUrl": { "type": "string" },
-                    "error": { "type": "string" }
-                  },
-                  "required": ["success", "targetUrl", "error"]
-                }
+                "schema": { "$ref": "#/components/schemas/BaseErrorResponse" }
               }
             }
           }
@@ -376,6 +1010,7 @@
     },
     "/links": {
       "get": {
+        "operationId": "extractLinksGet",
         "description": "Returning extracted links sitemap results for the request URL.",
         "tags": ["Deepcrawl Links Extractor API"],
         "parameters": [
@@ -390,31 +1025,52 @@
             "in": "query"
           },
           {
-            "schema": { "type": ["boolean", "null"] },
+            "schema": {
+              "type": ["boolean", "null"],
+              "default": true,
+              "description": "Whether to build a site map tree."
+            },
             "required": false,
             "name": "tree",
             "in": "query"
           },
           {
-            "schema": { "type": ["boolean", "null"] },
+            "schema": {
+              "type": ["boolean", "null"],
+              "default": true,
+              "description": "Whether to extract metadata from the page."
+            },
             "required": false,
             "name": "metadata",
             "in": "query"
           },
           {
-            "schema": { "type": ["boolean", "null"] },
+            "schema": {
+              "type": ["boolean", "null"],
+              "default": false,
+              "description": "Whether to return cleaned HTML."
+            },
             "required": false,
             "name": "cleanedHtml",
             "in": "query"
           },
           {
-            "schema": { "type": ["boolean", "null"] },
+            "schema": {
+              "type": ["boolean", "null"],
+              "default": false,
+              "description": "Whether to fetch and parse robots.txt."
+            },
             "required": false,
             "name": "robots",
             "in": "query"
           },
           {
-            "schema": { "type": ["boolean", "null"] },
+            "schema": {
+              "type": ["boolean", "null"],
+              "default": false,
+              "description": "( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.",
+              "deprecated": true
+            },
             "required": false,
             "name": "sitemapXML",
             "in": "query"
@@ -444,62 +1100,19 @@
             "in": "query"
           },
           {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "title": { "type": "boolean", "default": true },
-                "description": { "type": "boolean", "default": true },
-                "language": { "type": "boolean", "default": true },
-                "canonical": { "type": "boolean", "default": true },
-                "robots": { "type": "boolean", "default": true },
-                "author": { "type": "boolean", "default": true },
-                "keywords": { "type": "boolean", "default": true },
-                "favicon": { "type": "boolean", "default": true },
-                "openGraph": { "type": "boolean", "default": true },
-                "twitter": { "type": "boolean", "default": true },
-                "isIframeAllowed": { "type": "boolean", "default": true }
-              }
-            },
+            "schema": { "$ref": "#/components/schemas/MetadataOptions" },
             "required": false,
             "name": "metadataOptions",
             "in": "query"
           },
           {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "includeExternal": { "type": "boolean" },
-                "includeMedia": { "type": "boolean" },
-                "excludePatterns": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                },
-                "removeQueryParams": { "type": "boolean" }
-              },
-              "additionalProperties": false
-            },
+            "schema": { "$ref": "#/components/schemas/LinkExtractionOptions" },
             "required": false,
             "name": "linksOptions",
             "in": "query"
           },
           {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "allowedHTMLTags": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                },
-                "disallowedHTMLTags": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                },
-                "extractMainContent": { "type": "boolean", "default": true },
-                "documentBaseUrl": { "type": "string" },
-                "removeBase64Images": { "type": "boolean", "default": true }
-              },
-              "additionalProperties": false
-            },
+            "schema": { "$ref": "#/components/schemas/HTMLCleaningOptions" },
             "required": false,
             "name": "cleanedHtmlOptions",
             "in": "query"
@@ -511,66 +1124,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "enum": [true] },
-                    "targetUrl": { "type": "string" },
-                    "timestamp": { "type": "string" },
-                    "title": { "type": "string" },
-                    "description": { "type": "string" },
-                    "metadata": {
-                      "type": "object",
-                      "properties": {
-                        "title": { "type": "string" },
-                        "description": { "type": "string" },
-                        "language": { "type": "string" },
-                        "canonical": { "type": "string", "format": "uri" },
-                        "robots": { "type": "string" },
-                        "author": { "type": "string" },
-                        "keywords": {
-                          "type": "array",
-                          "items": { "type": "string" }
-                        },
-                        "lastModified": { "type": ["string", "null"] },
-                        "favicon": { "type": "string", "format": "uri" },
-                        "ogTitle": { "type": "string" },
-                        "ogDescription": { "type": "string" },
-                        "ogImage": { "type": "string", "format": "uri" },
-                        "ogUrl": { "type": "string", "format": "uri" },
-                        "ogType": { "type": "string" },
-                        "ogSiteName": { "type": "string" },
-                        "twitterCard": { "type": "string" },
-                        "twitterSite": { "type": "string" },
-                        "twitterCreator": { "type": "string" },
-                        "twitterTitle": { "type": "string" },
-                        "twitterDescription": { "type": "string" },
-                        "twitterImage": { "type": "string", "format": "uri" },
-                        "isIframeAllowed": { "type": "boolean" }
-                      }
-                    },
-                    "cleanedHtml": { "type": "string" },
-                    "metaFiles": {
-                      "type": "object",
-                      "properties": {
-                        "robots": { "type": "string" },
-                        "sitemapXML": { "type": "string" }
-                      }
-                    },
-                    "cached": { "type": "boolean" },
-                    "executionTime": { "type": "string" },
-                    "ancestors": {
-                      "type": "array",
-                      "items": { "type": "string" }
-                    },
-                    "skippedUrls": {
-                      "$ref": "#/components/schemas/SkippedLinks"
-                    },
-                    "extractedLinks": {
-                      "$ref": "#/components/schemas/ExtractedLinks"
-                    },
-                    "tree": { "$ref": "#/components/schemas/LinksTree" }
-                  },
-                  "required": ["success", "targetUrl", "timestamp", "cached"]
+                  "$ref": "#/components/schemas/LinksPostSuccessResponse"
                 }
               }
             }
@@ -580,15 +1134,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "enum": [false] },
-                    "targetUrl": { "type": "string" },
-                    "timestamp": { "type": "string" },
-                    "error": { "type": "string" },
-                    "tree": { "$ref": "#/components/schemas/LinksTree" }
-                  },
-                  "required": ["success", "targetUrl", "timestamp", "error"]
+                  "$ref": "#/components/schemas/LinksPostErrorResponse"
                 }
               }
             }
@@ -596,6 +1142,7 @@
         }
       },
       "post": {
+        "operationId": "extractLinksPost",
         "description": "Returning extracted links sitemap results for the request URL.",
         "tags": ["Deepcrawl Links Extractor API"],
         "requestBody": {
@@ -604,79 +1151,20 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "url": {
-                    "type": "string",
-                    "description": "The valid URL to extract links from. This URL will be validated and normalized.",
-                    "examples": ["example.com", "https://example.com"]
-                  },
-                  "tree": { "type": ["boolean", "null"] },
-                  "metadata": { "type": ["boolean", "null"] },
-                  "cleanedHtml": { "type": ["boolean", "null"] },
-                  "robots": { "type": ["boolean", "null"] },
-                  "sitemapXML": { "type": ["boolean", "null"] },
-                  "folderFirst": { "type": ["boolean", "null"] },
-                  "linksOrder": {
-                    "type": "string",
-                    "enum": ["page", "alphabetical"]
-                  },
-                  "extractedLinks": { "type": ["boolean", "null"] },
-                  "subdomainAsRootUrl": { "type": ["boolean", "null"] },
-                  "metadataOptions": {
+                "allOf": [
+                  { "$ref": "#/components/schemas/LinksOptions" },
+                  {
                     "type": "object",
                     "properties": {
-                      "title": { "type": "boolean", "default": true },
-                      "description": { "type": "boolean", "default": true },
-                      "language": { "type": "boolean", "default": true },
-                      "canonical": { "type": "boolean", "default": true },
-                      "robots": { "type": "boolean", "default": true },
-                      "author": { "type": "boolean", "default": true },
-                      "keywords": { "type": "boolean", "default": true },
-                      "favicon": { "type": "boolean", "default": true },
-                      "openGraph": { "type": "boolean", "default": true },
-                      "twitter": { "type": "boolean", "default": true },
-                      "isIframeAllowed": { "type": "boolean", "default": true }
-                    }
-                  },
-                  "linksOptions": {
-                    "type": "object",
-                    "properties": {
-                      "includeExternal": { "type": "boolean" },
-                      "includeMedia": { "type": "boolean" },
-                      "excludePatterns": {
-                        "type": "array",
-                        "items": { "type": "string" }
-                      },
-                      "removeQueryParams": { "type": "boolean" }
-                    },
-                    "additionalProperties": false
-                  },
-                  "cleanedHtmlOptions": {
-                    "type": "object",
-                    "properties": {
-                      "allowedHTMLTags": {
-                        "type": "array",
-                        "items": { "type": "string" }
-                      },
-                      "disallowedHTMLTags": {
-                        "type": "array",
-                        "items": { "type": "string" }
-                      },
-                      "extractMainContent": {
-                        "type": "boolean",
-                        "default": true
-                      },
-                      "documentBaseUrl": { "type": "string" },
-                      "removeBase64Images": {
-                        "type": "boolean",
-                        "default": true
+                      "url": {
+                        "type": "string",
+                        "description": "The valid URL to extract links from. This URL will be validated and normalized.",
+                        "examples": ["example.com", "https://example.com"]
                       }
-                    },
-                    "additionalProperties": false
+                    }
                   }
-                },
-                "required": ["url"]
+                ],
+                "example": { "url": "https://example.com" }
               }
             }
           }
@@ -687,66 +1175,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "enum": [true] },
-                    "targetUrl": { "type": "string" },
-                    "timestamp": { "type": "string" },
-                    "title": { "type": "string" },
-                    "description": { "type": "string" },
-                    "metadata": {
-                      "type": "object",
-                      "properties": {
-                        "title": { "type": "string" },
-                        "description": { "type": "string" },
-                        "language": { "type": "string" },
-                        "canonical": { "type": "string", "format": "uri" },
-                        "robots": { "type": "string" },
-                        "author": { "type": "string" },
-                        "keywords": {
-                          "type": "array",
-                          "items": { "type": "string" }
-                        },
-                        "lastModified": { "type": ["string", "null"] },
-                        "favicon": { "type": "string", "format": "uri" },
-                        "ogTitle": { "type": "string" },
-                        "ogDescription": { "type": "string" },
-                        "ogImage": { "type": "string", "format": "uri" },
-                        "ogUrl": { "type": "string", "format": "uri" },
-                        "ogType": { "type": "string" },
-                        "ogSiteName": { "type": "string" },
-                        "twitterCard": { "type": "string" },
-                        "twitterSite": { "type": "string" },
-                        "twitterCreator": { "type": "string" },
-                        "twitterTitle": { "type": "string" },
-                        "twitterDescription": { "type": "string" },
-                        "twitterImage": { "type": "string", "format": "uri" },
-                        "isIframeAllowed": { "type": "boolean" }
-                      }
-                    },
-                    "cleanedHtml": { "type": "string" },
-                    "metaFiles": {
-                      "type": "object",
-                      "properties": {
-                        "robots": { "type": "string" },
-                        "sitemapXML": { "type": "string" }
-                      }
-                    },
-                    "cached": { "type": "boolean" },
-                    "executionTime": { "type": "string" },
-                    "ancestors": {
-                      "type": "array",
-                      "items": { "type": "string" }
-                    },
-                    "skippedUrls": {
-                      "$ref": "#/components/schemas/SkippedLinks"
-                    },
-                    "extractedLinks": {
-                      "$ref": "#/components/schemas/ExtractedLinks"
-                    },
-                    "tree": { "$ref": "#/components/schemas/LinksTree" }
-                  },
-                  "required": ["success", "targetUrl", "timestamp", "cached"]
+                  "$ref": "#/components/schemas/LinksPostSuccessResponse"
                 }
               }
             }
@@ -756,15 +1185,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "enum": [false] },
-                    "targetUrl": { "type": "string" },
-                    "timestamp": { "type": "string" },
-                    "error": { "type": "string" },
-                    "tree": { "$ref": "#/components/schemas/LinksTree" }
-                  },
-                  "required": ["success", "targetUrl", "timestamp", "error"]
+                  "$ref": "#/components/schemas/LinksPostErrorResponse"
                 }
               }
             }

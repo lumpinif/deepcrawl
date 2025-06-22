@@ -6,15 +6,59 @@ import { z } from '@hono/zod-openapi';
  */
 export const HTMLCleaningOptionsSchema = z
   .object({
-    allowedHTMLTags: z.array(z.string()).optional(),
-    disallowedHTMLTags: z.array(z.string()).optional(),
-    extractMainContent: z.boolean().optional().default(true),
+    allowedHTMLTags: z
+      .array(z.string())
+      .optional()
+      .openapi({
+        description: 'HTML tags to preserve in the output (whitelist)',
+        example: ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'strong', 'em'],
+      }),
+    disallowedHTMLTags: z
+      .array(z.string())
+      .optional()
+      .openapi({
+        description: 'HTML tags to remove from the output (blacklist)',
+        example: ['script', 'style', 'iframe', 'form', 'button'],
+      }),
+    extractMainContent: z.boolean().optional().default(true).openapi({
+      description:
+        'Whether to extract only the main content area, removing navigation, footers, etc.',
+      example: true,
+    }),
     /* Deprecated property, will be removed in future. add baseUrl to HTMLCleaning as a required parameter instead*/
-    documentBaseUrl: z.string().optional(),
-    removeBase64Images: z.boolean().optional().default(true),
+    documentBaseUrl: z.string().optional().openapi({
+      description:
+        'Base URL for resolving relative URLs (deprecated, use baseUrl parameter instead)',
+      example: 'https://example.com',
+      deprecated: true,
+    }),
+    removeBase64Images: z.boolean().optional().default(true).openapi({
+      description:
+        'Whether to remove base64 encoded images to reduce payload size',
+      example: true,
+    }),
   })
   .strict()
-  .openapi('HTMLCleaningOptions');
+  .openapi('HTMLCleaningOptions', {
+    example: {
+      allowedHTMLTags: [
+        'p',
+        'h1',
+        'h2',
+        'h3',
+        'ul',
+        'ol',
+        'li',
+        'a',
+        'strong',
+        'em',
+      ],
+      disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
+      extractMainContent: true,
+      documentBaseUrl: 'https://example.com',
+      removeBase64Images: true,
+    },
+  });
 
 /**
  * Configuration options for HTML content cleaning and sanitization.

@@ -30,6 +30,32 @@ export default function configureOpenAPI(app: AppOpenAPI) {
         Bearer: [],
       },
     ],
+    tags: [
+      {
+        name: 'Deepcrawl API Root',
+        description: 'Root API endpoints',
+      },
+      {
+        name: 'Deepcrawl Read URL API',
+        description:
+          'API endpoints for reading and extracting content from URLs',
+      },
+      {
+        name: 'Deepcrawl Links Extractor API',
+        description: 'API endpoints for extracting links and building sitemaps',
+      },
+    ],
+    'x-speakeasy-retries': {
+      strategy: 'backoff',
+      backoff: {
+        initialInterval: 500,
+        maxInterval: 60000,
+        maxElapsedTime: 3600000,
+        exponent: 1.5,
+      },
+      statusCodes: ['5XX'],
+      retryConnectionErrors: true,
+    },
   }));
 
   app.get(

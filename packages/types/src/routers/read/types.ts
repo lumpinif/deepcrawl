@@ -1,3 +1,4 @@
+import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
 import { MetadataOptionsSchema } from '@deepcrawl/types/services/metadata';
 import { ScrapedDataSchema } from '@deepcrawl/types/services/scrape';
 import { z } from '@hono/zod-openapi';
@@ -8,7 +9,10 @@ export const ReadOptionsSchema = z
      * The URL to scrape.
      * Must be a valid URL string.
      */
-    url: z.string(),
+    url: z.string().openapi({
+      description: 'The URL to read and extract content from',
+      example: 'https://example.com',
+    }),
 
     /**
      * Whether to extract metadata from the page.
@@ -18,6 +22,7 @@ export const ReadOptionsSchema = z
     metadata: z.coerce.boolean().optional().default(true).openapi({
       default: true,
       description: 'Whether to extract metadata from the page.',
+      example: true,
     }),
 
     /**
@@ -28,6 +33,7 @@ export const ReadOptionsSchema = z
     markdown: z.coerce.boolean().optional().default(true).openapi({
       default: true,
       description: 'Whether to extract markdown from the page.',
+      example: true,
     }),
 
     /**
@@ -37,6 +43,7 @@ export const ReadOptionsSchema = z
     cleanedHtml: z.coerce.boolean().optional().default(false).openapi({
       default: false,
       description: 'Whether to return cleaned HTML.',
+      example: false,
     }),
 
     /**
@@ -46,6 +53,7 @@ export const ReadOptionsSchema = z
     robots: z.coerce.boolean().optional().default(false).openapi({
       default: false,
       description: 'Whether to fetch and parse robots.txt.',
+      example: false,
     }),
 
     /**
@@ -55,6 +63,7 @@ export const ReadOptionsSchema = z
     rawHtml: z.coerce.boolean().optional().default(false).openapi({
       default: false,
       description: 'Whether to return raw HTML.',
+      example: false,
     }),
 
     /**
@@ -71,7 +80,11 @@ export const ReadOptionsSchema = z
      */
     // cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
   })
-  .openapi('ReadOptions');
+  .openapi('ReadOptions', {
+    example: {
+      url: 'https://example.com',
+    },
+  });
 
 export const ReadResponseBaseSchema = z.object({
   success: z.boolean(),
@@ -83,24 +96,38 @@ export const ReadResponseBaseSchema = z.object({
   targetUrl: z.string(),
 });
 
-export const ReadErrorResponseSchema = ReadResponseBaseSchema.omit({
-  cached: true,
-}).extend({
-  success: z.literal(false),
-  error: z.string(),
-});
+export const ReadErrorResponseSchema = BaseErrorResponseSchema;
 
 export const MetricsSchema = z
   .object({
-    readableDuration: z.string(),
-    duration: z.number(),
-    startTime: z.number(),
-    endTime: z.number(),
+    readableDuration: z.string().openapi({
+      description: 'Human-readable representation of the operation duration',
+      example: '1.2s',
+    }),
+    duration: z.number().openapi({
+      description: 'Duration of the operation in milliseconds',
+      example: 1200,
+    }),
+    startTime: z.number().openapi({
+      description: 'Timestamp in milliseconds when the operation started',
+      example: 1704067800000,
+    }),
+    endTime: z.number().openapi({
+      description: 'Timestamp in milliseconds when the operation finished',
+      example: 1704067801200,
+    }),
   })
-  .openapi('Metrics');
+  .openapi('Metrics', {
+    example: {
+      readableDuration: '1.2s',
+      duration: 1200,
+      startTime: 1704067800000,
+      endTime: 1704067801200,
+    },
+  });
 
 export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
-  success: z.literal(true), // override to enforce success: true
+  success: z.literal(true).openapi({ type: 'boolean', example: true }), // override to enforce success: true
 })
   .merge(ScrapedDataSchema.omit({ rawHtml: true }))
   .extend({

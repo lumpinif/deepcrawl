@@ -17,6 +17,7 @@ const tags = ['Deepcrawl Links Extractor API'];
 export const linksGETRoute = createRoute({
   path: '/',
   method: 'get',
+  operationId: 'extractLinksGet',
   description: 'Returning extracted links sitemap results for the request URL.',
   request: {
     query: LinksOptionsSchema,
@@ -37,6 +38,7 @@ export const linksGETRoute = createRoute({
 export const linksPOSTRoute = createRoute({
   path: '/',
   method: 'post',
+  operationId: 'extractLinksPost',
   description: 'Returning extracted links sitemap results for the request URL.',
   request: {
     body: jsonContentRequired(

@@ -1,10 +1,25 @@
 import { PageMetadataSchema } from '@deepcrawl/types/services/metadata/types';
 import { z } from '@hono/zod-openapi';
 
-export const MetaFilesSchema = z.object({
-  robots: z.string().optional(),
-  sitemapXML: z.string().optional(),
-});
+export const MetaFilesSchema = z
+  .object({
+    robots: z.string().optional().openapi({
+      description: 'Content of the robots.txt file',
+      example: 'User-agent: *\nAllow: /',
+    }),
+    sitemapXML: z.string().optional().openapi({
+      description: 'Content of the sitemap.xml file',
+      example:
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>',
+    }),
+  })
+  .openapi('MetaFiles', {
+    example: {
+      robots: 'User-agent: *\nAllow: /',
+      sitemapXML:
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>',
+    },
+  });
 
 /**
  * Contains robots.txt and sitemap.xml content.
