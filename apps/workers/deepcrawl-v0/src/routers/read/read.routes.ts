@@ -12,13 +12,15 @@ import {
   ReadSuccessResponseSchema,
 } from '@deepcrawl/types/index';
 
-const tags = ['Deepcrawl Read URL API'];
+const tags = ['Read Website'];
 
 export const readGETRoute = createRoute({
   path: '/',
   method: 'get',
   operationId: 'getMarkdown',
   description: 'Directly return page markdown content from the request URL.',
+  'x-speakeasy-name-override': 'getMarkdown',
+  'x-speakeasy-group': 'deepcrawl',
   request: {
     query: ReadOptionsSchema.pick({
       url: true,
@@ -50,6 +52,8 @@ export const readPOSTRoute = createRoute({
   method: 'post',
   operationId: 'readUrl',
   description: 'Returning full result object from the request URL.',
+  'x-speakeasy-name-override': 'readUrl',
+  'x-speakeasy-group': 'deepcrawl',
   request: {
     body: jsonContentRequired(
       ReadOptionsSchema,

@@ -32,16 +32,16 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     ],
     tags: [
       {
-        name: 'Deepcrawl API Root',
-        description: 'Root API endpoints',
+        name: 'API Root',
+        description: 'Root API endpoints and system information',
       },
       {
-        name: 'Deepcrawl Read URL API',
+        name: 'Read Website',
         description:
           'API endpoints for reading and extracting content from URLs',
       },
       {
-        name: 'Deepcrawl Links Extractor API',
+        name: 'Extract Links',
         description: 'API endpoints for extracting links and building sitemaps',
       },
     ],

@@ -9,13 +9,16 @@
   ],
   "security": [{ "Bearer": [] }],
   "tags": [
-    { "name": "Deepcrawl API Root", "description": "Root API endpoints" },
     {
-      "name": "Deepcrawl Read URL API",
+      "name": "API Root",
+      "description": "Root API endpoints and system information"
+    },
+    {
+      "name": "Read Website",
       "description": "API endpoints for reading and extracting content from URLs"
     },
     {
-      "name": "Deepcrawl Links Extractor API",
+      "name": "Extract Links",
       "description": "API endpoints for extracting links and building sitemaps"
     }
   ],
@@ -1072,8 +1075,10 @@
   "paths": {
     "/": {
       "get": {
-        "tags": ["Deepcrawl API Root"],
+        "tags": ["API Root"],
         "operationId": "getApiRoot",
+        "x-speakeasy-name-override": "getApiInfo",
+        "x-speakeasy-group": "deepcrawl",
         "security": [],
         "responses": {
           "200": {
@@ -1104,7 +1109,9 @@
       "get": {
         "operationId": "getMarkdown",
         "description": "Directly return page markdown content from the request URL.",
-        "tags": ["Deepcrawl Read URL API"],
+        "x-speakeasy-name-override": "getMarkdown",
+        "x-speakeasy-group": "deepcrawl",
+        "tags": ["Read Website"],
         "parameters": [
           {
             "schema": {
@@ -1142,7 +1149,9 @@
       "post": {
         "operationId": "readUrl",
         "description": "Returning full result object from the request URL.",
-        "tags": ["Deepcrawl Read URL API"],
+        "x-speakeasy-name-override": "readUrl",
+        "x-speakeasy-group": "deepcrawl",
+        "tags": ["Read Website"],
         "requestBody": {
           "description": "/read POST request body, read options schema",
           "required": true,
@@ -1188,159 +1197,12 @@
       }
     },
     "/links": {
-      "get": {
-        "operationId": "extractLinksGet",
-        "description": "Returning extracted links sitemap results for the request URL.",
-        "tags": ["Deepcrawl Links Extractor API"],
-        "parameters": [
-          {
-            "schema": {
-              "type": "string",
-              "description": "The valid URL to extract links from. This URL will be validated and normalized.",
-              "examples": ["example.com", "https://example.com"]
-            },
-            "required": true,
-            "name": "url",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": ["boolean", "null"],
-              "default": true,
-              "description": "Whether to build a site map tree.",
-              "example": true
-            },
-            "required": false,
-            "name": "tree",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": ["boolean", "null"],
-              "default": true,
-              "description": "Whether to extract metadata from the page.",
-              "example": true
-            },
-            "required": false,
-            "name": "metadata",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": ["boolean", "null"],
-              "default": false,
-              "description": "Whether to return cleaned HTML.",
-              "example": false
-            },
-            "required": false,
-            "name": "cleanedHtml",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": ["boolean", "null"],
-              "default": false,
-              "description": "Whether to fetch and parse robots.txt.",
-              "example": false
-            },
-            "required": false,
-            "name": "robots",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": ["boolean", "null"],
-              "default": false,
-              "description": "( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.",
-              "deprecated": true,
-              "example": false
-            },
-            "required": false,
-            "name": "sitemapXML",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": ["boolean", "null"],
-              "description": "Whether to place folders before leaf nodes in the tree.",
-              "example": true
-            },
-            "required": false,
-            "name": "folderFirst",
-            "in": "query"
-          },
-          {
-            "schema": { "$ref": "#/components/schemas/LinksOrder" },
-            "required": false,
-            "name": "linksOrder",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": ["boolean", "null"],
-              "description": "Whether to include extracted links for each node in the tree.",
-              "example": true
-            },
-            "required": false,
-            "name": "extractedLinks",
-            "in": "query"
-          },
-          {
-            "schema": {
-              "type": ["boolean", "null"],
-              "description": "Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL.",
-              "example": false
-            },
-            "required": false,
-            "name": "subdomainAsRootUrl",
-            "in": "query"
-          },
-          {
-            "schema": { "$ref": "#/components/schemas/MetadataOptions" },
-            "required": false,
-            "name": "metadataOptions",
-            "in": "query"
-          },
-          {
-            "schema": { "$ref": "#/components/schemas/LinkExtractionOptions" },
-            "required": false,
-            "name": "linksOptions",
-            "in": "query"
-          },
-          {
-            "schema": { "$ref": "#/components/schemas/HTMLCleaningOptions" },
-            "required": false,
-            "name": "cleanedHtmlOptions",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Extracted links sitemap results for request URL",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinksPostSuccessResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Bad request error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LinksPostErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "operationId": "extractLinksPost",
         "description": "Returning extracted links sitemap results for the request URL.",
-        "tags": ["Deepcrawl Links Extractor API"],
+        "x-speakeasy-name-override": "extractLinks",
+        "x-speakeasy-group": "deepcrawl",
+        "tags": ["Extract Links"],
         "requestBody": {
           "description": "/links POST request body, links options schema",
           "required": true,

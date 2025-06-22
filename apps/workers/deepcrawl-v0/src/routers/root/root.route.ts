@@ -8,10 +8,12 @@ import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schema
 
 const router = createRouter().openapi(
   createRoute({
-    tags: ['Deepcrawl API Root'],
+    tags: ['API Root'],
     method: 'get',
     path: '/',
     operationId: 'getApiRoot',
+    'x-speakeasy-name-override': 'getApiInfo',
+    'x-speakeasy-group': 'deepcrawl',
     security: [],
     responses: {
       [HttpStatusCodes.OK]: jsonContent(

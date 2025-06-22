@@ -12,13 +12,15 @@ import {
   LinksPostSuccessResponseSchema,
 } from '@deepcrawl/types/index';
 
-const tags = ['Deepcrawl Links Extractor API'];
+const tags = ['Extract Links'];
 
 export const linksGETRoute = createRoute({
   path: '/',
   method: 'get',
   operationId: 'extractLinksGet',
   description: 'Returning extracted links sitemap results for the request URL.',
+  'x-speakeasy-name-override': 'getLinks',
+  'x-speakeasy-group': 'deepcrawl',
   request: {
     query: LinksOptionsSchema,
   },
@@ -40,6 +42,8 @@ export const linksPOSTRoute = createRoute({
   method: 'post',
   operationId: 'extractLinksPost',
   description: 'Returning extracted links sitemap results for the request URL.',
+  'x-speakeasy-name-override': 'extractLinks',
+  'x-speakeasy-group': 'deepcrawl',
   request: {
     body: jsonContentRequired(
       LinksOptionsSchema,
@@ -63,7 +67,7 @@ export type LinksGETRoute = typeof linksGETRoute;
 export type LinksPOSTRoute = typeof linksPOSTRoute;
 
 const router = createRouter()
-  .openapi(linksGETRoute, handlers.linksGET)
+  // .openapi(linksGETRoute, handlers.linksGET)
   .openapi(linksPOSTRoute, handlers.linksPOST);
 
 export default router;
