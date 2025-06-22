@@ -65,3 +65,6 @@ lerna-debug.log*
 # Misc
 .DS_Store
 *.pem
+
+#todo
+TODO.md
