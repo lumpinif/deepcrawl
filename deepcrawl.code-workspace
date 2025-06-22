@@ -10,11 +10,11 @@
     },
     {
       "name": "🖥️ app",
-      "path": "./apps/dashboard"
+      "path": "./apps/app"
     },
     {
-      "name": "🔌 js-sdk",
-      "path": "./apps/js-sdk"
+      "name": "🔌 sdks",
+      "path": "./apps/sdks"
     },
     {
       "name": "📦 packages",
