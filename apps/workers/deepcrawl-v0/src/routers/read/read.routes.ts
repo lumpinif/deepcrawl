@@ -31,6 +31,8 @@ export const readGETRoute = createRoute({
         'text/markdown': {
           schema: {
             type: 'string',
+            example:
+              '# Example Page\n\nThis is an example markdown content extracted from the webpage.\n\n## Main Content\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
           },
         },
       },

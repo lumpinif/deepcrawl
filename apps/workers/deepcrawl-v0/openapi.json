@@ -252,6 +252,68 @@
           "endTime": 1704067801200
         }
       },
+      "ReadSuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "cached": {
+            "type": "boolean",
+            "default": false,
+            "description": "The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application."
+          },
+          "targetUrl": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "metadata": { "$ref": "#/components/schemas/PageMetadata" },
+          "cleanedHtml": { "type": "string" },
+          "metaFiles": { "$ref": "#/components/schemas/MetaFiles" },
+          "markdown": {
+            "type": "string",
+            "description": "Markdown content of the page."
+          },
+          "rawHtml": {
+            "type": "string",
+            "description": "Raw HTML content of the page."
+          },
+          "metrics": { "$ref": "#/components/schemas/Metrics" }
+        },
+        "required": ["success", "targetUrl", "title", "description"],
+        "example": {
+          "success": true,
+          "cached": false,
+          "targetUrl": "https://example.com/article",
+          "title": "Example Article",
+          "description": "This is an example article description",
+          "markdown": "# Example Article\n\nThis is the main content of the article.\n\n## Introduction\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "metadata": {
+            "title": "Example Article",
+            "description": "This is an example article description",
+            "language": "en",
+            "canonical": "https://example.com/article",
+            "robots": "index, follow",
+            "author": "John Doe",
+            "keywords": ["example", "article", "demo"],
+            "favicon": "https://example.com/favicon.ico",
+            "ogTitle": "Example Article",
+            "ogDescription": "This is an example article description",
+            "ogImage": "https://example.com/og-image.jpg",
+            "ogUrl": "https://example.com/article",
+            "ogType": "article",
+            "ogSiteName": "Example Site",
+            "twitterCard": "summary_large_image",
+            "twitterTitle": "Example Article",
+            "twitterDescription": "This is an example article description",
+            "twitterImage": "https://example.com/twitter-image.jpg",
+            "isIframeAllowed": true
+          },
+          "metrics": {
+            "readableDuration": "1.2s",
+            "duration": 1200,
+            "startTime": 1704067800000,
+            "endTime": 1704067801200
+          }
+        }
+      },
       "MetadataOptions": {
         "type": "object",
         "properties": {
@@ -693,7 +755,52 @@
             ]
           }
         },
-        "required": ["success", "targetUrl", "timestamp", "cached"]
+        "required": ["success", "targetUrl", "timestamp", "cached"],
+        "example": {
+          "success": true,
+          "targetUrl": "https://example.com",
+          "timestamp": "2024-01-15T10:30:00.000Z",
+          "cached": false,
+          "executionTime": "1.2s",
+          "title": "Example Website",
+          "description": "Welcome to our example website",
+          "ancestors": ["https://example.com"],
+          "extractedLinks": {
+            "internal": [
+              "https://example.com/about",
+              "https://example.com/contact"
+            ],
+            "external": ["https://external-site.com/reference"],
+            "media": {
+              "images": ["https://example.com/logo.png"],
+              "videos": [],
+              "documents": ["https://example.com/brochure.pdf"]
+            }
+          },
+          "skippedUrls": {
+            "internal": [
+              {
+                "url": "https://example.com/admin",
+                "reason": "Blocked by robots.txt"
+              }
+            ]
+          },
+          "tree": {
+            "url": "https://example.com",
+            "rootUrl": "https://example.com",
+            "name": "Home",
+            "totalUrls": 25,
+            "executionTime": "1.2s",
+            "lastUpdated": "2024-01-15T10:30:00.000Z",
+            "children": [
+              {
+                "url": "https://example.com/about",
+                "name": "About",
+                "lastUpdated": "2024-01-15T10:30:05.000Z"
+              }
+            ]
+          }
+        }
       },
       "LinksPostErrorResponse": {
         "allOf": [
@@ -721,6 +828,12 @@
           "targetUrl": "https://example.com/article",
           "error": "Failed to fetch: 404 Not Found"
         }
+      },
+      "LinksOrder": {
+        "type": "string",
+        "enum": ["page", "alphabetical"],
+        "description": "How to order links within each folder: \"page\" (preserve original order) or \"alphabetical\" (sort A→Z by URL).",
+        "example": "alphabetical"
       },
       "LinkExtractionOptions": {
         "type": "object",
@@ -853,10 +966,22 @@
             "description": "( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.",
             "deprecated": true
           },
-          "folderFirst": { "type": ["boolean", "null"] },
-          "linksOrder": { "type": "string", "enum": ["page", "alphabetical"] },
-          "extractedLinks": { "type": ["boolean", "null"] },
-          "subdomainAsRootUrl": { "type": ["boolean", "null"] },
+          "folderFirst": {
+            "type": ["boolean", "null"],
+            "description": "Whether to place folders before leaf nodes in the tree.",
+            "example": true
+          },
+          "linksOrder": { "$ref": "#/components/schemas/LinksOrder" },
+          "extractedLinks": {
+            "type": ["boolean", "null"],
+            "description": "Whether to include extracted links for each node in the tree.",
+            "example": true
+          },
+          "subdomainAsRootUrl": {
+            "type": ["boolean", "null"],
+            "description": "Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL.",
+            "example": false
+          },
           "metadataOptions": { "$ref": "#/components/schemas/MetadataOptions" },
           "linksOptions": {
             "$ref": "#/components/schemas/LinkExtractionOptions"
@@ -922,7 +1047,14 @@
         "responses": {
           "200": {
             "description": "The page markdown content from the request URL",
-            "content": { "text/markdown": { "schema": { "type": "string" } } }
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string",
+                  "example": "# Example Page\n\nThis is an example markdown content extracted from the webpage.\n\n## Main Content\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit."
+                }
+              }
+            }
           },
           "500": {
             "description": "Bad request error",
@@ -967,33 +1099,7 @@
             "description": "Read options schema",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "example": true },
-                    "cached": {
-                      "type": "boolean",
-                      "default": false,
-                      "description": "The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application."
-                    },
-                    "targetUrl": { "type": "string" },
-                    "title": { "type": "string" },
-                    "description": { "type": "string" },
-                    "metadata": { "$ref": "#/components/schemas/PageMetadata" },
-                    "cleanedHtml": { "type": "string" },
-                    "metaFiles": { "$ref": "#/components/schemas/MetaFiles" },
-                    "markdown": {
-                      "type": "string",
-                      "description": "Markdown content of the page."
-                    },
-                    "rawHtml": {
-                      "type": "string",
-                      "description": "Raw HTML content of the page."
-                    },
-                    "metrics": { "$ref": "#/components/schemas/Metrics" }
-                  },
-                  "required": ["success", "targetUrl", "title", "description"]
-                }
+                "schema": { "$ref": "#/components/schemas/ReadSuccessResponse" }
               }
             }
           },
@@ -1076,25 +1182,37 @@
             "in": "query"
           },
           {
-            "schema": { "type": ["boolean", "null"] },
+            "schema": {
+              "type": ["boolean", "null"],
+              "description": "Whether to place folders before leaf nodes in the tree.",
+              "example": true
+            },
             "required": false,
             "name": "folderFirst",
             "in": "query"
           },
           {
-            "schema": { "type": "string", "enum": ["page", "alphabetical"] },
+            "schema": { "$ref": "#/components/schemas/LinksOrder" },
             "required": false,
             "name": "linksOrder",
             "in": "query"
           },
           {
-            "schema": { "type": ["boolean", "null"] },
+            "schema": {
+              "type": ["boolean", "null"],
+              "description": "Whether to include extracted links for each node in the tree.",
+              "example": true
+            },
             "required": false,
             "name": "extractedLinks",
             "in": "query"
           },
           {
-            "schema": { "type": ["boolean", "null"] },
+            "schema": {
+              "type": ["boolean", "null"],
+              "description": "Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL.",
+              "example": false
+            },
             "required": false,
             "name": "subdomainAsRootUrl",
             "in": "query"

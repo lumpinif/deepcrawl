@@ -140,6 +140,44 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
     metrics: MetricsSchema.optional().openapi({
       description: 'Metrics for the read operation.',
     }),
+  })
+  .openapi('ReadSuccessResponse', {
+    example: {
+      success: true,
+      cached: false,
+      targetUrl: 'https://example.com/article',
+      title: 'Example Article',
+      description: 'This is an example article description',
+      markdown:
+        '# Example Article\n\nThis is the main content of the article.\n\n## Introduction\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      metadata: {
+        title: 'Example Article',
+        description: 'This is an example article description',
+        language: 'en',
+        canonical: 'https://example.com/article',
+        robots: 'index, follow',
+        author: 'John Doe',
+        keywords: ['example', 'article', 'demo'],
+        favicon: 'https://example.com/favicon.ico',
+        ogTitle: 'Example Article',
+        ogDescription: 'This is an example article description',
+        ogImage: 'https://example.com/og-image.jpg',
+        ogUrl: 'https://example.com/article',
+        ogType: 'article',
+        ogSiteName: 'Example Site',
+        twitterCard: 'summary_large_image',
+        twitterTitle: 'Example Article',
+        twitterDescription: 'This is an example article description',
+        twitterImage: 'https://example.com/twitter-image.jpg',
+        isIframeAllowed: true,
+      },
+      metrics: {
+        readableDuration: '1.2s',
+        duration: 1200,
+        startTime: 1704067800000,
+        endTime: 1704067801200,
+      },
+    },
   });
 
 type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {

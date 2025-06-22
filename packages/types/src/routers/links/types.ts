@@ -42,6 +42,18 @@ export const ContentOptionsSchema = z
   .openapi('ContentOptions');
 
 /**
+ * Schema for links order enum.
+ * Defines how links should be ordered within folders.
+ */
+export const LinksOrderSchema = z
+  .enum(['page', 'alphabetical'])
+  .openapi('LinksOrder', {
+    description:
+      'How to order links within each folder: "page" (preserve original order) or "alphabetical" (sort A→Z by URL).',
+    example: 'alphabetical',
+  });
+
+/**
  * Schema for tree options.
  * Defines options for building a site map tree.
  *
@@ -54,36 +66,53 @@ export const TreeOptionsSchema = z
      * Whether to place folders before leaf nodes in the tree.
      * Default: true
      */
-    folderFirst: z.preprocess(
-      (val) => val !== 'false' && val !== false,
-      z.boolean().optional(),
-    ),
+    folderFirst: z
+      .preprocess(
+        (val) => val !== 'false' && val !== false,
+        z.boolean().optional(),
+      )
+      .openapi({
+        description: 'Whether to place folders before leaf nodes in the tree.',
+        example: true,
+      }),
     /**
      * How to order links within each folder:
      *  - 'page'        preserve the original document order
      *  - 'alphabetical'  sort A→Z by URL
      * Default: 'page'
      */
-    linksOrder: z.enum(['page', 'alphabetical']).optional(),
+    linksOrder: LinksOrderSchema.optional(),
 
     /**
      * Whether to include extracted links for each node in the tree.
      * Default: true
      */
-    extractedLinks: z.preprocess(
-      (val) => val !== 'false' && val !== false,
-      z.boolean().optional(),
-    ),
+    extractedLinks: z
+      .preprocess(
+        (val) => val !== 'false' && val !== false,
+        z.boolean().optional(),
+      )
+      .openapi({
+        description:
+          'Whether to include extracted links for each node in the tree.',
+        example: true,
+      }),
 
     /**
      * Whether to exclude subdomain as root URL.
      * Default: true
      * e.g., if false: rootUrl: https://swr.vercel.app -> https://vercel.app
      */
-    subdomainAsRootUrl: z.preprocess(
-      (val) => val !== 'false' && val !== false,
-      z.boolean().optional(),
-    ),
+    subdomainAsRootUrl: z
+      .preprocess(
+        (val) => val !== 'false' && val !== false,
+        z.boolean().optional(),
+      )
+      .openapi({
+        description:
+          'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL.',
+        example: false,
+      }),
   })
   .openapi('TreeOptions');
 
@@ -413,7 +442,50 @@ export const LinksPostSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
         anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }],
       }),
   })
-  .openapi('LinksPostSuccessResponse');
+  .openapi('LinksPostSuccessResponse', {
+    example: {
+      success: true,
+      targetUrl: 'https://example.com',
+      timestamp: '2024-01-15T10:30:00.000Z',
+      cached: false,
+      executionTime: '1.2s',
+      title: 'Example Website',
+      description: 'Welcome to our example website',
+      ancestors: ['https://example.com'],
+      extractedLinks: {
+        internal: ['https://example.com/about', 'https://example.com/contact'],
+        external: ['https://external-site.com/reference'],
+        media: {
+          images: ['https://example.com/logo.png'],
+          videos: [],
+          documents: ['https://example.com/brochure.pdf'],
+        },
+      },
+      skippedUrls: {
+        internal: [
+          {
+            url: 'https://example.com/admin',
+            reason: 'Blocked by robots.txt',
+          },
+        ],
+      },
+      tree: {
+        url: 'https://example.com',
+        rootUrl: 'https://example.com',
+        name: 'Home',
+        totalUrls: 25,
+        executionTime: '1.2s',
+        lastUpdated: '2024-01-15T10:30:00.000Z',
+        children: [
+          {
+            url: 'https://example.com/about',
+            name: 'About',
+            lastUpdated: '2024-01-15T10:30:05.000Z',
+          },
+        ],
+      },
+    },
+  });
 
 export const LinksPostErrorResponseSchema = BaseErrorResponseSchema.extend({
   timestamp: z.string().openapi({
