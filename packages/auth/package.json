@@ -7,8 +7,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "check": "biome check --write && pnpm typecheck",
-    "auth:generate": "dotenv -e ../../apps/dashboard/.env.development.local -- pnpm dlx @better-auth/cli@latest generate --output ../db/src/db/schema.ts -y && pnpm biome format --write ../db/src/db/schema.ts",
-    "auth:generate:prod": "dotenv -e ../../apps/dashboard/.env -- pnpm dlx @better-auth/cli@latest generate --output ../db/src/db/schema.ts -y && pnpm biome format --write ../db/src/db/schema.ts",
+    "auth:generate": "dotenv -e ../../apps/app/.env.development.local -- pnpm dlx @better-auth/cli@latest generate --output ../db/src/db/schema.ts -y && pnpm biome format --write ../db/src/db/schema.ts",
+    "auth:generate:prod": "dotenv -e ../../apps/app/.env -- pnpm dlx @better-auth/cli@latest generate --output ../db/src/db/schema.ts -y && pnpm biome format --write ../db/src/db/schema.ts",
     "email:dev": "email dev --dir src/templates",
     "email:export": "email export --dir src/templates"
   },
