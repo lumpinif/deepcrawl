@@ -15,6 +15,7 @@
   //   "bindings": []
   // },
   "vars": {
+    "API_URL": "api.deepcrawl.dev",
     "WORKER_NODE_ENV": "production"
   },
   "env": {
@@ -35,6 +36,7 @@
         }
       ],
       "vars": {
+        "API_URL": "http://127.0.0.1:8787",
         "WORKER_NODE_ENV": "development"
       }
     },
