@@ -22,6 +22,12 @@ generation:
   sdkHooksConfigAccess: true
 typescript:
   version: 0.0.1
+  compileCommand:
+    - pnpm
+    - install
+    - and
+    - pnpm
+    - build
   additionalDependencies:
     dependencies: {}
     devDependencies: {}
