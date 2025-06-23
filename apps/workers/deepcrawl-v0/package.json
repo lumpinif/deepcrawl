@@ -39,10 +39,13 @@
     "@antfu/eslint-config": "^4.13.2",
     "@deepcrawl/typescript-config": "workspace:*",
     "@mozilla/readability": "^0.6.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "20.8.3",
     "@types/turndown": "^5.0.5",
     "eslint-plugin-format": "^1.0.1",
-    "turndown": "^7.2.0"
+    "js-yaml": "^4.1.0",
+    "turndown": "^7.2.0",
+    "wrangler": "^4.20.5"
   },
   "overrides": {
     "@types/node": "20.8.3"
