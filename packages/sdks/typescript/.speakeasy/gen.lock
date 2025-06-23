@@ -1,0 +1,189 @@
+lockVersion: 2.0.0
+id: 8b1be12b-6ec1-425e-8c7e-f2d7750d2522
+management:
+  docChecksum: 729b4f9eb9a2fb5e01bf5407c6c37389
+  docVersion: 0.0.1
+  speakeasyVersion: 1.568.0
+  generationVersion: 2.632.2
+  releaseVersion: 0.0.1
+  configChecksum: 7d4c1ddb65ad57e4ffc1a93af2ff6e37
+features:
+  typescript:
+    additionalDependencies: 0.1.0
+    constsAndDefaults: 0.1.12
+    core: 3.21.11
+    defaultEnabledRetries: 0.1.0
+    deprecations: 2.81.1
+    devContainers: 2.90.0
+    enumUnions: 0.1.0
+    envVarSecurityUsage: 0.1.2
+    globalSecurity: 2.82.13
+    globalSecurityCallbacks: 0.1.0
+    globalSecurityFlattening: 0.1.0
+    globalServerURLs: 2.82.5
+    groups: 2.81.2
+    mcpServer: 0.9.2
+    methodArguments: 0.1.2
+    nameOverrides: 2.81.2
+    nullables: 0.1.1
+    responseFormat: 0.2.3
+    retries: 2.83.0
+    sdkHooks: 0.3.0
+generatedFiles:
+  - .devcontainer/README.md
+  - .devcontainer/devcontainer.json
+  - .devcontainer/setup.sh
+  - .gitattributes
+  - .npmignore
+  - FUNCTIONS.md
+  - RUNTIMES.md
+  - USAGE.md
+  - docs/lib/utils/retryconfig.md
+  - docs/models/errors/baseerrorresponse.md
+  - docs/models/errors/linksposterrorresponse.md
+  - docs/models/extractedlinks.md
+  - docs/models/extractedlinksmedia.md
+  - docs/models/htmlcleaningoptions.md
+  - docs/models/linkextractionoptions.md
+  - docs/models/linksorder.md
+  - docs/models/linkspostsuccessresponse.md
+  - docs/models/linkstree.md
+  - docs/models/metadataoptions.md
+  - docs/models/metafiles.md
+  - docs/models/metrics.md
+  - docs/models/operations/extractlinkspostrequest.md
+  - docs/models/operations/getapirootresponse.md
+  - docs/models/operations/getmarkdownrequest.md
+  - docs/models/operations/readurlrequest.md
+  - docs/models/pagemetadata.md
+  - docs/models/readsuccessresponse.md
+  - docs/models/security.md
+  - docs/models/skippedlinks.md
+  - docs/models/skippedlinksmedia.md
+  - docs/models/skippedurl.md
+  - docs/sdks/deepcrawl/README.md
+  - docs/sdks/deepcrawlapp/README.md
+  - eslint.config.mjs
+  - jsr.json
+  - package.json
+  - src/core.ts
+  - src/funcs/deepcrawlExtractLinks.ts
+  - src/funcs/deepcrawlGetApiInfo.ts
+  - src/funcs/deepcrawlGetMarkdown.ts
+  - src/funcs/deepcrawlReadUrl.ts
+  - src/hooks/hooks.ts
+  - src/hooks/index.ts
+  - src/hooks/types.ts
+  - src/index.ts
+  - src/lib/base64.ts
+  - src/lib/config.ts
+  - src/lib/dlv.ts
+  - src/lib/encodings.ts
+  - src/lib/env.ts
+  - src/lib/files.ts
+  - src/lib/http.ts
+  - src/lib/is-plain-object.ts
+  - src/lib/logger.ts
+  - src/lib/matchers.ts
+  - src/lib/primitives.ts
+  - src/lib/retries.ts
+  - src/lib/schemas.ts
+  - src/lib/sdks.ts
+  - src/lib/security.ts
+  - src/lib/url.ts
+  - src/mcp-server/build.mts
+  - src/mcp-server/cli.ts
+  - src/mcp-server/cli/start/command.ts
+  - src/mcp-server/cli/start/impl.ts
+  - src/mcp-server/console-logger.ts
+  - src/mcp-server/extensions.ts
+  - src/mcp-server/mcp-server.ts
+  - src/mcp-server/prompts.ts
+  - src/mcp-server/resources.ts
+  - src/mcp-server/scopes.ts
+  - src/mcp-server/server.ts
+  - src/mcp-server/shared.ts
+  - src/mcp-server/tools.ts
+  - src/mcp-server/tools/deepcrawlExtractLinks.ts
+  - src/mcp-server/tools/deepcrawlGetApiInfo.ts
+  - src/mcp-server/tools/deepcrawlGetMarkdown.ts
+  - src/mcp-server/tools/deepcrawlReadUrl.ts
+  - src/models/errors/baseerrorresponse.ts
+  - src/models/errors/deepcrawlappdefaulterror.ts
+  - src/models/errors/deepcrawlapperror.ts
+  - src/models/errors/httpclienterrors.ts
+  - src/models/errors/index.ts
+  - src/models/errors/linksposterrorresponse.ts
+  - src/models/errors/responsevalidationerror.ts
+  - src/models/errors/sdkvalidationerror.ts
+  - src/models/extractedlinks.ts
+  - src/models/htmlcleaningoptions.ts
+  - src/models/index.ts
+  - src/models/linkextractionoptions.ts
+  - src/models/linksorder.ts
+  - src/models/linkspostsuccessresponse.ts
+  - src/models/linkstree.ts
+  - src/models/metadataoptions.ts
+  - src/models/metafiles.ts
+  - src/models/metrics.ts
+  - src/models/operations/extractlinkspost.ts
+  - src/models/operations/getapiroot.ts
+  - src/models/operations/getmarkdown.ts
+  - src/models/operations/index.ts
+  - src/models/operations/readurl.ts
+  - src/models/pagemetadata.ts
+  - src/models/readsuccessresponse.ts
+  - src/models/security.ts
+  - src/models/skippedlinks.ts
+  - src/models/skippedurl.ts
+  - src/sdk/deepcrawl.ts
+  - src/sdk/index.ts
+  - src/sdk/sdk.ts
+  - src/types/async.ts
+  - src/types/blobs.ts
+  - src/types/constdatetime.ts
+  - src/types/enums.ts
+  - src/types/fp.ts
+  - src/types/index.ts
+  - src/types/operations.ts
+  - src/types/rfcdate.ts
+  - src/types/streams.ts
+  - tsconfig.json
+examples:
+  getApiRoot:
+    speakeasy-default-get-api-root:
+      responses:
+        "200":
+          application/json: {"message": "Welcome to Deepcrawl API"}
+        "500":
+          application/json: {"success": false, "targetUrl": "https://example.com/article", "error": "Failed to fetch: 404 Not Found"}
+  getMarkdown:
+    speakeasy-default-get-markdown:
+      parameters:
+        query:
+          url: "example.com"
+      responses:
+        "200":
+          text/markdown: "<value>"
+        "500":
+          application/json: {"success": false, "targetUrl": "https://example.com/article", "error": "Failed to fetch: 404 Not Found"}
+  readUrl:
+    speakeasy-default-read-url:
+      requestBody:
+        application/json: {"url": "https://example.com", "metadata": true, "markdown": true, "cleanedHtml": false, "robots": false, "rawHtml": false}
+      responses:
+        "200":
+          application/json: {"success": true, "cached": false, "targetUrl": "https://example.com/article", "title": "Example Article", "description": "This is an example article description", "metadata": {"title": "Example Article", "description": "This is an example article description", "language": "en", "canonical": "https://example.com/article", "robots": "index, follow", "author": "John Doe", "keywords": ["example", "article", "demo"], "favicon": "https://example.com/favicon.ico", "ogTitle": "Example Article", "ogDescription": "This is an example article description", "ogImage": "https://example.com/og-image.jpg", "ogUrl": "https://example.com/article", "ogType": "article", "ogSiteName": "Example Site", "twitterCard": "summary_large_image", "twitterTitle": "Example Article", "twitterDescription": "This is an example article description", "twitterImage": "https://example.com/twitter-image.jpg", "isIframeAllowed": true}, "markdown": "# Example Article\n\nThis is the main content of the article.\n\n## Introduction\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.", "metrics": {"readableDuration": "1.2s", "duration": 1200, "startTime": 1704067800000, "endTime": 1704067801200}}
+        "500":
+          application/json: {"success": false, "targetUrl": "https://example.com/article", "error": "Failed to fetch: 404 Not Found"}
+  extractLinksPost:
+    speakeasy-default-extract-links-post:
+      requestBody:
+        application/json: {"url": "https://example.com", "tree": true, "metadata": true, "cleanedHtml": false, "robots": false, "sitemapXML": false}
+      responses:
+        "200":
+          application/json: {"success": true, "targetUrl": "https://example.com", "timestamp": "2024-01-15T10:30:00.000Z", "title": "Example Website", "description": "Welcome to our example website", "cached": false, "executionTime": "1.2s", "ancestors": ["https://example.com"], "skippedUrls": {"internal": [{"url": "https://example.com/admin", "reason": "Blocked by robots.txt"}]}, "extractedLinks": {"internal": ["https://example.com/about", "https://example.com/contact"], "external": ["https://external-site.com/reference"], "media": {"images": ["https://example.com/logo.png"], "videos": [], "documents": ["https://example.com/brochure.pdf"]}}, "tree": {"url": "https://example.com", "rootUrl": "https://example.com", "name": "Home", "totalUrls": 25, "executionTime": "1.2s", "lastUpdated": "2024-01-15T10:30:00.000Z", "children": [{"url": "https://example.com/about", "name": "About", "lastUpdated": "2024-01-15T10:30:05.000Z"}]}}
+        "500":
+          application/json: {"success": false, "targetUrl": "https://example.com/article", "error": "Failed to fetch: 404 Not Found", "timestamp": "2024-01-15T10:30:00.000Z"}
+examplesVersion: 1.0.2
+generatedTests: {}
