@@ -14,7 +14,7 @@
     },
     {
       "name": "🔌 sdks",
-      "path": "./apps/sdks"
+      "path": "./packages/sdks"
     },
     {
       "name": "📦 packages",
@@ -25,7 +25,8 @@
     "biome.enabled": false,
     "files.exclude": {
       "apps/**": true,
-      "packages/**": true
+      "packages/**": true,
+      "sdks": true
     },
     "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css"
   }
