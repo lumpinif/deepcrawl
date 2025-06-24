@@ -77,6 +77,27 @@ function getDefaultMarkdown(
 }
 
 /**
+ * Check if markdown content is meaningful (has substantial content)
+ * @param markdown - Markdown content to check
+ * @returns true if markdown has meaningful content, false otherwise
+ */
+function hasMeaningfulMarkdown(markdown: string): boolean {
+  if (!markdown) return false;
+  
+  // Remove whitespace, newlines, and common markdown formatting
+  const cleanedContent = markdown
+    .replace(/\s+/g, ' ')
+    .replace(/[#*_`-]/g, '')
+    .trim();
+  
+  // Check if there's substantial content (more than just a few words)
+  const wordCount = cleanedContent.split(' ').filter(word => word.length > 2).length;
+  
+  // Consider it meaningful if it has at least 10 meaningful words
+  return wordCount >= 10;
+}
+
+/**
  * Convert HTML to Markdown
  * @param param0 - HTML content to convert
  * @returns Markdown content
@@ -230,7 +251,16 @@ export async function processReadRequest(
     let markdown: string | undefined;
     if (isMarkdown || isGETRequest) {
       if (cleanedHtml) {
-        markdown = getMarkdown({ html: cleanedHtml });
+        const convertedMarkdown = getMarkdown({ html: cleanedHtml });
+        
+        // Check if the converted markdown has meaningful content
+        if (hasMeaningfulMarkdown(convertedMarkdown)) {
+          markdown = convertedMarkdown;
+        } else if (isMarkdown) {
+          // For POST requests with markdown=true but no meaningful content,
+          // provide informative default markdown instead of undefined
+          markdown = getDefaultMarkdown(title, targetUrl, description);
+        }
       } else if (isMarkdown) {
         // For POST requests with markdown=true but no extractable content,
         // provide informative default markdown instead of undefined
