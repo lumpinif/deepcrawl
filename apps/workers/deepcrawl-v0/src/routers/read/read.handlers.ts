@@ -17,7 +17,9 @@ export const readGET: AppRouteHandler<ReadGETRoute> = async (c) => {
       /* isStringResponse */
       true,
     );
-    return c.text(result, HttpStatusCodes.OK);
+    return c.text(result, HttpStatusCodes.OK, {
+      'Content-Type': 'text/markdown; charset=UTF-8',
+    });
   } catch (error) {
     const readErrorResponse: ReadErrorResponse = {
       success: false,
