@@ -47,6 +47,36 @@ function getMetrics(startTime: number, endTime: number) {
 }
 
 /**
+ * Generate default markdown content when no content can be extracted
+ * @param title - Page title
+ * @param targetUrl - Target URL
+ * @param description - Page description
+ * @returns Default markdown content
+ */
+function getDefaultMarkdown(
+  title?: string,
+  targetUrl?: string,
+  description?: string,
+): string {
+  return [
+    `# ${title || 'No Title Available'}`,
+    '',
+    '**No content could be extracted from this URL.**',
+    '',
+    `**URL:** ${targetUrl || 'Unknown URL'}`,
+    description ? `**Description:** ${description}` : '',
+    '',
+    '*This page may contain content that cannot be processed as markdown, such as:*',
+    '- Interactive applications or SPAs',
+    '- Media-only content',
+    '- Protected or restricted content',
+    '- Malformed HTML',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+/**
  * Convert HTML to Markdown
  * @param param0 - HTML content to convert
  * @returns Markdown content
@@ -234,7 +264,12 @@ export async function processReadRequest(
       // Cache the response
       try {
         const valueToCache = isGETRequest
-          ? markdown || ''
+          ? markdown ||
+            getDefaultMarkdown(
+              readResponse?.title,
+              readResponse?.targetUrl,
+              readResponse?.description,
+            )
           : JSON.stringify(readResponse);
 
         await kvPutWithRetry(
@@ -257,8 +292,13 @@ export async function processReadRequest(
     }
 
     if (isGETRequest) {
-      const stringResponse = markdown || JSON.stringify(readResponse);
-      return stringResponse;
+      // For GET requests, always return markdown content only
+      if (markdown) {
+        return markdown;
+      }
+
+      // Generate informative default markdown when no content is extracted
+      return getDefaultMarkdown(title, targetUrl, description);
     }
 
     return readResponse as ReadSuccessResponse;
