@@ -227,10 +227,16 @@ export async function processReadRequest(
     });
 
     // Convert article content to markdown if available
-    const markdown =
-      (isMarkdown || isGETRequest) && cleanedHtml
-        ? getMarkdown({ html: cleanedHtml })
-        : undefined;
+    let markdown: string | undefined;
+    if (isMarkdown || isGETRequest) {
+      if (cleanedHtml) {
+        markdown = getMarkdown({ html: cleanedHtml });
+      } else if (isMarkdown) {
+        // For POST requests with markdown=true but no extractable content,
+        // provide informative default markdown instead of undefined
+        markdown = getDefaultMarkdown(title, targetUrl, description);
+      }
+    }
 
     // Sanitize rawHtml if present
     // ?? why enable if isMarkdown
