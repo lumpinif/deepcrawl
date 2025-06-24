@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   version: 0.0.1
-  title: Deepcrawl OpenAPI
+  title: DeepcrawlApp
 servers:
   - url: https://api.deepcrawl.dev
     description: Deepcrawl Official API server
@@ -1008,7 +1008,7 @@ paths:
         - API Root
       operationId: getApiRoot
       x-speakeasy-name-override: getApiInfo
-      x-speakeasy-group: deepcrawl
+      x-speakeasy-sdk-ignore: true
       security: []
       responses:
         '200':
@@ -1035,7 +1035,6 @@ paths:
       operationId: getMarkdown
       description: Directly return page markdown content from the request URL.
       x-speakeasy-name-override: getMarkdown
-      x-speakeasy-group: deepcrawl
       tags: &ref_1
         - Read Website
       parameters:
@@ -1077,7 +1076,6 @@ paths:
       operationId: readUrl
       description: Returning full result object from the request URL.
       x-speakeasy-name-override: readUrl
-      x-speakeasy-group: deepcrawl
       tags: *ref_1
       requestBody:
         description: /read POST request body, read options schema
@@ -1114,7 +1112,6 @@ paths:
       operationId: extractLinksPost
       description: Returning extracted links sitemap results for the request URL.
       x-speakeasy-name-override: extractLinks
-      x-speakeasy-group: deepcrawl
       tags:
         - Extract Links
       requestBody:
