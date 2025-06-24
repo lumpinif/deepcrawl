@@ -54,6 +54,7 @@ export default function configureOpenAPI(app: AppOpenAPI) {
   app.openAPIRegistry.registerComponent('securitySchemes', 'Bearer', {
     type: 'http',
     scheme: 'bearer',
+    'x-speakeasy-example': 'Bearer <YOUR_API_KEY_HERE>',
   });
 
   app.doc31('/openapi', (c) => ({

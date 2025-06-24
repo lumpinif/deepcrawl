@@ -15,17 +15,23 @@ import {
 const tags = ['Read Website'];
 
 export const readGETRoute = createRoute({
+  tags,
   path: '/',
   method: 'get',
   operationId: 'getMarkdown',
-  description: 'Directly return page markdown content from the request URL.',
+  'x-speakeasy-group': '',
   'x-speakeasy-name-override': 'getMarkdown',
+  description: 'Directly return page markdown content from the request URL.',
+  'x-speakeasy-usage-example': {
+    title: 'Get Markdown from a URL (GET)',
+    description: 'Directly return page markdown content from the request URL.',
+    position: 1,
+  },
   request: {
     query: ReadOptionsSchema.pick({
       url: true,
     }),
   },
-  tags,
   responses: {
     [HttpStatusCodes.OK]: {
       content: {
@@ -47,18 +53,24 @@ export const readGETRoute = createRoute({
 });
 
 export const readPOSTRoute = createRoute({
+  tags,
   path: '/',
   method: 'post',
   operationId: 'readUrl',
-  description: 'Returning full result object from the request URL.',
+  'x-speakeasy-group': '',
   'x-speakeasy-name-override': 'readUrl',
+  description: 'Returning full result object from the request URL.',
+  'x-speakeasy-usage-example': {
+    title: 'Read URL (POST)',
+    description: 'Returning full result object from the request URL.',
+    position: 2,
+  },
   request: {
     body: jsonContentRequired(
       ReadOptionsSchema,
       '/read POST request body, read options schema',
     ),
   },
-  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       ReadSuccessResponseSchema,

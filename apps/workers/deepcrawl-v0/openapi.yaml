@@ -29,6 +29,7 @@ components:
     Bearer:
       type: http
       scheme: bearer
+      x-speakeasy-example: Bearer <YOUR_API_KEY_HERE>
   schemas:
     BaseErrorResponse:
       type: object
@@ -1008,7 +1009,7 @@ paths:
         - API Root
       operationId: getApiRoot
       x-speakeasy-name-override: getApiInfo
-      x-speakeasy-sdk-ignore: true
+      x-speakeasy-ignore: true
       security: []
       responses:
         '200':
@@ -1032,11 +1033,16 @@ paths:
                 $ref: '#/components/schemas/BaseErrorResponse'
   /read:
     get:
-      operationId: getMarkdown
-      description: Directly return page markdown content from the request URL.
-      x-speakeasy-name-override: getMarkdown
       tags: &ref_1
         - Read Website
+      operationId: getMarkdown
+      x-speakeasy-group: ''
+      x-speakeasy-name-override: getMarkdown
+      description: Directly return page markdown content from the request URL.
+      x-speakeasy-usage-example:
+        title: Get Markdown from a URL (GET)
+        description: Directly return page markdown content from the request URL.
+        position: 1
       parameters:
         - schema:
             type: string
@@ -1073,10 +1079,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/BaseErrorResponse'
     post:
-      operationId: readUrl
-      description: Returning full result object from the request URL.
-      x-speakeasy-name-override: readUrl
       tags: *ref_1
+      operationId: readUrl
+      x-speakeasy-group: ''
+      x-speakeasy-name-override: readUrl
+      description: Returning full result object from the request URL.
+      x-speakeasy-usage-example:
+        title: Read URL (POST)
+        description: Returning full result object from the request URL.
+        position: 2
       requestBody:
         description: /read POST request body, read options schema
         required: true
@@ -1109,11 +1120,16 @@ paths:
                 $ref: '#/components/schemas/BaseErrorResponse'
   /links:
     post:
-      operationId: extractLinksPost
-      description: Returning extracted links sitemap results for the request URL.
-      x-speakeasy-name-override: extractLinks
       tags:
         - Extract Links
+      operationId: extractLinksPost
+      x-speakeasy-group: ''
+      x-speakeasy-name-override: extractLinks
+      description: Returning extracted links sitemap results for the request URL.
+      x-speakeasy-usage-example:
+        title: Extract Links from a URL (POST)
+        description: Returning extracted links sitemap results for the request URL.
+        position: 2
       requestBody:
         description: /links POST request body, links options schema
         required: true

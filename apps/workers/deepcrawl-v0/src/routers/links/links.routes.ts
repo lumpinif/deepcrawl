@@ -15,15 +15,22 @@ import {
 const tags = ['Extract Links'];
 
 export const linksGETRoute = createRoute({
+  tags,
   path: '/',
   method: 'get',
+  'x-speakeasy-group': '',
+  'x-speakeasy-name-override': 'getLinks',
   operationId: 'extractLinksGet',
   description: 'Returning extracted links sitemap results for the request URL.',
-  'x-speakeasy-name-override': 'getLinks',
+  'x-speakeasy-usage-example': {
+    title: 'Get Links from a URL (GET)',
+    description:
+      'Returning extracted links sitemap results for the request URL.',
+    position: 1,
+  },
   request: {
     query: LinksOptionsSchema,
   },
-  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       LinksPostSuccessResponseSchema,
@@ -37,18 +44,25 @@ export const linksGETRoute = createRoute({
 });
 
 export const linksPOSTRoute = createRoute({
+  tags,
   path: '/',
   method: 'post',
   operationId: 'extractLinksPost',
-  description: 'Returning extracted links sitemap results for the request URL.',
+  'x-speakeasy-group': '',
   'x-speakeasy-name-override': 'extractLinks',
+  description: 'Returning extracted links sitemap results for the request URL.',
+  'x-speakeasy-usage-example': {
+    title: 'Extract Links from a URL (POST)',
+    description:
+      'Returning extracted links sitemap results for the request URL.',
+    position: 2,
+  },
   request: {
     body: jsonContentRequired(
       LinksOptionsSchema,
       '/links POST request body, links options schema',
     ),
   },
-  tags,
   responses: {
     [HttpStatusCodes.OK]: jsonContent(
       LinksPostSuccessResponseSchema,
