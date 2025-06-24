@@ -44,8 +44,7 @@
     "@types/turndown": "^5.0.5",
     "eslint-plugin-format": "^1.0.1",
     "js-yaml": "^4.1.0",
-    "turndown": "^7.2.0",
-    "wrangler": "^4.20.5"
+    "turndown": "^7.2.0"
   },
   "overrides": {
     "@types/node": "20.8.3"

@@ -24,8 +24,8 @@ importers:
         specifier: 5.7.3
         version: 5.7.3
       wrangler:
-        specifier: ^4.20.5
-        version: 4.20.5(@cloudflare/workers-types@4.20250531.0)
+        specifier: ^4.21.0
+        version: 4.21.0
 
   apps/app:
     dependencies:
@@ -267,9 +267,6 @@ importers:
       drizzle-kit:
         specifier: ^0.31.1
         version: 0.31.1
-      wrangler:
-        specifier: ^4.20.5
-        version: 4.20.5(@cloudflare/workers-types@4.20250531.0)
 
   apps/workers/deepcrawl-v0:
     dependencies:
@@ -361,9 +358,6 @@ importers:
       turndown:
         specifier: ^7.2.0
         version: 7.2.0
-      wrangler:
-        specifier: ^4.20.5
-        version: 4.20.5(@cloudflare/workers-types@4.20250531.0)
 
   packages/auth:
     dependencies:
@@ -465,8 +459,6 @@ importers:
       typescript-eslint:
         specifier: ^8.24.1
         version: 8.32.1(eslint@9.27.0(jiti@2.4.2))(typescript@5.7.3)
-
-  packages/sdks: {}
 
   packages/types:
     dependencies:
@@ -6986,8 +6978,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.20.5:
-    resolution: {integrity: sha512-tmiyt2vBHszhdzJEDbCpFLU2RiV7/QzvGMV07Zaz4ptqiU2h/lTojyNJAugPpSFNiOuY+k0g3ENNTDQqoUkMFA==}
+  wrangler@4.21.0:
+    resolution: {integrity: sha512-37xm0CG2qMvsJUNZYQKje6HbCsJFYuE8dQSnu7981iDRT4DLrEIL1DAUnZJG9HiXteKPvrSj96AkZyomi5sYHw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
     peerDependencies:
@@ -14295,7 +14287,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20250617.0
       '@cloudflare/workerd-windows-64': 1.20250617.0
 
-  wrangler@4.20.5(@cloudflare/workers-types@4.20250531.0):
+  wrangler@4.21.0:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
       '@cloudflare/unenv-preset': 2.3.3(unenv@2.0.0-rc.17)(workerd@1.20250617.0)
@@ -14306,7 +14298,6 @@ snapshots:
       unenv: 2.0.0-rc.17
       workerd: 1.20250617.0
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20250531.0
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
