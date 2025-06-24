@@ -20,7 +20,6 @@ export const linksGETRoute = createRoute({
   operationId: 'extractLinksGet',
   description: 'Returning extracted links sitemap results for the request URL.',
   'x-speakeasy-name-override': 'getLinks',
-  'x-speakeasy-group': 'deepcrawl',
   request: {
     query: LinksOptionsSchema,
   },
@@ -43,7 +42,6 @@ export const linksPOSTRoute = createRoute({
   operationId: 'extractLinksPost',
   description: 'Returning extracted links sitemap results for the request URL.',
   'x-speakeasy-name-override': 'extractLinks',
-  'x-speakeasy-group': 'deepcrawl',
   request: {
     body: jsonContentRequired(
       LinksOptionsSchema,

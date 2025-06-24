@@ -20,7 +20,6 @@ export const readGETRoute = createRoute({
   operationId: 'getMarkdown',
   description: 'Directly return page markdown content from the request URL.',
   'x-speakeasy-name-override': 'getMarkdown',
-  'x-speakeasy-group': 'deepcrawl',
   request: {
     query: ReadOptionsSchema.pick({
       url: true,
@@ -53,7 +52,6 @@ export const readPOSTRoute = createRoute({
   operationId: 'readUrl',
   description: 'Returning full result object from the request URL.',
   'x-speakeasy-name-override': 'readUrl',
-  'x-speakeasy-group': 'deepcrawl',
   request: {
     body: jsonContentRequired(
       ReadOptionsSchema,

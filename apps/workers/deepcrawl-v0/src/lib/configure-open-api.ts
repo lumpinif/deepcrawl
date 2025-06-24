@@ -9,7 +9,7 @@ export const openAPIObjectConfig = {
   openapi: '3.1.0',
   info: {
     version: packageJSON.version,
-    title: 'Deepcrawl OpenAPI',
+    title: 'DeepcrawlApp',
   },
   servers: [
     {

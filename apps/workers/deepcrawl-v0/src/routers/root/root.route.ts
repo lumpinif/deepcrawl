@@ -13,7 +13,7 @@ const router = createRouter().openapi(
     path: '/',
     operationId: 'getApiRoot',
     'x-speakeasy-name-override': 'getApiInfo',
-    'x-speakeasy-group': 'deepcrawl',
+    'x-speakeasy-sdk-ignore': true,
     security: [],
     responses: {
       [HttpStatusCodes.OK]: jsonContent(
