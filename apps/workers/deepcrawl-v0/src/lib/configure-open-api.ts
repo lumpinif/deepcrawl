@@ -61,7 +61,13 @@ export default function configureOpenAPI(app: AppOpenAPI) {
     // override the servers url with the API_URL from the environment
     servers: [
       {
-        url: c.env.API_URL,
+        url: (() => {
+          try {
+            return new URL(c.env.API_URL).toString();
+          } catch {
+            return new URL(`https://${c.env.API_URL}`).toString();
+          }
+        })(),
         description: 'Deepcrawl Official API server',
       },
     ],
