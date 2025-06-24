@@ -2,4 +2,3 @@ packages:
   - "apps/*"
   - "packages/*"
   - "apps/workers/*"
-  - "packages/sdks/*"
