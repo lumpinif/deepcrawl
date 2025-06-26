@@ -148,13 +148,13 @@ export default function AppNavTabs() {
       <div className="relative flex w-full flex-nowrap items-center justify-start bg-background-subtle py-2 shadow-none">
         {/* Hover Highlight */}
         <div
-          className="hidden absolute md:flex h-[30px] items-center rounded-[6px] bg-accent transition-all duration-200 ease-out"
+          className="hidden absolute md:flex h-[30px] items-center rounded-[6px] bg-accent transition-all duration-150 ease-out"
           style={computedHoverStyle}
         />
 
         {/* Active Indicator */}
         <div
-          className="absolute bottom-0 z-20 h-[2px] bg-primary transition-all duration-200 ease-out"
+          className="absolute bottom-0 z-20 h-[2px] bg-primary transition-all duration-150 ease-out"
           style={activeStyle}
         />
 
