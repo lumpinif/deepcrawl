@@ -778,7 +778,8 @@ export const useUpdateApiKey = () => {
 };
 
 /**
- * Hook for deleting an API key with optimistic updates
+ * Hook for deleting an API key without optimistic updates
+ * Waits for server confirmation before updating the UI
  */
 export const useDeleteApiKey = () => {
   const queryClient = useQueryClient();
@@ -818,32 +819,9 @@ export const useDeleteApiKey = () => {
 
       return await deleteApiKey(keyId);
     },
-    onMutate: async (keyId: string) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: userQueryKeys.apiKeys });
-
-      // Snapshot previous value
-      const previousApiKeys = queryClient.getQueryData<ApiKey[]>(
-        userQueryKeys.apiKeys,
-      );
-
-      // Optimistically remove the API key
-      queryClient.setQueryData<ApiKey[]>(userQueryKeys.apiKeys, (old) => {
-        if (!old) return old;
-        return old.filter((apiKey) => apiKey.id !== keyId);
-      });
-
-      return { previousApiKeys, keyId };
-    },
-    onError: (error, keyId, context) => {
-      // Rollback on error
-      if (context?.previousApiKeys) {
-        queryClient.setQueryData(
-          userQueryKeys.apiKeys,
-          context.previousApiKeys,
-        );
-      }
-
+    // Removed onMutate to disable optimistic updates
+    // UI will only update after successful deletion is confirmed
+    onError: (error) => {
       console.error('Failed to delete API key:', error);
       toast.error(
         error instanceof Error ? error.message : 'Failed to delete API key',
@@ -851,9 +829,7 @@ export const useDeleteApiKey = () => {
     },
     onSuccess: () => {
       toast.success('API key deleted successfully');
-    },
-    onSettled: () => {
-      // Always refetch to ensure consistency
+      // Invalidate and refetch to update UI after successful deletion
       queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
     },
   });
