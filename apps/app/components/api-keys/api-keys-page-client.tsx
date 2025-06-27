@@ -107,7 +107,7 @@ export function ApiKeysPageClient() {
       <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4">
         <PageHeader
           title="Your API Keys"
-          className="max-sm:w-full"
+          className="mb-4 max-sm:w-full"
           description="Manage your API keys for accessing DeepCrawl services."
         />
         <Button
