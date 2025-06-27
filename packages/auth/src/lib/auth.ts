@@ -1,4 +1,5 @@
 import { type BetterAuthOptions, betterAuth } from 'better-auth';
+
 import { nextCookies } from 'better-auth/next-js';
 import { createAuthConfig } from '../configs';
 
@@ -24,6 +25,19 @@ const authConfigs = createAuthConfig({
     process.env.NEXT_PUBLIC_USE_AUTH_WORKER !== 'false',
 }) satisfies BetterAuthOptions;
 
+export const playgroundApiKeyConfig = {
+  name: 'PLAYGROUND_API_KEY',
+  prefix: 'dc_',
+  rateLimitMax: 100,
+  rateLimitEnabled: true,
+  rateLimitTimeWindow: 1000 * 60 * 60 * 24, // 24 hours
+  metadata: {
+    type: 'auto-generated',
+    purpose: 'playground',
+    createdAt: new Date().toISOString(),
+  },
+};
+
 /**
  *  Auth instance for Next.js Server Components
  *  This should NOT be used in Cloudflare Workers
@@ -36,4 +50,25 @@ export const auth = betterAuth({
     ...authConfigs.plugins,
     nextCookies(), // This plugin is Next.js specific - make sure this is the last plugin in the array
   ],
+  // HACK TO CREATE A DEFAULT API KEY FOR EVERY NEW USER (ENSURE IT IS ALSO ADDED TO AUTH WORKER IF NEEDED)
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          // Automatically create a default API key for every new user
+          // This enables immediate playground access without manual API key creation
+          try {
+            await auth.api.createApiKey({
+              body: {
+                userId: user.id,
+                ...playgroundApiKeyConfig,
+              },
+            });
+          } catch (err) {
+            console.error('❌ Failed to create PLAYGROUND_API_KEY:', err);
+          }
+        },
+      },
+    },
+  },
 });

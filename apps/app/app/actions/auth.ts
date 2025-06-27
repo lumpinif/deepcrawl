@@ -1,7 +1,7 @@
 'use server';
 
 import type { ActiveOrganization } from '@/lib/auth.client-types';
-import { auth } from '@deepcrawl/auth/lib/auth';
+import { auth, playgroundApiKeyConfig } from '@deepcrawl/auth/lib/auth';
 import type { Session } from '@deepcrawl/auth/types';
 import { getDrizzleDB, schema } from '@deepcrawl/db';
 import { desc, eq } from 'drizzle-orm';
@@ -451,6 +451,39 @@ export async function deleteApiKey(keyId: string) {
   const requestHeaders = await headers();
 
   try {
+    // First, get the API key details to check if it's a protected playground key
+    const apiKeys = await auth.api.listApiKeys({
+      headers: requestHeaders,
+    });
+
+    const keyToDelete = apiKeys.find((key) => key.id === keyId);
+
+    if (!keyToDelete) {
+      throw new Error('API key not found');
+    }
+
+    // Check if this is a protected PLAYGROUND_API_KEY
+    let metadata = keyToDelete.metadata;
+    if (typeof metadata === 'string') {
+      try {
+        metadata = JSON.parse(metadata);
+      } catch (e) {
+        metadata = null;
+      }
+    }
+
+    if (
+      keyToDelete.name === 'PLAYGROUND_API_KEY' &&
+      metadata &&
+      typeof metadata === 'object' &&
+      (metadata as Record<string, unknown>).type === 'auto-generated' &&
+      (metadata as Record<string, unknown>).purpose === 'playground'
+    ) {
+      throw new Error(
+        'This key is managed by the system and cannot be deleted',
+      );
+    }
+
     const result = await auth.api.deleteApiKey({
       headers: requestHeaders,
       body: {
@@ -463,6 +496,73 @@ export async function deleteApiKey(keyId: string) {
     console.error('Failed to delete API key:', error);
     throw new Error(
       error instanceof Error ? error.message : 'Failed to delete API key',
+    );
+  }
+}
+
+/**
+ * Ensures the user has a PLAYGROUND_API_KEY for playground access
+ * Creates one if it doesn't exist with the same configuration as for new users
+ */
+export async function ensurePlaygroundApiKey() {
+  const requestHeaders = await headers();
+
+  try {
+    // Get current session
+    const session = await auth.api.getSession({
+      headers: requestHeaders,
+    });
+
+    if (!session?.user?.id) {
+      throw new Error('Unauthorized: No valid session found');
+    }
+
+    // Check if user already has a PLAYGROUND_API_KEY
+    const apiKeys = await auth.api.listApiKeys({
+      headers: requestHeaders,
+    });
+
+    const playgroundKey = apiKeys.find((key) => {
+      let metadata = key.metadata;
+      // Parse metadata if it's stored as JSON string
+      if (typeof metadata === 'string') {
+        try {
+          metadata = JSON.parse(metadata);
+        } catch (e) {
+          metadata = null;
+        }
+      }
+
+      return (
+        key.name === 'PLAYGROUND_API_KEY' &&
+        metadata &&
+        typeof metadata === 'object' &&
+        metadata.type === 'auto-generated' &&
+        metadata.purpose === 'playground'
+      );
+    });
+
+    // If playground key exists, return it
+    if (playgroundKey) {
+      return JSON.parse(JSON.stringify(playgroundKey));
+    }
+
+    // Create a new PLAYGROUND_API_KEY with the same config as for new users
+
+    const result = await auth.api.createApiKey({
+      body: {
+        userId: session.user.id,
+        ...playgroundApiKeyConfig,
+      },
+    });
+
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error('❌ Failed to ensure playground API key:', error);
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Failed to ensure playground API key',
     );
   }
 }
