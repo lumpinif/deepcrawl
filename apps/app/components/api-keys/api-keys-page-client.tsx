@@ -16,7 +16,7 @@ export function ApiKeysPageSkeleton() {
     <div className="space-y-6 max-sm:space-y-4">
       <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4">
         <PageHeader
-          className="max-sm:w-full"
+          className="mb-4 max-sm:w-full"
           title="Your API Keys"
           description="Manage your API keys for accessing DeepCrawl services."
         />
