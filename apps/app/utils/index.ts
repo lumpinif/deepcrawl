@@ -1,6 +1,9 @@
 import type { AuthView, AuthViewRoutes } from '@/routes/auth';
 import z from 'zod';
 
+// Re-export utilities
+export { copyToClipboard } from './clipboard';
+
 export function getAuthViewByPath(
   authViewPaths: AuthViewRoutes,
   path?: string,

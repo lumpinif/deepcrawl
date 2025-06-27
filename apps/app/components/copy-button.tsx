@@ -1,3 +1,4 @@
+import { copyToClipboard } from '@/utils/clipboard';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Tooltip,
@@ -23,11 +24,9 @@ export default function CopyButton({ textToCopy }: CopyButtonProps) {
   }, [isCopied]);
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(textToCopy);
+    const success = await copyToClipboard(textToCopy);
+    if (success) {
       setIsCopied(true);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
     }
   };
 

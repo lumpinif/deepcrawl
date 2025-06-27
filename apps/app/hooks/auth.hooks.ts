@@ -24,6 +24,7 @@ import {
   userPasskeysQueryOptions,
 } from '@/lib/query-options';
 import { getSearchParam } from '@/utils';
+import { copyToClipboard } from '@/utils/clipboard';
 import type { ApiKey, Session } from '@deepcrawl/auth/types';
 import {
   useMutation,
@@ -686,10 +687,21 @@ export const useCreateApiKey = () => {
     }) => {
       return await createApiKey({ name, expiresIn, prefix, metadata });
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       // Invalidate and refetch API keys
       queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
-      toast.success('API key created successfully');
+
+      // Auto-copy the API key to clipboard if available
+      if (data?.key) {
+        const copySuccess = await copyToClipboard(data.key);
+        if (copySuccess) {
+          toast.success('API key created and copied to clipboard!');
+        } else {
+          toast.success('API key created successfully');
+        }
+      } else {
+        toast.success('API key created successfully');
+      }
     },
     onError: (error) => {
       console.error('Failed to create API key:', error);
