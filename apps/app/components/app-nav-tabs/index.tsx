@@ -148,7 +148,7 @@ export default function AppNavTabs() {
       <div className="relative flex w-full flex-nowrap items-center justify-start bg-background-subtle py-2 shadow-none">
         {/* Hover Highlight */}
         <div
-          className="hidden absolute md:flex h-[30px] items-center rounded-[6px] bg-accent transition-all duration-150 ease-out"
+          className="absolute hidden h-[30px] items-center rounded-[6px] bg-accent transition-all duration-150 ease-out md:flex"
           style={computedHoverStyle}
         />
 
