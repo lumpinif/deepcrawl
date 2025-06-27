@@ -343,7 +343,9 @@ export async function fetchApiKeys() {
       headers: requestHeaders,
     });
 
-    return JSON.parse(JSON.stringify(result));
+    // Better Auth already returns properly typed results
+    // No need to JSON.parse/stringify which removes types
+    return result;
   } catch (error) {
     console.error('Failed to fetch API keys:', error);
     throw new Error(

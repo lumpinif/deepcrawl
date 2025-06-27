@@ -2,7 +2,6 @@
 
 import { SpinnerButton } from '@/components/spinner-button';
 import { useDeleteApiKey, useUpdateApiKey } from '@/hooks/auth.hooks';
-import type { ApiKey } from '@deepcrawl/auth/types';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -15,6 +14,7 @@ import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 
+import type { ApiKeyResponse } from '@deepcrawl/auth/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +36,7 @@ import { useState } from 'react';
 import { EditApiKeyDialog } from './edit-api-key-dialog';
 
 interface ApiKeysTableProps {
-  apiKeys: ApiKey[];
+  apiKeys: ApiKeyResponse[];
 }
 
 export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {

@@ -2,7 +2,7 @@
 
 import { SpinnerButton } from '@/components/spinner-button';
 import { useUpdateApiKey } from '@/hooks/auth.hooks';
-import type { ApiKey } from '@deepcrawl/auth/types';
+import type { ApiKeyResponse } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Dialog,
@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 interface EditApiKeyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  apiKey: ApiKey;
+  apiKey: ApiKeyResponse;
   onClose: () => void;
 }
 

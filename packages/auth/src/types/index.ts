@@ -100,3 +100,9 @@ export type ApiKey = {
     [key: string]: string[];
   } | null;
 };
+
+// Type for API keys as returned by Better Auth (without the actual key value)
+// The 'key' property is hashed and not returned in API responses for security
+export type ApiKeyResponse = Omit<ApiKey, 'key'> & {
+  key?: string; // Make key optional since it's not returned in responses
+};

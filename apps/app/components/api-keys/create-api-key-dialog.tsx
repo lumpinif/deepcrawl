@@ -92,7 +92,7 @@ export function CreateApiKeyDialog({
       }}
     >
       {createdKey ? (
-        <DialogContent className="space-y-4 sm:max-w-xl">
+        <DialogContent className="space-y-4 outline-none ring-0 sm:max-w-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />

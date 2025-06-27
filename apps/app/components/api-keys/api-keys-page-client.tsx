@@ -1,6 +1,7 @@
 'use client';
 
 import { useSuspenseApiKeys } from '@/hooks/auth.hooks';
+import type { ApiKeyResponse } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
@@ -59,6 +60,32 @@ export function ApiKeysPageClient() {
 
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
+  // Filter out system-managed playground keys from the UI
+  const userApiKeys: ApiKeyResponse[] = (apiKeys || []).filter((key) => {
+    // Parse metadata if it's stored as JSON string
+    let metadata = key.metadata;
+    if (typeof metadata === 'string') {
+      try {
+        metadata = JSON.parse(metadata);
+      } catch (e) {
+        metadata = null;
+      }
+    }
+
+    // Hide PLAYGROUND_API_KEY from UI (system-managed keys)
+    if (
+      key.name === 'PLAYGROUND_API_KEY' &&
+      metadata &&
+      typeof metadata === 'object' &&
+      (metadata as Record<string, unknown>).type === 'auto-generated' &&
+      (metadata as Record<string, unknown>).purpose === 'playground'
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
   if (error) {
     return (
       <div className="space-y-6">
@@ -98,7 +125,7 @@ export function ApiKeysPageClient() {
       </p>
 
       <div className="block sm:hidden">
-        <ApiKeysTable apiKeys={apiKeys || []} />
+        <ApiKeysTable apiKeys={userApiKeys} />
       </div>
 
       <Card className="hidden bg-background sm:block">
@@ -108,7 +135,7 @@ export function ApiKeysPageClient() {
               <Skeleton className="h-12 w-full" />
             </div>
           ) : (
-            <ApiKeysTable apiKeys={apiKeys || []} />
+            <ApiKeysTable apiKeys={userApiKeys} />
           )}
         </CardContent>
       </Card>
