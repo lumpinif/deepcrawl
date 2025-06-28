@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.18",
+    "@deepcrawl-sdk/ts": "^0.0.3",
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/db": "workspace:*",
     "@dnd-kit/core": "^6.3.1",
