@@ -83,16 +83,18 @@ function getDefaultMarkdown(
  */
 function hasMeaningfulMarkdown(markdown: string): boolean {
   if (!markdown) return false;
-  
+
   // Remove whitespace, newlines, and common markdown formatting
   const cleanedContent = markdown
     .replace(/\s+/g, ' ')
     .replace(/[#*_`-]/g, '')
     .trim();
-  
+
   // Check if there's substantial content (more than just a few words)
-  const wordCount = cleanedContent.split(' ').filter(word => word.length > 2).length;
-  
+  const wordCount = cleanedContent
+    .split(' ')
+    .filter((word) => word.length > 2).length;
+
   // Consider it meaningful if it has at least 10 meaningful words
   return wordCount >= 10;
 }
@@ -252,7 +254,7 @@ export async function processReadRequest(
     if (isMarkdown || isGETRequest) {
       if (cleanedHtml) {
         const convertedMarkdown = getMarkdown({ html: cleanedHtml });
-        
+
         // Check if the converted markdown has meaningful content
         if (hasMeaningfulMarkdown(convertedMarkdown)) {
           markdown = convertedMarkdown;
