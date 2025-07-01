@@ -1,7 +1,7 @@
 {
   "folders": [
     {
-      "name": "🏠 root",
+      "name": "🗂️ root",
       "path": "."
     },
     {
@@ -13,12 +13,15 @@
       "path": "./apps/app"
     },
     {
+      "name": "🔌 sdks",
+      "path": "./sdks"
+    },
+    {
       "name": "📦 packages",
       "path": "./packages"
     }
   ],
   "settings": {
-    "biome.enabled": false,
     "files.exclude": {
       "apps/**": true,
       "packages/**": true
