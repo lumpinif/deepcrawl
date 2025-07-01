@@ -41,7 +41,7 @@ export const ScrapedDataSchema = z
   .object({
     title: z.string(),
     rawHtml: z.string(),
-    description: z.string(),
+    description: z.string().optional(),
     metadata: PageMetadataSchema.optional(),
     cleanedHtml: z.string().optional(),
     metaFiles: MetaFilesSchema.optional(),
