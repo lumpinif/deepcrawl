@@ -22,6 +22,7 @@
     }
   ],
   "settings": {
+    "biome.enabled": false,
     "files.exclude": {
       "apps/**": true,
       "packages/**": true
