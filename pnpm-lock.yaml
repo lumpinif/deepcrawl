@@ -291,6 +291,9 @@ importers:
       '@orpc/client':
         specifier: ^1.6.0
         version: 1.6.0
+      '@orpc/contract':
+        specifier: ^1.6.0
+        version: 1.6.0
       '@orpc/openapi':
         specifier: ^1.6.0
         version: 1.6.0
