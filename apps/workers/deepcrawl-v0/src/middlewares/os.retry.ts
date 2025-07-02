@@ -1,4 +1,4 @@
-import { os } from '@orpc/server'
+import { os } from '@orpc/server';
 
 export function retry(options: { times: number }) {
   /**
@@ -8,28 +8,27 @@ export function retry(options: { times: number }) {
   return os
     .$context<{ canRetry?: boolean }>()
     .middleware(({ context, next }) => {
-      const canRetry = context.canRetry ?? true
+      const canRetry = context.canRetry ?? true;
 
       if (!canRetry) {
-        return next()
+        return next();
       }
 
-      let times = 0
+      let times = 0;
       while (true) {
         try {
           return next({
             context: {
               canRetry: false,
             },
-          })
-        }
-        catch (e) {
+          });
+        } catch (e) {
           if (times >= options.times) {
-            throw e
+            throw e;
           }
 
-          times++
+          times++;
         }
       }
-    })
+    });
 }
