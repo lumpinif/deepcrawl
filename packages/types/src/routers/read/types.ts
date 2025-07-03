@@ -3,7 +3,6 @@ import { MetadataOptionsSchema } from '@deepcrawl/types/services/metadata';
 import { ScrapedDataSchema } from '@deepcrawl/types/services/scrape';
 import { z } from 'zod/v4';
 
-
 /* NOTE: IN ZOD V4: The input type of all z.coerce schemas is now unknown. THIS MIGHT BREAKES CURRENT TYPES */
 
 export const ReadOptionsSchema = z
