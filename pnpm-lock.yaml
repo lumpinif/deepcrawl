@@ -303,6 +303,9 @@ importers:
       '@orpc/openapi':
         specifier: ^1.6.0
         version: 1.6.0
+      '@orpc/openapi-client':
+        specifier: ^1.6.4
+        version: 1.6.4
       '@orpc/server':
         specifier: ^1.6.0
         version: 1.6.0
@@ -488,7 +491,7 @@ importers:
     dependencies:
       '@orpc/zod':
         specifier: ^1.6.0
-        version: 1.6.0(@orpc/contract@1.6.0)(@orpc/server@1.6.0)(zod@3.25.67)
+        version: 1.6.0(@orpc/contract@1.6.4)(@orpc/server@1.6.0)(zod@3.25.67)
       typescript:
         specifier: '>=5.0.0'
         version: 5.7.3
@@ -1805,11 +1808,20 @@ packages:
   '@orpc/client@1.6.0':
     resolution: {integrity: sha512-LVmfB6z+NNUqLF3PM0D7ouInfCXSGjrv39FbTabbo/Wq5GTi4GmxqAxTN7/MIYe2Ak1/1nxUIbNcRiPfU0eI7Q==}
 
+  '@orpc/client@1.6.4':
+    resolution: {integrity: sha512-rKRS+PIJmJE2ozBg0DEkP7lEdczmp0IVyF3gl49uL/+xsW4FyoYDQDa2BcwECQP3K752AmS0lTWtY3nxOAP0NA==}
+
   '@orpc/contract@1.6.0':
     resolution: {integrity: sha512-r+lxBSORz/AwjgAND8eXym21UcNa7/vufI7xEkAoUQ26nNk+KYpi3Fr+h1t7P0zptFNL+nTKG1Ib/hJqj/OHtQ==}
 
+  '@orpc/contract@1.6.4':
+    resolution: {integrity: sha512-IZJQqFzBCv540eAgevfa7GhD/2Ksa3ew1mQGWnnFJ5VShQsUQgQpO+BAyFr9GqJ98gr7qQzxQhNDbYFOoUG3gg==}
+
   '@orpc/openapi-client@1.6.0':
     resolution: {integrity: sha512-Oqd/9IuVFxtzqZ6jfY4q9GXgllfcsK9ls6YRuVHUfSE5k3u8ZjA/8mcbo9Mvbd5uMAYqAg2OkI15u5dENhD1Kw==}
+
+  '@orpc/openapi-client@1.6.4':
+    resolution: {integrity: sha512-vsa8iIqgQp+25k+nqDAJN1xVq7t/BCg6mfUy9+8g6gszpxTbJmd9j+qRh9fSQKxsfN6cix5XzxwhqokxHsZulQ==}
 
   '@orpc/openapi@1.6.0':
     resolution: {integrity: sha512-vQpbYpY8EAdiKXHdC9ciON6lFqYqQL6KzUVHVTun2FRaTedImJQcEtT7V0DfXGNadnlMEfURKuhSUU4x9F4gCg==}
@@ -1828,11 +1840,17 @@ packages:
   '@orpc/shared@1.6.0':
     resolution: {integrity: sha512-cAfn8gJ9+T9xXcOP+zIDwOoELu5LWScOueXYyGmsEZm8aEl/wAmbOp8sgKixlA53k7Usguwkh21xFfstt8ATfQ==}
 
+  '@orpc/shared@1.6.4':
+    resolution: {integrity: sha512-UuQZ/ok78Bdin3YlOkZ2id10kq/8r4cvhN8OSlI/SWy3mshWnJLdTDkbGOrVl0TNkndzIDMF3pY6Ur8BRy5jEw==}
+
   '@orpc/standard-server-aws-lambda@1.6.0':
     resolution: {integrity: sha512-ferabDYgAt67o6rV4qFjTj03ums4WA+eLHn7JvG1UMUMEcBKHduZPHh1J2Z+Uc5XpD37SxuQJ749tVrt+FQrKA==}
 
   '@orpc/standard-server-fetch@1.6.0':
     resolution: {integrity: sha512-iowzMNG6yT8KBhXH9ts763K2NRcAl1JKjo1V7BixK/L8EaWfIlCyXCjT4mpL8BkJNo8QxXtIWhu7be+ZegIqsg==}
+
+  '@orpc/standard-server-fetch@1.6.4':
+    resolution: {integrity: sha512-Kjg+DqNEiA6REbuhczLGxl82biEXTgyutZnCKj8N5ccfmWEsmcrJ9Mf2oScy8Rm5RwVB12DelIFA9fsZ8vGj7w==}
 
   '@orpc/standard-server-node@1.6.0':
     resolution: {integrity: sha512-lvwOBcevkDmPkVTdARa/5OwGOrs57tMrEOgiNEEYMrYn8ZULBpWFH2dtp6Ul2zQ9grraSejRuw404Dsq4R+aOA==}
@@ -1840,8 +1858,14 @@ packages:
   '@orpc/standard-server-peer@1.6.0':
     resolution: {integrity: sha512-abblhl9Qw1ey1LBRaGg32OP3GH14ykDEfYNGBJJwpxIhlJOqw12tEDDHrDM270/xKnpHWIHMbE1T5D/F9d9zRA==}
 
+  '@orpc/standard-server-peer@1.6.4':
+    resolution: {integrity: sha512-F3Dp2ooUlFR74jUEnEDeA+uLGzDoXX5oexLrau5tDUtJNyjn9KpVoY3b38dBCdvAc0iAJDD5zhrvuJfVKgDHAA==}
+
   '@orpc/standard-server@1.6.0':
     resolution: {integrity: sha512-C22orlB29jzTLdEuvr7yfz9AcGQo097nekpkyW26GLPqauvOvx1fx7yclr6yjT8qcTsrDSm6JS7pA41UFDgf+Q==}
+
+  '@orpc/standard-server@1.6.4':
+    resolution: {integrity: sha512-u2npKeDbu6KCcbjn2cJDdVlnlrX0KN+qfGszBxOS8yQowGI0DBO29BE8RrUeEs0+XZjgjQGzFzBYmha9Q2s4bA==}
 
   '@orpc/zod@1.6.0':
     resolution: {integrity: sha512-mzrGlV/yoWu7iztYzO/Tox8RwrxGP3n5l03j1Nez5Y0JEsT8QEE2k5qTOw7wRvMKQERAgbJgoxXck+6R6K9Icg==}
@@ -8163,10 +8187,24 @@ snapshots:
       '@orpc/standard-server-fetch': 1.6.0
       '@orpc/standard-server-peer': 1.6.0
 
+  '@orpc/client@1.6.4':
+    dependencies:
+      '@orpc/shared': 1.6.4
+      '@orpc/standard-server': 1.6.4
+      '@orpc/standard-server-fetch': 1.6.4
+      '@orpc/standard-server-peer': 1.6.4
+
   '@orpc/contract@1.6.0':
     dependencies:
       '@orpc/client': 1.6.0
       '@orpc/shared': 1.6.0
+      '@standard-schema/spec': 1.0.0
+      openapi-types: 12.1.3
+
+  '@orpc/contract@1.6.4':
+    dependencies:
+      '@orpc/client': 1.6.4
+      '@orpc/shared': 1.6.4
       '@standard-schema/spec': 1.0.0
       openapi-types: 12.1.3
 
@@ -8176,6 +8214,13 @@ snapshots:
       '@orpc/contract': 1.6.0
       '@orpc/shared': 1.6.0
       '@orpc/standard-server': 1.6.0
+
+  '@orpc/openapi-client@1.6.4':
+    dependencies:
+      '@orpc/client': 1.6.4
+      '@orpc/contract': 1.6.4
+      '@orpc/shared': 1.6.4
+      '@orpc/standard-server': 1.6.4
 
   '@orpc/openapi@1.6.0':
     dependencies:
@@ -8207,6 +8252,11 @@ snapshots:
       radash: 12.1.1
       type-fest: 4.41.0
 
+  '@orpc/shared@1.6.4':
+    dependencies:
+      radash: 12.1.1
+      type-fest: 4.41.0
+
   '@orpc/standard-server-aws-lambda@1.6.0':
     dependencies:
       '@orpc/shared': 1.6.0
@@ -8219,6 +8269,11 @@ snapshots:
       '@orpc/shared': 1.6.0
       '@orpc/standard-server': 1.6.0
 
+  '@orpc/standard-server-fetch@1.6.4':
+    dependencies:
+      '@orpc/shared': 1.6.4
+      '@orpc/standard-server': 1.6.4
+
   '@orpc/standard-server-node@1.6.0':
     dependencies:
       '@orpc/shared': 1.6.0
@@ -8230,13 +8285,35 @@ snapshots:
       '@orpc/shared': 1.6.0
       '@orpc/standard-server': 1.6.0
 
+  '@orpc/standard-server-peer@1.6.4':
+    dependencies:
+      '@orpc/shared': 1.6.4
+      '@orpc/standard-server': 1.6.4
+
   '@orpc/standard-server@1.6.0':
     dependencies:
       '@orpc/shared': 1.6.0
 
+  '@orpc/standard-server@1.6.4':
+    dependencies:
+      '@orpc/shared': 1.6.4
+
   '@orpc/zod@1.6.0(@orpc/contract@1.6.0)(@orpc/server@1.6.0)(zod@3.25.67)':
     dependencies:
       '@orpc/contract': 1.6.0
+      '@orpc/openapi': 1.6.0
+      '@orpc/server': 1.6.0
+      '@orpc/shared': 1.6.0
+      escape-string-regexp: 5.0.0
+      wildcard-match: 5.1.4
+      zod: 3.25.67
+    transitivePeerDependencies:
+      - crossws
+      - ws
+
+  '@orpc/zod@1.6.0(@orpc/contract@1.6.4)(@orpc/server@1.6.0)(zod@3.25.67)':
+    dependencies:
+      '@orpc/contract': 1.6.4
       '@orpc/openapi': 1.6.0
       '@orpc/server': 1.6.0
       '@orpc/shared': 1.6.0

@@ -30,21 +30,31 @@ app.use('/rpc/*', async (c, next) => {
   if (matched) {
     return c.newResponse(response.body, response);
   }
+
   await next();
 });
 
-// Handle API routes - all routes from your contract
-app.all('*', async (c) => {
-  const context = await createContext({ context: c });
-  const { matched, response } = await openAPIHandler.handle(c.req.raw, {
-    context: context,
-  });
+// Handle API routes - all routes from contract
+const routes = [
+  { path: '/docs', methods: ['GET'] },
+  { path: '/openapi', methods: ['GET'] },
+  { path: '/read', methods: ['GET', 'POST'] },
+  { path: '/links', methods: ['GET', 'POST'] },
+] as const;
 
-  if (matched && response) {
-    return response;
+for (const route of routes) {
+  for (const method of route.methods) {
+    app.on(method, route.path, async (c) => {
+      const context = await createContext({ context: c });
+      const { matched, response } = await openAPIHandler.handle(c.req.raw, {
+        context: context,
+      });
+
+      if (matched && response) {
+        return c.newResponse(response.body, response);
+      }
+    });
   }
-
-  return c.notFound();
-});
+}
 
 export default app;

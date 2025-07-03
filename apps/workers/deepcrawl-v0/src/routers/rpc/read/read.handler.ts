@@ -1,0 +1,63 @@
+import { retry } from '@/middlewares/os.retry';
+import { publicProcedures } from '@/orpc';
+import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
+import { processReadRequest } from './read.processor';
+
+export const readGETHandler = publicProcedures
+  .use(retry({ times: 3 }))
+  .read.getMarkdown.handler(async ({ input, context: c, errors }) => {
+    const { url } = input;
+
+    try {
+      const result = await processReadRequest(
+        c,
+        {
+          url,
+        },
+        /* isStringResponse */
+        true,
+      );
+
+      // WORKAROUND: Return a Blob with text/markdown MIME type to bypass ORPC's JSON serialization
+      return new Blob([result], { type: 'text/markdown; charset=utf-8' });
+    } catch (error) {
+      const readErrorResponse: ReadErrorResponse = {
+        success: false,
+        targetUrl: url,
+        error: 'Failed to read url',
+      };
+
+      throw errors.READ_ERROR_RESPONSE({
+        data: readErrorResponse,
+      });
+    }
+  });
+
+export const readPOSTHandler = publicProcedures
+  .use(retry({ times: 3 }))
+  .read.readWebsite.handler(async ({ input, context: c, errors }) => {
+    const { url, ...rest } = input;
+    try {
+      const result = await processReadRequest(
+        c,
+        {
+          url,
+          ...rest,
+        },
+        /* isStringResponse */
+        false,
+      );
+
+      return result as ReadSuccessResponse;
+    } catch (error) {
+      const readErrorResponse: ReadErrorResponse = {
+        success: false,
+        targetUrl: url,
+        error: 'Failed to read url',
+      };
+
+      throw errors.READ_ERROR_RESPONSE({
+        data: readErrorResponse,
+      });
+    }
+  });

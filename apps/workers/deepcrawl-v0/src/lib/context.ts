@@ -1,3 +1,4 @@
+import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
 import type { Context as HonoContext } from 'hono';
 import type { PinoLogger } from 'hono-pino';
 
@@ -10,7 +11,9 @@ export interface AppBindings {
   Variables: AppVariables;
 }
 
-export interface AppContext extends HonoContext<AppBindings> {}
+export interface AppContext
+  extends HonoContext<AppBindings>,
+    ResponseHeadersPluginContext {}
 
 export type CreateContextOptions = {
   context: AppContext;

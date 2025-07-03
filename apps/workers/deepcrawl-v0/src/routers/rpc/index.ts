@@ -1,8 +1,9 @@
 import { publicProcedures } from '@/orpc';
-import { readGetHandler } from './read.procedures';
+import { readGETHandler, readPOSTHandler } from './read/read.handler';
 
 export const router = publicProcedures.router({
   read: {
-    getMarkdown: readGetHandler,
+    getMarkdown: readGETHandler,
+    readWebsite: readPOSTHandler,
   },
 });

@@ -12,8 +12,6 @@ import type { AppContext } from './lib/context';
  */
 export const publicProcedures = implement(contract).$context<AppContext>();
 
-//
-
 // export const authed = pub.use(({ context, next }) => {
 //   if (!context.user) {
 //     throw new ORPCError('UNAUTHORIZED')

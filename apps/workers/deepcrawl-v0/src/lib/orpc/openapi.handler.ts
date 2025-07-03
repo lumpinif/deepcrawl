@@ -6,6 +6,13 @@ import { experimental_ZodToJsonSchemaConverter as ZodV4ToJsonSchemaConverter } f
 
 import { env } from 'cloudflare:workers';
 import { router } from '@/routers/rpc';
+import {
+  LinksErrorResponseSchema,
+  ReadErrorResponseSchema,
+  ReadOptionsSchema,
+  ReadSuccessResponseSchema,
+} from '@deepcrawl/types';
+import { ResponseHeadersPlugin } from '@orpc/server/plugins';
 import packageJSON from '../../../package.json' with { type: 'json' };
 
 export const openAPIHandler = new OpenAPIHandler(router, {
@@ -15,6 +22,7 @@ export const openAPIHandler = new OpenAPIHandler(router, {
     }),
   ],
   plugins: [
+    new ResponseHeadersPlugin(),
     new ZodSmartCoercionPlugin(),
     new OpenAPIReferencePlugin({
       schemaConverters: [new ZodV4ToJsonSchemaConverter()],
@@ -48,7 +56,23 @@ export const openAPIHandler = new OpenAPIHandler(router, {
               'API endpoints for extracting links and building sitemaps',
           },
         ],
-        commonSchemas: {},
+        commonSchemas: {
+          ReadOptions: {
+            schema: ReadOptionsSchema,
+          },
+          ReadSuccessResponse: {
+            schema: ReadSuccessResponseSchema,
+          },
+          ReadErrorResponse: {
+            schema: ReadErrorResponseSchema,
+          },
+          LinksErrorResponse: {
+            schema: LinksErrorResponseSchema,
+          },
+          UndefinedError: {
+            error: 'UndefinedError',
+          },
+        },
         components: {
           securitySchemes: {
             bearerAuth: {
