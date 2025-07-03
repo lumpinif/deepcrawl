@@ -562,7 +562,7 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
     },
   });
 
-const LinksPostResponseBaseSchema = z.object({
+const LinksResponseBaseSchema = z.object({
   success: z.boolean().meta({
     description: 'Indicates whether the operation was successful',
   }),
@@ -581,9 +581,11 @@ const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
   rawHtml: true,
 });
 
-export const LinksSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
-  PartialScrapedDataSchema,
-)
+export const LinksSuccessResponseSchema = z
+  .object({
+    ...LinksResponseBaseSchema.shape,
+    ...PartialScrapedDataSchema.shape,
+  })
   .extend({
     success: z.literal(true).meta({
       description: 'Indicates that the operation was successful',
@@ -615,7 +617,7 @@ export const LinksSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
     }),
   })
   .meta({
-    title: 'LinksPostSuccessResponse',
+    title: 'LinksSuccessResponse',
     description: 'Successful response from the links extraction operation',
     example: {
       success: true,
@@ -673,7 +675,7 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
       'Partial site map tree if available, or null if no tree could be generated',
   }),
 }).meta({
-  title: 'LinksPostErrorResponse',
+  title: 'LinksErrorResponse',
   description: 'Error response from the links extraction operation',
 });
 
