@@ -6,12 +6,21 @@ import type {
 
 import { MAX_VISITED_URLS_LIMIT } from '@/config/constants';
 import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
-import type { _linksSets } from '@/routers/links/links.processor';
 import {
   ImageSrcNormalizeHandler,
   LinkNormalizeHandler,
 } from '@/services/html-cleaning/handlers/link-normalize';
 import { validateURL } from '@/utils/url/validate-url';
+
+export interface _linksSets {
+  internal: Set<string>;
+  external: Set<string>;
+  media: {
+    images: Set<string>;
+    videos: Set<string>;
+    documents: Set<string>;
+  };
+}
 
 const MEDIA_EXTENSIONS = {
   images: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico'],

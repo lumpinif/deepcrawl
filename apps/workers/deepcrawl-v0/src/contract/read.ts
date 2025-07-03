@@ -1,7 +1,6 @@
-import { ReadOptionsSchema } from '@/middlewares/read.validator';
-
 import { oc } from '@orpc/contract';
-import z from 'zod';
+
+import * as z from 'zod/v4';
 import type { Inputs, Outputs } from '.';
 
 const tags = ['Read Website'];
@@ -11,10 +10,15 @@ export const readGETContract = oc
     tags,
     path: '/',
     method: 'GET',
-    summary: 'Get page markdown content from a URL',
-    description: 'Directly return page markdown content from the request URL.',
+    summary: 'GET /read - Get page markdown content from a URL',
+    description:
+      'Directly return page markdown content from the request URL as a string response.',
   })
-  .input(ReadOptionsSchema.pick({ url: true }))
+  .input(
+    z.object({
+      url: z.string(),
+    }),
+  )
   .output(z.string());
 
 export type ReadGetMarkdownInput = Inputs['read']['getMarkdown'];

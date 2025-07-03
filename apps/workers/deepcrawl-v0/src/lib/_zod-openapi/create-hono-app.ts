@@ -8,10 +8,9 @@ import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
 
-import { pinoLogger } from '@/middlewares/pino-logger';
-
+import type { AppBindings } from '@/lib/context';
 import { defaultErrorHook, errorHandler } from '@/middlewares/error';
-import type { AppBindings, AppOpenAPI } from './types';
+import type { AppOpenAPI } from './types';
 
 const allowedOrigins = [
   'https://api.deepcrawl.dev',
@@ -36,10 +35,6 @@ export default function createApp() {
     .use('*', secureHeaders())
     .use('*', serveEmojiFavicon('🔗'))
     .use('*', trimTrailingSlash())
-    .use('*', async (c, next) => {
-      pinoLogger({ c });
-      await next();
-    })
     .use(
       '*',
       cors({

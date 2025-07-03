@@ -1,4 +1,4 @@
-import type { AppRouteHandler } from '@/lib/types';
+import type { AppRouteHandler } from '@/lib/_zod-openapi/types';
 import * as HttpStatusCodes from 'stoker/http-status-codes';
 
 import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';

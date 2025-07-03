@@ -10,7 +10,7 @@ import type {
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 import { KV_CACHE_EXPIRATION_TTL } from '@/config/constants';
-import type { AppContext } from '@/lib/types';
+import type { AppContext } from '@/lib/context';
 import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
 

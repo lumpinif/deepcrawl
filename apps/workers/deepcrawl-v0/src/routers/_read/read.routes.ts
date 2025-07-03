@@ -1,4 +1,4 @@
-import { createRouter } from '@/lib/create-hono-app';
+import { createRouter } from '@/lib/_zod-openapi/create-hono-app';
 
 import * as handlers from './read.handlers';
 

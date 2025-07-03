@@ -14,10 +14,12 @@
     "gen:openapi": "tsx ./src/lib/generate-openapi-yaml.ts"
   },
   "dependencies": {
-    "@cloudflare/puppeteer": "^0.0.15",
     "@deepcrawl/types": "workspace:*",
+    "@deepcrawl/auth": "workspace:*",
+    "@deepcrawl/db": "workspace:*",
+    "@cloudflare/puppeteer": "^0.0.15",
     "@hono-rate-limiter/cloudflare": "^0.2.2",
-    "@hono/zod-openapi": "^0.19.6",
+    "@hono/zod-openapi": "^0.19.9",
     "@hono/zod-validator": "^0.5.0",
     "@orpc/client": "^1.6.0",
     "@orpc/contract": "^1.6.0",
@@ -37,8 +39,8 @@
     "pino-pretty": "^13.0.0",
     "stoker": "^1.4.2",
     "xss": "^1.0.15",
-    "zod": "^3.25.23",
-    "zod-to-json-schema": "^3.24.3"
+    "zod": "^3.25.67",
+    "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.13.2",

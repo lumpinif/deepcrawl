@@ -1,4 +1,4 @@
-import type { AppBindings, AppContext } from '@/lib/types';
+import type { AppBindings, AppContext } from '@/lib/context';
 import { isProduction } from '@/utils/worker-env';
 import type { Hook } from '@hono/zod-openapi';
 import type { ErrorHandler } from 'hono';
