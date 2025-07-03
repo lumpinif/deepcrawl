@@ -52,7 +52,7 @@ export const LinksOrderSchema = z.enum(['page', 'alphabetical']).meta({
   title: 'LinksOrder',
   description:
     'How to order links within each folder: "page" (preserve original order) or "alphabetical" (sort A→Z by URL).',
-  example: 'alphabetical',
+  examples: ['alphabetical'],
 });
 
 /**
@@ -75,7 +75,7 @@ export const TreeOptionsSchema = z
       )
       .meta({
         description: 'Whether to place folders before leaf nodes in the tree.',
-        example: true,
+        examples: [true],
       }),
     /**
      * How to order links within each folder:
@@ -97,7 +97,7 @@ export const TreeOptionsSchema = z
       .meta({
         description:
           'Whether to include extracted links for each node in the tree.',
-        example: true,
+        examples: [true],
       }),
 
     /**
@@ -113,7 +113,7 @@ export const TreeOptionsSchema = z
       .meta({
         description:
           'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL.',
-        example: false,
+        examples: [false],
       }),
   })
   .meta({
@@ -155,7 +155,7 @@ export const LinksOptionsSchema = z
      */
     url: z.string().meta({
       description: 'The URL to extract links from.',
-      example: 'https://example.com',
+      examples: ['https://example.com', 'example.com'],
     }),
 
     /**
@@ -163,48 +163,68 @@ export const LinksOptionsSchema = z
      * Default: true
      */
     // default true if not set
-    tree: z.coerce.boolean().optional().default(true).meta({
-      description: 'Whether to build a site map tree.',
-      example: true,
-    }),
+    tree: z.coerce
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Whether to build a site map tree.',
+        examples: [true],
+      }),
 
     /**
      * Whether to extract metadata from the page.
      * Default: true
      */
     // default true if not set
-    metadata: z.coerce.boolean().optional().default(true).meta({
-      description: 'Whether to extract metadata from the page.',
-      example: true,
-    }),
+    metadata: z.coerce
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Whether to extract metadata from the page.',
+        examples: [true],
+      }),
 
     /**
      * Whether to return cleaned HTML.
      * Default: false
      */
-    cleanedHtml: z.coerce.boolean().optional().default(false).meta({
-      description: 'Whether to return cleaned HTML.',
-      example: false,
-    }),
+    cleanedHtml: z.coerce
+      .boolean()
+      .optional()
+      .default(false)
+      .meta({
+        description: 'Whether to return cleaned HTML.',
+        examples: [false],
+      }),
 
     /**
      * Whether to fetch and parse robots.txt.
      * Default: false
      */
-    robots: z.coerce.boolean().optional().default(false).meta({
-      description: 'Whether to fetch and parse robots.txt.',
-      example: false,
-    }),
+    robots: z.coerce
+      .boolean()
+      .optional()
+      .default(false)
+      .meta({
+        description: 'Whether to fetch and parse robots.txt.',
+        examples: [false],
+      }),
 
     /**
      * Whether to fetch and parse sitemap.xml.
      * Default: false
      */
-    sitemapXML: z.coerce.boolean().optional().default(false).meta({
-      description:
-        '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
-      example: false,
-    }),
+    sitemapXML: z.coerce
+      .boolean()
+      .optional()
+      .default(false)
+      .meta({
+        description:
+          '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
+        examples: [false],
+      }),
 
     ...TreeOptionsSchema.shape,
 
@@ -213,41 +233,50 @@ export const LinksOptionsSchema = z
   .meta({
     title: 'LinksOptions',
     description: 'Configuration options for links extraction operation',
-    example: {
-      url: 'https://example.com',
-    },
+    examples: [
+      {
+        url: 'https://example.com',
+        tree: true,
+      },
+    ],
   });
 
 export const SkippedUrlSchema = z
   .object({
     url: z.string().meta({
       description: 'The URL that was skipped during processing',
-      example: 'https://example.com/private-page',
+      examples: ['https://example.com/private-page'],
     }),
     reason: z.string().meta({
       description: 'The reason why this URL was skipped',
-      example: 'Blocked by robots.txt',
+      examples: ['Blocked by robots.txt'],
     }),
   })
   .meta({
     title: 'SkippedUrl',
     description: 'A URL that was skipped during processing with the reason',
-    example: {
-      url: 'https://example.com/private-page',
-      reason: 'Blocked by robots.txt',
-    },
+    examples: [
+      {
+        url: 'https://example.com/private-page',
+        reason: 'Blocked by robots.txt',
+      },
+    ],
   });
 
 export const VisitedUrlSchema = z
   .object({
     url: z.string().meta({
       description: 'The URL that was visited',
-      example: 'https://example.com/about',
+      examples: ['https://example.com/about'],
     }),
-    lastVisited: z.string().nullable().optional().meta({
-      description: 'ISO timestamp when this URL was last visited',
-      example: '2024-01-15T10:30:00.000Z',
-    }),
+    lastVisited: z
+      .string()
+      .nullable()
+      .optional()
+      .meta({
+        description: 'ISO timestamp when this URL was last visited',
+        examples: ['2024-01-15T10:30:00.000Z'],
+      }),
   })
   .meta({
     title: 'VisitedUrl',
@@ -261,7 +290,7 @@ export const SkippedLinksSchema = z
       .optional()
       .meta({
         description: 'Internal URLs that were skipped during processing',
-        example: [
+        examples: [
           {
             url: 'https://example.com/admin',
             reason: 'Blocked by robots.txt',
@@ -273,7 +302,7 @@ export const SkippedLinksSchema = z
       .optional()
       .meta({
         description: 'External URLs that were skipped during processing',
-        example: [
+        examples: [
           {
             url: 'https://external-site.com/blocked',
             reason: 'External domain excluded',
@@ -287,7 +316,7 @@ export const SkippedLinksSchema = z
           .optional()
           .meta({
             description: 'Image URLs that were skipped during processing',
-            example: [
+            examples: [
               {
                 url: 'https://example.com/large-image.jpg',
                 reason: 'File size exceeds limit',
@@ -299,7 +328,7 @@ export const SkippedLinksSchema = z
           .optional()
           .meta({
             description: 'Video URLs that were skipped during processing',
-            example: [
+            examples: [
               {
                 url: 'https://example.com/video.mp4',
                 reason: 'Media extraction disabled',
@@ -311,7 +340,7 @@ export const SkippedLinksSchema = z
           .optional()
           .meta({
             description: 'Document URLs that were skipped during processing',
-            example: [
+            examples: [
               {
                 url: 'https://example.com/document.pdf',
                 reason: 'PDF processing disabled',
@@ -328,7 +357,7 @@ export const SkippedLinksSchema = z
       .optional()
       .meta({
         description: 'Other URLs that were skipped during processing',
-        example: [
+        examples: [
           {
             url: 'mailto:contact@example.com',
             reason: 'Non-HTTP protocol',
@@ -340,50 +369,52 @@ export const SkippedLinksSchema = z
     title: 'SkippedLinks',
     description:
       'Categorized collection of URLs that were skipped during processing',
-    example: {
-      internal: [
-        {
-          url: 'https://example.com/admin',
-          reason: 'Blocked by robots.txt',
-        },
-        {
-          url: 'https://example.com/private',
-          reason: 'Requires authentication',
-        },
-      ],
-      external: [
-        {
-          url: 'https://external-site.com/blocked',
-          reason: 'External domain excluded',
-        },
-      ],
-      media: {
-        images: [
+    examples: [
+      {
+        internal: [
           {
-            url: 'https://example.com/large-image.jpg',
-            reason: 'File size exceeds limit',
+            url: 'https://example.com/admin',
+            reason: 'Blocked by robots.txt',
+          },
+          {
+            url: 'https://example.com/private',
+            reason: 'Requires authentication',
           },
         ],
-        videos: [
+        external: [
           {
-            url: 'https://example.com/video.mp4',
-            reason: 'Media extraction disabled',
+            url: 'https://external-site.com/blocked',
+            reason: 'External domain excluded',
           },
         ],
-        documents: [
+        media: {
+          images: [
+            {
+              url: 'https://example.com/large-image.jpg',
+              reason: 'File size exceeds limit',
+            },
+          ],
+          videos: [
+            {
+              url: 'https://example.com/video.mp4',
+              reason: 'Media extraction disabled',
+            },
+          ],
+          documents: [
+            {
+              url: 'https://example.com/document.pdf',
+              reason: 'PDF processing disabled',
+            },
+          ],
+        },
+        other: [
           {
-            url: 'https://example.com/document.pdf',
-            reason: 'PDF processing disabled',
+            url: 'mailto:contact@example.com',
+            reason: 'Non-HTTP protocol',
           },
         ],
       },
-      other: [
-        {
-          url: 'mailto:contact@example.com',
-          reason: 'Non-HTTP protocol',
-        },
-      ],
-    },
+    ],
   });
 
 // Define the type first to avoid circular reference
@@ -408,37 +439,56 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
     // Inline all properties for better OpenAPI documentation display
     url: z.string().meta({
       description: 'The URL of this page',
-      example: 'https://example.com/about',
+      examples: ['https://example.com/about'],
     }),
-    rootUrl: z.string().optional().meta({
-      description: 'The root URL of the website being crawled',
-      example: 'https://example.com',
-    }),
-    name: z.string().optional().meta({
-      description: 'The display name or title of this page',
-      example: 'About Us',
-    }),
-    totalUrls: z.number().optional().meta({
-      description: 'Total number of URLs discovered in the entire tree',
-      example: 150,
-    }),
-    executionTime: z.string().optional().meta({
-      description: 'Time taken to process this page',
-      example: '1.2s',
-    }),
+    rootUrl: z
+      .string()
+      .optional()
+      .meta({
+        description: 'The root URL of the website being crawled',
+        examples: ['https://example.com'],
+      }),
+    name: z
+      .string()
+      .optional()
+      .meta({
+        description: 'The display name or title of this page',
+        examples: ['About Us'],
+      }),
+    totalUrls: z
+      .number()
+      .optional()
+      .meta({
+        description: 'Total number of URLs discovered in the entire tree',
+        examples: [150],
+      }),
+    executionTime: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Time taken to process this page',
+        examples: ['0.2s'],
+      }),
     lastUpdated: z.string().meta({
       description: 'ISO timestamp when this page was last crawled',
-      example: '2024-01-15T10:30:00.000Z',
+      examples: ['2024-01-15T10:30:00.000Z'],
     }),
-    lastVisited: z.string().nullable().optional().meta({
-      description:
-        'ISO timestamp when this page was last visited (null if never visited)',
-      example: '2024-01-15T10:30:00.000Z',
-    }),
-    error: z.string().optional().meta({
-      description: 'Error message if there was an issue processing this page',
-      example: 'Failed to fetch: 404 Not Found',
-    }),
+    lastVisited: z
+      .string()
+      .nullable()
+      .optional()
+      .meta({
+        description:
+          'ISO timestamp when this page was last visited (null if never visited)',
+        examples: ['2024-01-15T10:30:00.000Z'],
+      }),
+    error: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Error message if there was an issue processing this page',
+        examples: ['Failed to fetch: 404 Not Found'],
+      }),
     metadata: PageMetadataSchema.optional().meta({
       description:
         'Extracted metadata from the page (title, description, etc.)',
@@ -466,7 +516,7 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
       .meta({
         description:
           'Array of child LinksTree nodes, each representing a page found under this URL. This creates a recursive tree structure for the entire website hierarchy.',
-        example: [
+        examples: [
           {
             url: 'https://example.com/about/team',
             name: 'Team',
@@ -492,74 +542,77 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
     title: 'LinksTree',
     description:
       'A node in the site map tree representing a webpage and its children',
-    example: {
-      url: 'https://example.com/about',
-      rootUrl: 'https://example.com',
-      name: 'About Us',
-      totalUrls: 150,
-      executionTime: '1.2s',
-      lastUpdated: '2024-01-15T10:30:00.000Z',
-      lastVisited: '2024-01-15T10:30:00.000Z',
-      metadata: {
-        title: 'About Us - Example Company',
-        description: 'Learn more about our company history and mission.',
-        language: 'en',
-        canonical: 'https://example.com/about',
-        robots: 'index,follow',
-        author: 'Example Company',
-        keywords: ['about', 'company', 'history'],
-        favicon: 'https://example.com/favicon.ico',
-        ogTitle: 'About Us - Example Company',
-        ogDescription: 'Learn more about our company history and mission.',
-        ogImage: 'https://example.com/og-about.jpg',
-        ogUrl: 'https://example.com/about',
-        twitterCard: 'summary_large_image',
-        twitterTitle: 'About Us - Example Company',
-        twitterDescription: 'Learn more about our company history and mission.',
-        twitterImage: 'https://example.com/twitter-about.jpg',
-        isIframeAllowed: true,
-      },
-      extractedLinks: {
-        internal: [
-          'https://example.com/about/team',
-          'https://example.com/about/history',
-          'https://example.com/contact',
-        ],
-        external: [
-          'https://partner-company.com',
-          'https://industry-association.org',
-        ],
-        media: {
-          images: [
-            'https://example.com/images/office-photo.jpg',
-            'https://example.com/images/team-photo.jpg',
+    examples: [
+      {
+        url: 'https://example.com/about',
+        rootUrl: 'https://example.com',
+        name: 'About Us',
+        totalUrls: 150,
+        executionTime: '1.2s',
+        lastUpdated: '2024-01-15T10:30:00.000Z',
+        lastVisited: '2024-01-15T10:30:00.000Z',
+        metadata: {
+          title: 'About Us - Example Company',
+          description: 'Learn more about our company history and mission.',
+          language: 'en',
+          canonical: 'https://example.com/about',
+          robots: 'index,follow',
+          author: 'Example Company',
+          keywords: ['about', 'company', 'history'],
+          favicon: 'https://example.com/favicon.ico',
+          ogTitle: 'About Us - Example Company',
+          ogDescription: 'Learn more about our company history and mission.',
+          ogImage: 'https://example.com/og-about.jpg',
+          ogUrl: 'https://example.com/about',
+          twitterCard: 'summary_large_image',
+          twitterTitle: 'About Us - Example Company',
+          twitterDescription:
+            'Learn more about our company history and mission.',
+          twitterImage: 'https://example.com/twitter-about.jpg',
+          isIframeAllowed: true,
+        },
+        extractedLinks: {
+          internal: [
+            'https://example.com/about/team',
+            'https://example.com/about/history',
+            'https://example.com/contact',
           ],
-          videos: ['https://example.com/videos/company-intro.mp4'],
-          documents: ['https://example.com/files/company-brochure.pdf'],
-        },
-      },
-      children: [
-        {
-          url: 'https://example.com/about/team',
-          name: 'Our Team',
-          lastUpdated: '2024-01-15T10:35:00.000Z',
-          children: [],
-        },
-        {
-          url: 'https://example.com/about/history',
-          name: 'Company History',
-          lastUpdated: '2024-01-15T10:36:00.000Z',
-          children: [
-            {
-              url: 'https://example.com/about/history/founding',
-              name: 'Company Founding',
-              lastUpdated: '2024-01-15T10:37:00.000Z',
-              children: [],
-            },
+          external: [
+            'https://partner-company.com',
+            'https://industry-association.org',
           ],
+          media: {
+            images: [
+              'https://example.com/images/office-photo.jpg',
+              'https://example.com/images/team-photo.jpg',
+            ],
+            videos: ['https://example.com/videos/company-intro.mp4'],
+            documents: ['https://example.com/files/company-brochure.pdf'],
+          },
         },
-      ],
-    },
+        children: [
+          {
+            url: 'https://example.com/about/team',
+            name: 'Our Team',
+            lastUpdated: '2024-01-15T10:35:00.000Z',
+            children: [],
+          },
+          {
+            url: 'https://example.com/about/history',
+            name: 'Company History',
+            lastUpdated: '2024-01-15T10:36:00.000Z',
+            children: [
+              {
+                url: 'https://example.com/about/history/founding',
+                name: 'Company Founding',
+                lastUpdated: '2024-01-15T10:37:00.000Z',
+                children: [],
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
 
 const LinksResponseBaseSchema = z.object({
@@ -568,11 +621,11 @@ const LinksResponseBaseSchema = z.object({
   }),
   targetUrl: z.string().meta({
     description: 'The URL that was requested to be processed',
-    example: 'https://example.com',
+    examples: ['https://example.com'],
   }),
   timestamp: z.string().meta({
     description: 'ISO timestamp when the request was processed',
-    example: '2024-01-15T10:30:00.000Z',
+    examples: ['2024-01-15T10:30:00.000Z'],
   }),
 });
 
@@ -589,22 +642,25 @@ export const LinksSuccessResponseSchema = z
   .extend({
     success: z.literal(true).meta({
       description: 'Indicates that the operation was successful',
-      example: true,
+      examples: [true],
     }),
     cached: z.boolean().meta({
       description: 'Whether the result was returned from cache',
-      example: false,
+      examples: [false],
     }),
-    executionTime: z.string().optional().meta({
-      description: 'Time taken to execute the request',
-      example: '1.2s',
-    }),
+    executionTime: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Time taken to execute the request',
+        examples: ['0.2s'],
+      }),
     ancestors: z
       .array(z.string())
       .optional()
       .meta({
         description: 'Array of parent URLs leading to this URL',
-        example: ['https://example.com'],
+        examples: ['https://example.com'],
       }),
     skippedUrls: SkippedLinksSchema.optional(),
     extractedLinks: ExtractedLinksSchema.optional(),
@@ -619,54 +675,59 @@ export const LinksSuccessResponseSchema = z
   .meta({
     title: 'LinksSuccessResponse',
     description: 'Successful response from the links extraction operation',
-    example: {
-      success: true,
-      targetUrl: 'https://example.com',
-      timestamp: '2024-01-15T10:30:00.000Z',
-      cached: false,
-      executionTime: '1.2s',
-      title: 'Example Website',
-      description: 'Welcome to our example website',
-      ancestors: ['https://example.com'],
-      extractedLinks: {
-        internal: ['https://example.com/about', 'https://example.com/contact'],
-        external: ['https://external-site.com/reference'],
-        media: {
-          images: ['https://example.com/logo.png'],
-          videos: [],
-          documents: ['https://example.com/brochure.pdf'],
+    examples: [
+      {
+        success: true,
+        targetUrl: 'https://example.com',
+        timestamp: '2024-01-15T10:30:00.000Z',
+        cached: false,
+        executionTime: '1.2s',
+        title: 'Example Website',
+        description: 'Welcome to our example website',
+        ancestors: ['https://example.com'],
+        extractedLinks: {
+          internal: [
+            'https://example.com/about',
+            'https://example.com/contact',
+          ],
+          external: ['https://external-site.com/reference'],
+          media: {
+            images: ['https://example.com/logo.png'],
+            videos: [],
+            documents: ['https://example.com/brochure.pdf'],
+          },
+        },
+        skippedUrls: {
+          internal: [
+            {
+              url: 'https://example.com/admin',
+              reason: 'Blocked by robots.txt',
+            },
+          ],
+        },
+        tree: {
+          url: 'https://example.com',
+          rootUrl: 'https://example.com',
+          name: 'Home',
+          totalUrls: 25,
+          executionTime: '1.2s',
+          lastUpdated: '2024-01-15T10:30:00.000Z',
+          children: [
+            {
+              url: 'https://example.com/about',
+              name: 'About',
+              lastUpdated: '2024-01-15T10:30:05.000Z',
+            },
+          ],
         },
       },
-      skippedUrls: {
-        internal: [
-          {
-            url: 'https://example.com/admin',
-            reason: 'Blocked by robots.txt',
-          },
-        ],
-      },
-      tree: {
-        url: 'https://example.com',
-        rootUrl: 'https://example.com',
-        name: 'Home',
-        totalUrls: 25,
-        executionTime: '1.2s',
-        lastUpdated: '2024-01-15T10:30:00.000Z',
-        children: [
-          {
-            url: 'https://example.com/about',
-            name: 'About',
-            lastUpdated: '2024-01-15T10:30:05.000Z',
-          },
-        ],
-      },
-    },
+    ],
   });
 
 export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
   timestamp: z.string().meta({
     description: 'ISO timestamp when the error occurred',
-    example: '2024-01-15T10:30:00.000Z',
+    examples: ['2024-01-15T10:30:00.000Z'],
   }),
   /* _DEPRECATED_ .openapi({
       anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }] */
@@ -677,6 +738,14 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
 }).meta({
   title: 'LinksErrorResponse',
   description: 'Error response from the links extraction operation',
+  examples: [
+    {
+      success: false,
+      targetUrl: 'https://example.com',
+      timestamp: '2024-01-15T10:30:00.000Z',
+      error: 'Failed to fetch: 404 Not Found',
+    },
+  ],
 });
 
 /**

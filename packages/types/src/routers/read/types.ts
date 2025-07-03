@@ -13,7 +13,7 @@ export const ReadOptionsSchema = z
      */
     url: z.string().meta({
       description: 'The URL to read and extract content from',
-      example: 'https://example.com',
+      examples: ['https://example.com', 'example.com'],
     }),
 
     /**
@@ -21,47 +21,67 @@ export const ReadOptionsSchema = z
      * Default: true
      */
     // default true if not set
-    metadata: z.coerce.boolean().optional().default(true).meta({
-      description: 'Whether to extract metadata from the page.',
-      example: true,
-    }),
+    metadata: z.coerce
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Whether to extract metadata from the page.',
+        examples: [true],
+      }),
 
     /**
      * Whether to extract markdown from the page.
      * Default: true
      */
     // default true if not set
-    markdown: z.coerce.boolean().optional().default(true).meta({
-      description: 'Whether to extract markdown from the page.',
-      example: true,
-    }),
+    markdown: z.coerce
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Whether to extract markdown from the page.',
+        examples: [true],
+      }),
 
     /**
      * Whether to return cleaned HTML.
      * Default: false
      */
-    cleanedHtml: z.coerce.boolean().optional().default(false).meta({
-      description: 'Whether to return cleaned HTML.',
-      example: false,
-    }),
+    cleanedHtml: z.coerce
+      .boolean()
+      .optional()
+      .default(false)
+      .meta({
+        description: 'Whether to return cleaned HTML.',
+        examples: [false],
+      }),
 
     /**
      * Whether to fetch and parse robots.txt.
      * Default: false
      */
-    robots: z.coerce.boolean().optional().default(false).meta({
-      description: 'Whether to fetch and parse robots.txt.',
-      example: false,
-    }),
+    robots: z.coerce
+      .boolean()
+      .optional()
+      .default(false)
+      .meta({
+        description: 'Whether to fetch and parse robots.txt.',
+        examples: [false],
+      }),
 
     /**
      * Whether to return raw HTML.
      * Default: false
      */
-    rawHtml: z.coerce.boolean().optional().default(false).meta({
-      description: 'Whether to return raw HTML.',
-      example: false,
-    }),
+    rawHtml: z.coerce
+      .boolean()
+      .optional()
+      .default(false)
+      .meta({
+        description: 'Whether to return raw HTML.',
+        examples: [false],
+      }),
 
     /**
      * Options for metadata extraction.
@@ -80,23 +100,41 @@ export const ReadOptionsSchema = z
   .meta({
     title: 'ReadOptions',
     description: 'Configuration options for read operation',
-    example: {
-      url: 'https://example.com',
-    },
+    examples: [
+      {
+        url: 'https://example.com',
+        metadata: true,
+        markdown: true,
+        cleanedHtml: false,
+        robots: false,
+        rawHtml: false,
+        metadataOptions: {
+          title: true,
+          description: true,
+          language: true,
+          canonical: true,
+          robots: true,
+        },
+      },
+    ],
   });
 
 export const ReadResponseBaseSchema = z.object({
   success: z.boolean().meta({
     description: 'Indicates whether the operation was successful',
   }),
-  cached: z.boolean().optional().default(false).meta({
-    description:
-      'The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application.',
-    example: false,
-  }),
+  cached: z
+    .boolean()
+    .optional()
+    .default(false)
+    .meta({
+      description:
+        'The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application.',
+      examples: [false],
+    }),
   targetUrl: z.string().meta({
     description: 'The URL that was requested to be processed',
-    example: 'https://example.com',
+    examples: ['https://example.com'],
   }),
 });
 
@@ -106,49 +144,60 @@ export const MetricsSchema = z
   .object({
     readableDuration: z.string().meta({
       description: 'Human-readable representation of the operation duration',
-      example: '1.2s',
+      examples: ['0.2s'],
     }),
     duration: z.number().meta({
       description: 'Duration of the operation in milliseconds',
-      example: 1200,
+      examples: [1200],
     }),
     startTime: z.number().meta({
       description: 'Timestamp in milliseconds when the operation started',
-      example: 1704067800000,
+      examples: [1704067800000],
     }),
     endTime: z.number().meta({
       description: 'Timestamp in milliseconds when the operation finished',
-      example: 1704067801200,
+      examples: [1704067800200],
     }),
   })
   .meta({
     title: 'Metrics',
     description: 'Performance metrics for the read operation',
-    example: {
-      readableDuration: '1.2s',
-      duration: 1200,
-      startTime: 1704067800000,
-      endTime: 1704067801200,
-    },
+    examples: [
+      {
+        readableDuration: '0.2s',
+        duration: 1200,
+        startTime: 1704067800000,
+        endTime: 1704067800200,
+      },
+    ],
   });
 
-export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
-  success: z.literal(true).meta({
-    description: 'Indicates that the operation was successful',
-    example: true,
-  }), // override to enforce success: true
-})
-  .merge(ScrapedDataSchema.omit({ rawHtml: true }))
-  .extend({
-    markdown: z.string().optional().meta({
-      description: 'Markdown content of the page.',
-      example: '# Example Article\n\nThis is the main content of the article.',
-    }),
-    rawHtml: z.string().optional().meta({
-      description: 'Raw HTML content of the page.',
-      example:
-        '<html><head><title>Example</title></head><body><h1>Example Article</h1></body></html>',
-    }),
+export const ReadSuccessResponseSchema = z
+  .object({
+    ...ReadResponseBaseSchema.shape,
+    success: z.literal(true).meta({
+      description: 'Indicates that the operation was successful',
+      examples: [true],
+    }), // override to enforce success: true
+    ...ScrapedDataSchema.omit({ rawHtml: true }).shape,
+    markdown: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Markdown content of the page.',
+        examples: [
+          '# Example Article\n\nThis is the main content of the article.',
+        ],
+      }),
+    rawHtml: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Raw HTML content of the page.',
+        examples: [
+          '<html><head><title>Example</title></head><body><h1>Example Article</h1></body></html>',
+        ],
+      }),
     metrics: MetricsSchema.optional().meta({
       description: 'Metrics for the read operation.',
     }),
@@ -156,42 +205,44 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
   .meta({
     title: 'ReadSuccessResponse',
     description: 'Successful response from the read operation',
-    example: {
-      success: true,
-      cached: false,
-      targetUrl: 'https://example.com/article',
-      title: 'Example Article',
-      description: 'This is an example article description',
-      markdown:
-        '# Example Article\n\nThis is the main content of the article.\n\n## Introduction\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      metadata: {
+    examples: [
+      {
+        success: true,
+        cached: false,
+        targetUrl: 'https://example.com/article',
         title: 'Example Article',
         description: 'This is an example article description',
-        language: 'en',
-        canonical: 'https://example.com/article',
-        robots: 'index, follow',
-        author: 'John Doe',
-        keywords: ['example', 'article', 'demo'],
-        favicon: 'https://example.com/favicon.ico',
-        ogTitle: 'Example Article',
-        ogDescription: 'This is an example article description',
-        ogImage: 'https://example.com/og-image.jpg',
-        ogUrl: 'https://example.com/article',
-        ogType: 'article',
-        ogSiteName: 'Example Site',
-        twitterCard: 'summary_large_image',
-        twitterTitle: 'Example Article',
-        twitterDescription: 'This is an example article description',
-        twitterImage: 'https://example.com/twitter-image.jpg',
-        isIframeAllowed: true,
+        markdown:
+          '# Example Article\n\nThis is the main content of the article.\n\n## Introduction\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        metadata: {
+          title: 'Example Article',
+          description: 'This is an example article description',
+          language: 'en',
+          canonical: 'https://example.com/article',
+          robots: 'index, follow',
+          author: 'John Doe',
+          keywords: ['example', 'article', 'demo'],
+          favicon: 'https://example.com/favicon.ico',
+          ogTitle: 'Example Article',
+          ogDescription: 'This is an example article description',
+          ogImage: 'https://example.com/og-image.jpg',
+          ogUrl: 'https://example.com/article',
+          ogType: 'article',
+          ogSiteName: 'Example Site',
+          twitterCard: 'summary_large_image',
+          twitterTitle: 'Example Article',
+          twitterDescription: 'This is an example article description',
+          twitterImage: 'https://example.com/twitter-image.jpg',
+          isIframeAllowed: true,
+        },
+        metrics: {
+          readableDuration: '1.2s',
+          duration: 1200,
+          startTime: 1704067800000,
+          endTime: 1704067801200,
+        },
       },
-      metrics: {
-        readableDuration: '1.2s',
-        duration: 1200,
-        startTime: 1704067800000,
-        endTime: 1704067801200,
-      },
-    },
+    ],
   });
 
 type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {

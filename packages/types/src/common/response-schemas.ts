@@ -8,15 +8,15 @@ export const BaseErrorResponseSchema = z
   .object({
     success: z.literal(false).meta({
       description: 'Indicates that the operation failed',
-      example: false,
+      examples: [false],
     }),
     targetUrl: z.string().meta({
       description: 'The URL that was being processed when the error occurred',
-      example: 'https://example.com/article',
+      examples: ['https://example.com/article'],
     }),
     error: z.string().meta({
       description: 'Error message describing what went wrong',
-      example: 'Failed to fetch: 404 Not Found',
+      examples: ['Failed to fetch: 404 Not Found'],
     }),
   })
   .meta({
@@ -39,19 +39,19 @@ export const BaseSuccessResponseSchema = z
   .object({
     success: z.literal(true).meta({
       description: 'Indicates that the operation succeeded',
-      example: true,
+      examples: [true],
     }),
     targetUrl: z.string().meta({
       description: 'The URL that was processed',
-      example: 'https://example.com/article',
+      examples: ['https://example.com/article'],
     }),
     timestamp: z.string().meta({
       description: 'ISO timestamp when the operation was completed',
-      example: '2024-01-15T10:30:00.000Z',
+      examples: ['2024-01-15T10:30:00.000Z'],
     }),
     cached: z.boolean().meta({
       description: 'Whether the response was served from cache',
-      example: false,
+      examples: [false],
     }),
   })
   .meta({
