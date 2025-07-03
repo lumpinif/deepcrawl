@@ -1,4 +1,4 @@
-import { z } from '@hono/zod-openapi';
+import { z } from 'zod/v4';
 
 /**
  * Schema for HTML cleaning configuration options.
@@ -9,55 +9,59 @@ export const HTMLCleaningOptionsSchema = z
     allowedHTMLTags: z
       .array(z.string())
       .optional()
-      .openapi({
+      .meta({
         description: 'HTML tags to preserve in the output (whitelist)',
         example: ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'strong', 'em'],
       }),
     disallowedHTMLTags: z
       .array(z.string())
       .optional()
-      .openapi({
+      .meta({
         description: 'HTML tags to remove from the output (blacklist)',
         example: ['script', 'style', 'iframe', 'form', 'button'],
       }),
-    extractMainContent: z.boolean().optional().default(true).openapi({
+    extractMainContent: z.boolean().optional().default(true).meta({
       description:
         'Whether to extract only the main content area, removing navigation, footers, etc.',
       example: true,
     }),
     /* Deprecated property, will be removed in future. add baseUrl to HTMLCleaning as a required parameter instead*/
-    documentBaseUrl: z.string().optional().openapi({
+    documentBaseUrl: z.string().optional().meta({
       description:
         'Base URL for resolving relative URLs (deprecated, use baseUrl parameter instead)',
       example: 'https://example.com',
       deprecated: true,
     }),
-    removeBase64Images: z.boolean().optional().default(true).openapi({
+    removeBase64Images: z.boolean().optional().default(true).meta({
       description:
         'Whether to remove base64 encoded images to reduce payload size',
       example: true,
     }),
   })
   .strict()
-  .openapi('HTMLCleaningOptions', {
-    example: {
-      allowedHTMLTags: [
-        'p',
-        'h1',
-        'h2',
-        'h3',
-        'ul',
-        'ol',
-        'li',
-        'a',
-        'strong',
-        'em',
-      ],
-      disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
-      extractMainContent: true,
-      documentBaseUrl: 'https://example.com',
-      removeBase64Images: true,
-    },
+  .meta({
+    title: 'HTMLCleaningOptions',
+    description: 'Schema for HTML cleaning configuration options',
+    examples: [
+      {
+        allowedHTMLTags: [
+          'p',
+          'h1',
+          'h2',
+          'h3',
+          'ul',
+          'ol',
+          'li',
+          'a',
+          'strong',
+          'em',
+        ],
+        disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
+        extractMainContent: true,
+        documentBaseUrl: 'https://example.com',
+        removeBase64Images: true,
+      },
+    ],
   });
 
 /**
@@ -133,16 +137,28 @@ export const ElementPatternSchema = z
 export type ElementPattern = z.infer<typeof ElementPatternSchema>;
 
 /**
- * Schema for metrics collected during HTML cleaning.
- * Tracks performance and effectiveness of the cleaning process.
+ * Schema for HTML cleaning performance metrics.
+ * Tracks the size changes during HTML cleaning operations.
  */
 export const HTMLCleaningMetricsSchema = z
   .object({
-    inputSize: z.number(),
-    outputSize: z.number(),
-    compressionRatio: z.number(),
+    inputSize: z.number().meta({
+      description: 'Original HTML size in bytes',
+      example: 45000,
+    }),
+    outputSize: z.number().meta({
+      description: 'Cleaned HTML size in bytes',
+      example: 12000,
+    }),
+    compressionRatio: z.number().meta({
+      description: 'Compression ratio (original size / cleaned size)',
+      example: 0.75,
+    }),
   })
-  .openapi('HTMLCleaningMetrics');
+  .meta({
+    title: 'HTMLCleaningMetrics',
+    description: 'Schema for HTML cleaning performance metrics',
+  });
 
 /**
  * Metrics collected during HTML cleaning and sanitization.
@@ -164,15 +180,24 @@ export const HTMLCleaningMetricsSchema = z
 export type HTMLCleaningMetrics = z.infer<typeof HTMLCleaningMetricsSchema>;
 
 /**
- * Schema for the result of HTML cleaning operation.
- * Defines the structure of the cleaning operation output.
+ * Schema for HTML cleaning operation result.
+ * Contains the cleaned HTML content along with metadata about the cleaning process.
  */
 export const HTMLCleaningResultSchema = z
   .object({
-    cleanedHtml: z.string(),
-    metrics: HTMLCleaningMetricsSchema.optional(),
+    cleanedHtml: z.string().meta({
+      description: 'The cleaned HTML content',
+      example:
+        '<h1>Clean Title</h1><p>Clean content without scripts or styles.</p>',
+    }),
+    metrics: HTMLCleaningMetricsSchema.optional().meta({
+      description: 'Performance metrics for the cleaning operation',
+    }),
   })
-  .openapi('HTMLCleaningResult');
+  .meta({
+    title: 'HTMLCleaningResult',
+    description: 'Schema for HTML cleaning operation result',
+  });
 
 /**
  * Result of HTML cleaning and sanitization.

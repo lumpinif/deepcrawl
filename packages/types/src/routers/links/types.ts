@@ -9,7 +9,7 @@ import {
   PageMetadataSchema,
 } from '@deepcrawl/types/services/metadata/types';
 import { ScrapedDataSchema } from '@deepcrawl/types/services/scrape/types';
-import { z } from '@hono/zod-openapi';
+import { z } from 'zod/v4';
 
 /**
  * Schema for content extraction options.
@@ -39,19 +39,21 @@ export const ContentOptionsSchema = z
      */
     cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
   })
-  .openapi('ContentOptions');
+  .meta({
+    title: 'ContentOptions',
+    description: 'Schema for content extraction options',
+  });
 
 /**
  * Schema for links order enum.
  * Defines how links should be ordered within folders.
  */
-export const LinksOrderSchema = z
-  .enum(['page', 'alphabetical'])
-  .openapi('LinksOrder', {
-    description:
-      'How to order links within each folder: "page" (preserve original order) or "alphabetical" (sort A→Z by URL).',
-    example: 'alphabetical',
-  });
+export const LinksOrderSchema = z.enum(['page', 'alphabetical']).meta({
+  title: 'LinksOrder',
+  description:
+    'How to order links within each folder: "page" (preserve original order) or "alphabetical" (sort A→Z by URL).',
+  example: 'alphabetical',
+});
 
 /**
  * Schema for tree options.
@@ -71,7 +73,7 @@ export const TreeOptionsSchema = z
         (val) => val !== 'false' && val !== false,
         z.boolean().optional(),
       )
-      .openapi({
+      .meta({
         description: 'Whether to place folders before leaf nodes in the tree.',
         example: true,
       }),
@@ -92,7 +94,7 @@ export const TreeOptionsSchema = z
         (val) => val !== 'false' && val !== false,
         z.boolean().optional(),
       )
-      .openapi({
+      .meta({
         description:
           'Whether to include extracted links for each node in the tree.',
         example: true,
@@ -108,13 +110,16 @@ export const TreeOptionsSchema = z
         (val) => val !== 'false' && val !== false,
         z.boolean().optional(),
       )
-      .openapi({
+      .meta({
         description:
           'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL.',
         example: false,
       }),
   })
-  .openapi('TreeOptions');
+  .meta({
+    title: 'TreeOptions',
+    description: 'Options for building a site map tree',
+  });
 
 /**
  * Schema for links route options.
@@ -148,8 +153,9 @@ export const LinksOptionsSchema = z
      * The URL to extract links from.
      * Must be a valid URL string.
      */
-    url: z.string().openapi({
+    url: z.string().meta({
       description: 'The URL to extract links from.',
+      example: 'https://example.com',
     }),
 
     /**
@@ -157,8 +163,7 @@ export const LinksOptionsSchema = z
      * Default: true
      */
     // default true if not set
-    tree: z.coerce.boolean().optional().default(true).openapi({
-      default: true,
+    tree: z.coerce.boolean().optional().default(true).meta({
       description: 'Whether to build a site map tree.',
       example: true,
     }),
@@ -168,8 +173,7 @@ export const LinksOptionsSchema = z
      * Default: true
      */
     // default true if not set
-    metadata: z.coerce.boolean().optional().default(true).openapi({
-      default: true,
+    metadata: z.coerce.boolean().optional().default(true).meta({
       description: 'Whether to extract metadata from the page.',
       example: true,
     }),
@@ -178,8 +182,7 @@ export const LinksOptionsSchema = z
      * Whether to return cleaned HTML.
      * Default: false
      */
-    cleanedHtml: z.coerce.boolean().optional().default(false).openapi({
-      default: false,
+    cleanedHtml: z.coerce.boolean().optional().default(false).meta({
       description: 'Whether to return cleaned HTML.',
       example: false,
     }),
@@ -188,8 +191,7 @@ export const LinksOptionsSchema = z
      * Whether to fetch and parse robots.txt.
      * Default: false
      */
-    robots: z.coerce.boolean().optional().default(false).openapi({
-      default: false,
+    robots: z.coerce.boolean().optional().default(false).meta({
       description: 'Whether to fetch and parse robots.txt.',
       example: false,
     }),
@@ -198,9 +200,7 @@ export const LinksOptionsSchema = z
      * Whether to fetch and parse sitemap.xml.
      * Default: false
      */
-    sitemapXML: z.coerce.boolean().optional().default(false).openapi({
-      default: false,
-      deprecated: true,
+    sitemapXML: z.coerce.boolean().optional().default(false).meta({
       description:
         '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
       example: false,
@@ -210,7 +210,9 @@ export const LinksOptionsSchema = z
 
     ...ContentOptionsSchema.shape,
   })
-  .openapi('LinksOptions', {
+  .meta({
+    title: 'LinksOptions',
+    description: 'Configuration options for links extraction operation',
     example: {
       url: 'https://example.com',
     },
@@ -218,16 +220,18 @@ export const LinksOptionsSchema = z
 
 export const SkippedUrlSchema = z
   .object({
-    url: z.string().openapi({
+    url: z.string().meta({
       description: 'The URL that was skipped during processing',
       example: 'https://example.com/private-page',
     }),
-    reason: z.string().openapi({
+    reason: z.string().meta({
       description: 'The reason why this URL was skipped',
       example: 'Blocked by robots.txt',
     }),
   })
-  .openapi('SkippedUrl', {
+  .meta({
+    title: 'SkippedUrl',
+    description: 'A URL that was skipped during processing with the reason',
     example: {
       url: 'https://example.com/private-page',
       reason: 'Blocked by robots.txt',
@@ -236,40 +240,106 @@ export const SkippedUrlSchema = z
 
 export const VisitedUrlSchema = z
   .object({
-    url: z.string(),
-    lastVisited: z.string().nullable().optional(),
+    url: z.string().meta({
+      description: 'The URL that was visited',
+      example: 'https://example.com/about',
+    }),
+    lastVisited: z.string().nullable().optional().meta({
+      description: 'ISO timestamp when this URL was last visited',
+      example: '2024-01-15T10:30:00.000Z',
+    }),
   })
-  .openapi('VisitedUrl');
+  .meta({
+    title: 'VisitedUrl',
+    description: 'A URL that has been visited with timestamp information',
+  });
 
 export const SkippedLinksSchema = z
   .object({
-    internal: z.array(SkippedUrlSchema).optional().openapi({
-      description: 'Internal URLs that were skipped during processing',
-    }),
-    external: z.array(SkippedUrlSchema).optional().openapi({
-      description: 'External URLs that were skipped during processing',
-    }),
+    internal: z
+      .array(SkippedUrlSchema)
+      .optional()
+      .meta({
+        description: 'Internal URLs that were skipped during processing',
+        example: [
+          {
+            url: 'https://example.com/admin',
+            reason: 'Blocked by robots.txt',
+          },
+        ],
+      }),
+    external: z
+      .array(SkippedUrlSchema)
+      .optional()
+      .meta({
+        description: 'External URLs that were skipped during processing',
+        example: [
+          {
+            url: 'https://external-site.com/blocked',
+            reason: 'External domain excluded',
+          },
+        ],
+      }),
     media: z
       .object({
-        images: z.array(SkippedUrlSchema).optional().openapi({
-          description: 'Image URLs that were skipped during processing',
-        }),
-        videos: z.array(SkippedUrlSchema).optional().openapi({
-          description: 'Video URLs that were skipped during processing',
-        }),
-        documents: z.array(SkippedUrlSchema).optional().openapi({
-          description: 'Document URLs that were skipped during processing',
-        }),
+        images: z
+          .array(SkippedUrlSchema)
+          .optional()
+          .meta({
+            description: 'Image URLs that were skipped during processing',
+            example: [
+              {
+                url: 'https://example.com/large-image.jpg',
+                reason: 'File size exceeds limit',
+              },
+            ],
+          }),
+        videos: z
+          .array(SkippedUrlSchema)
+          .optional()
+          .meta({
+            description: 'Video URLs that were skipped during processing',
+            example: [
+              {
+                url: 'https://example.com/video.mp4',
+                reason: 'Media extraction disabled',
+              },
+            ],
+          }),
+        documents: z
+          .array(SkippedUrlSchema)
+          .optional()
+          .meta({
+            description: 'Document URLs that were skipped during processing',
+            example: [
+              {
+                url: 'https://example.com/document.pdf',
+                reason: 'PDF processing disabled',
+              },
+            ],
+          }),
       })
       .optional()
-      .openapi({
+      .meta({
         description: 'Media URLs that were skipped during processing',
       }),
-    other: z.array(SkippedUrlSchema).optional().openapi({
-      description: 'Other URLs that were skipped during processing',
-    }),
+    other: z
+      .array(SkippedUrlSchema)
+      .optional()
+      .meta({
+        description: 'Other URLs that were skipped during processing',
+        example: [
+          {
+            url: 'mailto:contact@example.com',
+            reason: 'Non-HTTP protocol',
+          },
+        ],
+      }),
   })
-  .openapi('SkippedLinks', {
+  .meta({
+    title: 'SkippedLinks',
+    description:
+      'Categorized collection of URLs that were skipped during processing',
     example: {
       internal: [
         {
@@ -336,63 +406,64 @@ export type LinksTree = {
 export const LinksTreeSchema: z.ZodType<LinksTree> = z
   .object({
     // Inline all properties for better OpenAPI documentation display
-    url: z.string().openapi({
+    url: z.string().meta({
       description: 'The URL of this page',
       example: 'https://example.com/about',
     }),
-    rootUrl: z.string().optional().openapi({
+    rootUrl: z.string().optional().meta({
       description: 'The root URL of the website being crawled',
       example: 'https://example.com',
     }),
-    name: z.string().optional().openapi({
+    name: z.string().optional().meta({
       description: 'The display name or title of this page',
       example: 'About Us',
     }),
-    totalUrls: z.number().optional().openapi({
+    totalUrls: z.number().optional().meta({
       description: 'Total number of URLs discovered in the entire tree',
       example: 150,
     }),
-    executionTime: z.string().optional().openapi({
+    executionTime: z.string().optional().meta({
       description: 'Time taken to process this page',
       example: '1.2s',
     }),
-    lastUpdated: z.string().openapi({
+    lastUpdated: z.string().meta({
       description: 'ISO timestamp when this page was last crawled',
       example: '2024-01-15T10:30:00.000Z',
     }),
-    lastVisited: z.string().nullable().optional().openapi({
+    lastVisited: z.string().nullable().optional().meta({
       description:
         'ISO timestamp when this page was last visited (null if never visited)',
       example: '2024-01-15T10:30:00.000Z',
     }),
-    error: z.string().optional().openapi({
+    error: z.string().optional().meta({
       description: 'Error message if there was an issue processing this page',
       example: 'Failed to fetch: 404 Not Found',
     }),
-    metadata: PageMetadataSchema.optional().openapi({
+    metadata: PageMetadataSchema.optional().meta({
       description:
         'Extracted metadata from the page (title, description, etc.)',
     }),
-    cleanedHtml: z.string().optional().openapi({
+    cleanedHtml: z.string().optional().meta({
       description: 'Cleaned HTML content of the page',
     }),
-    extractedLinks: ExtractedLinksSchema.optional().openapi({
+    extractedLinks: ExtractedLinksSchema.optional().meta({
       description: 'Links found on this page, categorized by type',
     }),
-    skippedUrls: SkippedLinksSchema.optional().openapi({
+    skippedUrls: SkippedLinksSchema.optional().meta({
       description: 'URLs that were skipped during processing with reasons',
     }),
     // Add the recursive children property
-    children: z
-      .array(z.lazy(() => LinksTreeSchema))
-      .optional()
-      .openapi({
+    /* _DEPRECATED_ .openapi({
         type: 'array',
         title: 'Array of LinksTree',
         items: {
           $ref: '#/components/schemas/LinksTree',
           title: 'LinksTree',
-        },
+        }, */
+    children: z
+      .array(z.lazy(() => LinksTreeSchema))
+      .optional()
+      .meta({
         description:
           'Array of child LinksTree nodes, each representing a page found under this URL. This creates a recursive tree structure for the entire website hierarchy.',
         example: [
@@ -417,7 +488,10 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
         ],
       }),
   })
-  .openapi('LinksTree', {
+  .meta({
+    title: 'LinksTree',
+    description:
+      'A node in the site map tree representing a webpage and its children',
     example: {
       url: 'https://example.com/about',
       rootUrl: 'https://example.com',
@@ -489,9 +563,17 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
   });
 
 const LinksPostResponseBaseSchema = z.object({
-  success: z.boolean(),
-  targetUrl: z.string(),
-  timestamp: z.string(),
+  success: z.boolean().meta({
+    description: 'Indicates whether the operation was successful',
+  }),
+  targetUrl: z.string().meta({
+    description: 'The URL that was requested to be processed',
+    example: 'https://example.com',
+  }),
+  timestamp: z.string().meta({
+    description: 'ISO timestamp when the request was processed',
+    example: '2024-01-15T10:30:00.000Z',
+  }),
 });
 
 /* NOTE: use partial() to make all properties optional for /links response for better response shape such as not returning title and description if there is tree */
@@ -503,20 +585,38 @@ export const LinksPostSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
   PartialScrapedDataSchema,
 )
   .extend({
-    success: z.literal(true).openapi({ type: 'boolean', example: true }),
-    cached: z.boolean(),
-    executionTime: z.string().optional(),
-    ancestors: z.array(z.string()).optional(),
+    success: z.literal(true).meta({
+      description: 'Indicates that the operation was successful',
+      example: true,
+    }),
+    cached: z.boolean().meta({
+      description: 'Whether the result was returned from cache',
+      example: false,
+    }),
+    executionTime: z.string().optional().meta({
+      description: 'Time taken to execute the request',
+      example: '1.2s',
+    }),
+    ancestors: z
+      .array(z.string())
+      .optional()
+      .meta({
+        description: 'Array of parent URLs leading to this URL',
+        example: ['https://example.com'],
+      }),
     skippedUrls: SkippedLinksSchema.optional(),
     extractedLinks: ExtractedLinksSchema.optional(),
-    tree: z
-      .union([LinksTreeSchema, z.null()])
-      .optional()
-      .openapi({
+    /* _DEPRECATED_ .openapi({
         anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }],
-      }),
+      }) */
+    tree: z.union([LinksTreeSchema, z.null()]).optional().meta({
+      description:
+        'Site map tree starting from the root URL, or null if tree generation was disabled',
+    }),
   })
-  .openapi('LinksPostSuccessResponse', {
+  .meta({
+    title: 'LinksPostSuccessResponse',
+    description: 'Successful response from the links extraction operation',
     example: {
       success: true,
       targetUrl: 'https://example.com',
@@ -562,17 +662,20 @@ export const LinksPostSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
   });
 
 export const LinksPostErrorResponseSchema = BaseErrorResponseSchema.extend({
-  timestamp: z.string().openapi({
+  timestamp: z.string().meta({
     description: 'ISO timestamp when the error occurred',
     example: '2024-01-15T10:30:00.000Z',
   }),
-  tree: z
-    .union([LinksTreeSchema, z.null()])
-    .optional()
-    .openapi({
-      anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }],
-    }),
-}).openapi('LinksPostErrorResponse');
+  /* _DEPRECATED_ .openapi({
+      anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }] */
+  tree: z.union([LinksTreeSchema, z.null()]).optional().meta({
+    description:
+      'Partial site map tree if available, or null if no tree could be generated',
+  }),
+}).meta({
+  title: 'LinksPostErrorResponse',
+  description: 'Error response from the links extraction operation',
+});
 
 /**
  * @name    can be imported as LinksTree or Tree

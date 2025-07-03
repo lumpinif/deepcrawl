@@ -1,24 +1,28 @@
 import { PageMetadataSchema } from '@deepcrawl/types/services/metadata/types';
-import { z } from '@hono/zod-openapi';
+import { z } from 'zod/v4';
 
 export const MetaFilesSchema = z
   .object({
-    robots: z.string().optional().openapi({
+    robots: z.string().optional().meta({
       description: 'Content of the robots.txt file',
       example: 'User-agent: *\nAllow: /',
     }),
-    sitemapXML: z.string().optional().openapi({
+    sitemapXML: z.string().optional().meta({
       description: 'Content of the sitemap.xml file',
       example:
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>',
     }),
   })
-  .openapi('MetaFiles', {
-    example: {
-      robots: 'User-agent: *\nAllow: /',
-      sitemapXML:
-        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>',
-    },
+  .meta({
+    title: 'MetaFiles',
+    description: 'Schema for meta files (robots.txt, sitemap.xml)',
+    examples: [
+      {
+        robots: 'User-agent: *\nAllow: /',
+        sitemapXML:
+          '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>',
+      },
+    ],
   });
 
 /**
@@ -37,16 +41,42 @@ export const MetaFilesSchema = z
  */
 export type MetaFiles = z.infer<typeof MetaFilesSchema>;
 
+/**
+ * Schema for scraped data from a webpage.
+ * Defines the structure for all content extracted from a webpage.
+ */
 export const ScrapedDataSchema = z
   .object({
-    title: z.string(),
-    rawHtml: z.string(),
-    description: z.string().optional(),
-    metadata: PageMetadataSchema.optional(),
-    cleanedHtml: z.string().optional(),
-    metaFiles: MetaFilesSchema.optional(),
+    title: z.string().meta({
+      description: 'The title of the webpage',
+      example: 'Example Website - Home Page',
+    }),
+    rawHtml: z.string().meta({
+      description: 'The original unmodified HTML content of the webpage',
+      example:
+        '<html><head><title>Example Website - Home Page</title></head><body>...</body></html>',
+    }),
+    description: z.string().optional().meta({
+      description: 'The meta description of the webpage',
+      example:
+        'This is an example website demonstrating web scraping capabilities.',
+    }),
+    metadata: PageMetadataSchema.optional().meta({
+      description: 'The structured metadata extracted from the page',
+    }),
+    cleanedHtml: z.string().optional().meta({
+      description:
+        'The sanitized version of the HTML with unnecessary elements removed',
+      example: '<div><h1>Example Website</h1><p>Main content...</p></div>',
+    }),
+    metaFiles: MetaFilesSchema.optional().meta({
+      description: 'The metadata files like robots.txt and sitemap.xml',
+    }),
   })
-  .openapi('ScrapedData');
+  .meta({
+    title: 'ScrapedData',
+    description: 'Schema for scraped data from a webpage',
+  });
 
 /**
  * Represents data scraped from a webpage.

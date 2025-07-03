@@ -1,7 +1,10 @@
 import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
 import { MetadataOptionsSchema } from '@deepcrawl/types/services/metadata';
 import { ScrapedDataSchema } from '@deepcrawl/types/services/scrape';
-import { z } from '@hono/zod-openapi';
+import { z } from 'zod/v4';
+
+
+/* NOTE: IN ZOD V4: The input type of all z.coerce schemas is now unknown. THIS MIGHT BREAKES CURRENT TYPES */
 
 export const ReadOptionsSchema = z
   .object({
@@ -9,7 +12,7 @@ export const ReadOptionsSchema = z
      * The URL to scrape.
      * Must be a valid URL string.
      */
-    url: z.string().openapi({
+    url: z.string().meta({
       description: 'The URL to read and extract content from',
       example: 'https://example.com',
     }),
@@ -19,8 +22,7 @@ export const ReadOptionsSchema = z
      * Default: true
      */
     // default true if not set
-    metadata: z.coerce.boolean().optional().default(true).openapi({
-      default: true,
+    metadata: z.coerce.boolean().optional().default(true).meta({
       description: 'Whether to extract metadata from the page.',
       example: true,
     }),
@@ -30,8 +32,7 @@ export const ReadOptionsSchema = z
      * Default: true
      */
     // default true if not set
-    markdown: z.coerce.boolean().optional().default(true).openapi({
-      default: true,
+    markdown: z.coerce.boolean().optional().default(true).meta({
       description: 'Whether to extract markdown from the page.',
       example: true,
     }),
@@ -40,8 +41,7 @@ export const ReadOptionsSchema = z
      * Whether to return cleaned HTML.
      * Default: false
      */
-    cleanedHtml: z.coerce.boolean().optional().default(false).openapi({
-      default: false,
+    cleanedHtml: z.coerce.boolean().optional().default(false).meta({
       description: 'Whether to return cleaned HTML.',
       example: false,
     }),
@@ -50,8 +50,7 @@ export const ReadOptionsSchema = z
      * Whether to fetch and parse robots.txt.
      * Default: false
      */
-    robots: z.coerce.boolean().optional().default(false).openapi({
-      default: false,
+    robots: z.coerce.boolean().optional().default(false).meta({
       description: 'Whether to fetch and parse robots.txt.',
       example: false,
     }),
@@ -60,8 +59,7 @@ export const ReadOptionsSchema = z
      * Whether to return raw HTML.
      * Default: false
      */
-    rawHtml: z.coerce.boolean().optional().default(false).openapi({
-      default: false,
+    rawHtml: z.coerce.boolean().optional().default(false).meta({
       description: 'Whether to return raw HTML.',
       example: false,
     }),
@@ -70,7 +68,7 @@ export const ReadOptionsSchema = z
      * Options for metadata extraction.
      * Controls how metadata like title, description, etc. are extracted.
      */
-    metadataOptions: MetadataOptionsSchema.optional().openapi({
+    metadataOptions: MetadataOptionsSchema.optional().meta({
       description: 'Options for metadata extraction.',
     }),
 
@@ -80,44 +78,53 @@ export const ReadOptionsSchema = z
      */
     // cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
   })
-  .openapi('ReadOptions', {
+  .meta({
+    title: 'ReadOptions',
+    description: 'Configuration options for read operation',
     example: {
       url: 'https://example.com',
     },
   });
 
 export const ReadResponseBaseSchema = z.object({
-  success: z.boolean(),
-  cached: z.boolean().optional().default(false).openapi({
-    default: false,
+  success: z.boolean().meta({
+    description: 'Indicates whether the operation was successful',
+  }),
+  cached: z.boolean().optional().default(false).meta({
     description:
       'The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application.',
+    example: false,
   }),
-  targetUrl: z.string(),
+  targetUrl: z.string().meta({
+    description: 'The URL that was requested to be processed',
+    example: 'https://example.com',
+  }),
 });
 
 export const ReadErrorResponseSchema = BaseErrorResponseSchema;
 
 export const MetricsSchema = z
   .object({
-    readableDuration: z.string().openapi({
+    readableDuration: z.string().meta({
       description: 'Human-readable representation of the operation duration',
       example: '1.2s',
     }),
-    duration: z.number().openapi({
+    duration: z.number().meta({
       description: 'Duration of the operation in milliseconds',
       example: 1200,
     }),
-    startTime: z.number().openapi({
+    startTime: z.number().meta({
       description: 'Timestamp in milliseconds when the operation started',
       example: 1704067800000,
     }),
-    endTime: z.number().openapi({
+    endTime: z.number().meta({
       description: 'Timestamp in milliseconds when the operation finished',
       example: 1704067801200,
     }),
   })
-  .openapi('Metrics', {
+  .meta({
+    title: 'Metrics',
+    description: 'Performance metrics for the read operation',
     example: {
       readableDuration: '1.2s',
       duration: 1200,
@@ -127,21 +134,29 @@ export const MetricsSchema = z
   });
 
 export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
-  success: z.literal(true).openapi({ type: 'boolean', example: true }), // override to enforce success: true
+  success: z.literal(true).meta({
+    description: 'Indicates that the operation was successful',
+    example: true,
+  }), // override to enforce success: true
 })
   .merge(ScrapedDataSchema.omit({ rawHtml: true }))
   .extend({
-    markdown: z.string().optional().openapi({
+    markdown: z.string().optional().meta({
       description: 'Markdown content of the page.',
+      example: '# Example Article\n\nThis is the main content of the article.',
     }),
-    rawHtml: z.string().optional().openapi({
+    rawHtml: z.string().optional().meta({
       description: 'Raw HTML content of the page.',
+      example:
+        '<html><head><title>Example</title></head><body><h1>Example Article</h1></body></html>',
     }),
-    metrics: MetricsSchema.optional().openapi({
+    metrics: MetricsSchema.optional().meta({
       description: 'Metrics for the read operation.',
     }),
   })
-  .openapi('ReadSuccessResponse', {
+  .meta({
+    title: 'ReadSuccessResponse',
+    description: 'Successful response from the read operation',
     example: {
       success: true,
       cached: false,

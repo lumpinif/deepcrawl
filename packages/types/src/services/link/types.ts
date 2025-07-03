@@ -1,4 +1,4 @@
-import { z } from '@hono/zod-openapi';
+import { z } from 'zod/v4';
 
 /**
  * Schema for configuring link extraction behavior.
@@ -6,34 +6,38 @@ import { z } from '@hono/zod-openapi';
  */
 export const LinkExtractionOptionsSchema = z
   .object({
-    includeExternal: z.boolean().optional().openapi({
+    includeExternal: z.boolean().optional().meta({
       description: 'Whether to include links from other domains',
       example: false,
     }),
-    includeMedia: z.boolean().optional().openapi({
+    includeMedia: z.boolean().optional().meta({
       description: 'Whether to include media files (images, videos, docs)',
       example: true,
     }),
     excludePatterns: z
       .array(z.string())
       .optional()
-      .openapi({
+      .meta({
         description: 'Array of regex patterns to exclude URLs',
         example: ['^/admin/', '\\.pdf$', '/private/'],
       }),
-    removeQueryParams: z.boolean().optional().openapi({
+    removeQueryParams: z.boolean().optional().meta({
       description: 'Whether to remove query parameters from URLs',
       example: true,
     }),
   })
   .strict()
-  .openapi('LinkExtractionOptions', {
-    example: {
-      includeExternal: false,
-      includeMedia: true,
-      excludePatterns: ['^/admin/', '\\.pdf$', '/private/'],
-      removeQueryParams: true,
-    },
+  .meta({
+    title: 'LinkExtractionOptions',
+    description: 'Schema for configuring link extraction behavior',
+    examples: [
+      {
+        includeExternal: false,
+        includeMedia: true,
+        excludePatterns: ['^/admin/', '\\.pdf$', '/private/'],
+        removeQueryParams: true,
+      },
+    ],
   });
 
 /**
@@ -45,7 +49,7 @@ export const ExtractedLinksSchema = z
     internal: z
       .array(z.string())
       .optional()
-      .openapi({
+      .meta({
         description: 'Array of internal links from the same domain',
         example: [
           'https://example.com/about',
@@ -56,7 +60,7 @@ export const ExtractedLinksSchema = z
     external: z
       .array(z.string())
       .optional()
-      .openapi({
+      .meta({
         description: 'Array of external links from other domains',
         example: [
           'https://github.com/example/repo',
@@ -69,7 +73,7 @@ export const ExtractedLinksSchema = z
         images: z
           .array(z.string())
           .optional()
-          .openapi({
+          .meta({
             description: 'Array of image file URLs',
             example: [
               'https://example.com/images/logo.png',
@@ -79,7 +83,7 @@ export const ExtractedLinksSchema = z
         videos: z
           .array(z.string())
           .optional()
-          .openapi({
+          .meta({
             description: 'Array of video file URLs',
             example: [
               'https://example.com/videos/intro.mp4',
@@ -89,7 +93,7 @@ export const ExtractedLinksSchema = z
         documents: z
           .array(z.string())
           .optional()
-          .openapi({
+          .meta({
             description: 'Array of document file URLs',
             example: [
               'https://example.com/docs/whitepaper.pdf',
@@ -98,37 +102,41 @@ export const ExtractedLinksSchema = z
           }),
       })
       .optional()
-      .openapi({
+      .meta({
         description: 'Media files categorized by type',
       }),
   })
-  .openapi('ExtractedLinks', {
-    example: {
-      internal: [
-        'https://example.com/about',
-        'https://example.com/contact',
-        'https://example.com/services',
-      ],
-      external: [
-        'https://github.com/example/repo',
-        'https://twitter.com/example',
-        'https://linkedin.com/company/example',
-      ],
-      media: {
-        images: [
-          'https://example.com/images/logo.png',
-          'https://example.com/images/banner.jpg',
+  .meta({
+    title: 'ExtractedLinks',
+    description: 'Schema for storing extracted links by category',
+    examples: [
+      {
+        internal: [
+          'https://example.com/about',
+          'https://example.com/contact',
+          'https://example.com/services',
         ],
-        videos: [
-          'https://example.com/videos/intro.mp4',
-          'https://example.com/videos/demo.webm',
+        external: [
+          'https://github.com/example/repo',
+          'https://twitter.com/example',
+          'https://linkedin.com/company/example',
         ],
-        documents: [
-          'https://example.com/docs/whitepaper.pdf',
-          'https://example.com/docs/manual.docx',
-        ],
+        media: {
+          images: [
+            'https://example.com/images/logo.png',
+            'https://example.com/images/banner.jpg',
+          ],
+          videos: [
+            'https://example.com/videos/intro.mp4',
+            'https://example.com/videos/demo.webm',
+          ],
+          documents: [
+            'https://example.com/docs/whitepaper.pdf',
+            'https://example.com/docs/manual.docx',
+          ],
+        },
       },
-    },
+    ],
   });
 
 /**

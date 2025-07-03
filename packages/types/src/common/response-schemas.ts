@@ -1,4 +1,4 @@
-import { z } from '@hono/zod-openapi';
+import * as z from 'zod/v4';
 
 /**
  * Common error response schema used across all endpoints.
@@ -6,22 +6,29 @@ import { z } from '@hono/zod-openapi';
  */
 export const BaseErrorResponseSchema = z
   .object({
-    success: z.literal(false).openapi({ type: 'boolean', example: false }),
-    targetUrl: z.string().openapi({
+    success: z.literal(false).meta({
+      description: 'Indicates that the operation failed',
+      example: false,
+    }),
+    targetUrl: z.string().meta({
       description: 'The URL that was being processed when the error occurred',
       example: 'https://example.com/article',
     }),
-    error: z.string().openapi({
+    error: z.string().meta({
       description: 'Error message describing what went wrong',
       example: 'Failed to fetch: 404 Not Found',
     }),
   })
-  .openapi('BaseErrorResponse', {
-    example: {
-      success: false,
-      targetUrl: 'https://example.com/article',
-      error: 'Failed to fetch: 404 Not Found',
-    },
+  .meta({
+    title: 'BaseErrorResponse',
+    description: 'Common error response schema used across all endpoints',
+    examples: [
+      {
+        success: false,
+        targetUrl: 'https://example.com/article',
+        error: 'Failed to fetch: 404 Not Found',
+      },
+    ],
   });
 
 /**
@@ -30,25 +37,32 @@ export const BaseErrorResponseSchema = z
  */
 export const BaseSuccessResponseSchema = z
   .object({
-    success: z.literal(true).openapi({ type: 'boolean', example: true }),
-    targetUrl: z.string().openapi({
+    success: z.literal(true).meta({
+      description: 'Indicates that the operation succeeded',
+      example: true,
+    }),
+    targetUrl: z.string().meta({
       description: 'The URL that was processed',
       example: 'https://example.com/article',
     }),
-    timestamp: z.string().openapi({
+    timestamp: z.string().meta({
       description: 'ISO timestamp when the operation was completed',
       example: '2024-01-15T10:30:00.000Z',
     }),
-    cached: z.boolean().openapi({
+    cached: z.boolean().meta({
       description: 'Whether the response was served from cache',
       example: false,
     }),
   })
-  .openapi('BaseSuccessResponse', {
-    example: {
-      success: true,
-      targetUrl: 'https://example.com/article',
-      timestamp: '2024-01-15T10:30:00.000Z',
-      cached: false,
-    },
+  .meta({
+    title: 'BaseSuccessResponse',
+    description: 'Common base response schema for successful operations',
+    examples: [
+      {
+        success: true,
+        targetUrl: 'https://example.com/article',
+        timestamp: '2024-01-15T10:30:00.000Z',
+        cached: false,
+      },
+    ],
   });
