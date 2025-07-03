@@ -50,8 +50,9 @@ interface Env {
 
 export const ALLOWED_ORIGINS = [
   // Production origins
-  'https://auth.deepcrawl.dev', // Auth worker (legacy)
   'https://deepcrawl.dev',
+  'https://api.deepcrawl.dev',
+  'https://auth.deepcrawl.dev', // Auth worker (legacy)
   'https://app.deepcrawl.dev',
   'https://*.deepcrawl.dev',
   // Add explicit wildcard support for all deepcrawl.dev subdomains
