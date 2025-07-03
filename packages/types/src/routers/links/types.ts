@@ -581,7 +581,7 @@ const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
   rawHtml: true,
 });
 
-export const LinksPostSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
+export const LinksSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
   PartialScrapedDataSchema,
 )
   .extend({
@@ -661,7 +661,7 @@ export const LinksPostSuccessResponseSchema = LinksPostResponseBaseSchema.merge(
     },
   });
 
-export const LinksPostErrorResponseSchema = BaseErrorResponseSchema.extend({
+export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
   timestamp: z.string().meta({
     description: 'ISO timestamp when the error occurred',
     example: '2024-01-15T10:30:00.000Z',
@@ -826,7 +826,7 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  *
  * @example
  * ```typescript
- * const successResponse: LinksPostSuccessResponse = {
+ * const successResponse: LinksSuccessResponse = {
  *   success: true,
  *   targetUrl: "https://example.com",
  *   timestamp: "2025-04-02T14:28:23.000Z",
@@ -851,9 +851,7 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  * };
  * ```
  */
-export type LinksPostSuccessResponse = z.infer<
-  typeof LinksPostSuccessResponseSchema
->;
+export type LinksSuccessResponse = z.infer<typeof LinksSuccessResponseSchema>;
 
 /**
  * Represents an error response from a links POST route.
@@ -867,7 +865,7 @@ export type LinksPostSuccessResponse = z.infer<
  *
  * @example
  * ```typescript
- * const errorResponse: LinksPostErrorResponse = {
+ * const errorResponse: LinksErrorResponse = {
  *   success: false,
  *   targetUrl: "https://example.com",
  *   timestamp: "2025-04-02T14:28:23.000Z",
@@ -875,9 +873,7 @@ export type LinksPostSuccessResponse = z.infer<
  * };
  * ```
  */
-export type LinksPostErrorResponse = z.infer<
-  typeof LinksPostErrorResponseSchema
->;
+export type LinksErrorResponse = z.infer<typeof LinksErrorResponseSchema>;
 
 /**
  * Union type representing either a successful or failed link scraping operation.
@@ -885,17 +881,15 @@ export type LinksPostErrorResponse = z.infer<
  *
  * @example
  * ```typescript
- * function handleResponse(response: LinksPostResponse) {
+ * function handleResponse(response: LinksResponse) {
  *   if (response.success) {
- *     // TypeScript knows this is a LinksPostSuccessResponse
+ *     // TypeScript knows this is a LinksSuccessResponse
  *     console.log(response.metadata?.title);
  *   } else {
- *     // TypeScript knows this is a LinksPostErrorResponse
+ *     // TypeScript knows this is a LinksErrorResponse
  *     console.error(response.error);
  *   }
  * }
  * ```
  */
-export type LinksPostResponse =
-  | LinksPostSuccessResponse
-  | LinksPostErrorResponse;
+export type LinksResponse = LinksSuccessResponse | LinksErrorResponse;
