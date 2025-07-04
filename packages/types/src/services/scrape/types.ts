@@ -3,15 +3,22 @@ import { z } from 'zod/v4';
 
 export const MetaFilesSchema = z
   .object({
-    robots: z.string().optional().meta({
-      description: 'Content of the robots.txt file',
-      example: 'User-agent: *\nAllow: /',
-    }),
-    sitemapXML: z.string().optional().meta({
-      description: 'Content of the sitemap.xml file',
-      example:
-        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>',
-    }),
+    robots: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Content of the robots.txt file',
+        examples: ['User-agent: *\nAllow: /'],
+      }),
+    sitemapXML: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Content of the sitemap.xml file',
+        examples: [
+          '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>',
+        ],
+      }),
   })
   .meta({
     title: 'MetaFiles',
@@ -19,8 +26,9 @@ export const MetaFilesSchema = z
     examples: [
       {
         robots: 'User-agent: *\nAllow: /',
-        sitemapXML:
+        sitemapXML: [
           '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>',
+        ],
       },
     ],
   });
@@ -49,26 +57,34 @@ export const ScrapedDataSchema = z
   .object({
     title: z.string().meta({
       description: 'The title of the webpage',
-      example: 'Example Website - Home Page',
+      examples: ['Example Website - Home Page'],
     }),
     rawHtml: z.string().meta({
       description: 'The original unmodified HTML content of the webpage',
-      example:
+      examples: [
         '<html><head><title>Example Website - Home Page</title></head><body>...</body></html>',
+      ],
     }),
-    description: z.string().optional().meta({
-      description: 'The meta description of the webpage',
-      example:
-        'This is an example website demonstrating web scraping capabilities.',
-    }),
+    description: z
+      .string()
+      .optional()
+      .meta({
+        description: 'The meta description of the webpage',
+        examples: [
+          'This is an example website demonstrating web scraping capabilities.',
+        ],
+      }),
     metadata: PageMetadataSchema.optional().meta({
       description: 'The structured metadata extracted from the page',
     }),
-    cleanedHtml: z.string().optional().meta({
-      description:
-        'The sanitized version of the HTML with unnecessary elements removed',
-      example: '<div><h1>Example Website</h1><p>Main content...</p></div>',
-    }),
+    cleanedHtml: z
+      .string()
+      .optional()
+      .meta({
+        description:
+          'The sanitized version of the HTML with unnecessary elements removed',
+        examples: ['<div><h1>Example Website</h1><p>Main content...</p></div>'],
+      }),
     metaFiles: MetaFilesSchema.optional().meta({
       description: 'The metadata files like robots.txt and sitemap.xml',
     }),
@@ -76,6 +92,28 @@ export const ScrapedDataSchema = z
   .meta({
     title: 'ScrapedData',
     description: 'Schema for scraped data from a webpage',
+    examples: [
+      {
+        title: 'Example Website - Home Page',
+        rawHtml:
+          '<html><head><title>Example Website - Home Page</title></head><body>...</body></html>',
+        description:
+          'This is an example website demonstrating web scraping capabilities.',
+        metadata: {
+          title: 'Example Website - Home Page',
+          description:
+            'This is an example website demonstrating web scraping capabilities.',
+          ogTitle: 'Example Website',
+          // other metadata properties
+        },
+        cleanedHtml:
+          '<div><h1>Example Website</h1><p>Main content...</p></div>',
+        metaFiles: {
+          robots: 'User-agent: *\nDisallow: /admin/',
+          sitemapXML: '<?xml version="1.0"?><urlset>...</urlset>',
+        },
+      },
+    ],
   });
 
 /**

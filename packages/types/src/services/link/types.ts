@@ -6,25 +6,34 @@ import { z } from 'zod/v4';
  */
 export const LinkExtractionOptionsSchema = z
   .object({
-    includeExternal: z.boolean().optional().meta({
-      description: 'Whether to include links from other domains',
-      example: false,
-    }),
-    includeMedia: z.boolean().optional().meta({
-      description: 'Whether to include media files (images, videos, docs)',
-      example: true,
-    }),
+    includeExternal: z
+      .boolean()
+      .optional()
+      .meta({
+        description: 'Whether to include links from other domains',
+        examples: [false],
+      }),
+    includeMedia: z
+      .boolean()
+      .optional()
+      .meta({
+        description: 'Whether to include media files (images, videos, docs)',
+        examples: [true],
+      }),
     excludePatterns: z
       .array(z.string())
       .optional()
       .meta({
         description: 'Array of regex patterns to exclude URLs',
-        example: ['^/admin/', '\\.pdf$', '/private/'],
+        examples: [['^/admin/', '\\.pdf$', '/private/']],
       }),
-    removeQueryParams: z.boolean().optional().meta({
-      description: 'Whether to remove query parameters from URLs',
-      example: true,
-    }),
+    removeQueryParams: z
+      .boolean()
+      .optional()
+      .meta({
+        description: 'Whether to remove query parameters from URLs',
+        examples: [true],
+      }),
   })
   .strict()
   .meta({
@@ -51,7 +60,7 @@ export const ExtractedLinksSchema = z
       .optional()
       .meta({
         description: 'Array of internal links from the same domain',
-        example: [
+        examples: [
           'https://example.com/about',
           'https://example.com/contact',
           'https://example.com/services',
@@ -62,7 +71,7 @@ export const ExtractedLinksSchema = z
       .optional()
       .meta({
         description: 'Array of external links from other domains',
-        example: [
+        examples: [
           'https://github.com/example/repo',
           'https://twitter.com/example',
           'https://linkedin.com/company/example',
@@ -75,7 +84,7 @@ export const ExtractedLinksSchema = z
           .optional()
           .meta({
             description: 'Array of image file URLs',
-            example: [
+            examples: [
               'https://example.com/images/logo.png',
               'https://example.com/images/banner.jpg',
             ],
@@ -85,7 +94,7 @@ export const ExtractedLinksSchema = z
           .optional()
           .meta({
             description: 'Array of video file URLs',
-            example: [
+            examples: [
               'https://example.com/videos/intro.mp4',
               'https://example.com/videos/demo.webm',
             ],
@@ -95,7 +104,7 @@ export const ExtractedLinksSchema = z
           .optional()
           .meta({
             description: 'Array of document file URLs',
-            example: [
+            examples: [
               'https://example.com/docs/whitepaper.pdf',
               'https://example.com/docs/manual.docx',
             ],

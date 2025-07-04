@@ -148,7 +148,7 @@ export const MetricsSchema = z
     }),
     duration: z.number().meta({
       description: 'Duration of the operation in milliseconds',
-      examples: [1200],
+      examples: [200],
     }),
     startTime: z.number().meta({
       description: 'Timestamp in milliseconds when the operation started',
@@ -165,7 +165,7 @@ export const MetricsSchema = z
     examples: [
       {
         readableDuration: '0.2s',
-        duration: 1200,
+        duration: 200,
         startTime: 1704067800000,
         endTime: 1704067800200,
       },
@@ -200,6 +200,14 @@ export const ReadSuccessResponseSchema = z
       }),
     metrics: MetricsSchema.optional().meta({
       description: 'Metrics for the read operation.',
+      examples: [
+        {
+          readableDuration: '0.2s',
+          duration: 200,
+          startTime: 1704067800000,
+          endTime: 1704067800200,
+        },
+      ],
     }),
   })
   .meta({
@@ -236,10 +244,10 @@ export const ReadSuccessResponseSchema = z
           isIframeAllowed: true,
         },
         metrics: {
-          readableDuration: '1.2s',
-          duration: 1200,
+          readableDuration: '0.2s',
+          duration: 200,
           startTime: 1704067800000,
-          endTime: 1704067801200,
+          endTime: 1704067800200,
         },
       },
     ],

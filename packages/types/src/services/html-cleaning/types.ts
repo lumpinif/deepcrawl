@@ -11,32 +11,54 @@ export const HTMLCleaningOptionsSchema = z
       .optional()
       .meta({
         description: 'HTML tags to preserve in the output (whitelist)',
-        example: ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'strong', 'em'],
+        examples: [
+          'p',
+          'h1',
+          'h2',
+          'h3',
+          'ul',
+          'ol',
+          'li',
+          'a',
+          'strong',
+          'em',
+        ],
       }),
     disallowedHTMLTags: z
       .array(z.string())
       .optional()
       .meta({
         description: 'HTML tags to remove from the output (blacklist)',
-        example: ['script', 'style', 'iframe', 'form', 'button'],
+        examples: ['script', 'style', 'iframe', 'form', 'button'],
       }),
-    extractMainContent: z.boolean().optional().default(true).meta({
-      description:
-        'Whether to extract only the main content area, removing navigation, footers, etc.',
-      example: true,
-    }),
+    extractMainContent: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description:
+          'Whether to extract only the main content area, removing navigation, footers, etc.',
+        examples: [true],
+      }),
     /* Deprecated property, will be removed in future. add baseUrl to HTMLCleaning as a required parameter instead*/
-    documentBaseUrl: z.string().optional().meta({
-      description:
-        'Base URL for resolving relative URLs (deprecated, use baseUrl parameter instead)',
-      example: 'https://example.com',
-      deprecated: true,
-    }),
-    removeBase64Images: z.boolean().optional().default(true).meta({
-      description:
-        'Whether to remove base64 encoded images to reduce payload size',
-      example: true,
-    }),
+    documentBaseUrl: z
+      .string()
+      .optional()
+      .meta({
+        description:
+          'Base URL for resolving relative URLs (deprecated, use baseUrl parameter instead)',
+        examples: ['https://example.com'],
+        deprecated: true,
+      }),
+    removeBase64Images: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description:
+          'Whether to remove base64 encoded images to reduce payload size',
+        examples: [true],
+      }),
   })
   .strict()
   .meta({
@@ -107,7 +129,19 @@ export const ElementPatternSchema = z
     classNames: z.array(z.union([z.string(), z.instanceof(RegExp)])).optional(),
     ids: z.array(z.union([z.string(), z.instanceof(RegExp)])).optional(),
   })
-  .strict();
+  .strict()
+  .meta({
+    title: 'ElementPattern',
+    description: 'Schema for defining patterns to match DOM elements',
+    examples: [
+      {
+        tag: 'div',
+        attributes: [{ name: 'data-role', value: 'content' }],
+        classNames: ['main-content', /^content-/],
+        ids: ['main', 'article-body'],
+      },
+    ],
+  });
 
 /**
  * Defines a pattern for matching DOM elements based on their properties.
@@ -143,21 +177,28 @@ export type ElementPattern = z.infer<typeof ElementPatternSchema>;
 export const HTMLCleaningMetricsSchema = z
   .object({
     inputSize: z.number().meta({
-      description: 'Original HTML size in bytes',
-      example: 45000,
+      description: 'Original HTML size in bytes before cleaning',
+      examples: [125000],
     }),
     outputSize: z.number().meta({
-      description: 'Cleaned HTML size in bytes',
-      example: 12000,
+      description: 'Cleaned HTML size in bytes after processing',
+      examples: [42000],
     }),
     compressionRatio: z.number().meta({
-      description: 'Compression ratio (original size / cleaned size)',
-      example: 0.75,
+      description: 'Compression ratio (cleaned size / original size)',
+      examples: [0.336],
     }),
   })
   .meta({
     title: 'HTMLCleaningMetrics',
     description: 'Schema for HTML cleaning performance metrics',
+    examples: [
+      {
+        inputSize: 125000,
+        outputSize: 42000,
+        compressionRatio: 0.336,
+      },
+    ],
   });
 
 /**
@@ -187,8 +228,9 @@ export const HTMLCleaningResultSchema = z
   .object({
     cleanedHtml: z.string().meta({
       description: 'The cleaned HTML content',
-      example:
+      examples: [
         '<h1>Clean Title</h1><p>Clean content without scripts or styles.</p>',
+      ],
     }),
     metrics: HTMLCleaningMetricsSchema.optional().meta({
       description: 'Performance metrics for the cleaning operation',
@@ -197,6 +239,16 @@ export const HTMLCleaningResultSchema = z
   .meta({
     title: 'HTMLCleaningResult',
     description: 'Schema for HTML cleaning operation result',
+    examples: [
+      {
+        cleanedHtml: '<div><h1>Article Title</h1><p>Clean content...</p></div>',
+        metrics: {
+          inputSize: 125000,
+          outputSize: 42000,
+          compressionRatio: 0.336,
+        },
+      },
+    ],
   });
 
 /**

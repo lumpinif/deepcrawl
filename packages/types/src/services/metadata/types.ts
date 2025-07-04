@@ -6,50 +6,94 @@ import { z } from 'zod/v4';
  */
 export const MetadataOptionsSchema = z
   .object({
-    title: z.boolean().optional().default(true).meta({
-      description: 'Extract page title from title tag or meta title',
-      example: true,
-    }),
-    description: z.boolean().optional().default(true).meta({
-      description: 'Extract meta description content',
-      example: true,
-    }),
-    language: z.boolean().optional().default(true).meta({
-      description: 'Extract page language from html lang attribute',
-      example: true,
-    }),
-    canonical: z.boolean().optional().default(true).meta({
-      description: 'Extract canonical URL from link rel="canonical"',
-      example: true,
-    }),
-    robots: z.boolean().optional().default(true).meta({
-      description: 'Extract robots directives from meta robots',
-      example: false,
-    }),
-    author: z.boolean().optional().default(true).meta({
-      description: 'Extract author information from meta author',
-      example: true,
-    }),
-    keywords: z.boolean().optional().default(true).meta({
-      description: 'Extract meta keywords and convert to array',
-      example: true,
-    }),
-    favicon: z.boolean().optional().default(true).meta({
-      description: 'Extract favicon URL from link rel="icon" or similar',
-      example: true,
-    }),
-    openGraph: z.boolean().optional().default(true).meta({
-      description: 'Extract Open Graph metadata (og:* properties)',
-      example: true,
-    }),
-    twitter: z.boolean().optional().default(true).meta({
-      description: 'Extract Twitter Card metadata (twitter:* properties)',
-      example: false,
-    }),
-    isIframeAllowed: z.boolean().optional().default(true).meta({
-      description: 'Check if iframe embedding is allowed',
-      example: true,
-    }),
+    title: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract page title from title tag or meta title',
+        examples: [true],
+      }),
+    description: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract meta description content',
+        examples: [true],
+      }),
+    language: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract page language from html lang attribute',
+        examples: [true],
+      }),
+    canonical: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract canonical URL from link rel="canonical"',
+        examples: [true],
+      }),
+    robots: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract robots directives from meta robots',
+        examples: [false],
+      }),
+    author: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract author information from meta author',
+        examples: [true],
+      }),
+    keywords: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract meta keywords and convert to array',
+        examples: [true],
+      }),
+    favicon: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract favicon URL from link rel="icon" or similar',
+        examples: [true],
+      }),
+    openGraph: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract Open Graph metadata (og:* properties)',
+        examples: [true],
+      }),
+    twitter: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Extract Twitter Card metadata (twitter:* properties)',
+        examples: [false],
+      }),
+    isIframeAllowed: z
+      .boolean()
+      .optional()
+      .default(true)
+      .meta({
+        description: 'Check if iframe embedding is allowed',
+        examples: [true],
+      }),
   })
   .meta({
     title: 'MetadataOptions',
@@ -78,103 +122,176 @@ export const MetadataOptionsSchema = z
 export const PageMetadataSchema = z
   .object({
     // Basic metadata
-    title: z.string().optional().meta({
-      description: 'Page title from title tag or meta title',
-      example: 'Example Website - Home Page',
-    }),
-    description: z.string().optional().meta({
-      description: 'Page description from meta description',
-      example: 'This is an example website demonstrating metadata extraction.',
-    }),
-    language: z.string().optional().meta({
-      description: 'Page language from html lang attribute',
-      example: 'en',
-    }),
-    canonical: z.string().url().optional().meta({
-      description: 'Canonical URL from link rel="canonical"',
-      example: 'https://example.com/',
-    }),
-    robots: z.string().optional().meta({
-      description: 'Robots directives from meta robots',
-      example: 'index, follow',
-    }),
-    author: z.string().optional().meta({
-      description: 'Author information from meta author',
-      example: 'John Doe',
-    }),
+    title: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Page title from title tag or meta title',
+        examples: ['Example Website - Home Page'],
+      }),
+    description: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Page description from meta description',
+        examples: [
+          'This is an example website demonstrating metadata extraction.',
+        ],
+      }),
+    language: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Page language from html lang attribute',
+        examples: ['en'],
+      }),
+    canonical: z
+      .string()
+      .url()
+      .optional()
+      .meta({
+        description: 'Canonical URL from link rel="canonical"',
+        examples: ['https://example.com/'],
+      }),
+    robots: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Robots directives from meta robots',
+        examples: ['index, follow'],
+      }),
+    author: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Author information from meta author',
+        examples: ['John Doe'],
+      }),
     keywords: z
       .array(z.string())
       .optional()
       .meta({
         description: 'Keywords array from meta keywords',
-        example: ['example', 'metadata', 'extraction'],
+        examples: ['example', 'metadata', 'extraction'],
       }),
-    lastModified: z.string().optional().nullable().meta({
-      description: 'Last modified date from HTTP headers',
-      example: '2023-04-15T14:32:21Z',
-    }),
-    favicon: z.string().url().optional().meta({
-      description: 'Favicon URL from link rel="icon" or similar',
-      example: 'https://example.com/favicon.ico',
-    }),
+    lastModified: z
+      .string()
+      .optional()
+      .nullable()
+      .meta({
+        description: 'Last modified date from HTTP headers',
+        examples: ['2023-04-15T14:32:21Z'],
+      }),
+    favicon: z
+      .string()
+      .url()
+      .optional()
+      .meta({
+        description: 'Favicon URL from link rel="icon" or similar',
+        examples: ['https://example.com/favicon.ico'],
+      }),
 
     // OpenGraph metadata (flattened)
-    ogTitle: z.string().optional().meta({
-      description: 'OpenGraph title from meta property="og:title"',
-      example: 'Example Website',
-    }),
-    ogDescription: z.string().optional().meta({
-      description: 'OpenGraph description from meta property="og:description"',
-      example: 'Learn about our services',
-    }),
-    ogImage: z.string().url().optional().meta({
-      description: 'OpenGraph image URL from meta property="og:image"',
-      example: 'https://example.com/images/og-image.jpg',
-    }),
-    ogUrl: z.string().url().optional().meta({
-      description: 'OpenGraph URL from meta property="og:url"',
-      example: 'https://example.com/',
-    }),
-    ogType: z.string().optional().meta({
-      description: 'OpenGraph type from meta property="og:type"',
-      example: 'website',
-    }),
-    ogSiteName: z.string().optional().meta({
-      description: 'OpenGraph site name from meta property="og:site_name"',
-      example: 'Example Website',
-    }),
+    ogTitle: z
+      .string()
+      .optional()
+      .meta({
+        description: 'OpenGraph title from meta property="og:title"',
+        examples: ['Example Website'],
+      }),
+    ogDescription: z
+      .string()
+      .optional()
+      .meta({
+        description:
+          'OpenGraph description from meta property="og:description"',
+        examples: ['Learn about our services'],
+      }),
+    ogImage: z
+      .string()
+      .url()
+      .optional()
+      .meta({
+        description: 'OpenGraph image URL from meta property="og:image"',
+        examples: ['https://example.com/images/og-image.jpg'],
+      }),
+    ogUrl: z
+      .string()
+      .url()
+      .optional()
+      .meta({
+        description: 'OpenGraph URL from meta property="og:url"',
+        examples: ['https://example.com/'],
+      }),
+    ogType: z
+      .string()
+      .optional()
+      .meta({
+        description: 'OpenGraph type from meta property="og:type"',
+        examples: ['website'],
+      }),
+    ogSiteName: z
+      .string()
+      .optional()
+      .meta({
+        description: 'OpenGraph site name from meta property="og:site_name"',
+        examples: ['Example Website'],
+      }),
 
     // Twitter Card metadata (flattened)
-    twitterCard: z.string().optional().meta({
-      description: 'Twitter card type from meta name="twitter:card"',
-      example: 'summary_large_image',
-    }),
-    twitterSite: z.string().optional().meta({
-      description: 'Twitter site username from meta name="twitter:site"',
-      example: '@examplesite',
-    }),
-    twitterCreator: z.string().optional().meta({
-      description: 'Twitter creator username from meta name="twitter:creator"',
-      example: '@johndoe',
-    }),
-    twitterTitle: z.string().optional().meta({
-      description: 'Twitter title from meta name="twitter:title"',
-      example: 'Example Website - Official Site',
-    }),
-    twitterDescription: z.string().optional().meta({
-      description: 'Twitter description from meta name="twitter:description"',
-      example: 'The best example website on the internet',
-    }),
-    twitterImage: z.string().url().optional().meta({
-      description: 'Twitter image URL from meta name="twitter:image"',
-      example: 'https://example.com/images/twitter-card.jpg',
-    }),
+    twitterCard: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Twitter card type from meta name="twitter:card"',
+        examples: ['summary_large_image'],
+      }),
+    twitterSite: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Twitter site username from meta name="twitter:site"',
+        examples: ['@examplesite'],
+      }),
+    twitterCreator: z
+      .string()
+      .optional()
+      .meta({
+        description:
+          'Twitter creator username from meta name="twitter:creator"',
+        examples: ['@johndoe'],
+      }),
+    twitterTitle: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Twitter title from meta name="twitter:title"',
+        examples: ['Example Website - Official Site'],
+      }),
+    twitterDescription: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Twitter description from meta name="twitter:description"',
+        examples: ['The best example website on the internet'],
+      }),
+    twitterImage: z
+      .string()
+      .url()
+      .optional()
+      .meta({
+        description: 'Twitter image URL from meta name="twitter:image"',
+        examples: ['https://example.com/images/twitter-card.jpg'],
+      }),
 
     // Additional metadata
-    isIframeAllowed: z.boolean().optional().meta({
-      description: 'Whether iframe embedding is allowed',
-      example: true,
-    }),
+    isIframeAllowed: z
+      .boolean()
+      .optional()
+      .meta({
+        description: 'Whether iframe embedding is allowed',
+        examples: [true],
+      }),
   })
   .meta({
     title: 'PageMetadata',

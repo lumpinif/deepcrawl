@@ -42,6 +42,56 @@ export const ContentOptionsSchema = z
   .meta({
     title: 'ContentOptions',
     description: 'Schema for content extraction options',
+    examples: [
+      {
+        metadataOptions: {
+          title: true,
+          description: true,
+          language: true,
+          canonical: true,
+          robots: true,
+          author: true,
+          keywords: true,
+          lastModified: true,
+          favicon: true,
+          ogTitle: true,
+          ogDescription: true,
+          ogImage: true,
+          ogUrl: true,
+          ogType: true,
+          ogSiteName: true,
+          twitterCard: true,
+          twitterSite: true,
+          twitterCreator: true,
+          twitterTitle: true,
+          twitterDescription: true,
+          twitterImage: true,
+        },
+        linksOptions: {
+          includeExternal: true,
+          includeMedia: true,
+          excludePatterns: ['/admin/', '/private/'],
+          removeQueryParams: true,
+        },
+        cleanedHtmlOptions: {
+          allowedHTMLTags: [
+            'p',
+            'h1',
+            'h2',
+            'h3',
+            'ul',
+            'ol',
+            'li',
+            'a',
+            'strong',
+            'em',
+          ],
+          disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
+          extractMainContent: true,
+          removeBase64Images: true,
+        },
+      },
+    ],
   });
 
 /**
@@ -112,7 +162,7 @@ export const TreeOptionsSchema = z
       )
       .meta({
         description:
-          'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL.',
+          'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL. e.g., if false: rootUrl: `https://swr.vercel.app` -> `https://vercel.app`',
         examples: [false],
       }),
   })
@@ -154,7 +204,7 @@ export const LinksOptionsSchema = z
      * Must be a valid URL string.
      */
     url: z.string().meta({
-      description: 'The URL to extract links from.',
+      description: 'The URL to extract links from. Must be a valid URL string.',
       examples: ['https://example.com', 'example.com'],
     }),
 
@@ -514,6 +564,7 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
       .array(z.lazy(() => LinksTreeSchema))
       .optional()
       .meta({
+        title: 'LinksTree',
         description:
           'Array of child LinksTree nodes, each representing a page found under this URL. This creates a recursive tree structure for the entire website hierarchy.',
         examples: [
@@ -668,6 +719,7 @@ export const LinksSuccessResponseSchema = z
         anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }],
       }) */
     tree: z.union([LinksTreeSchema, z.null()]).optional().meta({
+      title: 'LinksTree',
       description:
         'Site map tree starting from the root URL, or null if tree generation was disabled',
     }),
@@ -681,7 +733,7 @@ export const LinksSuccessResponseSchema = z
         targetUrl: 'https://example.com',
         timestamp: '2024-01-15T10:30:00.000Z',
         cached: false,
-        executionTime: '1.2s',
+        executionTime: '0.2s',
         title: 'Example Website',
         description: 'Welcome to our example website',
         ancestors: ['https://example.com'],
@@ -710,7 +762,7 @@ export const LinksSuccessResponseSchema = z
           rootUrl: 'https://example.com',
           name: 'Home',
           totalUrls: 25,
-          executionTime: '1.2s',
+          executionTime: '0.2s',
           lastUpdated: '2024-01-15T10:30:00.000Z',
           children: [
             {
@@ -732,6 +784,7 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
   /* _DEPRECATED_ .openapi({
       anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }] */
   tree: z.union([LinksTreeSchema, z.null()]).optional().meta({
+    title: 'LinksTree',
     description:
       'Partial site map tree if available, or null if no tree could be generated',
   }),
