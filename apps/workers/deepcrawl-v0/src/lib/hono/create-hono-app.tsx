@@ -7,7 +7,7 @@ import { prettyJSON } from 'hono/pretty-json';
 import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
-import { notFound, onError, serveEmojiFavicon } from 'stoker/middlewares';
+import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
 
 export default function createHonoApp() {
   const app = new Hono<AppBindings>();
@@ -32,7 +32,6 @@ export default function createHonoApp() {
   //   return c.var.betterAuth.handler(c.req.raw);
   // });
 
-  app.onError(onError);
   app.notFound(notFound);
 
   return app;

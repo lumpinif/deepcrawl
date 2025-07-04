@@ -5,7 +5,7 @@ import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 import type { StatusCode } from 'hono/utils/http-status';
 import * as HttpStatusCodes from 'stoker/http-status-codes';
-import { ZodError, type ZodIssue } from 'zod';
+import { ZodError } from 'zod';
 
 interface ErrorIssue {
   code: string;
@@ -154,19 +154,19 @@ export const errorMiddleware = createMiddleware<AppBindings>(
   },
 );
 
-function formatZodError(error: ZodError): string {
-  return error.issues
-    .map((issue: ZodIssue) => {
-      const path = issue.path.join('.') || 'value';
-      let msg = `${path}: ${issue.message}`;
-      if (issue.code === 'invalid_type') {
-        const { expected, received } = issue;
-        msg += ` (expected ${expected}, received ${received})`;
-      }
-      return msg;
-    })
-    .join('; ');
-}
+// function formatZodError(error: ZodError): string {
+//   return error.issues
+//     .map((issue: ZodIssue) => {
+//       const path = issue.path.join('.') || 'value';
+//       let msg = `${path}: ${issue.message}`;
+//       if (issue.code === 'invalid_type') {
+//         const { expected, received } = issue;
+//         msg += ` (expected ${expected}, received ${received})`;
+//       }
+//       return msg;
+//     })
+//     .join('; ');
+// }
 
 // export const defaultErrorHook: Hook<any, any, any, any> = (result, c) => {
 //   if (!result.success) {
