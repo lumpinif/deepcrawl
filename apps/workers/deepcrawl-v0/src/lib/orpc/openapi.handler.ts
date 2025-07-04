@@ -9,6 +9,7 @@ import { router } from '@/routers/rpc';
 import {
   LinksErrorResponseSchema,
   LinksOptionsSchema,
+  LinksSuccessResponseSchema,
   ReadErrorResponseSchema,
   ReadOptionsSchema,
   ReadSuccessResponseSchema,
@@ -69,6 +70,9 @@ export const openAPIHandler = new OpenAPIHandler(router, {
           },
           LinksOptions: {
             schema: LinksOptionsSchema,
+          },
+          LinksSuccessResponse: {
+            schema: LinksSuccessResponseSchema,
           },
           LinksErrorResponse: {
             schema: LinksErrorResponseSchema,
