@@ -19,7 +19,7 @@ export const readGETHandler = publicProcedures
       );
 
       // WORKAROUND: Return a Blob with text/markdown MIME type to bypass ORPC's JSON serialization
-      return new Blob([result], { type: 'text/markdown; charset=utf-8' });
+      return new Blob([result], { type: 'text/markdown' });
     } catch (error) {
       const readErrorResponse: ReadErrorResponse = {
         success: false,

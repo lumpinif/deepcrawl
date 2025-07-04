@@ -5,17 +5,51 @@ import {
   ReadSuccessResponseSchema,
 } from '@deepcrawl/types';
 import { oc } from '@orpc/contract';
+import { oo } from '@orpc/openapi';
 import * as z from 'zod/v4';
 import type { Inputs, Outputs } from '.';
 
 const tags = ['Read Website'];
 
-const readOC = oc.errors({
+const errorConfig = {
   READ_ERROR_RESPONSE: {
     status: 500,
     message: 'Failed to read content from URL',
     data: ReadErrorResponseSchema,
   },
+};
+
+const readOC = oc.errors({
+  READ_ERROR_RESPONSE: oo.spec(
+    errorConfig.READ_ERROR_RESPONSE,
+    (currentOperation) => ({
+      ...currentOperation,
+      responses: {
+        ...currentOperation.responses, // WORKAROUND: oo.spec() let us override the 200 response to return a text/markdown string response here
+        200: {
+          ...currentOperation.responses?.[200],
+          description: 'Page markdown content',
+          content: {
+            'text/markdown': {
+              schema: {
+                type: 'string',
+                description:
+                  'NOTE - expecting a text/markdown string response instead of an application/json object',
+                examples: [
+                  '# Example Page\n\nThis is an example markdown content extracted from the webpage.\n\n## Main Content\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                ],
+              },
+            },
+          },
+        },
+        500: {
+          ...currentOperation.responses?.[500],
+          description:
+            'Content reading failed - unable to fetch or process the requested URL',
+        },
+      },
+    }),
+  ),
 });
 
 export const readGETContract = readOC
@@ -29,12 +63,8 @@ export const readGETContract = readOC
   .input(ReadOptionsSchema.pick({ url: true }))
   // WORKAROUND: Return a Blob to bypass ORPC's JSON serialization since we'd like to return a text/markdown string response
   .output(
-    z.instanceof(Blob).meta({
-      description:
-        'NOTE: expecting a string response instead of an application/json object. The page markdown content from the request URL',
-      examples: [
-        '# Example Page\n\nThis is an example markdown content extracted from the webpage.\n\n## Main Content\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      ],
+    z.instanceof(Blob).refine((blob) => blob.type === 'text/markdown', {
+      message: 'Blob must have text/markdown MIME type',
     }),
   );
 

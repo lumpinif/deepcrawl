@@ -1,12 +1,10 @@
 import type { AppBindings, AppContext } from '@/lib/context';
 import { isProduction } from '@/utils/worker-env';
-import type { Hook } from '@hono/zod-openapi';
 import type { ErrorHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 import type { StatusCode } from 'hono/utils/http-status';
 import * as HttpStatusCodes from 'stoker/http-status-codes';
-import { UNPROCESSABLE_ENTITY } from 'stoker/http-status-codes';
 import { ZodError, type ZodIssue } from 'zod';
 
 interface ErrorIssue {
@@ -170,28 +168,27 @@ function formatZodError(error: ZodError): string {
     .join('; ');
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export const defaultErrorHook: Hook<any, any, any, any> = (result, c) => {
-  if (!result.success) {
-    let message: string;
-    const isProd = isProduction(c);
+// export const defaultErrorHook: Hook<any, any, any, any> = (result, c) => {
+//   if (!result.success) {
+//     let message: string;
+//     const isProd = isProduction(c);
 
-    if (result.error instanceof ZodError && isProd) {
-      // Format each issue as a readable sentence
-      message = formatZodError(result.error);
-    } else {
-      message =
-        typeof result.error === 'string'
-          ? result.error
-          : JSON.stringify(result.error);
-    }
+//     if (result.error instanceof ZodError && isProd) {
+//       // Format each issue as a readable sentence
+//       message = formatZodError(result.error);
+//     } else {
+//       message =
+//         typeof result.error === 'string'
+//           ? result.error
+//           : JSON.stringify(result.error);
+//     }
 
-    return c.json(
-      {
-        success: result.success,
-        error: isProd ? message : result.error,
-      },
-      UNPROCESSABLE_ENTITY,
-    );
-  }
-};
+//     return c.json(
+//       {
+//         success: result.success,
+//         error: isProd ? message : result.error,
+//       },
+//       UNPROCESSABLE_ENTITY,
+//     );
+//   }
+// };

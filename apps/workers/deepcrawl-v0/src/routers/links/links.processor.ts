@@ -21,7 +21,7 @@ import {
   PLATFORM_URLS,
 } from '@/config/constants';
 import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
-import type { AppContext } from '@/lib/types';
+import type { AppContext } from '@/lib/context';
 import { LinkService } from '@/services/link/link.service';
 import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';

@@ -8,6 +8,7 @@ import { env } from 'cloudflare:workers';
 import { router } from '@/routers/rpc';
 import {
   LinksErrorResponseSchema,
+  LinksOptionsSchema,
   ReadErrorResponseSchema,
   ReadOptionsSchema,
   ReadSuccessResponseSchema,
@@ -65,6 +66,9 @@ export const openAPIHandler = new OpenAPIHandler(router, {
           },
           ReadErrorResponse: {
             schema: ReadErrorResponseSchema,
+          },
+          LinksOptions: {
+            schema: LinksOptionsSchema,
           },
           LinksErrorResponse: {
             schema: LinksErrorResponseSchema,

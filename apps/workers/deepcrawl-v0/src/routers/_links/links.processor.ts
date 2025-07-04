@@ -1,10 +1,10 @@
 import { performance } from 'node:perf_hooks';
 
 import type {
+  LinksErrorResponse,
   LinksOptions,
-  LinksPostErrorResponse,
-  LinksPostResponse,
-  LinksPostSuccessResponse,
+  LinksResponse,
+  LinksSuccessResponse,
   SkippedUrl,
   Tree,
   VisitedUrl,
@@ -55,7 +55,7 @@ export function createLinksErrorResponse({
   error?: string;
   existingTree: Tree | undefined;
   tree: Tree | undefined;
-}): LinksPostErrorResponse {
+}): LinksErrorResponse {
   return {
     success: false,
     targetUrl,
@@ -71,7 +71,7 @@ export function createLinksErrorResponse({
 export async function processLinksRequest(
   c: AppContext,
   params: LinksOptions,
-): Promise<LinksPostResponse> {
+): Promise<LinksResponse> {
   const {
     url,
     tree: isTree,
@@ -133,7 +133,7 @@ export async function processLinksRequest(
   let lastVisitedUrlsInCache = new Set<VisitedUrl>();
   let linksCacheIsFresh = false;
 
-  let linksPostResponse: LinksPostResponse | undefined;
+  let linksPostResponse: LinksResponse | undefined;
 
   try {
     const scrapeService = new ScrapeService();
@@ -205,7 +205,7 @@ export async function processLinksRequest(
 
     // Define the return type for processTargetUrl to use in our parallel promises
     type TargetUrlResult =
-      | LinksPostResponse
+      | LinksResponse
       | {
           targetScrapeResult: ScrapedData;
           allTargetLinks: ExtractedLinks;
@@ -224,7 +224,7 @@ export async function processLinksRequest(
         const tree: Tree | undefined = existingTree;
 
         // create a links post error response and return it
-        const linksPostErrorResponse: LinksPostErrorResponse =
+        const linksPostErrorResponse: LinksErrorResponse =
           createLinksErrorResponse({
             targetUrl,
             withTree,
@@ -451,7 +451,7 @@ export async function processLinksRequest(
 
     // Check if any result is a error Response object (links error response from processTargetUrl)
     const errorResponse = results.find(
-      (result): result is LinksPostErrorResponse =>
+      (result): result is LinksErrorResponse =>
         typeof result === 'object' &&
         result !== null &&
         'success' in result &&
@@ -634,7 +634,7 @@ export async function processLinksRequest(
       finalTree.executionTime = executionTime;
     }
 
-    linksPostResponse = cleanEmptyValues<LinksPostSuccessResponse>({
+    linksPostResponse = cleanEmptyValues<LinksSuccessResponse>({
       success: true,
       cached: linksCacheIsFresh,
       executionTime: !withTree || !finalTree ? executionTime : undefined,
@@ -664,7 +664,7 @@ export async function processLinksRequest(
       throw new Error('Failed to process links request');
     }
 
-    return linksPostResponse as LinksPostSuccessResponse;
+    return linksPostResponse as LinksSuccessResponse;
   } catch (error) {
     console.error('❌ [LINKS PROCESSOR] error:', error);
 
