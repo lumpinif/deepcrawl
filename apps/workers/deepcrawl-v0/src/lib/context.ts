@@ -1,14 +1,12 @@
 import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
 import type { Context as HonoContext } from 'hono';
-import type { PinoLogger } from 'hono-pino';
 
-export interface AppVariables {
-  logger: PinoLogger;
-}
+// export interface AppVariables {
+// }
 
 export interface AppBindings {
   Bindings: CloudflareBindings;
-  Variables: AppVariables;
+  // Variables: AppVariables;
 }
 
 export interface AppContext
