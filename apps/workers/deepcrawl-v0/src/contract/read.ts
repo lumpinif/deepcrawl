@@ -1,4 +1,3 @@
-import { env } from 'cloudflare:workers';
 import {
   ReadErrorResponseSchema,
   ReadOptionsSchema,
@@ -58,7 +57,7 @@ export const readGETContract = readOC
     path: '/',
     method: 'GET',
     summary: 'Get page markdown content',
-    description: `Endpoint: GET ${env.API_URL}/read?url=example.com\n\nDirectly return page markdown content from the request URL as a string response.`,
+    description: `Endpoint: GET \`api.deepcrawl.dev/read?url=example.com\`\n\nDirectly return page markdown content from the request URL as a string response.`,
   })
   .input(ReadOptionsSchema.pick({ url: true }))
   // WORKAROUND: Return a Blob to bypass ORPC's JSON serialization since we'd like to return a text/markdown string response
@@ -77,7 +76,7 @@ export const readPOSTContract = readOC
     path: '/',
     method: 'POST',
     summary: 'Read a URL and retrieve the full result object',
-    description: `Endpoint: POST ${env.API_URL}/read\n\nRead a URL and return the full detailed result object. This is a POST request can handle more complex requests and use cases.`,
+    description: `Endpoint: POST \`api.deepcrawl.dev/read\`\n\nRead a URL and return the full detailed result object. This is a POST request can handle more complex requests and use cases.`,
   })
   .input(ReadOptionsSchema)
   .output(ReadSuccessResponseSchema);

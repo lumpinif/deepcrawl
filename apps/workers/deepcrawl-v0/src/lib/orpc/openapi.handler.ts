@@ -14,8 +14,72 @@ import {
   ReadOptionsSchema,
   ReadSuccessResponseSchema,
 } from '@deepcrawl/types';
+import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
 import { ResponseHeadersPlugin } from '@orpc/server/plugins';
 import packageJSON from '../../../package.json' with { type: 'json' };
+
+export const SchemaConverters = [new ZodV4ToJsonSchemaConverter()];
+
+export const OpenAPISpecGenerateOptions = {
+  info: {
+    title: 'DeepCrawl',
+    version: packageJSON.version,
+  },
+  security: [{ bearerAuth: [] }],
+  servers: [
+    {
+      url: (() => {
+        try {
+          return new URL(env.API_URL).toString();
+        } catch {
+          return new URL(`https://${env.API_URL}`).toString();
+        }
+      })(),
+      description: 'Deepcrawl Official API server',
+    },
+  ],
+  tags: [
+    {
+      name: 'Read Website',
+      description: 'API endpoints for reading and extracting content from URLs',
+    },
+    {
+      name: 'Extract Links',
+      description: 'API endpoints for extracting links and building sitemaps',
+    },
+  ],
+  commonSchemas: {
+    ReadOptions: {
+      schema: ReadOptionsSchema,
+    },
+    ReadSuccessResponse: {
+      schema: ReadSuccessResponseSchema,
+    },
+    ReadErrorResponse: {
+      schema: ReadErrorResponseSchema,
+    },
+    LinksOptions: {
+      schema: LinksOptionsSchema,
+    },
+    LinksSuccessResponse: {
+      schema: LinksSuccessResponseSchema,
+    },
+    LinksErrorResponse: {
+      schema: LinksErrorResponseSchema,
+    },
+    UndefinedError: {
+      error: 'UndefinedError',
+    },
+  },
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+      },
+    },
+  },
+} satisfies OpenAPIGeneratorGenerateOptions;
 
 export const openAPIHandler = new OpenAPIHandler(router, {
   interceptors: [
@@ -27,74 +91,13 @@ export const openAPIHandler = new OpenAPIHandler(router, {
     new ResponseHeadersPlugin(),
     new ZodSmartCoercionPlugin(),
     new OpenAPIReferencePlugin({
-      schemaConverters: [new ZodV4ToJsonSchemaConverter()],
-      specGenerateOptions: {
-        info: {
-          title: 'DeepCrawl',
-          version: packageJSON.version,
-        },
-        security: [{ bearerAuth: [] }],
-        servers: [
-          {
-            url: (() => {
-              try {
-                return new URL(env.API_URL).toString();
-              } catch {
-                return new URL(`https://${env.API_URL}`).toString();
-              }
-            })(),
-            description: 'Deepcrawl Official API server',
-          },
-        ],
-        tags: [
-          {
-            name: 'Read Website',
-            description:
-              'API endpoints for reading and extracting content from URLs',
-          },
-          {
-            name: 'Extract Links',
-            description:
-              'API endpoints for extracting links and building sitemaps',
-          },
-        ],
-        commonSchemas: {
-          ReadOptions: {
-            schema: ReadOptionsSchema,
-          },
-          ReadSuccessResponse: {
-            schema: ReadSuccessResponseSchema,
-          },
-          ReadErrorResponse: {
-            schema: ReadErrorResponseSchema,
-          },
-          LinksOptions: {
-            schema: LinksOptionsSchema,
-          },
-          LinksSuccessResponse: {
-            schema: LinksSuccessResponseSchema,
-          },
-          LinksErrorResponse: {
-            schema: LinksErrorResponseSchema,
-          },
-          UndefinedError: {
-            error: 'UndefinedError',
-          },
-        },
-        components: {
-          securitySchemes: {
-            bearerAuth: {
-              type: 'http',
-              scheme: 'bearer',
-            },
-          },
-        },
-      },
+      schemaConverters: SchemaConverters,
+      specGenerateOptions: OpenAPISpecGenerateOptions,
       docsConfig: {
         authentication: {
           securitySchemes: {
             bearerAuth: {
-              token: 'your-api-key',
+              token: 'dc-YOUR_API_KEY',
             },
           },
         },
