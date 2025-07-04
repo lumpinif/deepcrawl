@@ -295,23 +295,23 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0(hono@4.7.10)(zod@3.25.67)
       '@orpc/client':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.4
+        version: 1.6.4
       '@orpc/contract':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.4
+        version: 1.6.4
       '@orpc/openapi':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.4
+        version: 1.6.4
       '@orpc/openapi-client':
         specifier: ^1.6.4
         version: 1.6.4
       '@orpc/server':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.6.4
+        version: 1.6.4
       '@orpc/zod':
-        specifier: ^1.6.0
-        version: 1.6.0(@orpc/contract@1.6.0)(@orpc/server@1.6.0)(zod@3.25.67)
+        specifier: ^1.6.4
+        version: 1.6.4(@orpc/contract@1.6.4)(@orpc/server@1.6.4)(zod@3.25.67)
       '@paoramen/cheer-reader':
         specifier: npm:@jsr/paoramen__cheer-reader@^0.1.2
         version: '@jsr/paoramen__cheer-reader@0.1.2'
@@ -327,9 +327,6 @@ importers:
       hono:
         specifier: ^4.7.10
         version: 4.7.10
-      hono-pino:
-        specifier: ^0.8.0
-        version: 0.8.0(hono@4.7.10)(pino@9.7.0)
       hono-rate-limiter:
         specifier: ^0.4.2
         version: 0.4.2(hono@4.7.10)
@@ -491,7 +488,7 @@ importers:
     dependencies:
       '@orpc/zod':
         specifier: ^1.6.0
-        version: 1.6.0(@orpc/contract@1.6.4)(@orpc/server@1.6.0)(zod@3.25.67)
+        version: 1.6.0(@orpc/contract@1.6.4)(@orpc/server@1.6.4)(zod@3.25.67)
       typescript:
         specifier: '>=5.0.0'
         version: 5.7.3
@@ -1826,8 +1823,22 @@ packages:
   '@orpc/openapi@1.6.0':
     resolution: {integrity: sha512-vQpbYpY8EAdiKXHdC9ciON6lFqYqQL6KzUVHVTun2FRaTedImJQcEtT7V0DfXGNadnlMEfURKuhSUU4x9F4gCg==}
 
+  '@orpc/openapi@1.6.4':
+    resolution: {integrity: sha512-iojJmwuiZ/GwkbpYKb9GeW9ac+9VzYIfkr/ln/mkjccDzcRXKjbSzu+VnfGXNTTuPASuoxqyMlZeJ0Lv88cifA==}
+
   '@orpc/server@1.6.0':
     resolution: {integrity: sha512-OW02rLLfKdLu2foO4szFuWM4oJogmjH1TjWbvDGIjbME+ItTo2ViZPrKnIDUDmkTaj1fSjNztIYMA7BU5dpRAg==}
+    peerDependencies:
+      crossws: '>=0.3.4'
+      ws: '>=8.18.1'
+    peerDependenciesMeta:
+      crossws:
+        optional: true
+      ws:
+        optional: true
+
+  '@orpc/server@1.6.4':
+    resolution: {integrity: sha512-YptJFE35gW8iLVsk4cLiyjuGokyYDY8c1LbZGpPLNt7Vm6kXWK57KNzIHhusZJ/3Zo3XV/1jLQ54UNSixsz8tA==}
     peerDependencies:
       crossws: '>=0.3.4'
       ws: '>=8.18.1'
@@ -1846,6 +1857,9 @@ packages:
   '@orpc/standard-server-aws-lambda@1.6.0':
     resolution: {integrity: sha512-ferabDYgAt67o6rV4qFjTj03ums4WA+eLHn7JvG1UMUMEcBKHduZPHh1J2Z+Uc5XpD37SxuQJ749tVrt+FQrKA==}
 
+  '@orpc/standard-server-aws-lambda@1.6.4':
+    resolution: {integrity: sha512-EbPmtS8rB7XDHdH5dS/uxgwj3wRt/f6CXYUOpx4Pwi4gcSgwV1heJwS7FBS3MpxP1B4mgX4KLgn11UGT953xzQ==}
+
   '@orpc/standard-server-fetch@1.6.0':
     resolution: {integrity: sha512-iowzMNG6yT8KBhXH9ts763K2NRcAl1JKjo1V7BixK/L8EaWfIlCyXCjT4mpL8BkJNo8QxXtIWhu7be+ZegIqsg==}
 
@@ -1854,6 +1868,9 @@ packages:
 
   '@orpc/standard-server-node@1.6.0':
     resolution: {integrity: sha512-lvwOBcevkDmPkVTdARa/5OwGOrs57tMrEOgiNEEYMrYn8ZULBpWFH2dtp6Ul2zQ9grraSejRuw404Dsq4R+aOA==}
+
+  '@orpc/standard-server-node@1.6.4':
+    resolution: {integrity: sha512-74KHhS0psxEDDTo5SNYSkARBdPmStkYv0iC3dZnSrKHopRUuliUII1cn18DnhZVZ335cm4sOyNq+wv4z+5dfjA==}
 
   '@orpc/standard-server-peer@1.6.0':
     resolution: {integrity: sha512-abblhl9Qw1ey1LBRaGg32OP3GH14ykDEfYNGBJJwpxIhlJOqw12tEDDHrDM270/xKnpHWIHMbE1T5D/F9d9zRA==}
@@ -1872,6 +1889,13 @@ packages:
     peerDependencies:
       '@orpc/contract': 1.6.0
       '@orpc/server': 1.6.0
+      zod: '>=3.24.2'
+
+  '@orpc/zod@1.6.4':
+    resolution: {integrity: sha512-AWB5k0b/DnD30Apdmu5pDyYQCOGNhrr18dnrx77yIheaAfg0dNlr8swHQQyKTF7W3bjfkkbQj/WvvP6aEfG0XQ==}
+    peerDependencies:
+      '@orpc/contract': 1.6.4
+      '@orpc/server': 1.6.4
       zod: '>=3.24.2'
 
   '@peculiar/asn1-android@2.3.16':
@@ -4749,13 +4773,6 @@ packages:
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
-
-  hono-pino@0.8.0:
-    resolution: {integrity: sha512-JFQcOIHApa22NUqZpyNCYf/ni2kwnn85vABjpAzssiQeEt7rkN/sRW19Z+WQzdHDluZVSNnF6Mk7nY13MJzJDA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      hono: '>=4.0.0'
-      pino: '>=7.1.0'
 
   hono-rate-limiter@0.4.2:
     resolution: {integrity: sha512-AAtFqgADyrmbDijcRTT/HJfwqfvhalya2Zo+MgfdrMPas3zSMD8SU03cv+ZsYwRU1swv7zgVt0shwN059yzhjw==}
@@ -8236,6 +8253,20 @@ snapshots:
       - crossws
       - ws
 
+  '@orpc/openapi@1.6.4':
+    dependencies:
+      '@orpc/client': 1.6.4
+      '@orpc/contract': 1.6.4
+      '@orpc/openapi-client': 1.6.4
+      '@orpc/server': 1.6.4
+      '@orpc/shared': 1.6.4
+      '@orpc/standard-server': 1.6.4
+      json-schema-typed: 8.0.1
+      rou3: 0.7.3
+    transitivePeerDependencies:
+      - crossws
+      - ws
+
   '@orpc/server@1.6.0':
     dependencies:
       '@orpc/client': 1.6.0
@@ -8246,6 +8277,17 @@ snapshots:
       '@orpc/standard-server-fetch': 1.6.0
       '@orpc/standard-server-node': 1.6.0
       '@orpc/standard-server-peer': 1.6.0
+
+  '@orpc/server@1.6.4':
+    dependencies:
+      '@orpc/client': 1.6.4
+      '@orpc/contract': 1.6.4
+      '@orpc/shared': 1.6.4
+      '@orpc/standard-server': 1.6.4
+      '@orpc/standard-server-aws-lambda': 1.6.4
+      '@orpc/standard-server-fetch': 1.6.4
+      '@orpc/standard-server-node': 1.6.4
+      '@orpc/standard-server-peer': 1.6.4
 
   '@orpc/shared@1.6.0':
     dependencies:
@@ -8264,6 +8306,13 @@ snapshots:
       '@orpc/standard-server-fetch': 1.6.0
       '@orpc/standard-server-node': 1.6.0
 
+  '@orpc/standard-server-aws-lambda@1.6.4':
+    dependencies:
+      '@orpc/shared': 1.6.4
+      '@orpc/standard-server': 1.6.4
+      '@orpc/standard-server-fetch': 1.6.4
+      '@orpc/standard-server-node': 1.6.4
+
   '@orpc/standard-server-fetch@1.6.0':
     dependencies:
       '@orpc/shared': 1.6.0
@@ -8279,6 +8328,12 @@ snapshots:
       '@orpc/shared': 1.6.0
       '@orpc/standard-server': 1.6.0
       '@orpc/standard-server-fetch': 1.6.0
+
+  '@orpc/standard-server-node@1.6.4':
+    dependencies:
+      '@orpc/shared': 1.6.4
+      '@orpc/standard-server': 1.6.4
+      '@orpc/standard-server-fetch': 1.6.4
 
   '@orpc/standard-server-peer@1.6.0':
     dependencies:
@@ -8298,11 +8353,11 @@ snapshots:
     dependencies:
       '@orpc/shared': 1.6.4
 
-  '@orpc/zod@1.6.0(@orpc/contract@1.6.0)(@orpc/server@1.6.0)(zod@3.25.67)':
+  '@orpc/zod@1.6.0(@orpc/contract@1.6.4)(@orpc/server@1.6.4)(zod@3.25.67)':
     dependencies:
-      '@orpc/contract': 1.6.0
+      '@orpc/contract': 1.6.4
       '@orpc/openapi': 1.6.0
-      '@orpc/server': 1.6.0
+      '@orpc/server': 1.6.4
       '@orpc/shared': 1.6.0
       escape-string-regexp: 5.0.0
       wildcard-match: 5.1.4
@@ -8311,12 +8366,12 @@ snapshots:
       - crossws
       - ws
 
-  '@orpc/zod@1.6.0(@orpc/contract@1.6.4)(@orpc/server@1.6.0)(zod@3.25.67)':
+  '@orpc/zod@1.6.4(@orpc/contract@1.6.4)(@orpc/server@1.6.4)(zod@3.25.67)':
     dependencies:
       '@orpc/contract': 1.6.4
-      '@orpc/openapi': 1.6.0
-      '@orpc/server': 1.6.0
-      '@orpc/shared': 1.6.0
+      '@orpc/openapi': 1.6.4
+      '@orpc/server': 1.6.4
+      '@orpc/shared': 1.6.4
       escape-string-regexp: 5.0.0
       wildcard-match: 5.1.4
       zod: 3.25.67
@@ -11726,12 +11781,6 @@ snapshots:
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
-
-  hono-pino@0.8.0(hono@4.7.10)(pino@9.7.0):
-    dependencies:
-      defu: 6.1.4
-      hono: 4.7.10
-      pino: 9.7.0
 
   hono-rate-limiter@0.4.2(hono@4.7.10):
     dependencies:
