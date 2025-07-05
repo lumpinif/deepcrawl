@@ -724,7 +724,7 @@ export const LinksSuccessResponseSchema = z
     tree: LinksTreeSchema.optional().meta({
       title: 'LinksTree',
       description:
-        'Site map tree starting from the root URL, or undefined if tree generation was disabled',
+        'LinksTree - Site map tree starting from the root URL, or undefined if tree generation was disabled',
     }),
   })
   .meta({
@@ -789,7 +789,7 @@ export const LinksErrorResponseSchema = z
     tree: LinksTreeSchema.optional().meta({
       title: 'LinksTree',
       description:
-        'Partial site map tree if available, or undefined if no tree could be generated',
+        'LinksTree - Partial site map tree if available, or undefined if no tree could be generated',
     }),
   })
   .meta({
