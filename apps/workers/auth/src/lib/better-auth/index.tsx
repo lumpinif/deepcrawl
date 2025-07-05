@@ -3,7 +3,10 @@ import { playgroundApiKeyConfig } from '@deepcrawl/auth/lib/auth';
 import { betterAuth } from 'better-auth';
 
 export function createBetterAuth(env: CloudflareBindings) {
-  const authConfigs = createAuthConfig(env);
+  const authConfigs = createAuthConfig({
+    ...env,
+    IS_WORKERD: true,
+  });
 
   const auth = betterAuth({
     ...authConfigs,
