@@ -3,7 +3,7 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
   "name": "deepcrawl_auth",
   "main": "src/index.tsx",
   "compatibility_date": "2025-05-31",
@@ -12,6 +12,7 @@
   // 	"directory": "./public"
   // },
   "vars": {
+    "NEXT_PUBLIC_APP_URL": "app.deepcrawl.dev",
     "AUTH_WORKER_NODE_ENV": "production",
     "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
   },
@@ -36,6 +37,7 @@
   "env": {
     "development": {
       "vars": {
+        "NEXT_PUBLIC_APP_URL": "http://localhost:3000",
         "AUTH_WORKER_NODE_ENV": "development",
         "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
       }
