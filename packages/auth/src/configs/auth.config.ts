@@ -112,28 +112,19 @@ export const DEVELOPMENT_ORIGINS = [
 
 export const MAX_SESSIONS = 2;
 
-const crossSubDomainConfigs = {
-  crossSubDomainCookies: {
-    enabled: true,
-    domain: '.deepcrawl.dev',
-  },
-  defaultCookieAttributes: {
-    secure: true,
-    sameSite: 'none',
-    partitioned: true,
-  },
-} satisfies BetterAuthOptions['advanced'];
-
 const getBaseURL = (envUrl: string | undefined): string => {
   try {
     if (!envUrl) {
       throw new Error('URL is not defined');
     }
-    
+
     // If URL doesn't start with protocol, assume https
-    const urlWithProtocol = envUrl.startsWith('http') ? envUrl : `https://${envUrl}`;
-    
-    return new URL(urlWithProtocol).toString();
+    const urlWithProtocol = envUrl.startsWith('http')
+      ? envUrl
+      : `https://${envUrl}`;
+
+    // Remove trailing slash to prevent double slashes in URL construction
+    return new URL(urlWithProtocol).toString().replace(/\/$/, '');
   } catch (error) {
     console.error('Invalid URL:', envUrl, error);
     // Provide fallback or throw meaningful error
@@ -166,7 +157,7 @@ export function createAuthConfig(env: Env) {
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
 
   // enable oAuthProxy for auth worker instance only
-  const useOAuthProxy = env.IS_WORKERD === true && useAuthWorker;
+  const useOAuthProxy = env.IS_WORKERD === true || useAuthWorker;
 
   assertValidAuthConfiguration({
     useAuthWorker,
@@ -212,8 +203,8 @@ export function createAuthConfig(env: Env) {
       ...(useOAuthProxy
         ? [
             oAuthProxy({
-              currentURL: isDevelopment ? 'http://localhost:3000' : appURL,
-              productionURL: appURL,
+              currentURL: isDevelopment ? 'http://localhost:8787' : baseAuthURL, // Auth worker
+              productionURL: 'https://auth.deepcrawl.dev', // Auth worker
             }),
           ]
         : []),
@@ -280,7 +271,7 @@ export function createAuthConfig(env: Env) {
       }),
       passkey({
         rpName: 'DeepCrawl Auth',
-        rpID: isDevelopment ? 'localhost:deepcrawl.dev' : 'deepcrawl.dev',
+        rpID: isDevelopment ? 'localhost' : 'auth.deepcrawl.dev',
         origin: isDevelopment ? 'http://localhost:3000' : appURL,
       }),
       organization({
@@ -371,14 +362,14 @@ export function createAuthConfig(env: Env) {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
         redirectURI: useOAuthProxy
-          ? `${baseAuthURL}/api/auth/callback/github`
+          ? `https://auth.deepcrawl.dev/api/auth/callback/github`
           : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
         redirectURI: useOAuthProxy
-          ? `${baseAuthURL}/api/auth/callback/google`
+          ? `https://auth.deepcrawl.dev/api/auth/callback/google`
           : undefined,
       },
     },
@@ -401,7 +392,17 @@ export function createAuthConfig(env: Env) {
       // Only disable when explicitly using Next.js API routes (NEXT_PUBLIC_USE_AUTH_WORKER='false')
       ...(env.NEXT_PUBLIC_USE_AUTH_WORKER === false
         ? {} // Disable crossSubDomainConfigs when explicitly using Next.js API routes
-        : crossSubDomainConfigs), // Default: enable crossSubDomainConfigs for auth worker
+        : {
+            crossSubDomainCookies: {
+              enabled: !isDevelopment, // Disable for localhost
+              domain: '.deepcrawl.dev',
+            },
+            defaultCookieAttributes: {
+              secure: !isDevelopment, // Only secure in production
+              sameSite: isDevelopment ? 'lax' : 'none',
+              partitioned: !isDevelopment,
+            },
+          }),
     },
     // rateLimit: {
     // window: 60, // time window in seconds
