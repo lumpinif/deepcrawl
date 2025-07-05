@@ -22,23 +22,13 @@ import {
 } from '@/config/constants';
 import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
 import type { AppContext } from '@/lib/context';
-import { LinkService } from '@/services/link/link.service';
+import { LinkService, type _linksSets } from '@/services/link/link.service';
 import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
-
-export interface _linksSets {
-  internal: Set<string>;
-  external: Set<string>;
-  media: {
-    images: Set<string>;
-    videos: Set<string>;
-    documents: Set<string>;
-  };
-}
 
 // Helper function to check if a URL exists in the Set of visited URLs
 function isUrlInVisitedSet(

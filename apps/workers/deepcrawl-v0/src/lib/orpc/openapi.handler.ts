@@ -5,7 +5,7 @@ import { ZodSmartCoercionPlugin } from '@orpc/zod';
 import { experimental_ZodToJsonSchemaConverter as ZodV4ToJsonSchemaConverter } from '@orpc/zod/zod4';
 
 import { env } from 'cloudflare:workers';
-import { router } from '@/routers/rpc';
+import { router } from '@/routers';
 import {
   LinksErrorResponseSchema,
   LinksOptionsSchema,

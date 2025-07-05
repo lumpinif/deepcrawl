@@ -1,4 +1,4 @@
-import { router } from '@/routers/rpc';
+import { router } from '@/routers';
 import { onError } from '@orpc/server';
 import { RPCHandler } from '@orpc/server/fetch';
 import { ResponseHeadersPlugin } from '@orpc/server/plugins';
