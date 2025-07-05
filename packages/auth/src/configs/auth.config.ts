@@ -157,11 +157,8 @@ export function createAuthConfig(env: Env) {
   // Validate auth configuration consistency
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
 
-  // enable oAuthProxy for auth worker instance only
-  // const useOAuthProxy = isWorkerd || useAuthWorker;
-
   // NOTE: OAuth Proxy is not working as expected right now
-  const useOAuthProxy = true;
+  const useOAuthProxy = false;
 
   assertValidAuthConfiguration({
     useAuthWorker,
