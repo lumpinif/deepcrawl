@@ -22,33 +22,33 @@ const getAuthBaseURL = () => {
   const useNextJSAuth = process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'false';
   const isDevelopment = process.env.NODE_ENV === 'development';
 
-  let baseURL: string;
+  let baseAuthURL: string;
 
   if (useNextJSAuth) {
     // Next.js integrated auth mode (when explicitly disabled worker)
     if (process.env.NODE_ENV === 'production') {
       // enfore to use nextjs app url for production
-      baseURL = process.env.NEXT_PUBLIC_APP_URL || 'https://app.deepcrawl.dev';
+      baseAuthURL = process.env.BETTER_AUTH_URL as string;
     } else {
-      baseURL = 'http://localhost:3000';
+      baseAuthURL = process.env.BETTER_AUTH_URL || 'http://localhost:3000';
     }
   } else {
     // Default: external auth worker mode
-    baseURL =
+    baseAuthURL =
       process.env.NODE_ENV === 'production'
-        ? 'https://auth.deepcrawl.dev'
-        : 'http://localhost:8787';
+        ? (process.env.BETTER_AUTH_URL as string)
+        : process.env.BETTER_AUTH_URL || 'http://localhost:8787';
   }
 
   // Validate configuration consistency
   assertValidAuthConfiguration({
     useAuthWorker: !useNextJSAuth,
-    betterAuthUrl: baseURL,
+    betterAuthUrl: baseAuthURL,
     isDevelopment,
     context: 'client',
   });
 
-  return baseURL;
+  return baseAuthURL;
 };
 
 export const authClient = createAuthClient({
