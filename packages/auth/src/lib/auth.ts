@@ -1,7 +1,7 @@
 import { type BetterAuthOptions, betterAuth } from 'better-auth';
 
 import { nextCookies } from 'better-auth/next-js';
-import { createAuthConfig } from '../configs';
+import { PLAYGROUND_API_KEY_CONFIG, createAuthConfig } from '../configs';
 
 // This file is specifically for Next.js Server Components usage
 // It should NOT be used in Cloudflare Workers
@@ -26,19 +26,6 @@ const authConfigs = createAuthConfig({
   IS_WORKERD: false,
 }) satisfies BetterAuthOptions;
 
-export const playgroundApiKeyConfig = {
-  name: 'PLAYGROUND_API_KEY',
-  prefix: 'dc_',
-  rateLimitMax: 100,
-  rateLimitEnabled: true,
-  rateLimitTimeWindow: 1000 * 60 * 60 * 24, // 24 hours
-  metadata: {
-    type: 'auto-generated',
-    purpose: 'playground',
-    createdAt: new Date().toISOString(),
-  },
-};
-
 /**
  *  Auth instance for Next.js Server Components
  *  This should NOT be used in Cloudflare Workers
@@ -62,7 +49,7 @@ export const auth = betterAuth({
             await auth.api.createApiKey({
               body: {
                 userId: user.id,
-                ...playgroundApiKeyConfig,
+                ...PLAYGROUND_API_KEY_CONFIG,
               },
             });
           } catch (err) {

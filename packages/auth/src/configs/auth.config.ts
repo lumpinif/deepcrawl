@@ -137,11 +137,23 @@ const getBaseURL = (envUrl: string | undefined): string => {
   }
 };
 
+export const PLAYGROUND_API_KEY_CONFIG = {
+  name: 'PLAYGROUND_API_KEY',
+  prefix: 'dc_',
+  rateLimitMax: 100,
+  rateLimitEnabled: true,
+  rateLimitTimeWindow: 1000 * 60 * 60 * 24, // 24 hours
+  metadata: {
+    type: 'auto-generated',
+    purpose: 'playground',
+    createdAt: new Date().toISOString(),
+  },
+};
+
 /** Important: make sure always import this explicitly in workers to resolve process.env issues
  *  Factory function that accepts environment variables from cloudflare env
  */
 export function createAuthConfig(env: Env) {
-  // use this to determine if we are in development or production instead of process.env.NODE_ENV
   const baseAuthURL = getBaseURL(env.BETTER_AUTH_URL);
   const appURL = getBaseURL(env.NEXT_PUBLIC_APP_URL);
   const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
