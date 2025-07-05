@@ -382,11 +382,9 @@ export function createAuthConfig(env: Env) {
 
       // Enable cross-subdomain in production when using auth worker (default behavior)
       // Only disable when explicitly using Next.js API routes (NEXT_PUBLIC_USE_AUTH_WORKER='false')
-      ...(isDevelopment
-        ? {}
-        : env.NEXT_PUBLIC_USE_AUTH_WORKER === false
-          ? {} // Disable crossSubDomainConfigs when explicitly using Next.js API routes
-          : crossSubDomainConfigs), // Default: enable crossSubDomainConfigs for auth worker
+      ...(env.NEXT_PUBLIC_USE_AUTH_WORKER === false
+        ? {} // Disable crossSubDomainConfigs when explicitly using Next.js API routes
+        : crossSubDomainConfigs), // Default: enable crossSubDomainConfigs for auth worker
     },
     // rateLimit: {
     // window: 60, // time window in seconds
