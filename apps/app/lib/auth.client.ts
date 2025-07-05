@@ -18,7 +18,8 @@ import { toast } from 'sonner';
 // Default to using external auth worker (NEXT_PUBLIC_USE_AUTH_WORKER defaults to true)
 // Only use Next.js API routes when explicitly set to 'false'
 const getAuthBaseURL = () => {
-  const useAuthWorker = process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'true';
+  // Default to true if not set (external auth worker mode)
+  const useAuthWorker = process.env.NEXT_PUBLIC_USE_AUTH_WORKER !== 'false';
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   let baseAuthURL: string;
@@ -44,7 +45,7 @@ const getAuthBaseURL = () => {
 
   // Validate configuration consistency (not graceful)
   assertValidAuthConfiguration({
-    useAuthWorker: !useAuthWorker,
+    useAuthWorker: useAuthWorker,
     betterAuthUrl: baseAuthURL,
     isDevelopment,
     context: 'client',
