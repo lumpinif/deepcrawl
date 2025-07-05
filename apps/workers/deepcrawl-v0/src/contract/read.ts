@@ -75,7 +75,7 @@ export const readPOSTContract = readOC
     tags,
     path: '/',
     method: 'POST',
-    summary: 'Read a URL and retrieve the full result object',
+    summary: 'Read a URL',
     description: `Endpoint: POST \`api.deepcrawl.dev/read\`\n\nRead a URL and return the full detailed result object. This is a POST request can handle more complex requests and use cases.`,
   })
   .input(ReadOptionsSchema)

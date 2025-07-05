@@ -45,7 +45,7 @@ export const OpenAPISpecGenerateOptions = {
     },
     {
       name: 'Extract Links',
-      description: 'API endpoints for extracting links and building sitemaps',
+      description: 'API endpoints for extracting links and building links tree',
     },
   ],
   commonSchemas: {

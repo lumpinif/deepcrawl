@@ -3,12 +3,17 @@ import type {
   InferContractRouterOutputs,
 } from '@orpc/contract';
 import { oc } from '@orpc/contract';
+import { linksGETContract, linksPOSTContract } from './links';
 import { readGETContract, readPOSTContract } from './read';
 
 export const contract = oc.router({
   read: oc.prefix('/read').router({
     getMarkdown: readGETContract,
     readWebsite: readPOSTContract,
+  }),
+  links: oc.prefix('/links').router({
+    getLinks: linksGETContract,
+    extractLinks: linksPOSTContract,
   }),
 });
 
