@@ -18,46 +18,33 @@ import { toast } from 'sonner';
 // Default to using external auth worker (NEXT_PUBLIC_USE_AUTH_WORKER defaults to true)
 // Only use Next.js API routes when explicitly set to 'false'
 const getAuthBaseURL = () => {
-  // Check if we should use Next.js API routes (only when explicitly set to 'false')
-  const useNextJSAuth = process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'false';
+  const useAuthWorker = process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'true';
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   let baseAuthURL: string;
 
-  // In client-side code, only variables are available
-  const authURL = !useNextJSAuth
-    ? isDevelopment // nextjs app
-      ? 'http://localhost:3000'
-      : 'https://app.deepcrawl.dev'
-    : process.env.NEXT_PUBLIC_APP_URL;
-
-  if (useNextJSAuth) {
-    // Next.js integrated auth mode (when explicitly disabled worker)
-    if (process.env.NODE_ENV === 'production') {
-      // enfore to use nextjs app url for production
-      baseAuthURL = authURL as string;
-    } else {
-      baseAuthURL = authURL || 'http://localhost:3000';
-    }
+  // Determine base URL based on auth mode and environment
+  if (useAuthWorker) {
+    // External auth worker mode
+    baseAuthURL = isDevelopment
+      ? 'http://localhost:8787'
+      : 'https://auth.deepcrawl.dev';
   } else {
-    // Default: external auth worker mode
-    baseAuthURL =
-      process.env.NODE_ENV === 'production'
-        ? (authURL as string)
-        : authURL || 'http://localhost:8787';
+    // Next.js integrated auth mode
+    baseAuthURL = isDevelopment
+      ? 'http://localhost:3000'
+      : process.env.NEXT_PUBLIC_APP_URL || 'https://app.deepcrawl.dev';
   }
 
   // Fallback if no auth URL is configured
   if (!baseAuthURL) {
-    console.warn('⚠️ No BETTER_AUTH_URL configured, using fallback');
-    baseAuthURL = isDevelopment
-      ? 'http://localhost:3000'
-      : 'https://app.deepcrawl.dev';
+    console.warn('⚠️ No BETTER_AUTH_URL configured');
+    throw new Error('⚠️ No BETTER_AUTH_URL configured');
   }
 
   // Validate configuration consistency (not graceful)
   assertValidAuthConfiguration({
-    useAuthWorker: !useNextJSAuth,
+    useAuthWorker: !useAuthWorker,
     betterAuthUrl: baseAuthURL,
     isDevelopment,
     context: 'client',
