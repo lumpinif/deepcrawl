@@ -43,8 +43,7 @@ const readOC = oc.errors({
         },
         500: {
           ...currentOperation.responses?.[500],
-          description:
-            'Content reading failed - unable to fetch or process the requested URL',
+          description: 'Content reading failed',
         },
       },
     }),

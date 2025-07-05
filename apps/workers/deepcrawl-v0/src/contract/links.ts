@@ -26,8 +26,7 @@ const linksOC = oc.errors({
         ...currentOperation.responses,
         500: {
           ...currentOperation.responses?.[500],
-          description:
-            'Links extraction failed - unable to fetch or process the requested URL',
+          description: 'Links extraction failed',
         },
       },
     }),
