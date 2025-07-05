@@ -1,7 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm build --filter=@deepcrawl/app",
   "outputDirectory": ".next",
-  "installCommand": "cd ../.. && pnpm install",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- . ../../packages",
   "regions": ["sfo1"],
   "framework": "nextjs"
