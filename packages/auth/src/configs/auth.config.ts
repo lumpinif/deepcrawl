@@ -129,7 +129,11 @@ const getBaseURL = (envUrl: string | undefined): string => {
     if (!envUrl) {
       throw new Error('URL is not defined');
     }
-    return new URL(envUrl).toString();
+    
+    // If URL doesn't start with protocol, assume https
+    const urlWithProtocol = envUrl.startsWith('http') ? envUrl : `https://${envUrl}`;
+    
+    return new URL(urlWithProtocol).toString();
   } catch (error) {
     console.error('Invalid URL:', envUrl, error);
     // Provide fallback or throw meaningful error
