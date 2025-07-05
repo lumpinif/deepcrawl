@@ -889,7 +889,7 @@ export function useAuthRedirect(redirectTo?: string) {
           }
         }
 
-        return url.toString();
+        return url.toString().replace(/\/$/, ''); // Remove trailing slash
       } catch (error) {
         console.warn(
           'URL construction failed in getFrontendCallbackURL:',
@@ -899,7 +899,7 @@ export function useAuthRedirect(redirectTo?: string) {
         const normalizedPath = redirectPath?.startsWith('/')
           ? redirectPath
           : `/${redirectPath || ''}`;
-        return `${frontendOrigin}${normalizedPath}`;
+        return `${frontendOrigin}${normalizedPath}`.replace(/\/$/, ''); // Remove trailing slash
       }
     },
     [getRedirectTo],
