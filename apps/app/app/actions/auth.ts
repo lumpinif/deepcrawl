@@ -1,7 +1,8 @@
 'use server';
 
 import type { ActiveOrganization } from '@/lib/auth.client-types';
-import { auth, playgroundApiKeyConfig } from '@deepcrawl/auth/lib/auth';
+import { PLAYGROUND_API_KEY_CONFIG } from '@deepcrawl/auth/configs/auth.config';
+import { auth } from '@deepcrawl/auth/lib/auth';
 import type { Session } from '@deepcrawl/auth/types';
 import { getDrizzleDB, schema } from '@deepcrawl/db';
 import { desc, eq } from 'drizzle-orm';
@@ -554,7 +555,7 @@ export async function ensurePlaygroundApiKey() {
     const result = await auth.api.createApiKey({
       body: {
         userId: session.user.id,
-        ...playgroundApiKeyConfig,
+        ...PLAYGROUND_API_KEY_CONFIG,
       },
     });
 
