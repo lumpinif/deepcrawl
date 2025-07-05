@@ -40,6 +40,8 @@ interface Env {
   // Auth worker configuration - defaults to true (use auth worker), set to false to use Next.js API routes
   NEXT_PUBLIC_USE_AUTH_WORKER?: boolean;
   NEXT_PUBLIC_APP_URL?: string;
+  // workerd
+  IS_WORKERD?: boolean;
 }
 
 // Secondary storage interface for potential future use with rate limiting
@@ -146,10 +148,9 @@ export function createAuthConfig(env: Env) {
 
   // Validate auth configuration consistency
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
-  // disable oAuthProxy for auth worker
-  // const useOAuthProxy = !useAuthWorker && isDevelopment;
-  // oAuthProxy is not working in development currently
-  const useOAuthProxy = false;
+
+  // enable oAuthProxy for auth worker instance only
+  const useOAuthProxy = env.IS_WORKERD === true && useAuthWorker;
 
   assertValidAuthConfiguration({
     useAuthWorker,
@@ -195,8 +196,8 @@ export function createAuthConfig(env: Env) {
       ...(useOAuthProxy
         ? [
             oAuthProxy({
-              currentURL: appURL,
-              productionURL: 'PRODUCTION_URL',
+              currentURL: isDevelopment ? 'http://localhost:3000' : appURL,
+              productionURL: appURL,
             }),
           ]
         : []),
@@ -354,14 +355,14 @@ export function createAuthConfig(env: Env) {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
         redirectURI: useOAuthProxy
-          ? `${appURL}/api/auth/callback/github`
+          ? `${baseAuthURL}/api/auth/callback/github`
           : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
         redirectURI: useOAuthProxy
-          ? `${appURL}/api/auth/callback/google`
+          ? `${baseAuthURL}/api/auth/callback/google`
           : undefined,
       },
     },

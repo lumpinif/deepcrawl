@@ -5,7 +5,6 @@ import { createAuthConfig } from '../configs';
 
 // This file is specifically for Next.js Server Components usage
 // It should NOT be used in Cloudflare Workers
-
 const authConfigs = createAuthConfig({
   AUTH_WORKER_NODE_ENV:
     (process.env.NODE_ENV as 'production' | 'development') || 'development',
@@ -24,6 +23,7 @@ const authConfigs = createAuthConfig({
   NEXT_PUBLIC_USE_AUTH_WORKER:
     process.env.NEXT_PUBLIC_USE_AUTH_WORKER !== 'false',
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+  IS_WORKERD: false,
 }) satisfies BetterAuthOptions;
 
 export const playgroundApiKeyConfig = {
