@@ -7,12 +7,19 @@ import { experimental_ZodToJsonSchemaConverter as ZodV4ToJsonSchemaConverter } f
 import { env } from 'cloudflare:workers';
 import { router } from '@/routers';
 import {
+  ExtractedLinksSchema,
   LinksErrorResponseSchema,
   LinksOptionsSchema,
   LinksSuccessResponseSchema,
+  LinksTreeSchema,
+  PageMetadataSchema,
   ReadErrorResponseSchema,
   ReadOptionsSchema,
   ReadSuccessResponseSchema,
+  ScrapedDataSchema,
+  SkippedLinksSchema,
+  SkippedUrlSchema,
+  VisitedUrlSchema,
 } from '@deepcrawl/types';
 import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
 import { ResponseHeadersPlugin } from '@orpc/server/plugins';
@@ -66,6 +73,27 @@ export const OpenAPISpecGenerateOptions = {
     },
     LinksErrorResponse: {
       schema: LinksErrorResponseSchema,
+    },
+    LinksTree: {
+      schema: LinksTreeSchema,
+    },
+    ScrapedData: {
+      schema: ScrapedDataSchema,
+    },
+    PageMetadata: {
+      schema: PageMetadataSchema,
+    },
+    ExtractedLinks: {
+      schema: ExtractedLinksSchema,
+    },
+    SkippedLinks: {
+      schema: SkippedLinksSchema,
+    },
+    SkippedUrl: {
+      schema: SkippedUrlSchema,
+    },
+    VisitedUrl: {
+      schema: VisitedUrlSchema,
     },
     UndefinedError: {
       error: 'UndefinedError',
