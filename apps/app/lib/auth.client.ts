@@ -24,23 +24,40 @@ const getAuthBaseURL = () => {
 
   let baseAuthURL: string;
 
+  // In client-side code, only variables are available
+  const authURL = !useNextJSAuth
+    ? isDevelopment // nextjs app
+      ? 'http://localhost:3000'
+      : 'https://app.deepcrawl.dev'
+    : isDevelopment // auth worker (workerd)
+      ? 'http://localhost:8787'
+      : process.env.NEXT_PUBLIC_APP_URL;
+
   if (useNextJSAuth) {
     // Next.js integrated auth mode (when explicitly disabled worker)
     if (process.env.NODE_ENV === 'production') {
       // enfore to use nextjs app url for production
-      baseAuthURL = process.env.BETTER_AUTH_URL as string;
+      baseAuthURL = authURL as string;
     } else {
-      baseAuthURL = process.env.BETTER_AUTH_URL || 'http://localhost:3000';
+      baseAuthURL = authURL || 'http://localhost:3000';
     }
   } else {
     // Default: external auth worker mode
     baseAuthURL =
       process.env.NODE_ENV === 'production'
-        ? (process.env.BETTER_AUTH_URL as string)
-        : process.env.BETTER_AUTH_URL || 'http://localhost:8787';
+        ? (authURL as string)
+        : authURL || 'http://localhost:8787';
   }
 
-  // Validate configuration consistency
+  // Fallback if no auth URL is configured
+  if (!baseAuthURL) {
+    console.warn('⚠️ No BETTER_AUTH_URL configured, using fallback');
+    baseAuthURL = isDevelopment
+      ? 'http://localhost:3000'
+      : 'https://app.deepcrawl.dev';
+  }
+
+  // Validate configuration consistency (not graceful)
   assertValidAuthConfiguration({
     useAuthWorker: !useNextJSAuth,
     betterAuthUrl: baseAuthURL,
