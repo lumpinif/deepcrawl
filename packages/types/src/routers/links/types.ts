@@ -715,9 +715,6 @@ export const LinksSuccessResponseSchema = z
       }),
     skippedUrls: SkippedLinksSchema.optional(),
     extractedLinks: ExtractedLinksSchema.optional(),
-    /* _DEPRECATED_ .openapi({
-        anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }],
-      }) */
     tree: z.union([LinksTreeSchema, z.null()]).optional().meta({
       title: 'LinksTree',
       description:
@@ -781,8 +778,6 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
     description: 'ISO timestamp when the error occurred',
     examples: ['2024-01-15T10:30:00.000Z'],
   }),
-  /* _DEPRECATED_ .openapi({
-      anyOf: [{ $ref: '#/components/schemas/LinksTree' }, { type: 'null' }] */
   tree: z.union([LinksTreeSchema, z.null()]).optional().meta({
     title: 'LinksTree',
     description:
