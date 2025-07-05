@@ -23,7 +23,6 @@
     "@react-email/components": "^0.0.42",
     "@react-email/render": "^1.1.2",
     "@types/react": "^19.1.5",
-    "better-auth": "^1.2.9",
     "react": "^19.1.0",
     "react-email": "^4.0.16",
     "resend": "^4.6.0"
