@@ -39,6 +39,7 @@ interface Env {
   FROM_EMAIL?: string;
   // Auth worker configuration - defaults to true (use auth worker), set to false to use Next.js API routes
   NEXT_PUBLIC_USE_AUTH_WORKER?: boolean;
+  NEXT_PUBLIC_APP_URL?: string;
 }
 
 // Secondary storage interface for potential future use with rate limiting
@@ -121,12 +122,26 @@ const crossSubDomainConfigs = {
   },
 } satisfies BetterAuthOptions['advanced'];
 
+const getBaseURL = (envUrl: string | undefined): string => {
+  try {
+    if (!envUrl) {
+      throw new Error('URL is not defined');
+    }
+    return new URL(envUrl).toString();
+  } catch (error) {
+    console.error('Invalid URL:', envUrl, error);
+    // Provide fallback or throw meaningful error
+    throw new Error(`Invalid URL: ${envUrl}`);
+  }
+};
+
 /** Important: make sure always import this explicitly in workers to resolve process.env issues
  *  Factory function that accepts environment variables from cloudflare env
  */
 export function createAuthConfig(env: Env) {
   // use this to determine if we are in development or production instead of process.env.NODE_ENV
-  const baseAuthURL = env.BETTER_AUTH_URL;
+  const baseAuthURL = getBaseURL(env.BETTER_AUTH_URL);
+  const appURL = getBaseURL(env.NEXT_PUBLIC_APP_URL);
   const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
 
   // Validate auth configuration consistency
@@ -180,8 +195,8 @@ export function createAuthConfig(env: Env) {
       ...(useOAuthProxy
         ? [
             oAuthProxy({
-              currentURL: 'http://198.18.0.1:3000',
-              productionURL: 'https://app.deepcrawl.dev',
+              currentURL: appURL,
+              productionURL: 'PRODUCTION_URL',
             }),
           ]
         : []),
@@ -223,10 +238,11 @@ export function createAuthConfig(env: Env) {
             return;
           }
 
+          // TODO: CHECK THE USER REDIRECTING FUNCTIONALITIES
           // Use custom callback URL instead of built-in URL
           const customUrl = isDevelopment
             ? `http://localhost:3000/magic-link?token=${token}`
-            : `https://app.deepcrawl.dev/magic-link?token=${token}`;
+            : `${appURL}/magic-link?token=${token}`;
 
           try {
             await sendEmail(resend, {
@@ -246,11 +262,9 @@ export function createAuthConfig(env: Env) {
         disableSignUp: false, // Allow new users to sign up via magic link
       }),
       passkey({
-        rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
         rpName: 'DeepCrawl Auth',
-        origin: isDevelopment
-          ? 'http://localhost:3000'
-          : 'https://app.deepcrawl.dev',
+        rpID: isDevelopment ? 'localhost:deepcrawl.dev' : 'deepcrawl.dev',
+        origin: isDevelopment ? 'http://localhost:3000' : appURL,
       }),
       organization({
         async sendInvitationEmail(data) {
@@ -260,7 +274,7 @@ export function createAuthConfig(env: Env) {
 
           const inviteLink = isDevelopment
             ? `http://localhost:3000/accept-invitation?invitationId=${data.id}`
-            : `https://app.deepcrawl.dev/accept-invitation?invitationId=${data.id}`;
+            : `${appURL}/accept-invitation?invitationId=${data.id}`;
 
           try {
             await sendEmail(resend, {
@@ -315,7 +329,7 @@ export function createAuthConfig(env: Env) {
         // Use custom callback URL instead of built-in URL
         const customUrl = isDevelopment
           ? `http://localhost:3000/verify-email?token=${token}`
-          : `https://app.deepcrawl.dev/verify-email?token=${token}`;
+          : `${appURL}/verify-email?token=${token}`;
 
         try {
           await sendEmail(resend, {
@@ -340,14 +354,14 @@ export function createAuthConfig(env: Env) {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
         redirectURI: useOAuthProxy
-          ? 'https://app.deepcrawl.dev/api/auth/callback/github'
+          ? `${appURL}/api/auth/callback/github`
           : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
         redirectURI: useOAuthProxy
-          ? 'https://app.deepcrawl.dev/api/auth/callback/google'
+          ? `${appURL}/api/auth/callback/google`
           : undefined,
       },
     },

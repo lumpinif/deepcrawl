@@ -18,7 +18,7 @@ interface ValidationResult {
 
 /**
  * Expected URL patterns for different modes and environments
- * UPDATE THIS TO MATCH .ENV
+ * NOTE: ENSURE THIS MATCHES WITH .ENV
  */
 const URL_PATTERNS = {
   authWorker: {

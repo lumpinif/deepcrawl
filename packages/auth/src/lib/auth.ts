@@ -23,6 +23,7 @@ const authConfigs = createAuthConfig({
   // Default to true (use auth worker) unless explicitly set to 'false'
   NEXT_PUBLIC_USE_AUTH_WORKER:
     process.env.NEXT_PUBLIC_USE_AUTH_WORKER !== 'false',
+  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
 }) satisfies BetterAuthOptions;
 
 export const playgroundApiKeyConfig = {

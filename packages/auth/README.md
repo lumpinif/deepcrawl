@@ -83,7 +83,7 @@ await sendEmail(resend, {
   subject: 'Verify your email',
   template: EmailVerification({
     username: 'John Doe',
-    verificationUrl: 'https://app.deepcrawl.dev/verify?token=abc123',
+    verificationUrl: 'BETTER_AUTH_URL/verify?token=abc123',
   }),
 });
 
@@ -93,7 +93,7 @@ await sendEmail(resend, {
   subject: 'Reset your password',
   template: PasswordReset({
     username: 'John Doe',
-    resetUrl: 'https://app.deepcrawl.dev/reset?token=abc123',
+    resetUrl: 'BETTER_AUTH_URL/reset?token=abc123',
   }),
 });
 
@@ -103,7 +103,7 @@ await sendEmail(resend, {
   subject: 'Sign in to your account',
   template: MagicLink({
     username: 'John Doe',
-    magicLinkUrl: 'https://auth.deepcrawl.dev/api/auth/magic-link/verify?token=abc123',
+    magicLinkUrl: 'BETTER_AUTH_URL/api/auth/magic-link/verify?token=abc123',
   }),
 });
 ```
