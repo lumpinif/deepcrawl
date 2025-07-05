@@ -3,6 +3,6 @@
   "outputDirectory": ".next",
   "installCommand": "cd ../.. && pnpm install",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- . ../../packages",
-  "regions": ["iad1", "sfo1", "lhr1", "sin1", "hnd1"],
+  "regions": ["sfo1"],
   "framework": "nextjs"
 }
