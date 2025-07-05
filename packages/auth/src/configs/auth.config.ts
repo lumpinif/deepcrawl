@@ -152,7 +152,7 @@ export function createAuthConfig(env: Env) {
   const baseAuthURL = getBaseURL(env.BETTER_AUTH_URL);
   const appURL = getBaseURL(env.NEXT_PUBLIC_APP_URL);
   const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
-  const isWorkerd = env.IS_WORKERD === true;
+  // const isWorkerd = env.IS_WORKERD === true;
 
   // Validate auth configuration consistency
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
@@ -205,11 +205,11 @@ export function createAuthConfig(env: Env) {
         ? [
             oAuthProxy({
               currentURL: isDevelopment
-                ? isWorkerd
+                ? useAuthWorker
                   ? 'http://localhost:8787' // Auth worker
                   : 'http://localhost:3000' // Next.js app
                 : baseAuthURL, // Auth Handler
-              productionURL: isWorkerd
+              productionURL: useAuthWorker
                 ? 'https://auth.deepcrawl.dev' // Auth worker
                 : 'https://app.deepcrawl.dev', // Next.js app
             }),
@@ -369,19 +369,23 @@ export function createAuthConfig(env: Env) {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
         redirectURI: useOAuthProxy // always use production URL
-          ? isWorkerd
-            ? `https://auth.deepcrawl.dev/api/auth/callback/github`
-            : `https://app.deepcrawl.dev/api/auth/callback/github`
-          : undefined,
+          ? useAuthWorker
+            ? 'https://auth.deepcrawl.dev/api/auth/callback/github'
+            : 'https://app.deepcrawl.dev/api/auth/callback/github'
+          : useAuthWorker
+            ? 'https://auth.deepcrawl.dev/api/auth/callback/github'
+            : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
         redirectURI: useOAuthProxy // always use production URL
-          ? isWorkerd
-            ? `https://auth.deepcrawl.dev/api/auth/callback/google`
-            : `https://app.deepcrawl.dev/api/auth/callback/google`
-          : undefined,
+          ? useAuthWorker
+            ? 'https://auth.deepcrawl.dev/api/auth/callback/google'
+            : 'https://app.deepcrawl.dev/api/auth/callback/google'
+          : useAuthWorker
+            ? 'https://auth.deepcrawl.dev/api/auth/callback/google'
+            : undefined,
       },
     },
     account: {
