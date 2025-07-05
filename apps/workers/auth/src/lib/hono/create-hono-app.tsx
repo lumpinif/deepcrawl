@@ -19,22 +19,21 @@ export default function createHonoApp() {
   // Apply custom CORS middleware first (must be before routes)
   app.use('*', deepCrawlCors);
 
-  // Apply other middleware in order
-  app
-    .use(logger())
-    .use('*', requestId())
-    .use('*', secureHeaders())
-    .use('*', trimTrailingSlash())
-    .use('*', serveEmojiFavicon('🗝️'))
-    .use('*', authInstanceMiddleware)
-    .use('*', prettyJSON());
-
-  app.use('*', authInstanceMiddleware).use('*', authContextMiddleware);
-
-  /* Mount the handler, the path should be synced with the configs in auth.worker.ts */
+  // /* Mount the handler, the path should be synced with the configs in auth.worker.ts */
   app.on(['POST', 'GET'], '/api/auth/*', (c) => {
     return c.var.betterAuth.handler(c.req.raw);
   });
+
+  // Apply other middleware in order
+  app
+    .use('*', logger())
+    .use('*', requestId())
+    .use('*', prettyJSON())
+    .use('*', secureHeaders())
+    .use('*', trimTrailingSlash())
+    .use('*', serveEmojiFavicon('🛡️'))
+    .use('*', authInstanceMiddleware)
+    .use('*', authContextMiddleware);
 
   app.onError(onError);
   app.notFound(notFound);
