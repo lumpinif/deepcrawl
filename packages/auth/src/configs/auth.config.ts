@@ -368,16 +368,20 @@ export function createAuthConfig(env: Env) {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
-        redirectURI: useAuthWorker // always use production URL
-          ? 'https://auth.deepcrawl.dev/api/auth/callback/github'
-          : `${appURL}/api/auth/callback/github`,
+        redirectURI: useOAuthProxy
+          ? useAuthWorker // always use production URL
+            ? 'https://auth.deepcrawl.dev/api/auth/callback/github'
+            : `${appURL}/api/auth/callback/github`
+          : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
-        redirectURI: useAuthWorker // always use production URL
-          ? 'https://auth.deepcrawl.dev/api/auth/callback/google'
-          : `${appURL}/api/auth/callback/google`,
+        redirectURI: useOAuthProxy
+          ? useAuthWorker // always use production URL
+            ? 'https://auth.deepcrawl.dev/api/auth/callback/google'
+            : `${appURL}/api/auth/callback/google`
+          : undefined,
       },
     },
     account: {
