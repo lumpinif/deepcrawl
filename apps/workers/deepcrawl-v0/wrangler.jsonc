@@ -3,7 +3,7 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
   "name": "deepcrawl-worker-v0",
   "main": "src/index.ts",
   "compatibility_date": "2025-05-22",
