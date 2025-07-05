@@ -29,9 +29,7 @@ const getAuthBaseURL = () => {
     ? isDevelopment // nextjs app
       ? 'http://localhost:3000'
       : 'https://app.deepcrawl.dev'
-    : isDevelopment // auth worker (workerd)
-      ? 'http://localhost:8787'
-      : process.env.NEXT_PUBLIC_APP_URL;
+    : process.env.NEXT_PUBLIC_APP_URL;
 
   if (useNextJSAuth) {
     // Next.js integrated auth mode (when explicitly disabled worker)
