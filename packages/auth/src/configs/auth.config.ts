@@ -374,7 +374,7 @@ export function createAuthConfig(env: Env) {
         redirectURI: useOAuthProxy // always use production URL
           ? isWorkerd
             ? `https://auth.deepcrawl.dev/api/auth/callback/github`
-            : `https://app.deepcrawl.dev/auth/callback/github`
+            : `https://app.deepcrawl.dev/api/auth/callback/github`
           : undefined,
       },
       google: {
