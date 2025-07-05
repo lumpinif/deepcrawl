@@ -31,6 +31,7 @@ export function ProviderButton({
       const socialParams = {
         provider: provider.provider as SocialProvider,
         // callbackURL: getFrontendCallbackURL(),
+        callbackURL: '/account',
       };
 
       const { error } = await authClient.signIn.social(socialParams);
