@@ -75,7 +75,9 @@ export const ScrapedDataSchema = z
         ],
       }),
     metadata: PageMetadataSchema.optional().meta({
-      description: 'The structured metadata extracted from the page',
+      title: 'PageMetadata',
+      description:
+        'Extracted metadata from the page (title, description, etc.)',
     }),
     cleanedHtml: z
       .string()
@@ -86,6 +88,7 @@ export const ScrapedDataSchema = z
         examples: ['<div><h1>Example Website</h1><p>Main content...</p></div>'],
       }),
     metaFiles: MetaFilesSchema.optional().meta({
+      title: 'MetaFiles',
       description: 'The metadata files like robots.txt and sitemap.xml',
     }),
   })

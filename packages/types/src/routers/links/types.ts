@@ -468,23 +468,25 @@ export const SkippedLinksSchema = z
   });
 
 // Define the type first to avoid circular reference
-export type LinksTree = {
-  url: string;
-  rootUrl?: string;
-  name?: string;
-  totalUrls?: number;
-  executionTime?: string;
-  lastUpdated: string;
-  lastVisited?: string | null;
-  error?: string;
-  metadata?: z.infer<typeof PageMetadataSchema>;
-  cleanedHtml?: string;
-  extractedLinks?: z.infer<typeof ExtractedLinksSchema>;
-  skippedUrls?: z.infer<typeof SkippedLinksSchema>;
-  children?: LinksTree[];
-};
+// export type LinksTree = {
+//   url: string;
+//   rootUrl?: string;
+//   name?: string;
+//   totalUrls?: number;
+//   executionTime?: string;
+//   lastUpdated: string;
+//   lastVisited?: string | null;
+//   error?: string;
+//   metadata?: z.infer<typeof PageMetadataSchema>;
+//   cleanedHtml?: string;
+//   extractedLinks?: z.infer<typeof ExtractedLinksSchema>;
+//   skippedUrls?: z.infer<typeof SkippedLinksSchema>;
+//   children?: LinksTree[];
+// };
 
-export const LinksTreeSchema: z.ZodType<LinksTree> = z
+export type LinksTree = z.infer<typeof LinksTreeSchema>;
+
+export const LinksTreeSchema = z
   .object({
     // Inline all properties for better OpenAPI documentation display
     url: z.string().meta({
@@ -540,6 +542,7 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
         examples: ['Failed to fetch: 404 Not Found'],
       }),
     metadata: PageMetadataSchema.optional().meta({
+      title: 'PageMetadata',
       description:
         'Extracted metadata from the page (title, description, etc.)',
     }),
@@ -547,47 +550,44 @@ export const LinksTreeSchema: z.ZodType<LinksTree> = z
       description: 'Cleaned HTML content of the page',
     }),
     extractedLinks: ExtractedLinksSchema.optional().meta({
+      title: 'ExtractedLinks',
       description: 'Links found on this page, categorized by type',
     }),
     skippedUrls: SkippedLinksSchema.optional().meta({
+      title: 'SkippedLinks',
       description: 'URLs that were skipped during processing with reasons',
     }),
-    // Add the recursive children property
-    /* _DEPRECATED_ .openapi({
-        type: 'array',
-        title: 'Array of LinksTree',
-        items: {
-          $ref: '#/components/schemas/LinksTree',
+    // Add the recursive children property using getter
+    get children(): z.ZodOptional<z.ZodArray<typeof LinksTreeSchema>> {
+      return z
+        .array(LinksTreeSchema)
+        .optional()
+        .meta({
           title: 'LinksTree',
-        }, */
-    children: z
-      .array(z.lazy(() => LinksTreeSchema))
-      .optional()
-      .meta({
-        title: 'LinksTree',
-        description:
-          'Array of child LinksTree nodes, each representing a page found under this URL. This creates a recursive tree structure for the entire website hierarchy.',
-        examples: [
-          {
-            url: 'https://example.com/about/team',
-            name: 'Team',
-            lastUpdated: '2024-01-15T10:35:00.000Z',
-            children: [],
-          },
-          {
-            url: 'https://example.com/about/history',
-            name: 'History',
-            lastUpdated: '2024-01-15T10:36:00.000Z',
-            children: [
-              {
-                url: 'https://example.com/about/history/founding',
-                name: 'Company Founding',
-                lastUpdated: '2024-01-15T10:37:00.000Z',
-              },
-            ],
-          },
-        ],
-      }),
+          description:
+            'Array of child LinksTree nodes, each representing a page found under this URL. This creates a recursive tree structure for the entire website hierarchy.',
+          examples: [
+            {
+              url: 'https://example.com/about/team',
+              name: 'Team',
+              lastUpdated: '2024-01-15T10:35:00.000Z',
+              children: [],
+            },
+            {
+              url: 'https://example.com/about/history',
+              name: 'History',
+              lastUpdated: '2024-01-15T10:36:00.000Z',
+              children: [
+                {
+                  url: 'https://example.com/about/history/founding',
+                  name: 'Company Founding',
+                  lastUpdated: '2024-01-15T10:37:00.000Z',
+                },
+              ],
+            },
+          ],
+        });
+    },
   })
   .meta({
     title: 'LinksTree',
@@ -713,12 +713,18 @@ export const LinksSuccessResponseSchema = z
         description: 'Array of parent URLs leading to this URL',
         examples: ['https://example.com'],
       }),
-    skippedUrls: SkippedLinksSchema.optional(),
-    extractedLinks: ExtractedLinksSchema.optional(),
-    tree: z.union([LinksTreeSchema, z.null()]).optional().meta({
+    skippedUrls: SkippedLinksSchema.optional().meta({
+      title: 'SkippedLinks',
+      description: 'URLs that were skipped during processing with reasons',
+    }),
+    extractedLinks: ExtractedLinksSchema.optional().meta({
+      title: 'ExtractedLinks',
+      description: 'Links found on this page, categorized by type',
+    }),
+    tree: LinksTreeSchema.optional().meta({
       title: 'LinksTree',
       description:
-        'Site map tree starting from the root URL, or null if tree generation was disabled',
+        'Site map tree starting from the root URL, or undefined if tree generation was disabled',
     }),
   })
   .meta({
@@ -773,28 +779,31 @@ export const LinksSuccessResponseSchema = z
     ],
   });
 
-export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
-  timestamp: z.string().meta({
-    description: 'ISO timestamp when the error occurred',
-    examples: ['2024-01-15T10:30:00.000Z'],
-  }),
-  tree: z.union([LinksTreeSchema, z.null()]).optional().meta({
-    title: 'LinksTree',
-    description:
-      'Partial site map tree if available, or null if no tree could be generated',
-  }),
-}).meta({
-  title: 'LinksErrorResponse',
-  description: 'Error response from the links extraction operation',
-  examples: [
-    {
-      success: false,
-      targetUrl: 'https://example.com',
-      timestamp: '2024-01-15T10:30:00.000Z',
-      error: 'Failed to fetch: 404 Not Found',
-    },
-  ],
-});
+export const LinksErrorResponseSchema = z
+  .object({
+    ...BaseErrorResponseSchema.shape,
+    timestamp: z.string().meta({
+      description: 'ISO timestamp when the error occurred',
+      examples: ['2024-01-15T10:30:00.000Z'],
+    }),
+    tree: LinksTreeSchema.optional().meta({
+      title: 'LinksTree',
+      description:
+        'Partial site map tree if available, or undefined if no tree could be generated',
+    }),
+  })
+  .meta({
+    title: 'LinksErrorResponse',
+    description: 'Error response from the links extraction operation',
+    examples: [
+      {
+        success: false,
+        targetUrl: 'https://example.com',
+        timestamp: '2024-01-15T10:30:00.000Z',
+        error: 'Failed to fetch: 404 Not Found',
+      },
+    ],
+  });
 
 /**
  * @name    can be imported as LinksTree or Tree
