@@ -5,7 +5,7 @@ import {
 } from '@deepcrawl/types';
 import { oc } from '@orpc/contract';
 import { oo } from '@orpc/openapi';
-import * as z from 'zod/v4';
+import { z } from 'zod/v4';
 import type { Inputs, Outputs } from '.';
 
 const tags = ['Read Website'];

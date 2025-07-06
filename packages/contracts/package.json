@@ -13,8 +13,8 @@
   },
   "files": ["src", "README.md"],
   "scripts": {
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "type-check": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "biome check --write && pnpm typecheck"
   },
   "dependencies": {
     "@deepcrawl/types": "workspace:*",
