@@ -156,7 +156,6 @@ export function createAuthConfig(env: Env) {
   // Validate auth configuration consistency
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
 
-
   assertValidAuthConfiguration({
     useAuthWorker,
     betterAuthUrl: baseAuthURL,
