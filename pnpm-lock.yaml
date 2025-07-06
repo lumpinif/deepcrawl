@@ -24,7 +24,7 @@ importers:
         specifier: ^2.4.2
         version: 2.5.3
       typescript:
-        specifier: 5.8.3
+        specifier: ^5.8.3
         version: 5.8.3
       wrangler:
         specifier: ^4.23.0

@@ -14,7 +14,7 @@
     },
     {
       "name": "🔌 sdks",
-      "path": "./sdks"
+      "path": "./packages/sdks"
     },
     {
       "name": "📦 packages",
