@@ -17,7 +17,7 @@
     "better-auth": "^1.2.12",
     "dotenv-cli": "^8.0.0",
     "turbo": "^2.4.2",
-    "typescript": "5.7.3",
+    "typescript": "^5.8.3",
     "wrangler": "^4.23.0"
   },
   "packageManager": "pnpm@10.12.1",
