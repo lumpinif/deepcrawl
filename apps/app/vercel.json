@@ -1,6 +1,5 @@
 {
   "outputDirectory": ".next",
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- . ../../packages",
   "regions": ["sfo1"],
   "framework": "nextjs"
 }
