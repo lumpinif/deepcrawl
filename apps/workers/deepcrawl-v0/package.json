@@ -14,10 +14,11 @@
     "gen:openapi": "tsx ./src/lib/orpc/generate-openapi-yaml.ts"
   },
   "dependencies": {
-    "@cloudflare/puppeteer": "^0.0.15",
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/db": "workspace:*",
     "@deepcrawl/types": "workspace:*",
+    "@deepcrawl/contracts": "workspace:*",
+    "@cloudflare/puppeteer": "^0.0.15",
     "@hono-rate-limiter/cloudflare": "^0.2.2",
     "@hono/zod-openapi": "^0.19.9",
     "@hono/zod-validator": "^0.5.0",

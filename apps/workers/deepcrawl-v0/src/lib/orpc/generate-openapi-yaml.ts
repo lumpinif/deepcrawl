@@ -1,5 +1,5 @@
 import { writeFileSync } from 'node:fs';
-import { contract } from '@/contract';
+import { contract } from '@deepcrawl/contracts';
 import { OpenAPIGenerator } from '@orpc/openapi';
 import * as yaml from 'js-yaml';
 import {

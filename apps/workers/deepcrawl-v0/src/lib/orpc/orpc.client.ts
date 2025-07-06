@@ -1,8 +1,8 @@
 import { createORPCClient } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 
+import type { contract } from '@deepcrawl/contracts';
 import type { ContractRouterClient } from '@orpc/contract';
-import type { contract } from '../../contract';
 
 const rpcLink = new RPCLink({
   url: 'http://localhost:8787/rpc',

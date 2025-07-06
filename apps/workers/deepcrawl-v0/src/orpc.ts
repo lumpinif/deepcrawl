@@ -1,8 +1,8 @@
+import { contract } from '@deepcrawl/contracts';
 import {
   // ORPCError,
   implement,
 } from '@orpc/server';
-import { contract } from './contract';
 import type { AppContext } from './lib/context';
 
 /**
