@@ -44,8 +44,7 @@
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.0.1",
     "tw-animate-css": "^1.2.4",
-    "vaul": "^1.1.2",
-    "zod": "^3.25.67"
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@deepcrawl/eslint-config": "workspace:*",

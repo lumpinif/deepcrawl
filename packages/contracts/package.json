@@ -11,10 +11,7 @@
       "require": "./src/index.ts"
     }
   },
-  "files": [
-    "src",
-    "README.md"
-  ],
+  "files": ["src", "README.md"],
   "scripts": {
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "type-check": "tsc --noEmit"
@@ -22,20 +19,13 @@
   "dependencies": {
     "@deepcrawl/types": "workspace:*",
     "@orpc/contract": "^1.6.6",
-    "@orpc/openapi": "^1.6.6",
-    "zod": "^3.25.74"
+    "@orpc/openapi": "^1.6.6"
   },
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
     "typescript": "^5.7.2"
   },
-  "keywords": [
-    "deepcrawl",
-    "api",
-    "contracts",
-    "orpc",
-    "openapi"
-  ],
+  "keywords": ["deepcrawl", "api", "contracts", "orpc", "openapi"],
   "author": "Felix Lu(Lyu) <@felixlu1018>",
   "license": "MIT",
   "packageManager": "pnpm@10.12.1"

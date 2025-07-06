@@ -40,7 +40,6 @@
     "pino-pretty": "^13.0.0",
     "stoker": "^1.4.2",
     "xss": "^1.0.15",
-    "zod": "^3.25.67",
     "zod-to-json-schema": "^3.24.6"
   },
   "devDependencies": {
