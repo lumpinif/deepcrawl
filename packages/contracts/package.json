@@ -1,0 +1,42 @@
+{
+  "name": "@deepcrawl/contracts",
+  "version": "0.0.1",
+  "description": "Shared API contracts for DeepCrawl services",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "require": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@deepcrawl/types": "workspace:*",
+    "@orpc/contract": "^1.6.6",
+    "@orpc/openapi": "^1.6.6",
+    "zod": "^3.25.74"
+  },
+  "devDependencies": {
+    "@deepcrawl/typescript-config": "workspace:*",
+    "typescript": "^5.7.2"
+  },
+  "keywords": [
+    "deepcrawl",
+    "api",
+    "contracts",
+    "orpc",
+    "openapi"
+  ],
+  "author": "Felix Lu(Lyu) <@felixlu1018>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.1"
+}
