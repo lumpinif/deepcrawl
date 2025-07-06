@@ -213,10 +213,7 @@ export function createAuthConfig(env: Env) {
             //     ? 'https://auth.deepcrawl.dev' // Auth worker
             //     : 'https://app.deepcrawl.dev', // Next.js app
             // }),
-            oAuthProxy({
-              currentURL: appURL,
-              productionURL: 'https://app.deepcrawl.dev',
-            }),
+            oAuthProxy(),
           ]
         : []),
       admin(),
@@ -373,14 +370,14 @@ export function createAuthConfig(env: Env) {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
         redirectURI: useOAuthProxy
-          ? `${appURL}/api/auth/callback/github`
+          ? `https://app.deepcrawl.dev/api/auth/callback/github`
           : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
         redirectURI: useOAuthProxy
-          ? `${appURL}/api/auth/callback/google`
+          ? `https://app.deepcrawl.dev/api/auth/callback/google`
           : undefined,
       },
     },
