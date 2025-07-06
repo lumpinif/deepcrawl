@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
-    "typescript": "^5.7.2"
+    "typescript": "^5.8.3"
   },
   "keywords": ["deepcrawl", "api", "contracts", "orpc", "openapi"],
   "author": "Felix Lu(Lyu) <@felixlu1018>",

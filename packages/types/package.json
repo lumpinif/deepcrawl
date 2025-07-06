@@ -46,6 +46,6 @@
   },
   "keywords": ["deepcrawl", "api", "types", "typescript", "zod"],
   "dependencies": {
-    "@orpc/zod": "^1.6.4"
+    "@orpc/zod": "^1.6.6"
   }
 }
