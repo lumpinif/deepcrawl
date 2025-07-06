@@ -1,6 +1,8 @@
 {
   "extends": "@deepcrawl/typescript-config/base.json",
   "compilerOptions": {
+    "composite": true,
+    "incremental": true,
     "baseUrl": ".",
     "paths": {
       "@deepcrawl/types/*": ["./src/*"]

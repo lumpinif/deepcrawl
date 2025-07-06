@@ -1,3 +1,4 @@
+import { smartboolOptional } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
 
 /**
@@ -6,20 +7,14 @@ import { z } from 'zod/v4';
  */
 export const LinkExtractionOptionsSchema = z
   .object({
-    includeExternal: z
-      .boolean()
-      .optional()
-      .meta({
-        description: 'Whether to include links from other domains',
-        examples: [false],
-      }),
-    includeMedia: z
-      .boolean()
-      .optional()
-      .meta({
-        description: 'Whether to include media files (images, videos, docs)',
-        examples: [true],
-      }),
+    includeExternal: smartboolOptional().meta({
+      description: 'Whether to include links from other domains',
+      examples: [false],
+    }),
+    includeMedia: smartboolOptional().meta({
+      description: 'Whether to include media files (images, videos, docs)',
+      examples: [true],
+    }),
     excludePatterns: z
       .array(z.string())
       .optional()
@@ -27,13 +22,10 @@ export const LinkExtractionOptionsSchema = z
         description: 'Array of regex patterns to exclude URLs',
         examples: [['^/admin/', '\\.pdf$', '/private/']],
       }),
-    removeQueryParams: z
-      .boolean()
-      .optional()
-      .meta({
-        description: 'Whether to remove query parameters from URLs',
-        examples: [true],
-      }),
+    removeQueryParams: smartboolOptional().meta({
+      description: 'Whether to remove query parameters from URLs',
+      examples: [true],
+    }),
   })
   .strict()
   .meta({

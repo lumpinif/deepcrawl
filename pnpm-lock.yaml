@@ -505,6 +505,9 @@ importers:
       '@orpc/client':
         specifier: ^1.6.6
         version: 1.6.6
+      zod:
+        specifier: ^3.25.74
+        version: 3.25.74
     devDependencies:
       '@deepcrawl/typescript-config':
         specifier: workspace:*

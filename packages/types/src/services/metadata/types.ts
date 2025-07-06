@@ -1,3 +1,4 @@
+import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
 
 /**
@@ -6,94 +7,50 @@ import { z } from 'zod/v4';
  */
 export const MetadataOptionsSchema = z
   .object({
-    title: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract page title from title tag or meta title',
-        examples: [true],
-      }),
-    description: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract meta description content',
-        examples: [true],
-      }),
-    language: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract page language from html lang attribute',
-        examples: [true],
-      }),
-    canonical: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract canonical URL from link rel="canonical"',
-        examples: [true],
-      }),
-    robots: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract robots directives from meta robots',
-        examples: [false],
-      }),
-    author: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract author information from meta author',
-        examples: [true],
-      }),
-    keywords: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract meta keywords and convert to array',
-        examples: [true],
-      }),
-    favicon: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract favicon URL from link rel="icon" or similar',
-        examples: [true],
-      }),
-    openGraph: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract Open Graph metadata (og:* properties)',
-        examples: [true],
-      }),
-    twitter: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Extract Twitter Card metadata (twitter:* properties)',
-        examples: [false],
-      }),
-    isIframeAllowed: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Check if iframe embedding is allowed',
-        examples: [true],
-      }),
+    title: smartboolTrue().meta({
+      description: 'Extract page title from title tag or meta title',
+      examples: [true],
+    }),
+    description: smartboolTrue().meta({
+      description: 'Extract meta description content',
+      examples: [true],
+    }),
+    language: smartboolTrue().meta({
+      description: 'Extract page language from html lang attribute',
+      examples: [true],
+    }),
+    canonical: smartboolTrue().meta({
+      description: 'Extract canonical URL from link rel="canonical"',
+      examples: [true],
+    }),
+    robots: smartboolTrue().meta({
+      description: 'Extract robots directives from meta robots',
+      examples: [false],
+    }),
+    author: smartboolTrue().meta({
+      description: 'Extract author information from meta author',
+      examples: [true],
+    }),
+    keywords: smartboolTrue().meta({
+      description: 'Extract meta keywords and convert to array',
+      examples: [true],
+    }),
+    favicon: smartboolTrue().meta({
+      description: 'Extract favicon URL from link rel="icon" or similar',
+      examples: [true],
+    }),
+    openGraph: smartboolTrue().meta({
+      description: 'Extract Open Graph metadata (og:* properties)',
+      examples: [true],
+    }),
+    twitter: smartboolTrue().meta({
+      description: 'Extract Twitter Card metadata (twitter:* properties)',
+      examples: [false],
+    }),
+    isIframeAllowed: smartboolTrue().meta({
+      description: 'Check if iframe embedding is allowed',
+      examples: [true],
+    }),
   })
   .meta({
     title: 'MetadataOptions',
@@ -183,7 +140,6 @@ export const PageMetadataSchema = z
         examples: ['2023-04-15T14:32:21Z'],
       }),
     favicon: z
-      .string()
       .url()
       .optional()
       .meta({
@@ -208,7 +164,6 @@ export const PageMetadataSchema = z
         examples: ['Learn about our services'],
       }),
     ogImage: z
-      .string()
       .url()
       .optional()
       .meta({
@@ -276,7 +231,6 @@ export const PageMetadataSchema = z
         examples: ['The best example website on the internet'],
       }),
     twitterImage: z
-      .string()
       .url()
       .optional()
       .meta({

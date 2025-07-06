@@ -1,4 +1,8 @@
 import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
+import {
+  smartboolFalse,
+  smartboolTrue,
+} from '@deepcrawl/types/common/smart-schemas';
 import { HTMLCleaningOptionsSchema } from '@deepcrawl/types/services/html-cleaning/types';
 import {
   ExtractedLinksSchema,
@@ -118,15 +122,10 @@ export const TreeOptionsSchema = z
      * Whether to place folders before leaf nodes in the tree.
      * Default: true
      */
-    folderFirst: z
-      .preprocess(
-        (val) => val !== 'false' && val !== false,
-        z.boolean().optional(),
-      )
-      .meta({
-        description: 'Whether to place folders before leaf nodes in the tree.',
-        examples: [true],
-      }),
+    folderFirst: smartboolTrue().meta({
+      description: 'Whether to place folders before leaf nodes in the tree.',
+      examples: [true],
+    }),
     /**
      * How to order links within each folder:
      *  - 'page'        preserve the original document order
@@ -139,32 +138,22 @@ export const TreeOptionsSchema = z
      * Whether to include extracted links for each node in the tree.
      * Default: true
      */
-    extractedLinks: z
-      .preprocess(
-        (val) => val !== 'false' && val !== false,
-        z.boolean().optional(),
-      )
-      .meta({
-        description:
-          'Whether to include extracted links for each node in the tree.',
-        examples: [true],
-      }),
+    extractedLinks: smartboolTrue().meta({
+      description:
+        'Whether to include extracted links for each node in the tree.',
+      examples: [true],
+    }),
 
     /**
      * Whether to exclude subdomain as root URL.
      * Default: true
      * e.g., if false: rootUrl: https://swr.vercel.app -> https://vercel.app
      */
-    subdomainAsRootUrl: z
-      .preprocess(
-        (val) => val !== 'false' && val !== false,
-        z.boolean().optional(),
-      )
-      .meta({
-        description:
-          'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL. e.g., if false: rootUrl: `https://swr.vercel.app` -> `https://vercel.app`',
-        examples: [false],
-      }),
+    subdomainAsRootUrl: smartboolTrue().meta({
+      description:
+        'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL. e.g., if false: rootUrl: `https://swr.vercel.app` -> `https://vercel.app`',
+      examples: [false],
+    }),
   })
   .meta({
     title: 'TreeOptions',
@@ -212,69 +201,47 @@ export const LinksOptionsSchema = z
      * Whether to build a site map tree.
      * Default: true
      */
-    // default true if not set
-    tree: z.coerce
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Whether to build a site map tree.',
-        examples: [true],
-      }),
+    tree: smartboolTrue().meta({
+      description: 'Whether to build a site map tree.',
+      examples: [true],
+    }),
 
     /**
      * Whether to extract metadata from the page.
      * Default: true
      */
-    // default true if not set
-    metadata: z.coerce
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Whether to extract metadata from the page.',
-        examples: [true],
-      }),
+    metadata: smartboolTrue().meta({
+      description: 'Whether to extract metadata from the page.',
+      examples: [true],
+    }),
 
     /**
      * Whether to return cleaned HTML.
      * Default: false
      */
-    cleanedHtml: z.coerce
-      .boolean()
-      .optional()
-      .default(false)
-      .meta({
-        description: 'Whether to return cleaned HTML.',
-        examples: [false],
-      }),
+    cleanedHtml: smartboolFalse().meta({
+      description: 'Whether to return cleaned HTML.',
+      examples: [false],
+    }),
 
     /**
      * Whether to fetch and parse robots.txt.
      * Default: false
      */
-    robots: z.coerce
-      .boolean()
-      .optional()
-      .default(false)
-      .meta({
-        description: 'Whether to fetch and parse robots.txt.',
-        examples: [false],
-      }),
+    robots: smartboolFalse().meta({
+      description: 'Whether to fetch and parse robots.txt.',
+      examples: [false],
+    }),
 
     /**
      * Whether to fetch and parse sitemap.xml.
      * Default: false
      */
-    sitemapXML: z.coerce
-      .boolean()
-      .optional()
-      .default(false)
-      .meta({
-        description:
-          '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
-        examples: [false],
-      }),
+    sitemapXML: smartboolFalse().meta({
+      description:
+        '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
+      examples: [false],
+    }),
 
     ...TreeOptionsSchema.shape,
 

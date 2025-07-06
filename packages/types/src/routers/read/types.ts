@@ -1,4 +1,8 @@
 import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
+import {
+  smartboolFalse,
+  smartboolTrue,
+} from '@deepcrawl/types/common/smart-schemas';
 import { MetadataOptionsSchema } from '@deepcrawl/types/services/metadata';
 import { ScrapedDataSchema } from '@deepcrawl/types/services/scrape';
 import { z } from 'zod/v4';
@@ -20,68 +24,46 @@ export const ReadOptionsSchema = z
      * Whether to extract metadata from the page.
      * Default: true
      */
-    // default true if not set
-    metadata: z.coerce
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Whether to extract metadata from the page.',
-        examples: [true],
-      }),
+    metadata: smartboolTrue().meta({
+      description: 'Whether to extract metadata from the page.',
+      examples: [true],
+    }),
 
     /**
      * Whether to extract markdown from the page.
      * Default: true
      */
-    // default true if not set
-    markdown: z.coerce
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description: 'Whether to extract markdown from the page.',
-        examples: [true],
-      }),
+    markdown: smartboolTrue().meta({
+      description: 'Whether to extract markdown from the page.',
+      examples: [true],
+    }),
 
     /**
      * Whether to return cleaned HTML.
      * Default: false
      */
-    cleanedHtml: z.coerce
-      .boolean()
-      .optional()
-      .default(false)
-      .meta({
-        description: 'Whether to return cleaned HTML.',
-        examples: [false],
-      }),
+    cleanedHtml: smartboolFalse().meta({
+      description: 'Whether to return cleaned HTML.',
+      examples: [false],
+    }),
 
     /**
      * Whether to fetch and parse robots.txt.
      * Default: false
      */
-    robots: z.coerce
-      .boolean()
-      .optional()
-      .default(false)
-      .meta({
-        description: 'Whether to fetch and parse robots.txt.',
-        examples: [false],
-      }),
+    robots: smartboolFalse().meta({
+      description: 'Whether to fetch and parse robots.txt.',
+      examples: [false],
+    }),
 
     /**
      * Whether to return raw HTML.
      * Default: false
      */
-    rawHtml: z.coerce
-      .boolean()
-      .optional()
-      .default(false)
-      .meta({
-        description: 'Whether to return raw HTML.',
-        examples: [false],
-      }),
+    rawHtml: smartboolFalse().meta({
+      description: 'Whether to return raw HTML.',
+      examples: [false],
+    }),
 
     /**
      * Options for metadata extraction.
@@ -262,6 +244,7 @@ type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {
  * Derived from the readOptionsSchema.
  */
 export type ReadOptions = PartialExceptUrl<z.infer<typeof ReadOptionsSchema>>;
+export type ReadOptionsTest = z.infer<typeof ReadOptionsSchema>;
 
 /**
  * Base type for read responses.

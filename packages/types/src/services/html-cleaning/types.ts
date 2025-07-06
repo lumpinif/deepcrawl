@@ -1,3 +1,4 @@
+import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
 
 /**
@@ -31,15 +32,11 @@ export const HTMLCleaningOptionsSchema = z
         description: 'HTML tags to remove from the output (blacklist)',
         examples: ['script', 'style', 'iframe', 'form', 'button'],
       }),
-    extractMainContent: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description:
-          'Whether to extract only the main content area, removing navigation, footers, etc.',
-        examples: [true],
-      }),
+    extractMainContent: smartboolTrue().meta({
+      description:
+        'Whether to extract only the main content area, removing navigation, footers, etc.',
+      examples: [true],
+    }),
     /* Deprecated property, will be removed in future. add baseUrl to HTMLCleaning as a required parameter instead*/
     documentBaseUrl: z
       .string()
@@ -50,15 +47,11 @@ export const HTMLCleaningOptionsSchema = z
         examples: ['https://example.com'],
         deprecated: true,
       }),
-    removeBase64Images: z
-      .boolean()
-      .optional()
-      .default(true)
-      .meta({
-        description:
-          'Whether to remove base64 encoded images to reduce payload size',
-        examples: [true],
-      }),
+    removeBase64Images: smartboolTrue().meta({
+      description:
+        'Whether to remove base64 encoded images to reduce payload size',
+      examples: [true],
+    }),
   })
   .strict()
   .meta({
