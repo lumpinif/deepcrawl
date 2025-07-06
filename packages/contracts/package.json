@@ -13,7 +13,7 @@
   },
   "files": ["src", "README.md"],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit ",
     "check": "biome check --write && pnpm typecheck"
   },
   "dependencies": {

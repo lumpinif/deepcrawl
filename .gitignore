@@ -68,3 +68,7 @@ lerna-debug.log*
 
 #todo
 TODO.md
+
+# TypeScript build cache
+*.tsbuildinfo
+tsconfig.tsbuildinfo

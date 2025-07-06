@@ -9,11 +9,6 @@
       "@deepcrawl/types/*": ["../types/src/*"]
     }
   },
-  "references": [
-    {
-      "path": "../types"
-    }
-  ],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
