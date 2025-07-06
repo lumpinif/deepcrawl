@@ -1,7 +1,7 @@
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
 import { onError } from '@orpc/server';
-import { ZodSmartCoercionPlugin } from '@orpc/zod';
+import { experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin } from '@orpc/zod/zod4';
 import { experimental_ZodToJsonSchemaConverter as ZodV4ToJsonSchemaConverter } from '@orpc/zod/zod4';
 
 import { env } from 'cloudflare:workers';
