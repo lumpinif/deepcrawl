@@ -6,7 +6,8 @@
       "Bash(mkdir:*)",
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm dev:dashboard:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "WebFetch(domain:orpc.unnoq.com)"
     ],
     "deny": []
   }
