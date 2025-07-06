@@ -71,4 +71,5 @@ TODO.md
 
 # TypeScript build cache
 *.tsbuildinfo
+.tsbuildinfo
 tsconfig.tsbuildinfo
