@@ -158,7 +158,7 @@ export function createAuthConfig(env: Env) {
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
 
   // NOTE: OAuth Proxy is not working as expected right now
-  const useOAuthProxy = false;
+  const useOAuthProxy = true;
 
   assertValidAuthConfiguration({
     useAuthWorker,
@@ -203,15 +203,19 @@ export function createAuthConfig(env: Env) {
     plugins: [
       ...(useOAuthProxy
         ? [
+            // oAuthProxy({
+            //   currentURL: isDevelopment
+            //     ? useAuthWorker
+            //       ? 'http://localhost:8787' // Auth worker
+            //       : 'http://localhost:3000' // Next.js app
+            //     : baseAuthURL, // Auth Handler
+            //   productionURL: useAuthWorker
+            //     ? 'https://auth.deepcrawl.dev' // Auth worker
+            //     : 'https://app.deepcrawl.dev', // Next.js app
+            // }),
             oAuthProxy({
-              currentURL: isDevelopment
-                ? useAuthWorker
-                  ? 'http://localhost:8787' // Auth worker
-                  : 'http://localhost:3000' // Next.js app
-                : baseAuthURL, // Auth Handler
-              productionURL: useAuthWorker
-                ? 'https://auth.deepcrawl.dev' // Auth worker
-                : 'https://app.deepcrawl.dev', // Next.js app
+              currentURL: appURL,
+              productionURL: 'https://app.deepcrawl.dev',
             }),
           ]
         : []),
@@ -368,16 +372,16 @@ export function createAuthConfig(env: Env) {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
-        redirectURI: useAuthWorker // always use production URL
-          ? 'https://auth.deepcrawl.dev/api/auth/callback/github'
-          : `${appURL}/api/auth/callback/github`,
+        redirectURI: useOAuthProxy
+          ? `${appURL}/api/auth/callback/github`
+          : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
-        redirectURI: useAuthWorker // always use production URL
-          ? 'https://auth.deepcrawl.dev/api/auth/callback/google'
-          : `${appURL}/api/auth/callback/google`,
+        redirectURI: useOAuthProxy
+          ? `${appURL}/api/auth/callback/google`
+          : undefined,
       },
     },
     account: {
