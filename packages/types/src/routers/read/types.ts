@@ -244,7 +244,6 @@ type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {
  * Derived from the readOptionsSchema.
  */
 export type ReadOptions = PartialExceptUrl<z.infer<typeof ReadOptionsSchema>>;
-export type ReadOptionsTest = z.infer<typeof ReadOptionsSchema>;
 
 /**
  * Base type for read responses.
