@@ -1,0 +1,53 @@
+{
+  "name": "@deepcrawl-sdk/ts",
+  "version": "0.0.4",
+  "description": "TypeScript SDK for DeepCrawl API - A powerful web scraping and crawling service",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "deepcrawl",
+    "web-scraping",
+    "crawling",
+    "api",
+    "sdk",
+    "typescript",
+    "javascript"
+  ],
+  "author": "Felix Lu(Lyu) <@felixlu1018>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lumpinif/deepcrawl",
+    "directory": "packages/sdks/typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/lumpinif/deepcrawl/issues"
+  },
+  "homepage": "https://github.com/lumpinif/deepcrawl#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "tsup": "^8.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  }
+}
