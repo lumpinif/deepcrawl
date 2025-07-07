@@ -10,27 +10,32 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
     name: Deploy Auth Worker
-    timeout-minutes: 10
-    
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # To use Remote Caching, uncomment the next lines and follow the steps below.
+    # env:
+    #  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    #  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
     steps:
-      - name: Checkout code
+      - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
         with:
-          version: 8
+          fetch-depth: 2
 
-      - name: Setup Node.js
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Run database migrations
         run: pnpm run db:generate:prod && pnpm run db:migrate:prod
@@ -45,8 +50,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 'apps/workers/auth'
           packageManager: 'pnpm'
-          preCommands: |
-            pnpm run cf-typegen
           command: deploy --minify
           secrets: |
             DATABASE_URL
