@@ -7,6 +7,7 @@ import {
   bearer,
   magicLink,
   multiSession,
+  oAuthProxy,
   oneTap,
   openAPI,
   organization,
@@ -111,6 +112,8 @@ export const DEVELOPMENT_ORIGINS = [
 
 export const MAX_SESSIONS = 2;
 
+const USE_OAUTH_PROXY = true;
+
 const getBaseURL = (envUrl: string | undefined): string => {
   try {
     if (!envUrl) {
@@ -205,6 +208,14 @@ export function createAuthConfig(env: Env) {
       },
     },
     plugins: [
+      ...(USE_OAUTH_PROXY
+        ? [
+            oAuthProxy({
+              currentURL: baseAuthURL,
+              productionURL: appURL,
+            }),
+          ]
+        : []),
       admin(),
       oneTap(),
       bearer(),
@@ -358,10 +369,16 @@ export function createAuthConfig(env: Env) {
       github: {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
+        redirectURI: USE_OAUTH_PROXY
+          ? `${baseAuthURL}/api/auth/callback/github`
+          : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
+        redirectURI: USE_OAUTH_PROXY
+          ? `${baseAuthURL}/api/auth/callback/google`
+          : undefined,
       },
     },
     account: {
