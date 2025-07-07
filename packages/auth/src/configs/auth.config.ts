@@ -112,7 +112,7 @@ export const DEVELOPMENT_ORIGINS = [
 
 export const MAX_SESSIONS = 2;
 
-const USE_OAUTH_PROXY = true;
+const USE_OAUTH_PROXY = false;
 
 const getBaseURL = (envUrl: string | undefined): string => {
   try {
