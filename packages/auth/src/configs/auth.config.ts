@@ -122,8 +122,16 @@ const getBaseURL = (envUrl: string | undefined): string => {
       ? envUrl
       : `https://${envUrl}`;
 
-    // Remove trailing slash to prevent double slashes in URL construction
-    return new URL(urlWithProtocol).toString().replace(/\/$/, '');
+    // Create URL object and ensure no trailing slash
+    const url = new URL(urlWithProtocol);
+
+    // Remove trailing slash from pathname to prevent double slashes
+    if (url.pathname.endsWith('/') && url.pathname.length > 1) {
+      url.pathname = url.pathname.slice(0, -1);
+    }
+
+    // Return the URL without trailing slash
+    return url.toString();
   } catch (error) {
     console.error('Invalid URL:', envUrl, error);
     // Provide fallback or throw meaningful error
