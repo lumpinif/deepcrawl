@@ -7,7 +7,8 @@
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm dev:dashboard:*)",
       "Bash(touch:*)",
-      "WebFetch(domain:orpc.unnoq.com)"
+      "WebFetch(domain:orpc.unnoq.com)",
+      "Bash(find:*)"
     ],
     "deny": []
   }
