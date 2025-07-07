@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Auth Worker
+    name: 🛡️ Deploy Auth Worker
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -18,35 +18,38 @@ jobs:
      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     steps:
-      - name: Check out code
+      - name: 🔍 Check out code
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
       - uses: pnpm/action-setup@v4
 
-      - name: Setup Node.js environment
+      - name: 📦 Setup Node.js environment
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: 🛠️ Install dependencies
         run: pnpm install
 
-      - name: Run database migrations
+      - name: 🔄 Run database migrations
         run: pnpm run db:generate:prod && pnpm run db:migrate:prod
         working-directory: packages/db
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Deploy Auth Worker
+      - name: 🚀 Deploy Auth Worker
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 'apps/workers/auth'
           packageManager: 'pnpm'
+          preCommands: |
+            types --env-interface CloudflareBindings
+            pnpm run typecheck
           command: deploy --minify
           secrets: |
             DATABASE_URL
