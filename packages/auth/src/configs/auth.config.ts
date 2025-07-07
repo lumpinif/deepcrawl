@@ -51,12 +51,15 @@ interface Env {
 //   delete: (key: string) => Promise<void>;
 // }
 
+const PROD_APP_URL = 'https://app.deepcrawl.dev';
+const PROD_AUTH_WORKER_URL = 'https://auth.deepcrawl.dev';
+
 export const ALLOWED_ORIGINS = [
   // Production origins
+  PROD_APP_URL,
+  PROD_AUTH_WORKER_URL,
   'https://deepcrawl.dev',
   'https://api.deepcrawl.dev',
-  'https://auth.deepcrawl.dev', // Auth worker (legacy)
-  'https://app.deepcrawl.dev',
   'https://*.deepcrawl.dev',
   // Add explicit wildcard support for all deepcrawl.dev subdomains
   '*.deepcrawl.dev',
@@ -112,34 +115,20 @@ export const DEVELOPMENT_ORIGINS = [
 
 export const MAX_SESSIONS = 2;
 
-const USE_OAUTH_PROXY = false;
+const USE_OAUTH_PROXY = true;
 
 const getBaseURL = (envUrl: string | undefined): string => {
-  try {
-    if (!envUrl) {
-      throw new Error('URL is not defined');
-    }
-
-    // If URL doesn't start with protocol, assume https
-    const urlWithProtocol = envUrl.startsWith('http')
-      ? envUrl
-      : `https://${envUrl}`;
-
-    // Create URL object and ensure no trailing slash
-    const url = new URL(urlWithProtocol);
-
-    // Remove trailing slash from pathname to prevent double slashes
-    if (url.pathname.endsWith('/') && url.pathname.length > 1) {
-      url.pathname = url.pathname.slice(0, -1);
-    }
-
-    // Return the URL without trailing slash
-    return url.toString();
-  } catch (error) {
-    console.error('Invalid URL:', envUrl, error);
-    // Provide fallback or throw meaningful error
-    throw new Error(`Invalid URL: ${envUrl}`);
+  if (!envUrl) {
+    throw new Error('❌ [getBaseURL] URL is not defined');
   }
+
+  // Add protocol if missing
+  const urlWithProtocol = envUrl.startsWith('http')
+    ? envUrl
+    : `https://${envUrl}`;
+
+  // Remove trailing slash
+  return urlWithProtocol.replace(/\/+$/, '');
 };
 
 export const PLAYGROUND_API_KEY_CONFIG = {
@@ -212,7 +201,9 @@ export function createAuthConfig(env: Env) {
         ? [
             oAuthProxy({
               currentURL: baseAuthURL,
-              productionURL: appURL,
+              productionURL: useAuthWorker
+                ? PROD_AUTH_WORKER_URL
+                : PROD_APP_URL,
             }),
           ]
         : []),
@@ -256,9 +247,7 @@ export function createAuthConfig(env: Env) {
 
           // TODO: CHECK THE USER REDIRECTING FUNCTIONALITIES
           // Use custom callback URL instead of built-in URL
-          const customUrl = isDevelopment
-            ? `http://localhost:3000/magic-link?token=${token}`
-            : `${appURL}/magic-link?token=${token}`;
+          const customUrl = `${appURL}/magic-link?token=${token}`;
 
           try {
             await sendEmail(resend, {
@@ -279,8 +268,8 @@ export function createAuthConfig(env: Env) {
       }),
       passkey({
         rpName: 'DeepCrawl Auth',
-        rpID: isDevelopment ? 'localhost' : 'auth.deepcrawl.dev',
-        origin: isDevelopment ? 'http://localhost:3000' : appURL,
+        origin: appURL,
+        rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
       }),
       organization({
         async sendInvitationEmail(data) {
@@ -288,9 +277,7 @@ export function createAuthConfig(env: Env) {
             return;
           }
 
-          const inviteLink = isDevelopment
-            ? `http://localhost:3000/accept-invitation?invitationId=${data.id}`
-            : `${appURL}/accept-invitation?invitationId=${data.id}`;
+          const inviteLink = `${appURL}/accept-invitation?invitationId=${data.id}`;
 
           try {
             await sendEmail(resend, {
@@ -370,14 +357,18 @@ export function createAuthConfig(env: Env) {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
         redirectURI: USE_OAUTH_PROXY
-          ? `${baseAuthURL}/api/auth/callback/github`
+          ? useAuthWorker
+            ? `${PROD_AUTH_WORKER_URL}/api/auth/callback/github`
+            : `${PROD_APP_URL}/api/auth/callback/github`
           : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
         redirectURI: USE_OAUTH_PROXY
-          ? `${baseAuthURL}/api/auth/callback/google`
+          ? useAuthWorker
+            ? `${PROD_AUTH_WORKER_URL}/api/auth/callback/google`
+            : `${PROD_APP_URL}/api/auth/callback/google`
           : undefined,
       },
     },
