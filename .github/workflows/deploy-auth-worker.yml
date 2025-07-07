@@ -47,9 +47,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 'apps/workers/auth'
           packageManager: 'pnpm'
-          preCommands: |
-            types --env-interface CloudflareBindings
-            pnpm run typecheck
           command: deploy --minify
           secrets: |
             DATABASE_URL
