@@ -50,7 +50,7 @@ cd apps/workers/deepcrawl-v0 && pnpm deploy
 # Run sherif dependency checks
 pnpm sherif
 
-# Fix sherif issues automatically
+# Fix sherif issues automatically (ignores @types/node)
 pnpm sherif:fix
 
 # Format and lint deepcrawl worker
@@ -58,6 +58,9 @@ cd apps/workers/deepcrawl-v0 && pnpm check
 
 # Format and lint dashboard app
 cd apps/app && pnpm check
+
+# Run all checks from root (typecheck, lint, format, sherif)
+pnpm check
 ```
 
 ### OpenAPI and Types
@@ -108,6 +111,29 @@ pnpm email:dev
 pnpm email:export
 ```
 
+### SDK Development
+```bash
+# TypeScript SDK (run from packages/sdks/typescript/)
+cd packages/sdks/typescript
+
+# Build SDK for distribution
+pnpm build
+
+# Watch mode for SDK development
+pnpm dev
+
+# Type check SDK
+pnpm typecheck
+
+# Clean build artifacts
+pnpm clean
+
+# Test SDK locally (create test.ts file)
+# Note: test.ts files should use async/await properly
+# Wrap code in async function to avoid top-level await errors
+tsx src/test.ts
+```
+
 ## Architecture Overview
 
 ### DeepCrawl Worker (apps/workers/deepcrawl-v0/)
@@ -144,6 +170,7 @@ pnpm email:export
 2. **Type Safety**: Strict TypeScript configuration across all packages
 3. **Monorepo**: Uses pnpm workspaces with Turbo for build orchestration
 4. **Code Quality**: Biome for formatting/linting, ESLint for additional rules
+5. **Build Tools**: tsup for SDK builds, Turbo for parallel builds across packages
 
 ## Key Files and Directories
 
@@ -178,7 +205,15 @@ The project uses Biome for code formatting and linting:
 This project currently does not have automated tests set up. When implementing features, manual testing should be done using:
 - Development servers (`pnpm dev`)
 - OpenAPI documentation endpoints (`/docs`)
-- Database studio for data verification
+- Database studio for data verification (`pnpm db:studio` from packages/db/)
+- SDK test files with `tsx` command
+
+### SDK Package Details
+The TypeScript SDK (`@deepcrawl-sdk/ts`) provides:
+- Client library for DeepCrawl API
+- Methods: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`
+- Built with tsup for both CommonJS and ESM formats
+- Published to npm with version management
 
 ## Important Notes
 
