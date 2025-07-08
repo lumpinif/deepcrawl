@@ -9,20 +9,20 @@ import type { LinksOptions, ReadOptions } from '@deepcrawl/types';
 import { createORPCClient } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import type { ContractRouterClient } from '@orpc/contract';
-import { DeepCrawlAuthError, type DeepCrawlConfig } from './types';
+import { DeepcrawlAuthError, type DeepcrawlConfig } from './types';
 
-export class DeepCrawlApp {
+export class DeepcrawlApp {
   public client: ContractRouterClient<typeof contract>;
-  private config: DeepCrawlConfig;
+  private config: DeepcrawlConfig;
 
-  constructor(config: DeepCrawlConfig) {
+  constructor(config: DeepcrawlConfig) {
     this.config = {
       baseUrl: 'https://api.deepcrawl.dev',
       ...config,
     };
 
     if (!this.config.apiKey) {
-      throw new DeepCrawlAuthError('API key is required');
+      throw new DeepcrawlAuthError('API key is required');
     }
 
     const link = new RPCLink({
@@ -110,4 +110,4 @@ export class DeepCrawlApp {
   }
 }
 
-export default DeepCrawlApp;
+export default DeepcrawlApp;

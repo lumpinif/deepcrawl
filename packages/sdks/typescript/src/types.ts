@@ -1,4 +1,4 @@
-export interface DeepCrawlConfig {
+export interface DeepcrawlConfig {
   apiKey: string;
   baseUrl?: string;
   timeout?: number;
@@ -7,7 +7,7 @@ export interface DeepCrawlConfig {
 
 // Removed RequestOptions - oRPC handles request configuration at client level
 
-export class DeepCrawlError extends Error {
+export class DeepcrawlError extends Error {
   constructor(
     message: string,
     public readonly statusCode?: number,
@@ -18,14 +18,14 @@ export class DeepCrawlError extends Error {
   }
 }
 
-export class DeepCrawlAuthError extends DeepCrawlError {
+export class DeepcrawlAuthError extends DeepcrawlError {
   constructor(message = 'Authentication failed') {
     super(message, 401);
     this.name = 'DeepCrawlAuthError';
   }
 }
 
-export class DeepCrawlNetworkError extends DeepCrawlError {
+export class DeepcrawlNetworkError extends DeepcrawlError {
   constructor(message = 'Network error') {
     super(message);
     this.name = 'DeepCrawlNetworkError';
