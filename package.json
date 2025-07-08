@@ -16,7 +16,6 @@
     "@deepcrawl/typescript-config": "workspace:*",
     "better-auth": "^1.2.12",
     "dotenv-cli": "^8.0.0",
-    "husky": "^9.1.7",
     "turbo": "^2.4.2",
     "typescript": "^5.8.3",
     "wrangler": "^4.23.0",
