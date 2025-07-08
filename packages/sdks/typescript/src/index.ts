@@ -1,5 +1,3 @@
-import DeepCrawlApp from './deepcrawl';
-
 export { DeepCrawlApp, DeepCrawlApp as default } from './deepcrawl';
 export {
   type DeepCrawlConfig,
@@ -39,12 +37,3 @@ export type {
   LinksSuccessResponse,
   LinksErrorResponse,
 } from '@deepcrawl/types';
-
-const app = new DeepCrawlApp({
-  apiKey: '1234567890',
-});
-
-const a = await app.getMarkdown('https://example.com');
-const b = await app.readUrl('https://example.com');
-const c = await app.getLinks('https://example.com');
-const d = await app.extractLinks('https://example.com');
