@@ -173,7 +173,7 @@ export function createAuthConfig(env: Env) {
     : null;
 
   // Build trusted origins based on environment
-  const trustedOrigins = [...ALLOWED_ORIGINS, baseAuthURL];
+  const trustedOrigins = [...ALLOWED_ORIGINS, baseAuthURL, appURL];
   if (isDevelopment) {
     trustedOrigins.push(...DEVELOPMENT_ORIGINS);
   }
@@ -380,28 +380,24 @@ export function createAuthConfig(env: Env) {
     },
     advanced: {
       cookiePrefix: 'deepcrawl',
-
       // IP address tracking for rate limiting and session security
       ipAddress: {
         ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for', 'x-real-ip'],
         disableIpTracking: false,
       },
-
-      // Enable cross-subdomain in production when using auth worker (default behavior)
-      // Only disable when explicitly using Next.js API routes (NEXT_PUBLIC_USE_AUTH_WORKER='false')
-      ...(env.NEXT_PUBLIC_USE_AUTH_WORKER === false
-        ? {} // Disable crossSubDomainConfigs when explicitly using Next.js API routes
-        : {
-            crossSubDomainCookies: {
-              enabled: !isDevelopment, // Disable for localhost
-              domain: '.deepcrawl.dev',
-            },
-            defaultCookieAttributes: {
-              secure: !isDevelopment, // Only secure in production
-              sameSite: isDevelopment ? 'lax' : 'none',
-              partitioned: !isDevelopment,
-            },
-          }),
+      // Unified cross-domain cookie configuration
+      // Works for both auth worker and integrated auth, all environments
+      crossSubDomainCookies: {
+        enabled: !isDevelopment, // Only enable in production for .deepcrawl.dev
+        domain: isDevelopment ? undefined : '.deepcrawl.dev',
+      },
+      defaultCookieAttributes: {
+        secure: !isDevelopment, // HTTPS only in production
+        sameSite: isDevelopment ? 'lax' : 'none', // 'lax' for localhost, 'none' for cross-domain
+        partitioned: !isDevelopment, // Enable partitioned cookies in production
+        // Let browser handle domain properly in development
+        domain: isDevelopment ? undefined : '.deepcrawl.dev',
+      },
     },
     // rateLimit: {
     // window: 60, // time window in seconds
