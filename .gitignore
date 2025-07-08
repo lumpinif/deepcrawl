@@ -73,3 +73,6 @@ TODO.md
 *.tsbuildinfo
 .tsbuildinfo
 tsconfig.tsbuildinfo
+
+.cursor
+.claude
