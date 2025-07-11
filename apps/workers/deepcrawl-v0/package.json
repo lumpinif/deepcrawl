@@ -5,7 +5,7 @@
     "dev": "wrangler dev --remote --env=development",
     "dev:staging": "wrangler dev --remote --env=staging",
     "dev:prod": "wrangler dev --remote",
-    "deploy": "pnpm check && pnpm gen:openapi && pnpm cf-typegen && wrangler deploy --env production",
+    "deploy": "pnpm check && pnpm cf-typegen && wrangler deploy --env production",
     "antFu:lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "mdlint": "markdownlint-cli2 --config .markdownlint-cli2.jsonc --fix",
