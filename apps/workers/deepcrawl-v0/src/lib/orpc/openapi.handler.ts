@@ -35,6 +35,7 @@ export const OpenAPISpecGenerateOptions = {
   security: [{ bearerAuth: [] }],
   servers: [
     {
+      // url: 'https://api.deepcrawl.dev',
       url: (() => {
         try {
           return new URL(env.API_URL).toString();
@@ -47,7 +48,7 @@ export const OpenAPISpecGenerateOptions = {
   ],
   tags: [
     {
-      name: 'Read Website',
+      name: 'Read URL',
       description: 'API endpoints for reading and extracting content from URLs',
     },
     {

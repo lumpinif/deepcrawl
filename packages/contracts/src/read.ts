@@ -8,7 +8,7 @@ import { oo } from '@orpc/openapi';
 import { z } from 'zod/v4';
 import type { Inputs, Outputs } from '.';
 
-const tags = ['Read Website'];
+const tags = ['Read URL'];
 
 const errorConfig = {
   READ_ERROR_RESPONSE: {
