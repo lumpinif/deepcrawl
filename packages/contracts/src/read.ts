@@ -80,5 +80,5 @@ export const readPOSTContract = readOC
   .input(ReadOptionsSchema)
   .output(ReadSuccessResponseSchema);
 
-export type ReadPOSTInput = Inputs['read']['readWebsite'];
-export type ReadPOSTOutput = Outputs['read']['readWebsite'];
+export type ReadPOSTInput = Inputs['read']['readUrl'];
+export type ReadPOSTOutput = Outputs['read']['readUrl'];
