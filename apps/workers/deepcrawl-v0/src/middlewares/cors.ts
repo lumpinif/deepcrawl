@@ -23,14 +23,8 @@ import { createMiddleware } from 'hono/factory';
  * ```
  */
 export const deepCrawlCors = createMiddleware<AppBindings>(async (c, next) => {
-  // Determine environment - fallback to production if AUTH_WORKER_NODE_ENV is not set
-  const isDevelopment = c.env.WORKER_NODE_ENV === 'development';
-
   // Build allowed origins list based on environment
-  const allowedOrigins = [...ALLOWED_ORIGINS];
-  if (isDevelopment) {
-    allowedOrigins.push(...DEVELOPMENT_ORIGINS);
-  }
+  const allowedOrigins = [...ALLOWED_ORIGINS, ...DEVELOPMENT_ORIGINS];
 
   // Create and apply CORS middleware with custom origin validation
   const corsMiddleware = cors({
