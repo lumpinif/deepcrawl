@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@deepcrawl/types": "workspace:*",
-    "@orpc/contract": "^1.6.6",
+    "@orpc/contract": "^1.6.8",
     "@orpc/openapi": "^1.6.6"
   },
   "devDependencies": {
