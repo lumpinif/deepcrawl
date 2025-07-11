@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "incremental": false,
-    "composite": false,
-    "tsBuildInfoFile": null
-  },
-  "references": []
-} 
