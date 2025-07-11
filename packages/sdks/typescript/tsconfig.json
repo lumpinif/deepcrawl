@@ -6,16 +6,13 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    "noUncheckedIndexedAccess": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
@@ -23,11 +20,6 @@
       "@deepcrawl/contracts/*": ["../../contracts/src/*"]
     }
   },
-  "references": [
-    {
-      "path": "../../types"
-    }
-  ],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
