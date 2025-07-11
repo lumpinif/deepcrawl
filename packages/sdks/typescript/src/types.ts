@@ -3,6 +3,7 @@ export interface DeepcrawlConfig {
   baseUrl?: string;
   timeout?: number;
   headers?: Record<string, string>;
+  fetch?: typeof fetch; // Allow custom fetch implementation
 }
 
 // Removed RequestOptions - oRPC handles request configuration at client level
@@ -26,7 +27,10 @@ export class DeepcrawlAuthError extends DeepcrawlError {
 }
 
 export class DeepcrawlNetworkError extends DeepcrawlError {
-  constructor(message = 'Network error') {
+  constructor(
+    message = 'Network error',
+    public readonly cause?: unknown,
+  ) {
     super(message);
     this.name = 'DeepCrawlNetworkError';
   }

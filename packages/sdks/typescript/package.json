@@ -21,7 +21,10 @@
     "check": "biome check --write && pnpm typecheck",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
@@ -62,12 +65,17 @@
     "@deepcrawl/contracts": "workspace:*",
     "@deepcrawl/types": "workspace:*",
     "@orpc/client": "^1.6.6",
+    "@orpc/contract": "^1.6.8",
     "zod": "^3.25.74"
   },
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
+    "@vitest/ui": "^3.2.4",
+    "happy-dom": "^18.0.1",
+    "msw": "^2.10.3",
     "tsup": "^8.0.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0"

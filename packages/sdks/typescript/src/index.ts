@@ -1,5 +1,3 @@
-import DeepcrawlApp from './deepcrawl';
-
 export { DeepcrawlApp, DeepcrawlApp as default } from './deepcrawl';
 export {
   type DeepcrawlConfig as DeepCrawlConfig,
@@ -7,6 +5,16 @@ export {
   DeepcrawlAuthError as DeepCrawlAuthError,
   DeepcrawlNetworkError as DeepCrawlNetworkError,
 } from './types';
+
+// Export contract types for advanced users
+export type { contract as DeepCrawlContract } from '@deepcrawl/contracts';
+export type { ContractRouterClient } from '@orpc/contract';
+
+// Type helper for creating custom clients
+import type { ContractRouterClient as CRC } from '@orpc/contract';
+export type DeepCrawlClient = CRC<
+  typeof import('@deepcrawl/contracts').contract
+>;
 
 export type {
   Inputs,
@@ -39,7 +47,3 @@ export type {
   LinksSuccessResponse,
   LinksErrorResponse,
 } from '@deepcrawl/types';
-
-const app = new DeepcrawlApp({ apiKey: '1234567890' });
-// temp test
-const result = await app.extractLinks('https://www.google.com');
