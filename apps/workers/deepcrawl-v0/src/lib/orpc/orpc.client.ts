@@ -3,13 +3,22 @@ import { RPCLink } from '@orpc/client/fetch';
 
 import type { contract } from '@deepcrawl/contracts';
 import type { ContractRouterClient } from '@orpc/contract';
+import { env } from 'cloudflare:workers';
 
 const rpcLink = new RPCLink({
-  url: 'http://localhost:8787/rpc',
+  url: `${env.API_URL}/rpc`,
+  method: ({ context }, path) => {  
+    // Use GET for read operations (like getMarkdown, getLinks)  
+    if (path.at(-1)?.match(/^(?:get|find|list|search)(?:[A-Z].*)?$/)) {  
+      return 'GET'  
+    }  
+    return 'POST'  
+  },  
   headers: () => ({
-    Authorization: 'Bearer default-token',
+    'Content-Type': 'application/json',  
   }),
 });
 
 export const orpcClient: ContractRouterClient<typeof contract> =
   createORPCClient(rpcLink);
+
