@@ -74,12 +74,6 @@ importers:
       '@number-flow/react':
         specifier: ^0.5.9
         version: 0.5.10(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@orpc/client':
-        specifier: ^1.6.8
-        version: 1.6.8
-      '@orpc/contract':
-        specifier: ^1.6.8
-        version: 1.6.8
       '@radix-ui/react-avatar':
         specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
