@@ -63,6 +63,13 @@ export const ALLOWED_ORIGINS = [
   'https://*.deepcrawl.dev',
   // Add explicit wildcard support for all deepcrawl.dev subdomains
   '*.deepcrawl.dev',
+
+  // Local development origins
+  'http://localhost:3000', // Dashboard
+  'https://localhost:3000', // Dashboard HTTPS
+  'http://127.0.0.1:3000', // Dashboard alternative
+  'http://localhost:8787', // Auth worker
+  'http://127.0.0.1:8787', // Auth worker alternative
 ];
 
 /**
@@ -84,8 +91,8 @@ export const DEVELOPMENT_ORIGINS = [
   'http://localhost:3000', // Dashboard
   'https://localhost:3000', // Dashboard HTTPS
   'http://127.0.0.1:3000', // Dashboard alternative
-  'http://localhost:8787', // Auth worker (legacy)
-  'http://127.0.0.1:8787', // Auth worker alternative (legacy)
+  'http://localhost:8787', // Auth worker
+  'http://127.0.0.1:8787', // Auth worker alternative
 
   // 🔧 TO ADD YOUR NETWORK CONFIGURATION:
   // 1. Find your computer's IP address:
