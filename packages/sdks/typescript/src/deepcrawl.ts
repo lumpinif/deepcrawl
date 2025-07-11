@@ -116,7 +116,7 @@ export class DeepcrawlApp {
       ...options,
     };
 
-    const [error, data] = await safe(this.client.read.readWebsite(readOptions));
+    const [error, data] = await safe(this.client.read.readUrl(readOptions));
 
     if (isDefinedError(error)) {
       throw new DeepcrawlError(error.message);
