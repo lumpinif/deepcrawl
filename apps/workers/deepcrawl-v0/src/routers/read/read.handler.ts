@@ -35,7 +35,7 @@ export const readGETHandler = publicProcedures
 
 export const readPOSTHandler = publicProcedures
   .use(retry({ times: 3 }))
-  .read.readWebsite.handler(async ({ input, context: c, errors }) => {
+  .read.readUrl.handler(async ({ input, context: c, errors }) => {
     const { url, ...rest } = input;
     try {
       const result = await processReadRequest(

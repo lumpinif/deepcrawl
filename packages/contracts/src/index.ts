@@ -9,7 +9,7 @@ import { readGETContract, readPOSTContract } from './read';
 export const contract = oc.router({
   read: oc.prefix('/read').router({
     getMarkdown: readGETContract,
-    readWebsite: readPOSTContract,
+    readUrl: readPOSTContract,
   }),
   links: oc.prefix('/links').router({
     getLinks: linksGETContract,
