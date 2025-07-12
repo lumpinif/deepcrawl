@@ -245,7 +245,7 @@ export function createAuthConfig(env: Env) {
         maximumSessions: MAX_SESSIONS + 1, // better-auth issue: 3 is actually allowing max 2 sessions
       }),
       magicLink({
-        sendMagicLink: async ({ email, token, url }, request) => {
+        sendMagicLink: async ({ email, token }) => {
           if (!emailEnabled || !resend) {
             console.warn('⚠️ Magic link email not sent - Resend not configured');
             return;
