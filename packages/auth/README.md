@@ -12,6 +12,7 @@ Authentication package for DeepCrawl using Better Auth with email functionality 
 - ✅ **Cross-domain cookies** - Works across deepcrawl.dev subdomains
 - ✅ **Social auth** - GitHub and Google OAuth
 - ✅ **Passkeys** - WebAuthn passwordless authentication
+- ✅ **Universal email support** - Works in both Next.js and Cloudflare Workers
 
 ## Installation
 
@@ -65,6 +66,8 @@ export default {
 
 ### Using email templates
 
+The email system works universally in both Next.js and Cloudflare Workers by using Resend's native React component support:
+
 ```typescript
 import { 
   createResendClient, 
@@ -107,6 +110,16 @@ await sendEmail(resend, {
   }),
 });
 ```
+
+## Email System Architecture
+
+The email system is designed to work universally across different runtime environments:
+
+- **React Components**: Email templates are standard React components
+- **Resend Integration**: Uses Resend's native `react` property for universal compatibility
+- **No Server-Side Rendering**: Avoids runtime-specific rendering issues
+- **Cloudflare Workers Compatible**: Works seamlessly in edge environments
+- **Next.js Compatible**: Also works in traditional Node.js environments
 
 ## Email Templates
 
@@ -153,6 +166,12 @@ Used for organization/team invitations.
 - **Automatic Redirects**: Better Auth manages post-verification redirects and error handling
 - **Environment Aware**: Configuration adapts automatically to development/production environments
 
+### Universal Email Support
+- **Runtime Agnostic**: Works in both Cloudflare Workers and Next.js
+- **React Component Based**: Email templates are standard React components
+- **Resend Native**: Uses Resend's built-in React component support
+- **No Rendering Dependencies**: Eliminates compatibility issues with different runtimes
+
 ## Development vs Production
 
 ### Development
@@ -182,7 +201,7 @@ packages/auth/
 │   ├── configs/
 │   │   └── auth.config.ts       # Better Auth configuration
 │   ├── utils/
-│   │   └── email.ts             # Resend utilities
+│   │   └── email.ts             # Universal Resend utilities
 │   ├── templates/
 │   │   ├── email-verification.tsx
 │   │   ├── password-reset.tsx
@@ -200,6 +219,7 @@ packages/auth/
 1. Check that `RESEND_API_KEY` is properly set
 2. Verify the `FROM_EMAIL` domain is verified in Resend
 3. Check worker logs for error messages
+4. Ensure React Email templates are properly exported
 
 ### Multi-session issues
 
@@ -211,4 +231,10 @@ packages/auth/
 
 1. Verify domains match exactly (`.deepcrawl.dev`)
 2. Check that `secure: true` and `sameSite: 'none'` are set
-3. Consider removing `partitioned: true` if having cross-site issues 
+3. Consider removing `partitioned: true` if having cross-site issues
+
+### Cloudflare Workers email issues
+
+1. Verify `RESEND_API_KEY` is set as a Worker secret (not just environment variable)
+2. Check that the auth configuration is created at runtime, not build time
+3. Ensure React Email components are properly imported and exported 
