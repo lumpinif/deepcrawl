@@ -24,7 +24,7 @@
     "stoker": "^1.4.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250531.0",
+    "@cloudflare/workers-types": "^4.20250711.0",
     "drizzle-kit": "^0.31.1"
   }
 }
