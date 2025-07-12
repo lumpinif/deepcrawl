@@ -1,231 +1,210 @@
 'use server';
 
 import { DeepcrawlApp } from '@deepcrawl-sdk/ts';
+import type { LinksPOSTOutput, ReadPOSTOutput } from '@deepcrawl-sdk/ts';
+import {
+  DeepcrawlAuthError,
+  DeepcrawlError,
+  DeepcrawlLinksError,
+  DeepcrawlNetworkError,
+  DeepcrawlReadError,
+} from '@deepcrawl-sdk/ts';
 
-interface DeepCrawlParams {
+interface ApiCallInput {
   url: string;
-  apiKey: string;
 }
 
-// Type for Speakeasy-generated errors based on documentation
-interface SpeakeasyError extends Error {
-  statusCode: number;
-  body: string;
-  headers: Headers;
-  data$?: {
-    success: boolean;
-    targetUrl: string;
-    error: string;
-    timestamp?: string;
-    tree?: unknown;
-  };
+interface ApiResponse {
+  data?: unknown;
+  error?: string;
+  status?: number;
+  errorType?: 'auth' | 'network' | 'read' | 'links' | 'unknown';
+  targetUrl?: string;
+  timestamp?: string;
 }
 
-// Type guard for Speakeasy errors
-function isSpeakeasyError(error: unknown): error is SpeakeasyError {
-  return (
-    error instanceof Error &&
-    'statusCode' in error &&
-    typeof (error as SpeakeasyError).statusCode === 'number'
-  );
-}
+const apiKey = '123123123';
 
-export async function getMarkdownAction({ url, apiKey }: DeepCrawlParams) {
+export async function getMarkdownAction({
+  url,
+}: ApiCallInput): Promise<ApiResponse> {
   try {
-    if (!url.trim()) {
-      return { error: 'URL is required', status: 400 };
-    }
-
-    if (!apiKey.trim()) {
-      return { error: 'API key is required', status: 400 };
-    }
-
-    const deepcrawlApp = new DeepcrawlApp({
-      bearer: `Bearer ${apiKey}`,
+    const app = new DeepcrawlApp({
+      apiKey,
+      baseUrl: 'https://api.deepcrawl.dev',
     });
+    const data = await app.getMarkdown(url);
 
-    const result = await deepcrawlApp.getMarkdown({ url });
+    return {
+      data,
+      status: 200,
+    };
+  } catch (error) {
+    console.error('getMarkdownAction error:', error);
 
-    return { data: result, status: 200 };
-  } catch (error: unknown) {
-    // Handle Speakeasy-generated errors with proper type safety
-    if (isSpeakeasyError(error)) {
-      // Extract structured data if available
-      if (error.data$) {
-        return {
-          error: error.data$.error,
-          status: error.statusCode,
-          targetUrl: error.data$.targetUrl,
-          success: error.data$.success,
-        };
-      }
-
-      // Fallback for Speakeasy errors without structured data
+    // Handle specific Deepcrawl errors
+    if (error instanceof DeepcrawlAuthError) {
       return {
         error: error.message,
-        status: error.statusCode,
-        body: error.body,
+        status: 401,
+        errorType: 'auth',
       };
     }
 
-    // Handle standard errors
-    if (error instanceof Error) {
-      // Check for network/timeout errors by name
-      if (error.name === 'ConnectionError') {
-        return { error: 'Network connection failed', status: 503 };
-      }
-
-      if (error.name === 'RequestTimeoutError') {
-        return { error: 'Request timed out', status: 408 };
-      }
-
-      if (error.name === 'ResponseValidationError') {
-        return { error: 'Invalid response from server', status: 502 };
-      }
-
-      return { error: error.message, status: 500 };
+    if (error instanceof DeepcrawlReadError) {
+      return {
+        error: error.message,
+        status: 400,
+        errorType: 'read',
+        targetUrl: error.targetUrl,
+      };
     }
 
-    // Fallback for unexpected errors
-    return { error: 'An unexpected error occurred', status: 500 };
+    if (error instanceof DeepcrawlNetworkError) {
+      return {
+        error: error.message,
+        status: 503,
+        errorType: 'network',
+      };
+    }
+
+    if (error instanceof DeepcrawlError) {
+      return {
+        error: error.message,
+        status: 500,
+        errorType: 'unknown',
+      };
+    }
+
+    // Handle unknown errors
+    return {
+      error:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+      status: 500,
+      errorType: 'unknown',
+    };
   }
 }
 
-export async function readUrlAction({ url, apiKey }: DeepCrawlParams) {
+export async function readUrlAction({
+  url,
+}: ApiCallInput): Promise<ApiResponse> {
   try {
-    if (!url.trim()) {
-      return { error: 'URL is required', status: 400 };
-    }
-
-    if (!apiKey.trim()) {
-      return { error: 'API key is required', status: 400 };
-    }
-
-    const deepcrawlApp = new DeepcrawlApp({
-      bearer: `Bearer ${apiKey}`,
+    const app = new DeepcrawlApp({
+      apiKey,
+      baseUrl: 'https://api.deepcrawl.dev',
     });
+    const data: ReadPOSTOutput = await app.readUrl(url);
 
-    const result = await deepcrawlApp.readUrl({ url });
+    return {
+      data,
+      status: 200,
+    };
+  } catch (error) {
+    console.error('readUrlAction error:', error);
 
-    return { data: result, status: 200 };
-  } catch (error: unknown) {
-    // Handle Speakeasy-generated errors with proper type safety
-    if (isSpeakeasyError(error)) {
-      // Extract structured data if available
-      if (error.data$) {
-        return {
-          error: error.data$.error,
-          status: error.statusCode,
-          targetUrl: error.data$.targetUrl,
-          success: error.data$.success,
-        };
-      }
-
-      // Fallback for Speakeasy errors without structured data
+    // Handle specific Deepcrawl errors
+    if (error instanceof DeepcrawlAuthError) {
       return {
         error: error.message,
-        status: error.statusCode,
-        body: error.body,
+        status: 401,
+        errorType: 'auth',
       };
     }
 
-    // Handle standard errors
-    if (error instanceof Error) {
-      // Check for network/timeout errors by name
-      if (error.name === 'ConnectionError') {
-        return { error: 'Network connection failed', status: 503 };
-      }
-
-      if (error.name === 'RequestTimeoutError') {
-        return { error: 'Request timed out', status: 408 };
-      }
-
-      if (error.name === 'ResponseValidationError') {
-        return { error: 'Invalid response from server', status: 502 };
-      }
-
-      return { error: error.message, status: 500 };
+    if (error instanceof DeepcrawlReadError) {
+      return {
+        error: error.message,
+        status: 400,
+        errorType: 'read',
+        targetUrl: error.targetUrl,
+      };
     }
 
-    // Fallback for unexpected errors
-    return { error: 'An unexpected error occurred', status: 500 };
+    if (error instanceof DeepcrawlNetworkError) {
+      return {
+        error: error.message,
+        status: 503,
+        errorType: 'network',
+      };
+    }
+
+    if (error instanceof DeepcrawlError) {
+      return {
+        error: error.message,
+        status: 500,
+        errorType: 'unknown',
+      };
+    }
+
+    // Handle unknown errors
+    return {
+      error:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+      status: 500,
+      errorType: 'unknown',
+    };
   }
 }
 
-export async function extractLinksAction({ url, apiKey }: DeepCrawlParams) {
+export async function extractLinksAction({
+  url,
+}: ApiCallInput): Promise<ApiResponse> {
   try {
-    if (!url.trim()) {
-      return { error: 'URL is required', status: 400 };
-    }
-
-    if (!apiKey.trim()) {
-      return { error: 'API key is required', status: 400 };
-    }
-
-    const deepcrawlApp = new DeepcrawlApp({
-      bearer: `Bearer ${apiKey}`,
+    const app = new DeepcrawlApp({
+      apiKey,
+      baseUrl: 'https://api.deepcrawl.dev',
     });
+    const data: LinksPOSTOutput = await app.extractLinks(url);
 
-    const result = await deepcrawlApp.extractLinks({ url });
+    return {
+      data,
+      status: 200,
+    };
+  } catch (error) {
+    console.error('extractLinksAction error:', error);
 
-    return { data: result, status: 200 };
-  } catch (error: unknown) {
-    // Handle Speakeasy-generated errors with proper type safety
-    if (isSpeakeasyError(error)) {
-      // Extract structured data if available
-      if (error.data$) {
-        const response: {
-          error: string;
-          status: number;
-          targetUrl: string;
-          success: boolean;
-          timestamp?: string;
-          tree?: unknown;
-        } = {
-          error: error.data$.error,
-          status: error.statusCode,
-          targetUrl: error.data$.targetUrl,
-          success: error.data$.success,
-        };
-
-        // Add optional fields for links-specific errors
-        if (error.data$.timestamp) {
-          response.timestamp = error.data$.timestamp;
-        }
-        if (error.data$.tree) {
-          response.tree = error.data$.tree;
-        }
-
-        return response;
-      }
-
-      // Fallback for Speakeasy errors without structured data
+    // Handle specific Deepcrawl errors
+    if (error instanceof DeepcrawlAuthError) {
       return {
         error: error.message,
-        status: error.statusCode,
-        body: error.body,
+        status: 401,
+        errorType: 'auth',
       };
     }
 
-    // Handle standard errors
-    if (error instanceof Error) {
-      // Check for network/timeout errors by name
-      if (error.name === 'ConnectionError') {
-        return { error: 'Network connection failed', status: 503 };
-      }
-
-      if (error.name === 'RequestTimeoutError') {
-        return { error: 'Request timed out', status: 408 };
-      }
-
-      if (error.name === 'ResponseValidationError') {
-        return { error: 'Invalid response from server', status: 502 };
-      }
-
-      return { error: error.message, status: 500 };
+    if (error instanceof DeepcrawlLinksError) {
+      return {
+        error: error.message,
+        status: 400,
+        errorType: 'links',
+        targetUrl: error.targetUrl,
+        timestamp: error.timestamp,
+      };
     }
 
-    // Fallback for unexpected errors
-    return { error: 'An unexpected error occurred', status: 500 };
+    if (error instanceof DeepcrawlNetworkError) {
+      return {
+        error: error.message,
+        status: 503,
+        errorType: 'network',
+      };
+    }
+
+    if (error instanceof DeepcrawlError) {
+      return {
+        error: error.message,
+        status: 500,
+        errorType: 'unknown',
+      };
+    }
+
+    // Handle unknown errors
+    return {
+      error:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+      status: 500,
+      errorType: 'unknown',
+    };
   }
 }

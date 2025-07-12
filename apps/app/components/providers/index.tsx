@@ -2,6 +2,7 @@ import { TailwindIndicator } from '@deepcrawl/ui/components/theme/tailwind-indic
 import { SidebarProvider } from '@deepcrawl/ui/components/ui/sidebar';
 import { TooltipProvider } from '@deepcrawl/ui/components/ui/tooltip';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { cookies } from 'next/headers';
 import type { ReactNode } from 'react';
 import { QueryProviders } from './query.provider';
@@ -29,7 +30,9 @@ export async function Providers({ children }: { children: ReactNode }) {
           defaultWidth={sidebarWidth}
           defaultOpen={defaultSidebarOpen}
         >
-          <QueryProviders>{children}</QueryProviders>
+          <NuqsAdapter>
+            <QueryProviders>{children}</QueryProviders>
+          </NuqsAdapter>
         </SidebarProvider>
       </TooltipProvider>
       <TailwindIndicator />

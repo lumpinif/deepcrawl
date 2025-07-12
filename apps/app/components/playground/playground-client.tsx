@@ -16,28 +16,93 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@deepcrawl/ui/components/ui/tabs';
+
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { Copy, ExternalLink, FileText, Link2, Search } from 'lucide-react';
-import { useState } from 'react';
+import { Copy } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
+import {
+  ExtractLinksGridIcon,
+  GetMarkdownGridIcon,
+  ReadUrlGridIcon,
+} from '../animate-ui/components/grid-icons';
 
 interface ApiResponse {
   data?: unknown;
   error?: string;
   status?: number;
+  executionTime?: number;
+  errorType?: 'auth' | 'network' | 'read' | 'links' | 'unknown';
+  targetUrl?: string;
+  timestamp?: string;
 }
+
+const apiOptions = [
+  {
+    label: 'Get Markdown',
+    value: 'getMarkdown',
+    icon: GetMarkdownGridIcon,
+    description: 'Extract markdown content from the URL',
+  },
+  {
+    label: 'Read URL',
+    value: 'readUrl',
+    icon: ReadUrlGridIcon,
+    description: 'Get full result object with metadata',
+  },
+  {
+    label: 'Extract Links',
+    value: 'extractLinks',
+    icon: ExtractLinksGridIcon,
+    description: 'Extract all links and sitemap data',
+  },
+] as const;
+
+const apiOptionValues = ['getMarkdown', 'readUrl', 'extractLinks'] as const;
 
 export function PlaygroundClient() {
   const [url, setUrl] = useState('https://example.com');
-  const [apiKey, setApiKey] = useState('');
-  const [isLoading, setIsLoading] = useState<Record<string, boolean>>({});
+  const [selectedOptionValue, setSelectedOptionValue] = useQueryState(
+    'option',
+    parseAsStringLiteral(apiOptionValues).withDefault('getMarkdown'),
+  );
+
+  const selectedOption =
+    apiOptions.find((option) => option.value === selectedOptionValue) ||
+    apiOptions[0];
+  const [isLoading, setIsLoading] = useState<Record<string, boolean>>({
+    getMarkdown: false,
+    readUrl: false,
+    extractLinks: false,
+  });
   const [responses, setResponses] = useState<Record<string, ApiResponse>>({});
+  const [hoveredOption, setHoveredOption] = useState<string | null>(null);
+  const [executionStartTime, setExecutionStartTime] = useState<
+    Record<string, number>
+  >({});
+  const [currentExecutionTime, setCurrentExecutionTime] = useState<
+    Record<string, number>
+  >({});
+
+  // Timer effect to update current execution time
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentExecutionTime((prev) => {
+        const updated = { ...prev };
+        for (const operation in executionStartTime) {
+          if (isLoading[operation] && executionStartTime[operation]) {
+            updated[operation] = Date.now() - executionStartTime[operation];
+          }
+        }
+        return updated;
+      });
+    }, 100); // Update every 100ms for smooth animation
+
+    return () => clearInterval(interval);
+  }, [executionStartTime, isLoading]);
 
   const executeApiCall = async (
     operation: 'getMarkdown' | 'readUrl' | 'extractLinks',
@@ -48,26 +113,32 @@ export function PlaygroundClient() {
       return;
     }
 
-    if (!apiKey.trim()) {
-      toast.error('Please enter your API key');
-      return;
-    }
-
+    const startTime = Date.now();
+    setExecutionStartTime((prev) => ({ ...prev, [operation]: startTime }));
     setIsLoading((prev) => ({ ...prev, [operation]: true }));
 
     try {
-      let result: { data?: unknown; error?: string; status?: number };
+      let result: {
+        data?: unknown;
+        error?: string;
+        status?: number;
+        errorType?: 'auth' | 'network' | 'read' | 'links' | 'unknown';
+        targetUrl?: string;
+        timestamp?: string;
+      };
       switch (operation) {
         case 'getMarkdown':
-          result = await getMarkdownAction({ url, apiKey });
+          result = await getMarkdownAction({ url });
           break;
         case 'readUrl':
-          result = await readUrlAction({ url, apiKey });
+          result = await readUrlAction({ url });
           break;
         case 'extractLinks':
-          result = await extractLinksAction({ url, apiKey });
+          result = await extractLinksAction({ url });
           break;
       }
+
+      const executionTime = Date.now() - startTime;
 
       if (result.error) {
         setResponses((prev) => ({
@@ -75,29 +146,53 @@ export function PlaygroundClient() {
           [operation]: {
             error: result.error,
             status: result.status,
+            executionTime,
+            errorType: result.errorType,
+            targetUrl: result.targetUrl,
+            timestamp: result.timestamp,
           },
         }));
-        toast.error(`${label} failed: ${result.error}`);
+
+        // Enhanced error toast based on error type
+        const errorMessage = getErrorMessage(result.errorType, result.error);
+        toast.error(`${label} failed: ${errorMessage}`);
       } else {
         setResponses((prev) => ({
           ...prev,
-          [operation]: { data: result.data, status: result.status },
+          [operation]: {
+            data: result.data,
+            status: result.status,
+            executionTime,
+          },
         }));
         toast.success(`${label} completed successfully`);
       }
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'An error occurred';
+      const executionTime = Date.now() - startTime;
       setResponses((prev) => ({
         ...prev,
         [operation]: {
           error: errorMessage,
           status: 500,
+          executionTime,
+          errorType: 'unknown',
         },
       }));
       toast.error(`${label} failed: ${errorMessage}`);
     } finally {
       setIsLoading((prev) => ({ ...prev, [operation]: false }));
+      setExecutionStartTime((prev) => {
+        const updated = { ...prev };
+        delete updated[operation];
+        return updated;
+      });
+      setCurrentExecutionTime((prev) => {
+        const updated = { ...prev };
+        delete updated[operation];
+        return updated;
+      });
     }
   };
 
@@ -110,188 +205,187 @@ export function PlaygroundClient() {
     return JSON.stringify(data, null, 2);
   };
 
+  const formatExecutionTime = (ms: number): string => {
+    if (ms < 1000) {
+      return `${ms} ms`;
+    } else {
+      return `${(ms / 1000).toFixed(2)} s`;
+    }
+  };
+
+  const getErrorMessage = (
+    errorType?: string,
+    defaultError?: string,
+  ): string => {
+    switch (errorType) {
+      case 'auth':
+        return 'Authentication failed - please check your API key';
+      case 'network':
+        return 'Network error - please check your connection and try again';
+      case 'read':
+        return 'Failed to read the URL - the page might be inaccessible';
+      case 'links':
+        return 'Failed to extract links - the page structure might be complex';
+      default:
+        return defaultError || 'An unknown error occurred';
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Configuration Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Configuration
-          </CardTitle>
-          <CardDescription>
-            Enter your API key and the URL you want to test
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="url">Target URL</Label>
-              <Input
-                id="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://example.com"
-                className="font-mono"
+      <Label htmlFor="url" className="text-muted-foreground">
+        API Options
+      </Label>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        {apiOptions.map((option) => (
+          <Card
+            key={option.value}
+            onClick={() => setSelectedOptionValue(option.value)}
+            onMouseEnter={() => setHoveredOption(option.value)}
+            onMouseLeave={() => setHoveredOption(null)}
+            className={cn(
+              'relative cursor-pointer transition-all duration-200 ease-out hover:bg-muted/50 hover:shadow-md',
+              selectedOption?.value === option.value && 'bg-muted/50',
+            )}
+          >
+            {/* Timer in top right corner */}
+            {isLoading[option.value] && currentExecutionTime[option.value] && (
+              <div className="absolute top-2 right-2 animate-pulse rounded-md px-2 py-1 font-mono text-green-500 text-xs">
+                {formatExecutionTime(currentExecutionTime[option.value] || 0)}
+              </div>
+            )}
+
+            <div className="flex items-center justify-center">
+              <option.icon
+                cellClassName="size-[3px]"
+                animate={
+                  hoveredOption === option.value ||
+                  Boolean(isLoading[option.value])
+                }
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="apiKey">API Key</Label>
-              <Input
-                id="apiKey"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Your API key"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            <CardContent className="space-y-2 text-center">
+              <div className="flex items-center justify-center">
+                <CardTitle className="flex items-center gap-2">
+                  {option.label}
+                </CardTitle>
+              </div>
+              <CardDescription>{option.description}</CardDescription>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-      {/* API Operations */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Get Markdown */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Get Markdown
-              <Badge variant="secondary">GET</Badge>
-            </CardTitle>
-            <CardDescription>
-              Extract markdown content from the URL
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SpinnerButton
-              onClick={() => executeApiCall('getMarkdown', 'Get Markdown')}
-              isLoading={isLoading.getMarkdown}
-              className="w-full"
-            >
-              Get Markdown
-            </SpinnerButton>
-          </CardContent>
-        </Card>
-
-        {/* Read URL */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ExternalLink className="h-5 w-5" />
-              Read URL
-              <Badge variant="outline">POST</Badge>
-            </CardTitle>
-            <CardDescription>
-              Get full result object with metadata
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SpinnerButton
-              onClick={() => executeApiCall('readUrl', 'Read URL')}
-              isLoading={isLoading.readUrl}
-              className="w-full"
-            >
-              Read URL
-            </SpinnerButton>
-          </CardContent>
-        </Card>
-
-        {/* Extract Links */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Link2 className="h-5 w-5" />
-              Extract Links
-              <Badge variant="outline">POST</Badge>
-            </CardTitle>
-            <CardDescription>
-              Extract all links and sitemap data
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SpinnerButton
-              onClick={() => executeApiCall('extractLinks', 'Extract Links')}
-              isLoading={isLoading.extractLinks}
-              className="w-full"
-            >
-              Extract Links
-            </SpinnerButton>
-          </CardContent>
-        </Card>
+      <Label htmlFor="url" className="text-muted-foreground">
+        Target URL
+      </Label>
+      <div className="flex w-full items-center justify-between gap-4">
+        <div className="flex-1 space-y-2">
+          <Input
+            id="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            className="font-mono"
+            placeholder="https://example.com"
+          />
+        </div>
+        <SpinnerButton
+          className="w-32"
+          onClick={() =>
+            executeApiCall(
+              selectedOption?.value as
+                | 'getMarkdown'
+                | 'readUrl'
+                | 'extractLinks',
+              selectedOption?.label || '',
+            )
+          }
+          isLoading={isLoading[selectedOption?.value || '']}
+        >
+          {selectedOption?.label}
+        </SpinnerButton>
       </div>
 
       {/* Results Section */}
-      {Object.keys(responses).length > 0 && (
+      {responses[selectedOption?.value || ''] && (
         <Card>
           <CardHeader>
             <CardTitle>Results</CardTitle>
             <CardDescription>API responses will appear here</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue={Object.keys(responses)[0]} className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                {Object.keys(responses).map((operation) => (
-                  <TabsTrigger
-                    key={operation}
-                    value={operation}
-                    className="text-xs"
-                  >
-                    {operation === 'getMarkdown' && 'Markdown'}
-                    {operation === 'readUrl' && 'Read URL'}
-                    {operation === 'extractLinks' && 'Links'}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+            {(() => {
+              const response = responses[selectedOption?.value || ''];
+              if (!response) return null;
 
-              {Object.entries(responses).map(([operation, response]) => (
-                <TabsContent key={operation} value={operation} className="mt-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">Response</span>
-                        <Badge
-                          variant={response.error ? 'destructive' : 'default'}
-                          className="text-xs"
-                        >
-                          {response.status || 'Unknown'}
-                        </Badge>
-                      </div>
-                      <SpinnerButton
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          copyToClipboard(
-                            response.error
-                              ? response.error
-                              : formatResponseData(response.data),
-                          )
-                        }
+              return (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">Response</span>
+                      <Badge
+                        variant={response.error ? 'destructive' : 'default'}
+                        className="text-xs"
                       >
-                        <Copy className="h-4 w-4" />
-                        Copy
-                      </SpinnerButton>
-                    </div>
-
-                    <div
-                      className={cn(
-                        'relative rounded-lg border p-4 font-mono text-sm',
-                        'max-h-96 overflow-auto',
-                        response.error
-                          ? 'border-destructive/50 bg-destructive/5'
-                          : 'bg-muted/50',
+                        {response.status || 'Unknown'}
+                      </Badge>
+                      {response.errorType && (
+                        <Badge variant="outline" className="text-xs">
+                          {response.errorType}
+                        </Badge>
                       )}
-                    >
-                      <pre className="whitespace-pre-wrap">
-                        {response.error
-                          ? response.error
-                          : formatResponseData(response.data)}
-                      </pre>
+                      {response.executionTime && (
+                        <Badge variant="secondary" className="text-xs">
+                          {formatExecutionTime(response.executionTime)}
+                        </Badge>
+                      )}
                     </div>
+                    <SpinnerButton
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        copyToClipboard(
+                          response.error
+                            ? response.error
+                            : formatResponseData(response.data),
+                        )
+                      }
+                    >
+                      <Copy className="h-4 w-4" />
+                      Copy
+                    </SpinnerButton>
                   </div>
-                </TabsContent>
-              ))}
-            </Tabs>
+
+                  <div
+                    className={cn(
+                      'relative rounded-lg border p-4 text-sm',
+                      'max-h-[calc(100svh-20rem)] overflow-auto',
+                      response.error
+                        ? 'border-destructive/50 bg-destructive/5'
+                        : 'bg-muted/50',
+                    )}
+                  >
+                    {response.error ? (
+                      <pre className="whitespace-pre-wrap font-mono">
+                        {response.error}
+                      </pre>
+                    ) : selectedOption?.value === 'getMarkdown' &&
+                      typeof response.data === 'string' ? (
+                      <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:border prose-table:border prose-td:border prose-th:border prose-blockquote:border-muted-foreground prose-blockquote:border-l-4 prose-pre:bg-muted prose-th:bg-muted prose-blockquote:pl-4 prose-headings:font-semibold prose-a:text-primary prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:no-underline hover:prose-a:underline">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {response.data}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <pre className="whitespace-pre-wrap font-mono">
+                        {formatResponseData(response.data)}
+                      </pre>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
           </CardContent>
         </Card>
       )}
