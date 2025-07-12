@@ -256,7 +256,7 @@ export function createAuthConfig(env: Env) {
           const customUrl = `${appURL}/magic-link?token=${token}`;
 
           try {
-            const result = await sendEmail(resend, {
+            await sendEmail(resend, {
               to: email,
               subject: 'Sign in to your DeepCrawl account',
               template: MagicLink({
