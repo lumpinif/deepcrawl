@@ -6,7 +6,10 @@
     "paths": {
       "@/*": ["./*"],
       "@deepcrawl/ui/*": ["../../packages/ui/src/*"],
-      "@deepcrawl/auth/*": ["../../packages/auth/src/*"]
+      "@deepcrawl/auth/*": ["../../packages/auth/src/*"],
+      "@deepcrawl/types/*": ["../../packages/types/src/*"],
+      "@deepcrawl-sdk/ts": ["../../packages/sdks/typescript/src/*"],
+      "@deepcrawl/contracts/*": ["../../packages/contracts/src/*"]
     },
     "plugins": [
       {
