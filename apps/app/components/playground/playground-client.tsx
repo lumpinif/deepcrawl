@@ -19,8 +19,8 @@ import { Label } from '@deepcrawl/ui/components/ui/label';
 
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Copy } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';

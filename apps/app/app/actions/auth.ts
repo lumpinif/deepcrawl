@@ -1,7 +1,6 @@
 'use server';
 
 import type { ActiveOrganization } from '@/lib/auth.client-types';
-import { PLAYGROUND_API_KEY_CONFIG } from '@deepcrawl/auth/configs/auth.config';
 import { auth } from '@deepcrawl/auth/lib/auth';
 import type { Session } from '@deepcrawl/auth/types';
 import { getDrizzleDB, schema } from '@deepcrawl/db';

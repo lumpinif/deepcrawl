@@ -1,7 +1,7 @@
 'use client';
 
-import * as React from 'react';
 import { type HTMLMotionProps, motion } from 'motion/react';
+import * as React from 'react';
 
 import { cn } from '@deepcrawl/ui/lib/utils';
 

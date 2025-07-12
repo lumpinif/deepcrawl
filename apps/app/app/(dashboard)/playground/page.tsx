@@ -1,7 +1,7 @@
 import { fetchAuthSession } from '@/app/actions/auth';
 import { PageHeader } from '@/components/page-elements';
-import { redirect } from 'next/navigation';
 import { PlaygroundClient } from '@/components/playground/playground-client';
+import { redirect } from 'next/navigation';
 
 export default async function PlaygroundPage() {
   // Ensure user is authenticated
