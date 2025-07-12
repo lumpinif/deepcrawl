@@ -11,16 +11,17 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 
+import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
+import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Copy } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
@@ -45,18 +46,24 @@ const apiOptions = [
     label: 'Get Markdown',
     value: 'getMarkdown',
     icon: GetMarkdownGridIcon,
+    endpoint: '/read',
+    method: 'GET',
     description: 'Extract markdown content from the URL',
   },
   {
     label: 'Read URL',
     value: 'readUrl',
     icon: ReadUrlGridIcon,
+    endpoint: '/read',
+    method: 'POST',
     description: 'Get full result object with metadata',
   },
   {
     label: 'Extract Links',
     value: 'extractLinks',
     icon: ExtractLinksGridIcon,
+    endpoint: '/links',
+    method: 'POST',
     description: 'Extract all links and sitemap data',
   },
 ] as const;
@@ -86,6 +93,9 @@ export function PlaygroundClient() {
   const [currentExecutionTime, setCurrentExecutionTime] = useState<
     Record<string, number>
   >({});
+
+  // Add ref for LinkIcon
+  const linkIconRef = useRef<LinkIconHandle>(null);
 
   // Timer effect to update current execution time
   useEffect(() => {
@@ -245,7 +255,7 @@ export function PlaygroundClient() {
             onMouseEnter={() => setHoveredOption(option.value)}
             onMouseLeave={() => setHoveredOption(null)}
             className={cn(
-              'relative cursor-pointer transition-all duration-200 ease-out hover:bg-muted/50 hover:shadow-md',
+              'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-muted/50 hover:shadow-md',
               selectedOption?.value === option.value && 'bg-muted/50',
             )}
           >
@@ -255,6 +265,15 @@ export function PlaygroundClient() {
                 {formatExecutionTime(currentExecutionTime[option.value] || 0)}
               </div>
             )}
+
+            <div className="absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100">
+              <Badge
+                variant="outline"
+                className="text-muted-foreground text-xs"
+              >
+                {option.method} {option.endpoint}
+              </Badge>
+            </div>
 
             <div className="flex items-center justify-center">
               <option.icon
@@ -282,13 +301,25 @@ export function PlaygroundClient() {
       </Label>
       <div className="flex w-full items-center justify-between gap-4">
         <div className="flex-1 space-y-2">
-          <Input
-            id="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            className="font-mono"
-            placeholder="https://example.com"
-          />
+          {/* biome-ignore lint/nursery/noStaticElementInteractions: <explanation> */}
+          <div
+            className="relative"
+            onMouseEnter={() => linkIconRef.current?.startAnimation()}
+            onMouseLeave={() => linkIconRef.current?.stopAnimation()}
+          >
+            <LinkIcon
+              ref={linkIconRef}
+              size={16}
+              className="-translate-y-1/2 absolute top-1/2 left-3 text-muted-foreground"
+            />
+            <Input
+              id="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="pl-10 font-mono"
+              placeholder="https://example.com"
+            />
+          </div>
         </div>
         <SpinnerButton
           className="w-32"
@@ -309,12 +340,11 @@ export function PlaygroundClient() {
 
       {/* Results Section */}
       {responses[selectedOption?.value || ''] && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Results</CardTitle>
-            <CardDescription>API responses will appear here</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <>
+          <Label htmlFor="url" className="text-muted-foreground">
+            Results
+          </Label>
+          <div>
             {(() => {
               const response = responses[selectedOption?.value || ''];
               if (!response) return null;
@@ -323,6 +353,9 @@ export function PlaygroundClient() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs">
+                        {selectedOption?.method}
+                      </Badge>
                       <span className="font-medium text-sm">Response</span>
                       <Badge
                         variant={response.error ? 'destructive' : 'default'}
@@ -359,7 +392,7 @@ export function PlaygroundClient() {
 
                   <div
                     className={cn(
-                      'relative rounded-lg border p-4 text-sm',
+                      'relative rounded-lg border p-4 text-sm lg:p-6',
                       'max-h-[calc(100svh-20rem)] overflow-auto',
                       response.error
                         ? 'border-destructive/50 bg-destructive/5'
@@ -386,8 +419,8 @@ export function PlaygroundClient() {
                 </div>
               );
             })()}
-          </CardContent>
-        </Card>
+          </div>
+        </>
       )}
     </div>
   );
