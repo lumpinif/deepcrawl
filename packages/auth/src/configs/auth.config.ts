@@ -256,7 +256,7 @@ export function createAuthConfig(env: Env) {
           const customUrl = `${appURL}/magic-link?token=${token}`;
 
           try {
-            await sendEmail(resend, {
+            const result = await sendEmail(resend, {
               to: email,
               subject: 'Sign in to your DeepCrawl account',
               template: MagicLink({
@@ -270,7 +270,6 @@ export function createAuthConfig(env: Env) {
           }
         },
         expiresIn: 300, // 5 minutes
-        disableSignUp: false, // Allow new users to sign up via magic link
       }),
       passkey({
         rpName: 'DeepCrawl Auth',
