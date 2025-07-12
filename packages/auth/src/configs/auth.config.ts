@@ -4,7 +4,6 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
   admin,
   apiKey,
-  bearer,
   magicLink,
   multiSession,
   oAuthProxy,
@@ -216,12 +215,12 @@ export function createAuthConfig(env: Env) {
         : []),
       admin(),
       oneTap(),
-      bearer(),
       openAPI(),
       apiKey({
         startingCharactersConfig: {
           charactersLength: 10, // default 6
         },
+        apiKeyHeaders: ['authorization', 'x-api-key'],
         rateLimit: {
           enabled: true,
           timeWindow: 1000 * 60 * 60 * 24, // 1 day
