@@ -25,15 +25,19 @@ interface ApiResponse {
 
 const apiKey = '123123123';
 
+const dc = new DeepcrawlApp({
+  apiKey,
+  baseUrl:
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8080'
+      : 'https://api.deepcrawl.dev',
+});
+
 export async function getMarkdownAction({
   url,
 }: ApiCallInput): Promise<ApiResponse> {
   try {
-    const app = new DeepcrawlApp({
-      apiKey,
-      baseUrl: 'https://api.deepcrawl.dev',
-    });
-    const data = await app.getMarkdown(url);
+    const data = await dc.getMarkdown(url);
 
     return {
       data,
@@ -90,11 +94,7 @@ export async function readUrlAction({
   url,
 }: ApiCallInput): Promise<ApiResponse> {
   try {
-    const app = new DeepcrawlApp({
-      apiKey,
-      baseUrl: 'https://api.deepcrawl.dev',
-    });
-    const data: ReadPOSTOutput = await app.readUrl(url);
+    const data: ReadPOSTOutput = await dc.readUrl(url);
 
     return {
       data,
@@ -151,11 +151,7 @@ export async function extractLinksAction({
   url,
 }: ApiCallInput): Promise<ApiResponse> {
   try {
-    const app = new DeepcrawlApp({
-      apiKey,
-      baseUrl: 'https://api.deepcrawl.dev',
-    });
-    const data: LinksPOSTOutput = await app.extractLinks(url);
+    const data: LinksPOSTOutput = await dc.extractLinks(url);
 
     return {
       data,
