@@ -271,7 +271,7 @@ importers:
         version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0)
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: ^4.20250531.0
+        specifier: ^4.20250711.0
         version: 4.20250711.0
       drizzle-kit:
         specifier: ^0.31.1
@@ -364,6 +364,9 @@ importers:
       '@antfu/eslint-config':
         specifier: ^4.13.2
         version: 4.16.2(@vue/compiler-sfc@3.5.17)(eslint-plugin-format@1.0.1(eslint@9.30.1(jiti@2.4.2)))(eslint-plugin-react-hooks@5.2.0(eslint@9.30.1(jiti@2.4.2)))(eslint@9.30.1(jiti@2.4.2))(typescript@5.8.3)(vitest@3.2.4)
+      '@cloudflare/workers-types':
+        specifier: ^4.20250711.0
+        version: 4.20250711.0
       '@deepcrawl/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
