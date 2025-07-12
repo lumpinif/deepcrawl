@@ -51,6 +51,7 @@
     "@deepcrawl/typescript-config": "workspace:*",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.7",
+    "@tailwindcss/typography": "^0.5.16",
     "@turbo/gen": "^2.4.2",
     "@types/node": "^20",
     "@types/react": "^19.1.5",
