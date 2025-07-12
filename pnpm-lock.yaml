@@ -266,9 +266,6 @@ importers:
       hono:
         specifier: ^4.7.10
         version: 4.8.4
-      resend:
-        specifier: ^4.6.0
-        version: 4.6.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       stoker:
         specifier: ^1.4.2
         version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0)
