@@ -3,7 +3,6 @@ import {
   IconBook,
   IconDashboard,
   IconKey,
-  IconPlayerPlay,
   IconUser,
 } from '@tabler/icons-react';
 
@@ -15,10 +14,10 @@ export interface NavigationItem {
   isExternal?: boolean;
 }
 
-export const navigationItems: NavigationItem[] = [
+export const NAVGATION_ITEMS: NavigationItem[] = [
   {
     label: 'Dashboard',
-    title: 'Overview',
+    title: 'Home',
     url: '/',
     icon: IconDashboard,
   },
@@ -34,15 +33,9 @@ export const navigationItems: NavigationItem[] = [
     icon: IconKey,
   },
   {
-    label: 'Playground',
-    title: 'Playground',
-    url: '/playground',
-    icon: IconPlayerPlay,
-  },
-  {
     label: 'Resources',
     title: 'Documentation',
-    url: 'https://deepcrawl.com/docs',
+    url: '/',
     icon: IconBook,
     isExternal: true,
   },
