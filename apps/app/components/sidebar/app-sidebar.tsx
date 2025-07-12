@@ -5,7 +5,7 @@ import { GalleryVerticalEnd } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/sidebar/nav-main';
-import { navigationItems } from '@/lib/navigation-config';
+import { NAVGATION_ITEMS } from '@/lib/navigation-config';
 // import { NavUser } from '@/components/sidebar/nav-user';
 // import { TeamSwitcher } from '@/components/sidebar/team-switcher';
 import type { Session } from '@deepcrawl/auth/types';
@@ -46,7 +46,7 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="md:pt-2">
-        <NavMain items={navigationItems} />
+        <NavMain items={NAVGATION_ITEMS} />
       </SidebarContent>
       {/* <SidebarFooter>
         <NavUser user={user} />

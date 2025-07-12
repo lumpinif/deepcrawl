@@ -1,6 +1,6 @@
 'use client';
 
-import { navigationItems } from '@/lib/navigation-config';
+import { NAVGATION_ITEMS } from '@/lib/navigation-config';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -11,7 +11,7 @@ export default function AppNavTabs() {
 
   // Find the active index based on the current pathname
   const getActiveIndex = useCallback(() => {
-    const index = navigationItems.findIndex((item) => item.url === pathname);
+    const index = NAVGATION_ITEMS.findIndex((item) => item.url === pathname);
     return index >= 0 ? index : 0; // Default to first tab if not found
   }, [pathname]);
 
@@ -117,7 +117,7 @@ export default function AppNavTabs() {
   // Memoized navigation items to prevent unnecessary re-renders
   const renderedTabs = useMemo(
     () =>
-      navigationItems.map((item, index) => (
+      NAVGATION_ITEMS.map((item, index) => (
         <Link
           key={`${item.url}-${index}`} // More stable key
           href={item.url}
