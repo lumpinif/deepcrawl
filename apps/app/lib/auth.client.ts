@@ -1,14 +1,9 @@
+import { createAuthClientConfig } from '@deepcrawl/auth/configs';
 import type { auth } from '@deepcrawl/auth/lib/auth';
 import { assertValidAuthConfiguration } from '@deepcrawl/auth/utils/config-validator';
+import type { ClientOptions } from 'better-auth';
 import {
-  adminClient,
-  apiKeyClient,
-  genericOAuthClient,
   inferAdditionalFields,
-  magicLinkClient,
-  multiSessionClient,
-  organizationClient,
-  passkeyClient,
   twoFactorClient,
 } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
@@ -54,22 +49,20 @@ const getAuthBaseURL = () => {
   return baseAuthURL;
 };
 
-export const authClient = createAuthClient({
+const authClientConfig = createAuthClientConfig({
   basePath: '/api/auth',
   baseURL: getAuthBaseURL(),
+}) satisfies ClientOptions;
+
+export const authClient = createAuthClient({
+  ...authClientConfig,
   plugins: [
-    organizationClient(),
+    ...authClientConfig.plugins,
     twoFactorClient({
       onTwoFactorRedirect() {
         window.location.href = '/auth/two-factor';
       },
     }),
-    adminClient(),
-    apiKeyClient(),
-    passkeyClient(),
-    magicLinkClient(),
-    multiSessionClient(),
-    genericOAuthClient(),
     inferAdditionalFields<typeof auth>(),
     // oneTapClient({
     // 	clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
@@ -79,7 +72,7 @@ export const authClient = createAuthClient({
     // }),
   ],
   fetchOptions: {
-    credentials: 'include',
+    ...authClientConfig.fetchOptions,
     onError(e) {
       if (e.error.status === 429) {
         toast.error('Too many requests. Please try again later.');
