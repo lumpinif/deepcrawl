@@ -507,65 +507,65 @@ export async function deleteApiKey(keyId: string) {
  * Ensures the user has a PLAYGROUND_API_KEY for playground access
  * Creates one if it doesn't exist with the same configuration as for new users
  */
-export async function ensurePlaygroundApiKey() {
-  const requestHeaders = await headers();
+// export async function ensurePlaygroundApiKey() {
+//   const requestHeaders = await headers();
 
-  try {
-    // Get current session
-    const session = await auth.api.getSession({
-      headers: requestHeaders,
-    });
+//   try {
+//     // Get current session
+//     const session = await auth.api.getSession({
+//       headers: requestHeaders,
+//     });
 
-    if (!session?.user?.id) {
-      throw new Error('Unauthorized: No valid session found');
-    }
+//     if (!session?.user?.id) {
+//       throw new Error('Unauthorized: No valid session found');
+//     }
 
-    // Check if user already has a PLAYGROUND_API_KEY
-    const apiKeys = await auth.api.listApiKeys({
-      headers: requestHeaders,
-    });
+//     // Check if user already has a PLAYGROUND_API_KEY
+//     const apiKeys = await auth.api.listApiKeys({
+//       headers: requestHeaders,
+//     });
 
-    const playgroundKey = apiKeys.find((key) => {
-      let metadata = key.metadata;
-      // Parse metadata if it's stored as JSON string
-      if (typeof metadata === 'string') {
-        try {
-          metadata = JSON.parse(metadata);
-        } catch (e) {
-          metadata = null;
-        }
-      }
+//     const playgroundKey = apiKeys.find((key) => {
+//       let metadata = key.metadata;
+//       // Parse metadata if it's stored as JSON string
+//       if (typeof metadata === 'string') {
+//         try {
+//           metadata = JSON.parse(metadata);
+//         } catch (e) {
+//           metadata = null;
+//         }
+//       }
 
-      return (
-        key.name === 'PLAYGROUND_API_KEY' &&
-        metadata &&
-        typeof metadata === 'object' &&
-        metadata.type === 'auto-generated' &&
-        metadata.purpose === 'playground'
-      );
-    });
+//       return (
+//         key.name === 'PLAYGROUND_API_KEY' &&
+//         metadata &&
+//         typeof metadata === 'object' &&
+//         metadata.type === 'auto-generated' &&
+//         metadata.purpose === 'playground'
+//       );
+//     });
 
-    // If playground key exists, return it
-    if (playgroundKey) {
-      return JSON.parse(JSON.stringify(playgroundKey));
-    }
+//     // If playground key exists, return it
+//     if (playgroundKey) {
+//       return JSON.parse(JSON.stringify(playgroundKey));
+//     }
 
-    // Create a new PLAYGROUND_API_KEY with the same config as for new users
+//     // Create a new PLAYGROUND_API_KEY with the same config as for new users
 
-    const result = await auth.api.createApiKey({
-      body: {
-        userId: session.user.id,
-        ...PLAYGROUND_API_KEY_CONFIG,
-      },
-    });
+//     const result = await auth.api.createApiKey({
+//       body: {
+//         userId: session.user.id,
+//         ...PLAYGROUND_API_KEY_CONFIG,
+//       },
+//     });
 
-    return JSON.parse(JSON.stringify(result));
-  } catch (error) {
-    console.error('❌ Failed to ensure playground API key:', error);
-    throw new Error(
-      error instanceof Error
-        ? error.message
-        : 'Failed to ensure playground API key',
-    );
-  }
-}
+//     return JSON.parse(JSON.stringify(result));
+//   } catch (error) {
+//     console.error('❌ Failed to ensure playground API key:', error);
+//     throw new Error(
+//       error instanceof Error
+//         ? error.message
+//         : 'Failed to ensure playground API key',
+//     );
+//   }
+// }
