@@ -25,16 +25,18 @@ import { SessionsManagementCard } from './components/sessions-management-card';
 import { UserAvatarCard } from './components/user-avatar-card';
 import { UserNameCard } from './components/user-name-card';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AccountPage() {
   const queryClient = getQueryClient();
 
   // Prefetch all user-related data including OAuth accounts
-  queryClient.prefetchQuery(sessionQueryOptions());
-  queryClient.prefetchQuery(listSessionsQueryOptions());
-  queryClient.prefetchQuery(deviceSessionsQueryOptions());
-  queryClient.prefetchQuery(organizationQueryOptions());
-  queryClient.prefetchQuery(userPasskeysQueryOptions());
-  queryClient.prefetchQuery(linkedAccountsQueryOptions());
+  void queryClient.prefetchQuery(sessionQueryOptions());
+  void queryClient.prefetchQuery(listSessionsQueryOptions());
+  void queryClient.prefetchQuery(deviceSessionsQueryOptions());
+  void queryClient.prefetchQuery(organizationQueryOptions());
+  void queryClient.prefetchQuery(userPasskeysQueryOptions());
+  void queryClient.prefetchQuery(linkedAccountsQueryOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
