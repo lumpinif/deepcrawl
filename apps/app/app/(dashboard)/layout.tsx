@@ -42,7 +42,7 @@ export default async function DashboardLayout({
   // Get navigation mode from cookies
   const cookieStore = await cookies();
   const navigationMode =
-    (cookieStore.get('navigation:mode')?.value as NavigationMode) || 'sidebar';
+    (cookieStore.get('navigation:mode')?.value as NavigationMode) || 'header';
 
   const defaultInsetClassname = cn(
     '!overflow-hidden !shadow-none border-none !max-h-svh',
@@ -79,9 +79,9 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-svh w-full">
       <SiteHeader
+        className="h-16"
         user={session.user}
         deviceSessions={deviceSessions}
-        className="h-16"
       />
       <AppNavTabs />
       <main className={cn(mainContentContainerClassName, '2xl:px-[8rem]')}>
