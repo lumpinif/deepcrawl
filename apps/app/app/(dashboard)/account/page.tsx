@@ -1,4 +1,3 @@
-import { fetchAuthSession } from '@/app/actions/auth';
 import { PageHeader } from '@/components/page-elements';
 import {
   deviceSessionsQueryOptions,
@@ -10,7 +9,6 @@ import {
 } from '@/lib/query-options';
 import { getQueryClient } from '@/lib/query.client';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import {
   MultipleAccountsManagementCardSkeleton,
@@ -28,12 +26,6 @@ import { UserAvatarCard } from './components/user-avatar-card';
 import { UserNameCard } from './components/user-name-card';
 
 export default async function AccountPage() {
-  const session = await fetchAuthSession();
-
-  if (!session) {
-    redirect('/login');
-  }
-
   const queryClient = getQueryClient();
 
   // Prefetch all user-related data including OAuth accounts
