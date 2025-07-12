@@ -1,9 +1,11 @@
-export { DeepcrawlApp, DeepcrawlApp as default } from './deepcrawl';
+export { DeepcrawlApp as default, DeepcrawlApp } from './deepcrawl';
 export {
-  type DeepcrawlConfig as DeepCrawlConfig,
-  DeepcrawlError as DeepCrawlError,
-  DeepcrawlAuthError as DeepCrawlAuthError,
-  DeepcrawlNetworkError as DeepCrawlNetworkError,
+  DeepcrawlAuthError,
+  DeepcrawlError,
+  DeepcrawlLinksError,
+  DeepcrawlNetworkError,
+  DeepcrawlReadError,
+  type DeepcrawlConfig,
 } from './types';
 
 // Export contract types for advanced users

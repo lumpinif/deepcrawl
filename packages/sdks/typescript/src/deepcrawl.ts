@@ -13,11 +13,14 @@ import {
   type ClientRetryPluginContext,
 } from '@orpc/client/plugins';
 import type { ContractRouterClient } from '@orpc/contract';
+import packageJSON from '../package.json' with { type: 'json' };
 import {
   DeepcrawlAuthError,
   type DeepcrawlConfig,
   DeepcrawlError,
+  DeepcrawlLinksError,
   DeepcrawlNetworkError,
+  DeepcrawlReadError,
 } from './types';
 
 interface DeepCrawlClientContext extends ClientRetryPluginContext {}
@@ -28,7 +31,7 @@ export class DeepcrawlApp {
 
   constructor(config: DeepcrawlConfig) {
     this.config = {
-      baseUrl: 'https://api.deepcrawl.dev',
+      baseUrl: config.baseUrl || 'https://api.deepcrawl.dev',
       ...config,
     };
 
@@ -51,13 +54,14 @@ export class DeepcrawlApp {
       headers: () => ({
         Authorization: `Bearer ${this.config.apiKey}`,
         'Content-Type': 'application/json',
-        'User-Agent': '@deepcrawl-sdk/ts',
         ...this.config.headers,
+        'User-Agent': `${packageJSON.name}@${packageJSON.version}`,
       }),
       fetch: (request, init) =>
         fetchImpl(request, {
           ...init,
-          credentials: 'include', // Keep this to include cookies for cross-origin requests
+          ...this.config.fetchOptions,
+          credentials: this.config.fetchOptions?.credentials || 'include', // Keep this to include cookies for cross-origin requests
         }),
       plugins: [
         new ClientRetryPlugin({
@@ -88,7 +92,8 @@ export class DeepcrawlApp {
     const [error, data] = await safe(this.client.read.getMarkdown({ url }));
 
     if (isDefinedError(error)) {
-      throw new DeepcrawlError(error.message);
+      // Throw specific read error with detailed information
+      throw new DeepcrawlReadError(error.data);
     }
     if (error) {
       throw new DeepcrawlNetworkError('Failed to fetch markdown', error);
@@ -119,7 +124,8 @@ export class DeepcrawlApp {
     const [error, data] = await safe(this.client.read.readUrl(readOptions));
 
     if (isDefinedError(error)) {
-      throw new DeepcrawlError(error.message);
+      // Throw specific read error with detailed information
+      throw new DeepcrawlReadError(error.data);
     }
     if (error) {
       throw new DeepcrawlNetworkError('Failed to read URL', error);
@@ -137,7 +143,8 @@ export class DeepcrawlApp {
     const [error, data] = await safe(this.client.links.getLinks({ url }));
 
     if (isDefinedError(error)) {
-      throw new DeepcrawlError(error.message);
+      // Throw specific links error with detailed information
+      throw new DeepcrawlLinksError(error.data);
     }
     if (error) {
       throw new DeepcrawlNetworkError('Failed to get links', error);
@@ -166,7 +173,8 @@ export class DeepcrawlApp {
     );
 
     if (isDefinedError(error)) {
-      throw new DeepcrawlError(error.message);
+      // Throw specific links error with detailed information
+      throw new DeepcrawlLinksError(error.data);
     }
     if (error) {
       throw new DeepcrawlNetworkError('Failed to extract links', error);
