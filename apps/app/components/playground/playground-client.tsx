@@ -316,6 +316,18 @@ export function PlaygroundClient() {
               id="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  executeApiCall(
+                    selectedOption?.value as
+                      | 'getMarkdown'
+                      | 'readUrl'
+                      | 'extractLinks',
+                    selectedOption?.label || '',
+                  );
+                }
+              }}
               className="pl-10 font-mono"
               placeholder="https://example.com"
             />
