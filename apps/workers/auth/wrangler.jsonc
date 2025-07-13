@@ -12,8 +12,8 @@
   // 	"directory": "./public"
   // },
   "vars": {
-    "NEXT_PUBLIC_APP_URL": "app.deepcrawl.dev",
-    "AUTH_WORKER_NODE_ENV": "production",
+    "NEXT_PUBLIC_APP_URL": "http://localhost:3000",
+    "AUTH_WORKER_NODE_ENV": "development",
     "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
   },
   "observability": {
@@ -35,10 +35,10 @@
     "port": 8787
   },
   "env": {
-    "development": {
+    "production": {
       "vars": {
-        "NEXT_PUBLIC_APP_URL": "http://localhost:3000",
-        "AUTH_WORKER_NODE_ENV": "development",
+        "NEXT_PUBLIC_APP_URL": "https://app.deepcrawl.dev",
+        "AUTH_WORKER_NODE_ENV": "production",
         "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
       }
     }
