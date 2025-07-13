@@ -17,7 +17,7 @@ export default async function DashboardLayout({
 }) {
   // Create a new Headers object from Next.js headers to avoid modification issues
   const requestHeaders = new Headers(await headers());
-  
+
   // Get session first to check authentication
   const [currentSession, listDeviceSessions] = await Promise.all([
     auth.api.getSession({
