@@ -1,9 +1,10 @@
 import { Hono } from 'hono';
 
 import type { AppBindings } from '@/lib/context';
-import { requireAuthMiddleware } from '@/middlewares/auth';
-import { checkAuthMiddleware } from '@/middlewares/check-auth';
+import { checkAuthMiddleware } from '@/middlewares/check.auth';
 import deepCrawlCors from '@/middlewares/cors';
+import { requireAuthMiddleware } from '@/middlewares/require.auth';
+import { serviceFetcherMiddleware } from '@/middlewares/service.fetcher';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { requestId } from 'hono/request-id';
@@ -24,8 +25,11 @@ export default function createHonoApp() {
     .use('*', secureHeaders())
     .use('*', trimTrailingSlash())
     .use('*', serveEmojiFavicon('⚡'))
+
+    .use('*', serviceFetcherMiddleware)
     .use('*', checkAuthMiddleware)
     .use('*', requireAuthMiddleware)
+
     .use('*', prettyJSON());
 
   // Register check-auth route
