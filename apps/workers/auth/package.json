@@ -1,5 +1,5 @@
 {
-  "name": "deepcrawl_auth",
+  "name": "deepcrawl-worker-auth",
   "scripts": {
     "dev": "wrangler dev --remote --env=development",
     "dev:staging": "wrangler dev --remote --env=staging",

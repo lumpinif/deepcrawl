@@ -4,7 +4,7 @@
  */
 {
   "$schema": "../../../node_modules/wrangler/config-schema.json",
-  "name": "deepcrawl_auth",
+  "name": "deepcrawl-worker-auth",
   "main": "src/index.tsx",
   "compatibility_date": "2025-05-31",
   // "assets": {
