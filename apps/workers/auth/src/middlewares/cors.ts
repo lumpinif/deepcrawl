@@ -1,4 +1,4 @@
-import type { AppBindings } from '@/types';
+import type { AppContext } from '@/lib/context';
 import {
   ALLOWED_ORIGINS,
   DEVELOPMENT_ORIGINS,
@@ -9,7 +9,7 @@ import { createMiddleware } from 'hono/factory';
 /**
  * CORS middleware for DeepCrawl auth service - only allows trusted origins
  */
-export const deepCrawlCors = createMiddleware<AppBindings>(async (c, next) => {
+export const deepCrawlCors = createMiddleware<AppContext>(async (c, next) => {
   const isDevelopment = c.env.AUTH_WORKER_NODE_ENV === 'development';
 
   // Only allow trusted DeepCrawl origins

@@ -9,7 +9,7 @@ export interface AppVariables {
   session: Session['session'] | null;
 }
 
-export interface AppBindings {
+export interface AppContext {
   /** Cloudflare Bindings */
   Bindings: CloudflareBindings;
   /** App Variables */

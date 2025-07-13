@@ -1,8 +1,8 @@
 import { createAuth } from '@/lib/better-auth';
-import type { AppBindings } from '@/types';
+import type { AppContext } from '@/lib/context';
 import { createMiddleware } from 'hono/factory';
 
-export const authInstanceMiddleware = createMiddleware<AppBindings>(
+export const authInstanceMiddleware = createMiddleware<AppContext>(
   async (c, next) => {
     const auth = createAuth(c.env);
     c.set('betterAuth', auth);
@@ -10,7 +10,7 @@ export const authInstanceMiddleware = createMiddleware<AppBindings>(
   },
 );
 
-export const authContextMiddleware = createMiddleware<AppBindings>(
+export const authContextMiddleware = createMiddleware<AppContext>(
   async (c, next) => {
     const auth = c.var.betterAuth;
     const session = await auth.api.getSession({

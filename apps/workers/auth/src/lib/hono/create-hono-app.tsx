@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 
+import type { AppContext } from '@/lib/context';
 import {
   authContextMiddleware,
   authInstanceMiddleware,
 } from '@/middlewares/auth';
 import { deepCrawlCors } from '@/middlewares/cors';
-import type { AppBindings } from '@/types';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { requestId } from 'hono/request-id';
@@ -14,7 +14,7 @@ import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, onError, serveEmojiFavicon } from 'stoker/middlewares';
 
 export default function createHonoApp() {
-  const app = new Hono<AppBindings>();
+  const app = new Hono<AppContext>();
 
   // Apply custom CORS middleware first (must be before routes)
   app.use('*', deepCrawlCors);

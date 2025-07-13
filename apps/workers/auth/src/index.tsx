@@ -1,9 +1,21 @@
+import { WorkerEntrypoint } from 'cloudflare:workers';
+import type { AppContext } from '@/lib/context';
 import createHonoApp from '@/lib/hono/create-hono-app';
 
 const app = createHonoApp();
 
 app.get('/', (c) => {
-  return c.text('Deepcrawl Auth Worker');
+  return c.text('Welcome to Deepcrawl Auth Worker');
 });
 
-export default app;
+export default class extends WorkerEntrypoint<AppContext['Bindings']> {
+  async fetch(request: Request) {
+    return app.fetch(request, this.env, this.ctx);
+  }
+
+  sum(nums: number[]) {
+    const sum = nums.reduce((a, b) => a + b, 0);
+
+    return sum;
+  }
+}
