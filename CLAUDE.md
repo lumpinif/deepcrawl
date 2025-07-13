@@ -9,7 +9,13 @@ This is a monorepo containing a web scraping and crawling service with the follo
 - **apps/workers/deepcrawl-v0/**: Main Cloudflare Worker application providing web scraping and reading APIs
 - **apps/workers/auth/**: Authentication worker using Better Auth
 - **apps/app/**: Next.js dashboard application for managing the service
-- **packages/**: Shared packages (ui, types, db, etc.)
+- **packages/**: Shared packages including:
+  - `@deepcrawl/auth`: Authentication configuration and email templates
+  - `@deepcrawl/db`: Database schema and Drizzle ORM setup
+  - `@deepcrawl/types`: Shared TypeScript types and schemas
+  - `@deepcrawl/contracts`: API contract definitions for oRPC
+  - `@deepcrawl/ui`: shadcn/ui component library
+  - `@deepcrawl-sdk/ts`: TypeScript SDK for DeepCrawl API
 
 ## Common Commands
 
@@ -128,6 +134,18 @@ pnpm typecheck
 # Clean build artifacts
 pnpm clean
 
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with UI
+pnpm test:ui
+
+# Run tests with coverage
+pnpm test:coverage
+
 # Test SDK locally (create test.ts file)
 # Note: test.ts files should use async/await properly
 # Wrap code in async function to avoid top-level await errors
@@ -202,11 +220,18 @@ The project uses Biome for code formatting and linting:
 
 ## Testing
 
-This project currently does not have automated tests set up. When implementing features, manual testing should be done using:
+This project uses Vitest for testing the TypeScript SDK. For other parts of the monorepo, manual testing should be done using:
 - Development servers (`pnpm dev`)
 - OpenAPI documentation endpoints (`/docs`)
 - Database studio for data verification (`pnpm db:studio` from packages/db/)
 - SDK test files with `tsx` command
+
+### SDK Testing
+The TypeScript SDK has a complete test suite using Vitest:
+- Unit tests in `packages/sdks/typescript/src/__tests__/`
+- Integration tests available
+- Run tests with `pnpm test` from the SDK directory
+- Coverage reports available with `pnpm test:coverage`
 
 ### SDK Package Details
 The TypeScript SDK (`@deepcrawl-sdk/ts`) provides:
@@ -215,11 +240,58 @@ The TypeScript SDK (`@deepcrawl-sdk/ts`) provides:
 - Built with tsup for both CommonJS and ESM formats
 - Published to npm with version management
 
+## Worker Development
+
+### DeepCrawl Worker Development
+```bash
+# Development with remote Cloudflare environment
+cd apps/workers/deepcrawl-v0
+pnpm dev  # Uses port 8080
+
+# Generate Cloudflare Worker types
+pnpm cf-typegen
+
+# Deploy to production (includes checks and type generation)
+pnpm deploy
+```
+
+### Auth Worker Development  
+```bash
+# Development with remote Cloudflare environment
+cd apps/workers/auth
+pnpm dev
+
+# Deploy to production
+pnpm deploy
+```
+
+### Dashboard Development
+```bash
+# Development with Next.js Turbopack
+cd apps/app
+pnpm dev
+
+# Development with workers (dashboard + auth + deepcrawl)
+pnpm dev:workers
+
+# Development with auth worker only
+pnpm dev:auth-worker
+
+# Clean build artifacts
+pnpm clean
+pnpm clean:node  # Custom script to clean node_modules
+
+# shadcn/ui component management
+pnpm ui add button  # Example: add button component
+```
+
 ## Important Notes
 
 - **Node.js**: Requires Node.js >= 20
-- **Package Manager**: Uses pnpm with workspaces
+- **Package Manager**: Uses pnpm@10.12.4 with workspaces
 - **Deployment**: Cloudflare Workers for backend services
 - **Database**: Neon PostgreSQL with Drizzle ORM
-- **Authentication**: Better Auth with multiple providers
+- **Authentication**: Better Auth with multiple providers (GitHub, Google, passkeys, magic links)
 - **UI Components**: shadcn/ui with Tailwind CSS
+- **Build System**: Turbo for monorepo orchestration, tsup for SDK builds
+- **Code Quality**: Biome for formatting/linting (80 char line width, 2-space indentation)
