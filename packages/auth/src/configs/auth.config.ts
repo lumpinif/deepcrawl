@@ -69,6 +69,8 @@ export const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000', // Dashboard alternative
   'http://localhost:8787', // Auth worker
   'http://127.0.0.1:8787', // Auth worker alternative
+  'http://localhost:8080', // V0 worker
+  'http://127.0.0.1:8080', // V0 worker alternative
 ];
 
 /**
@@ -92,6 +94,8 @@ export const DEVELOPMENT_ORIGINS = [
   'http://127.0.0.1:3000', // Dashboard alternative
   'http://localhost:8787', // Auth worker
   'http://127.0.0.1:8787', // Auth worker alternative
+  'http://localhost:8080', // V0 worker
+  'http://127.0.0.1:8080', // V0 worker alternative
 
   // 🔧 TO ADD YOUR NETWORK CONFIGURATION:
   // 1. Find your computer's IP address:
