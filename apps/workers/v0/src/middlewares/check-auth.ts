@@ -1,6 +1,6 @@
+import { env } from 'cloudflare:workers';
 import type { AppBindings } from '@/lib/context';
 import type { Session } from '@deepcrawl/auth/types';
-import { env } from 'cloudflare:workers';
 import { createMiddleware } from 'hono/factory';
 
 export const checkAuthMiddleware = createMiddleware<AppBindings>(
@@ -32,6 +32,7 @@ export const checkAuthMiddleware = createMiddleware<AppBindings>(
       if (!session || !session.session) {
         c.set('user', null);
         c.set('session', null);
+        // Continue to next middleware/handler
         return next();
       }
 

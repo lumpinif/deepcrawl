@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 
 import type { AppBindings } from '@/lib/context';
+import { requireAuthMiddleware } from '@/middlewares/auth';
 import { checkAuthMiddleware } from '@/middlewares/check-auth';
 import deepCrawlCors from '@/middlewares/cors';
 import { logger } from 'hono/logger';
@@ -24,6 +25,7 @@ export default function createHonoApp() {
     .use('*', trimTrailingSlash())
     .use('*', serveEmojiFavicon('⚡'))
     .use('*', checkAuthMiddleware)
+    .use('*', requireAuthMiddleware)
     .use('*', prettyJSON());
 
   // Register check-auth route
