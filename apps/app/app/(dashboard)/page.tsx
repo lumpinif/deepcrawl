@@ -29,7 +29,10 @@ export default async function DashboardPage() {
       error = `API responded with status: ${response.status}`;
     }
   } catch (fetchError) {
-    error = fetchError instanceof Error ? fetchError.message : 'Failed to connect to API';
+    error =
+      fetchError instanceof Error
+        ? fetchError.message
+        : 'Failed to connect to API';
   }
 
   return (
@@ -42,13 +45,15 @@ export default async function DashboardPage() {
       <div className="mb-8 rounded-lg border p-4">
         <h3 className="mb-2 font-semibold text-lg">Auth Check Result:</h3>
         {error ? (
-          <div className="rounded p-2 text-sm bg-red-50 text-red-800 border border-red-200">
+          <div className="rounded border border-red-200 bg-red-50 p-2 text-red-800 text-sm">
             <strong>Error:</strong> {error}
             <br />
-            <em>This is expected if the API service is not running or accessible.</em>
+            <em>
+              This is expected if the API service is not running or accessible.
+            </em>
           </div>
         ) : (
-          <pre className="overflow-auto text-pretty rounded p-2 text-sm bg-gray-50">
+          <pre className="overflow-auto text-pretty rounded bg-gray-50 p-2 text-sm">
             {JSON.stringify(result, null, 2)}
           </pre>
         )}
