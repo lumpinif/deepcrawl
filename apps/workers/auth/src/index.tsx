@@ -8,14 +8,14 @@ app.get('/', (c) => {
   return c.text('Welcome to Deepcrawl Auth Worker');
 });
 
-export default class extends WorkerEntrypoint<AppContext['Bindings']> {
+export default class AuthWorker extends WorkerEntrypoint<
+  AppContext['Bindings']
+> {
   async fetch(request: Request) {
     return app.fetch(request, this.env, this.ctx);
   }
 
-  sum(nums: number[]) {
-    const sum = nums.reduce((a, b) => a + b, 0);
-
-    return sum;
+  async add(a: number, b: number) {
+    return a + b;
   }
 }
