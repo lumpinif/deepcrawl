@@ -17,7 +17,7 @@
   "services": [
     {
       "binding": "DEEPCRAWL_AUTH_WORKER",
-      "service": "deepcrawl_auth"
+      "service": "deepcrawl-worker-auth"
     }
   ],
   "vars": {
