@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "wrangler dev",
+    "dev:chain": "turbo run dev --filter=deepcrawl-worker-auth --filter=deepcrawl-worker-v0",
     "dev:remote": "wrangler dev --remote --port=8080",
     "dev:prod": "wrangler dev --remote --env=production",
     "deploy": "pnpm check && pnpm cf-typegen && wrangler secret bulk --env=production .dev.vars.production && wrangler deploy --env=production --minify",
