@@ -19,6 +19,12 @@ app.get('/', (c) => {
   });
 });
 
+app.get('/auth', (c) => {
+  return c.json({
+    message: 'Deepcrawl Auth',
+  });
+});
+
 // Handle RPC routes first (more specific)
 app.use('/rpc/*', async (c, next) => {
   const context = await createContext({ context: c });
