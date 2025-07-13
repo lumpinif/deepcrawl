@@ -44,7 +44,6 @@ export async function getMarkdownAction({
       status: 200,
     };
   } catch (error) {
-
     // Handle specific Deepcrawl errors
     if (error instanceof DeepcrawlAuthError) {
       return {
@@ -100,7 +99,6 @@ export async function readUrlAction({
       status: 200,
     };
   } catch (error) {
-
     // Handle specific Deepcrawl errors
     if (error instanceof DeepcrawlAuthError) {
       return {
@@ -156,7 +154,6 @@ export async function extractLinksAction({
       status: 200,
     };
   } catch (error) {
-
     // Handle specific Deepcrawl errors
     if (error instanceof DeepcrawlAuthError) {
       return {
