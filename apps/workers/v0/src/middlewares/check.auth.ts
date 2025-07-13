@@ -6,6 +6,9 @@ import { getAuthClient } from './auth.client';
 export const checkAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     const headers = c.req.raw.headers;
+    // Create a new Headers object to avoid modification issues
+    const requestHeaders = new Headers(headers);
+
     const serviceFetcher = c.var.serviceFetcher;
 
     // Custom Service Bindings Fetch
@@ -54,7 +57,7 @@ export const checkAuthMiddleware = createMiddleware<AppBindings>(
       const request = new Request(
         `${c.env.BETTER_AUTH_URL}/api/auth/get-session`,
         {
-          headers: headers,
+          headers: requestHeaders,
         },
       );
 

@@ -7,13 +7,16 @@ export function getAuthClient(c: AppContext, options: ClientOptions = {}) {
     baseURL: c.env.BETTER_AUTH_URL,
   });
 
+  // Create a new Headers object from the raw headers to avoid modification issues
+  const requestHeaders = new Headers(c.req.raw.headers);
+
   return createAuthClient({
     ...baseAuthClientConfig,
     plugins: [...baseAuthClientConfig.plugins, ...(options.plugins || [])],
     fetchOptions: {
       ...baseAuthClientConfig.fetchOptions,
       ...options.fetchOptions,
-      headers: c.req.raw.headers, // headers are passed to the fetch function
+      headers: requestHeaders, // Use the new Headers object instead of raw headers
     },
     ...options,
   });
