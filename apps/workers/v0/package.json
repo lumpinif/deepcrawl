@@ -5,7 +5,7 @@
     "dev": "wrangler dev --remote --env=development --port=8080",
     "dev:staging": "wrangler dev --remote --env=staging",
     "dev:prod": "wrangler dev --remote",
-    "deploy": "pnpm check && pnpm cf-typegen && wrangler deploy",
+    "deploy": "pnpm check && pnpm cf-typegen && wrangler secret bulk .dev.vars.production && wrangler deploy --minify",
     "antFu:lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "mdlint": "markdownlint-cli2 --config .markdownlint-cli2.jsonc --fix",
