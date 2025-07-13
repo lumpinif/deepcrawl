@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   const API_URL =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8080'
-      : 'https://api.deepcrawl.com';
+      : 'https://api.deepcrawl.dev';
 
   const requestHeaders = await headers();
 
@@ -20,7 +20,6 @@ export default async function DashboardPage() {
   try {
     const response = await fetch(`${API_URL}/check-auth`, {
       headers: requestHeaders,
-      credentials: 'include',
     });
 
     if (response.ok) {
@@ -45,7 +44,7 @@ export default async function DashboardPage() {
       <div className="mb-8 rounded-lg border p-4">
         <h3 className="mb-2 font-semibold text-lg">Auth Check Result:</h3>
         {error ? (
-          <div className="rounded border border-red-200 bg-red-50 p-2 text-red-800 text-sm">
+          <div className="rounded border border-red-200 p-2 text-red-800 text-sm">
             <strong>Error:</strong> {error}
             <br />
             <em>
@@ -53,7 +52,7 @@ export default async function DashboardPage() {
             </em>
           </div>
         ) : (
-          <pre className="overflow-auto text-pretty rounded bg-gray-50 p-2 text-sm">
+          <pre className="overflow-auto text-pretty rounded p-2 text-sm">
             {JSON.stringify(result, null, 2)}
           </pre>
         )}
