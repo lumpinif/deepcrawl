@@ -95,6 +95,12 @@ export class DeepcrawlApp {
       // Throw specific read error with detailed information
       throw new DeepcrawlReadError(error.data);
     }
+
+    // @ts-ignore TODO: FIX ERROR TYPE
+    if (!isDefinedError(error) && error?.code === 'UNAUTHORIZED') {
+      throw new DeepcrawlAuthError('Unauthorized');
+    }
+
     if (error) {
       throw new DeepcrawlNetworkError('Failed to fetch markdown', error);
     }
@@ -127,6 +133,12 @@ export class DeepcrawlApp {
       // Throw specific read error with detailed information
       throw new DeepcrawlReadError(error.data);
     }
+
+    // @ts-ignore TODO: FIX ERROR TYPE
+    if (!isDefinedError(error) && error?.code === 'UNAUTHORIZED') {
+      throw new DeepcrawlAuthError('Unauthorized');
+    }
+
     if (error) {
       throw new DeepcrawlNetworkError('Failed to read URL', error);
     }
@@ -146,6 +158,11 @@ export class DeepcrawlApp {
       // Throw specific links error with detailed information
       throw new DeepcrawlLinksError(error.data);
     }
+    // @ts-ignore TODO: FIX ERROR TYPE
+    if (!isDefinedError(error) && error?.code === 'UNAUTHORIZED') {
+      throw new DeepcrawlAuthError('Unauthorized');
+    }
+
     if (error) {
       throw new DeepcrawlNetworkError('Failed to get links', error);
     }
@@ -176,6 +193,11 @@ export class DeepcrawlApp {
       // Throw specific links error with detailed information
       throw new DeepcrawlLinksError(error.data);
     }
+    // @ts-ignore TODO: FIX ERROR TYPE
+    if (!isDefinedError(error) && error?.code === 'UNAUTHORIZED') {
+      throw new DeepcrawlAuthError('Unauthorized');
+    }
+
     if (error) {
       throw new DeepcrawlNetworkError('Failed to extract links', error);
     }
