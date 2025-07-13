@@ -12,7 +12,7 @@ export default async function DashboardPage() {
       ? 'http://localhost:8080'
       : 'https://api.deepcrawl.dev';
 
-  const requestHeaders = await headers();
+  const requestHeaders = new Headers(await headers());
 
   let result = null;
   let error = null;
