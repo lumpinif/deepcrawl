@@ -25,12 +25,6 @@
     "WORKER_NODE_ENV": "production"
   },
   "env": {
-    "production": {
-      "vars": {
-        "API_URL": "https://api.deepcrawl.dev",
-        "WORKER_NODE_ENV": "production"
-      }
-    },
     "development": {
       "ai": {
         "binding": "AI"
