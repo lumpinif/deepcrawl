@@ -87,7 +87,7 @@
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19",
     "eslint": "^9.31.0",
-    "eslint-config-next": "15.3.5",
+    "eslint-config-next": "^15.3.5",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "tailwind-scrollbar": "^4.0.2"
