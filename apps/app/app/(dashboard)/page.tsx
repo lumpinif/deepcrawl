@@ -12,15 +12,25 @@ export default async function DashboardPage() {
       ? 'http://localhost:8080'
       : 'https://api.deepcrawl.com';
 
-  // Create a new Headers object from Next.js headers to avoid modification issues
-  const requestHeaders = new Headers(await headers());
+  const requestHeaders = await headers();
 
-  const response = await fetch(`${API_URL}/check-auth`, {
-    headers: requestHeaders,
-    credentials: 'include',
-  });
+  let result = null;
+  let error = null;
 
-  const result = await response.json();
+  try {
+    const response = await fetch(`${API_URL}/check-auth`, {
+      headers: requestHeaders,
+      credentials: 'include',
+    });
+
+    if (response.ok) {
+      result = await response.json();
+    } else {
+      error = `API responded with status: ${response.status}`;
+    }
+  } catch (fetchError) {
+    error = fetchError instanceof Error ? fetchError.message : 'Failed to connect to API';
+  }
 
   return (
     <>
@@ -31,9 +41,17 @@ export default async function DashboardPage() {
 
       <div className="mb-8 rounded-lg border p-4">
         <h3 className="mb-2 font-semibold text-lg">Auth Check Result:</h3>
-        <pre className="overflow-auto text-pretty rounded p-2 text-sm">
-          {JSON.stringify(result, null, 2)}
-        </pre>
+        {error ? (
+          <div className="rounded p-2 text-sm bg-red-50 text-red-800 border border-red-200">
+            <strong>Error:</strong> {error}
+            <br />
+            <em>This is expected if the API service is not running or accessible.</em>
+          </div>
+        ) : (
+          <pre className="overflow-auto text-pretty rounded p-2 text-sm bg-gray-50">
+            {JSON.stringify(result, null, 2)}
+          </pre>
+        )}
       </div>
 
       <ChartAreaInteractive />
