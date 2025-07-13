@@ -1,16 +1,23 @@
 import { ChartAreaInteractive } from '@/components/home/chart-area-interactive';
 import { PageHeader } from '@/components/page-elements';
 import { PlaygroundClient } from '@/components/playground/playground-client';
+import { headers } from 'next/headers';
 
 export default async function DashboardPage() {
   const currentTime = new Date().toLocaleDateString();
 
-  // const response = await fetch('http://localhost:8080/check-auth', {
-  //   headers: await headers(),
-  //   credentials: 'include',
-  // });
+  // TODO: CONSIDER ADDING AN API_URL INTO ENV VARS
+  const API_URL =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:8080'
+      : 'https://api.deepcrawl.com';
 
-  // const result = await response.json();
+  const response = await fetch(`${API_URL}/check-auth`, {
+    headers: await headers(),
+    credentials: 'include',
+  });
+
+  const result = await response.json();
 
   return (
     <>
@@ -19,12 +26,12 @@ export default async function DashboardPage() {
         description={`Welcome back - ${currentTime}`}
       />
 
-      {/* <div className="mb-8 rounded-lg border p-4">
+      <div className="mb-8 rounded-lg border p-4">
         <h3 className="mb-2 font-semibold text-lg">Auth Check Result:</h3>
         <pre className="overflow-auto text-pretty rounded p-2 text-sm">
           {JSON.stringify(result, null, 2)}
         </pre>
-      </div> */}
+      </div>
 
       <ChartAreaInteractive />
       <PageHeader
