@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev:workers": "turbo dev --filter=dashboard --filter=deepcrawl_auth --filter=deepcrawl-worker-v0",
-    "dev:auth-worker": "turbo dev --filter=dashboard --filter=deepcrawl_auth",
+    "dev:workers": "turbo dev --filter=dashboard --filter=deepcrawl-worker-auth --filter=deepcrawl-worker-v0",
+    "dev:auth-worker": "turbo dev --filter=dashboard --filter=deepcrawl-worker-auth",
     "clean": "rimraf .next .turbo",
     "clean:node": "tsx scripts/clean.ts",
     "build": "next build",
