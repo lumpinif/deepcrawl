@@ -12,8 +12,11 @@ export default async function DashboardPage() {
       ? 'http://localhost:8080'
       : 'https://api.deepcrawl.com';
 
+  // Create a new Headers object from Next.js headers to avoid modification issues
+  const requestHeaders = new Headers(await headers());
+
   const response = await fetch(`${API_URL}/check-auth`, {
-    headers: await headers(),
+    headers: requestHeaders,
     credentials: 'include',
   });
 
