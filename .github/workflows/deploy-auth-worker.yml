@@ -34,11 +34,19 @@ jobs:
       - name: 🛠️ Install dependencies
         run: pnpm install
 
-      - name: 🔄 Run database migrations
-        run: pnpm run db:generate:prod && pnpm run db:migrate:prod
-        working-directory: packages/db
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # - name: 🔄 Run database migrations
+      #   run: pnpm run db:generate:prod && pnpm run db:migrate:prod
+      #   working-directory: packages/db
+      #   env:
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: 🔧 Generate CloudFlare types
+        run: pnpm run cf-typegen
+        working-directory: apps/workers/auth
+
+      - name: 🗄️ Sync database to production
+        run: pnpm run db:sync:prod
+        working-directory: apps/workers/auth
 
       - name: 🚀 Deploy Auth Worker
         uses: cloudflare/wrangler-action@v3
@@ -47,7 +55,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 'apps/workers/auth'
           packageManager: 'pnpm'
-          command: deploy --minify
+          environment: 'production'
+          command: deploy --env production --minify
           secrets: |
             DATABASE_URL
             BETTER_AUTH_SECRET
