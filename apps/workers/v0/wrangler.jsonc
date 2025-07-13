@@ -29,6 +29,12 @@
       "ai": {
         "binding": "AI"
       },
+      "services": [
+        {
+          "binding": "DEEPCRAWL_AUTH_WORKER",
+          "service": "deepcrawl-worker-auth"
+        }
+      ],
       "kv_namespaces": [
         {
           "binding": "DEEPCRAWL_V0_LINKS_STORE",
