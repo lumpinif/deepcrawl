@@ -44,13 +44,12 @@ export async function getMarkdownAction({
       status: 200,
     };
   } catch (error) {
-    console.error('getMarkdownAction error:', error);
 
     // Handle specific Deepcrawl errors
     if (error instanceof DeepcrawlAuthError) {
       return {
         error: error.message,
-        status: 401,
+        status: error.status,
         errorType: 'auth',
       };
     }
@@ -58,7 +57,7 @@ export async function getMarkdownAction({
     if (error instanceof DeepcrawlReadError) {
       return {
         error: error.message,
-        status: 400,
+        status: error.status,
         errorType: 'read',
         targetUrl: error.targetUrl,
       };
@@ -67,7 +66,7 @@ export async function getMarkdownAction({
     if (error instanceof DeepcrawlNetworkError) {
       return {
         error: error.message,
-        status: 503,
+        status: error.status,
         errorType: 'network',
       };
     }
@@ -75,7 +74,7 @@ export async function getMarkdownAction({
     if (error instanceof DeepcrawlError) {
       return {
         error: error.message,
-        status: 500,
+        status: error.status,
         errorType: 'unknown',
       };
     }
@@ -101,13 +100,12 @@ export async function readUrlAction({
       status: 200,
     };
   } catch (error) {
-    console.error('readUrlAction error:', error);
 
     // Handle specific Deepcrawl errors
     if (error instanceof DeepcrawlAuthError) {
       return {
         error: error.message,
-        status: 401,
+        status: error.status,
         errorType: 'auth',
       };
     }
@@ -115,7 +113,7 @@ export async function readUrlAction({
     if (error instanceof DeepcrawlReadError) {
       return {
         error: error.message,
-        status: 400,
+        status: error.status,
         errorType: 'read',
         targetUrl: error.targetUrl,
       };
@@ -124,7 +122,7 @@ export async function readUrlAction({
     if (error instanceof DeepcrawlNetworkError) {
       return {
         error: error.message,
-        status: 503,
+        status: error.status,
         errorType: 'network',
       };
     }
@@ -132,7 +130,7 @@ export async function readUrlAction({
     if (error instanceof DeepcrawlError) {
       return {
         error: error.message,
-        status: 500,
+        status: error.status,
         errorType: 'unknown',
       };
     }
@@ -158,13 +156,12 @@ export async function extractLinksAction({
       status: 200,
     };
   } catch (error) {
-    console.error('extractLinksAction error:', error);
 
     // Handle specific Deepcrawl errors
     if (error instanceof DeepcrawlAuthError) {
       return {
         error: error.message,
-        status: 401,
+        status: error.status,
         errorType: 'auth',
       };
     }
@@ -172,7 +169,7 @@ export async function extractLinksAction({
     if (error instanceof DeepcrawlLinksError) {
       return {
         error: error.message,
-        status: 400,
+        status: error.status,
         errorType: 'links',
         targetUrl: error.targetUrl,
         timestamp: error.timestamp,
@@ -182,7 +179,7 @@ export async function extractLinksAction({
     if (error instanceof DeepcrawlNetworkError) {
       return {
         error: error.message,
-        status: 503,
+        status: error.status,
         errorType: 'network',
       };
     }
@@ -190,7 +187,7 @@ export async function extractLinksAction({
     if (error instanceof DeepcrawlError) {
       return {
         error: error.message,
-        status: 500,
+        status: error.status,
         errorType: 'unknown',
       };
     }
