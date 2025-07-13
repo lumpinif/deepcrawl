@@ -97,6 +97,9 @@ export const DEVELOPMENT_ORIGINS = [
   'http://localhost:8080', // V0 worker
   'http://127.0.0.1:8080', // V0 worker alternative
 
+  // Cloudflare Workers preview URLs (for --remote development)
+  'https://*.nbr8rcs5kh.workers.dev', // Your specific workers.dev subdomain
+
   // 🔧 TO ADD YOUR NETWORK CONFIGURATION:
   // 1. Find your computer's IP address:
   //    - Windows: Run `ipconfig` and look for IPv4 Address
@@ -401,8 +404,10 @@ export function createAuthConfig(env: Env) {
         domain: isDevelopment ? undefined : '.deepcrawl.dev',
       },
       defaultCookieAttributes: {
-        secure: !isDevelopment, // HTTPS only in production
-        sameSite: isDevelopment ? 'lax' : 'none', // 'lax' for localhost, 'none' for cross-domain
+        // For localhost development: use 'none' + secure: false (works in some browsers)
+        // For production: use 'none' + secure: true for cross-domain
+        secure: !isDevelopment, // HTTP for localhost dev, HTTPS for production
+        sameSite: 'none', // 'none' for cross-origin in both dev and prod
         partitioned: !isDevelopment, // Enable partitioned cookies in production
         // Let browser handle domain properly in development
         domain: isDevelopment ? undefined : '.deepcrawl.dev',
