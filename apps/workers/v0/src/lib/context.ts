@@ -1,12 +1,18 @@
+import type { Session } from '@deepcrawl/auth/types';
 import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
+
 import type { Context as HonoContext } from 'hono';
 
-// export interface AppVariables {
-// }
+export interface AppVariables {
+  /** Current User */
+  user: Session['user'] | null;
+  /** Current Session */
+  session: Session['session'] | null;
+}
 
 export interface AppBindings {
   Bindings: CloudflareBindings;
-  // Variables: AppVariables;
+  Variables: AppVariables;
 }
 
 export interface AppContext

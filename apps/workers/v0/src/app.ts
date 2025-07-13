@@ -12,16 +12,10 @@ app.get('/', (c) => {
   const info = getConnInfo(c);
 
   return c.json({
-    message: 'Deepcrawl Official API',
+    message: 'Welcome to Deepcrawl Official API',
     runtime: getRuntimeKey(),
     nodeEnv: c.env.WORKER_NODE_ENV,
     connInfo: info,
-  });
-});
-
-app.get('/auth', (c) => {
-  return c.json({
-    message: 'Deepcrawl Auth',
   });
 });
 

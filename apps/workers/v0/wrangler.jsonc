@@ -36,9 +36,8 @@
   },
   "services": [
     {
-      "binding": "DEEPCRAWL_AUTH_WORKER",
-      "service": "deepcrawl-worker-auth-production",
-      "entrypoint": "AuthWorker"
+      "binding": "AUTH_WORKER",
+      "service": "deepcrawl-worker-auth"
     }
   ],
   "kv_namespaces": [
@@ -61,9 +60,8 @@
       },
       "services": [
         {
-          "binding": "DEEPCRAWL_AUTH_WORKER",
-          "service": "deepcrawl-worker-auth-production",
-          "entrypoint": "AuthWorker"
+          "binding": "AUTH_WORKER",
+          "service": "deepcrawl-worker-auth-production"
         }
       ],
       "kv_namespaces": [
