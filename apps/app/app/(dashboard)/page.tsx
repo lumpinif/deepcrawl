@@ -12,7 +12,35 @@ export default async function DashboardPage() {
       ? 'http://localhost:8080'
       : 'https://api.deepcrawl.dev';
 
-  const requestHeaders = new Headers(await headers());
+  const originalHeaders = await headers();
+  const requestHeaders = new Headers(originalHeaders);
+
+  // Log original headers in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Original request headers from browser:');
+    for (const [key, value] of originalHeaders.entries()) {
+      if (
+        key.toLowerCase().includes('encoding') ||
+        key.toLowerCase().includes('accept')
+      ) {
+        console.log(`  ${key}: ${value}`);
+      }
+    }
+  }
+
+  // Remove compression headers to avoid issues with Cloudflare Worker responses
+  // The browser automatically handles compression, but server-side fetch might not
+  const hadAcceptEncoding =
+    requestHeaders.has('accept-encoding') ||
+    requestHeaders.has('Accept-Encoding');
+  requestHeaders.delete('accept-encoding');
+  requestHeaders.delete('Accept-Encoding');
+
+  console.log(`🚀 [Dashboard] Making request to ${API_URL}/check-auth`);
+  console.log(`🚀 [Dashboard] Environment: ${process.env.NODE_ENV}`);
+  console.log(
+    `🚀 [Dashboard] Removed Accept-Encoding headers: ${hadAcceptEncoding}`,
+  );
 
   let result = null;
   let error = null;
@@ -22,16 +50,48 @@ export default async function DashboardPage() {
       headers: requestHeaders,
     });
 
+    console.log(
+      `🚀 [Dashboard] Response status: ${response.status} ${response.statusText}`,
+    );
+    console.log(
+      `🚀 [Dashboard] Response Content-Type: ${response.headers.get('content-type')}`,
+    );
+    console.log(
+      `🚀 [Dashboard] Response Content-Encoding: ${response.headers.get('content-encoding')}`,
+    );
+    console.log(
+      `🚀 [Dashboard] Response size: ${response.headers.get('content-length') || 'unknown'}`,
+    );
+
     if (response.ok) {
-      result = await response.json();
+      const responseText = await response.text();
+      console.log(
+        `🚀 [Dashboard] Raw response preview: ${responseText.substring(0, 100)}...`,
+      );
+
+      try {
+        result = JSON.parse(responseText);
+        console.log(`✅ [Dashboard] Successfully parsed JSON response`);
+      } catch (parseError) {
+        error = `JSON parse error: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`;
+        console.error(`❌ [Dashboard] JSON parse failed:`, parseError);
+        console.error(
+          `❌ [Dashboard] Response text (first 200 chars): ${responseText.substring(0, 200)}`,
+        );
+      }
     } else {
       error = `API responded with status: ${response.status}`;
+      const errorText = await response.text();
+      console.error(
+        `❌ [Dashboard] Error response: ${errorText.substring(0, 200)}`,
+      );
     }
   } catch (fetchError) {
     error =
       fetchError instanceof Error
         ? fetchError.message
         : 'Failed to connect to API';
+    console.error(`❌ [Dashboard] Fetch error:`, fetchError);
   }
 
   return (
