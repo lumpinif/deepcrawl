@@ -13,7 +13,6 @@ export default async function DashboardPage() {
       : 'https://api.deepcrawl.dev';
 
   const originalHeaders = await headers();
-  const requestHeaders = new Headers(originalHeaders);
 
   // Log original headers in development
   if (process.env.NODE_ENV === 'development') {
@@ -28,18 +27,12 @@ export default async function DashboardPage() {
     }
   }
 
-  // Remove compression headers to avoid issues with Cloudflare Worker responses
-  // The browser automatically handles compression, but server-side fetch might not
-  const hadAcceptEncoding =
-    requestHeaders.has('accept-encoding') ||
-    requestHeaders.has('Accept-Encoding');
-  requestHeaders.delete('accept-encoding');
-  requestHeaders.delete('Accept-Encoding');
-
+  // TESTING: Send all headers directly to worker (no client-side sanitization)
+  // Let the worker handle header sanitization
   console.log(`🚀 [Dashboard] Making request to ${API_URL}/check-auth`);
   console.log(`🚀 [Dashboard] Environment: ${process.env.NODE_ENV}`);
   console.log(
-    `🚀 [Dashboard] Removed Accept-Encoding headers: ${hadAcceptEncoding}`,
+    `🚀 [Dashboard] Sending ALL original headers to worker (testing worker-side protection)`,
   );
 
   let result = null;
@@ -47,7 +40,7 @@ export default async function DashboardPage() {
 
   try {
     const response = await fetch(`${API_URL}/check-auth`, {
-      headers: requestHeaders,
+      headers: originalHeaders,
     });
 
     console.log(
