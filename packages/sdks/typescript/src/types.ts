@@ -2,11 +2,24 @@ interface StandardHeaders {
   [key: string]: string | string[] | undefined;
 }
 
+// Type for Next.js ReadonlyHeaders (extends standard Headers)
+type ReadonlyHeaders = Headers & {
+  /** @deprecated Method unavailable on `ReadonlyHeaders`. Read more: https://nextjs.org/docs/app/api-reference/functions/headers */
+  // biome-ignore lint/suspicious/noExplicitAny: Matching Next.js ReadonlyHeaders type definition
+  append(...args: any[]): void;
+  /** @deprecated Method unavailable on `ReadonlyHeaders`. Read more: https://nextjs.org/docs/app/api-reference/functions/headers */
+  // biome-ignore lint/suspicious/noExplicitAny: Matching Next.js ReadonlyHeaders type definition
+  set(...args: any[]): void;
+  /** @deprecated Method unavailable on `ReadonlyHeaders`. Read more: https://nextjs.org/docs/app/api-reference/functions/headers */
+  // biome-ignore lint/suspicious/noExplicitAny: Matching Next.js ReadonlyHeaders type definition
+  delete(...args: any[]): void;
+};
+
 export interface DeepcrawlConfig {
   apiKey: string;
   baseUrl?: string;
   timeout?: number;
-  headers?: StandardHeaders;
+  headers?: StandardHeaders | ReadonlyHeaders; // Now accepts Next.js ReadonlyHeaders directly
   fetch?: typeof fetch; // Allow custom fetch implementation
   fetchOptions?: RequestInit;
 }

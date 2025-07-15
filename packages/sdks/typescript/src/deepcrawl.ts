@@ -25,6 +25,37 @@ import {
 
 interface DeepCrawlClientContext extends ClientRetryPluginContext {}
 
+/**
+ * Extract auth headers from Next.js headers or standard headers object
+ */
+function extractAuthHeaders(
+  headers: DeepcrawlConfig['headers'],
+): Record<string, string | string[] | undefined> {
+  if (!headers) return {};
+
+  // Check if this is a Next.js headers object (has .get method)
+  const isNextJSHeaders = 'get' in headers && typeof headers.get === 'function';
+
+  if (isNextJSHeaders) {
+    // Extract only auth-related headers from Next.js headers for security
+    const authHeaders: Record<string, string> = {};
+    const authHeaderNames = ['cookie', 'authorization'];
+    const nextHeaders = headers as { get(name: string): string | null };
+
+    for (const headerName of authHeaderNames) {
+      const value = nextHeaders.get(headerName);
+      if (value) {
+        authHeaders[headerName] = value;
+      }
+    }
+
+    return authHeaders;
+  }
+
+  // Standard headers object - return as-is (user responsibility)
+  return headers as Record<string, string | string[] | undefined>;
+}
+
 export class DeepcrawlApp {
   public client: ContractRouterClient<typeof contract, DeepCrawlClientContext>;
   private config: DeepcrawlConfig;
@@ -51,12 +82,16 @@ export class DeepcrawlApp {
       url: () => {
         return `${this.config.baseUrl}/rpc`;
       },
-      headers: () => ({
-        Authorization: `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json',
-        ...this.config.headers,
-        'User-Agent': `${packageJSON.name}@${packageJSON.version}`,
-      }),
+      headers: () => {
+        const extractedHeaders = extractAuthHeaders(this.config.headers);
+
+        return {
+          Authorization: `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+          'User-Agent': `${packageJSON.name}@${packageJSON.version}`,
+          ...extractedHeaders,
+        };
+      },
       fetch: (request, init) =>
         fetchImpl(request, {
           ...init,

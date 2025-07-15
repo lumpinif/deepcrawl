@@ -197,17 +197,20 @@ This SDK works in:
 
 ### Next.js Server Actions Example
 
-The SDK works perfectly in Next.js server actions using the efficient RPCLink:
+The SDK works perfectly in Next.js server actions and automatically handles header forwarding for session-based authentication:
 
 ```typescript
 // app/actions/scrape.ts
 'use server'
 
 import DeepcrawlApp from '@deepcrawl-sdk/ts';
+import { headers } from 'next/headers';
 
 export async function scrapeUrl(url: string) {
   const app = new DeepcrawlApp({
-    apiKey: process.env.DEEPCRAWL_API_KEY!
+    apiKey: process.env.DEEPCRAWL_API_KEY!,
+    // Automatically extracts only auth headers (cookies, authorization) for security
+    headers: await headers(), 
   });
 
   try {
