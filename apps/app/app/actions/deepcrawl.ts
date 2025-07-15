@@ -9,6 +9,7 @@ import {
   DeepcrawlNetworkError,
   DeepcrawlReadError,
 } from '@deepcrawl-sdk/ts';
+import { headers } from 'next/headers';
 
 interface ApiCallInput {
   url: string;
@@ -23,20 +24,25 @@ interface ApiResponse {
   timestamp?: string;
 }
 
-const apiKey = '123123123';
+const apiKey =
+  process.env.DEEP_CRAWL_API_KEY ?? 'use_header_auth_instead_api_key';
 
-const dc = new DeepcrawlApp({
-  apiKey,
-  baseUrl:
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8080'
-      : 'https://api.deepcrawl.dev',
-});
+async function createDeepcrawlClient() {
+  return new DeepcrawlApp({
+    apiKey,
+    baseUrl:
+      process.env.NODE_ENV === 'development'
+        ? 'http://localhost:8080'
+        : 'https://api.deepcrawl.dev',
+    headers: await headers(), // SDK automatically extracts only auth headers
+  });
+}
 
 export async function getMarkdownAction({
   url,
 }: ApiCallInput): Promise<ApiResponse> {
   try {
+    const dc = await createDeepcrawlClient();
     const data = await dc.getMarkdown(url);
 
     return {
@@ -92,6 +98,7 @@ export async function readUrlAction({
   url,
 }: ApiCallInput): Promise<ApiResponse> {
   try {
+    const dc = await createDeepcrawlClient();
     const data: ReadPOSTOutput = await dc.readUrl(url);
 
     return {
@@ -147,6 +154,7 @@ export async function extractLinksAction({
   url,
 }: ApiCallInput): Promise<ApiResponse> {
   try {
+    const dc = await createDeepcrawlClient();
     const data: LinksPOSTOutput = await dc.extractLinks(url);
 
     return {
