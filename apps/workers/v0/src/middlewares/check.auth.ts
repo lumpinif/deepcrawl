@@ -5,13 +5,9 @@ import { getAuthClient } from './auth.client';
 
 export const checkAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
-    const headers = c.req.raw.headers;
-    // Create a new Headers object to avoid modification issues
-    const requestHeaders = new Headers(headers);
-
     const serviceFetcher = c.var.serviceFetcher;
 
-    // Custom Service Bindings Fetch
+    // Custom Service Bindings Fetch for Better Auth client
     const customFetcher = async (
       input: RequestInfo | URL,
       init?: RequestInit,
@@ -31,7 +27,7 @@ export const checkAuthMiddleware = createMiddleware<AppBindings>(
     };
 
     try {
-      // 1. Try Better Auth client with SBF first
+      // 1. Try Better Auth client with service bindings first
       const authClient = getAuthClient(c, {
         fetchOptions: {
           customFetchImpl: customFetcher,
@@ -53,13 +49,13 @@ export const checkAuthMiddleware = createMiddleware<AppBindings>(
         return next();
       }
 
-      // 2. Fallback to Service Bindings Fetch
-      const request = new Request(
-        `${c.env.BETTER_AUTH_URL}/api/auth/get-session`,
-        {
-          headers: requestHeaders,
-        },
-      );
+      // 2. Fallback to direct service binding call if Better Auth client fails
+      const authUrl = `${c.env.BETTER_AUTH_URL}/api/auth/get-session`;
+      const headers = new Headers(c.req.raw.headers);
+
+      const request = new Request(authUrl, {
+        headers: headers,
+      });
 
       let response = await serviceFetcher(request);
 
@@ -67,26 +63,51 @@ export const checkAuthMiddleware = createMiddleware<AppBindings>(
         console.log('🚀 ~ SERVICE BINDINGS RPC FETCHER:', response.statusText);
       }
 
-      // fallback to fetch if SBF fails
+      let usingDirectFetch = false;
+
+      // 3. Final fallback to direct fetch if service binding fails
       if (!response.ok) {
+        if (c.env.WORKER_NODE_ENV === 'development') {
+          console.log(
+            `⚠️ [checkAuth] Service binding failed, trying direct fetch...`,
+          );
+        }
         response = await fetch(request);
+        usingDirectFetch = true;
       }
 
-      const session: Session = await response.json();
+      // Parse response - gracefully handle any parsing errors
+      try {
+        const responseText = await response.text();
+        const session: Session = JSON.parse(responseText);
 
-      if (!session || !session.session) {
+        if (session?.session) {
+          c.set('user', session.user);
+          c.set('session', session.session);
+        } else {
+          c.set('user', null);
+          c.set('session', null);
+        }
+      } catch (parseError) {
+        // Don't throw - just log and set null values
+        if (c.env.WORKER_NODE_ENV === 'development') {
+          console.error(
+            `❌ [checkAuth] JSON parse failed (${usingDirectFetch ? 'direct fetch' : 'service binding'}):`,
+            parseError,
+          );
+        }
         c.set('user', null);
         c.set('session', null);
-        // Continue to next middleware/handler
-        return next();
       }
 
-      // Set both the user and session objects from the session response
-      c.set('user', session.user);
-      c.set('session', session.session);
-
-      await next();
+      return next();
     } catch (error) {
+      // Never throw - always continue gracefully
+      if (c.env.WORKER_NODE_ENV === 'development') {
+        console.error(`❌ [checkAuth] Authentication error:`, error);
+      }
+      c.set('user', null);
+      c.set('session', null);
       return next();
     }
   },
