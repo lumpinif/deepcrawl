@@ -1,8 +1,12 @@
+interface StandardHeaders {
+  [key: string]: string | string[] | undefined;
+}
+
 export interface DeepcrawlConfig {
   apiKey: string;
   baseUrl?: string;
   timeout?: number;
-  headers?: Record<string, string>;
+  headers?: StandardHeaders;
   fetch?: typeof fetch; // Allow custom fetch implementation
   fetchOptions?: RequestInit;
 }
