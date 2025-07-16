@@ -34,13 +34,27 @@
     "ip": "localhost",
     "port": 8787
   },
+  "kv_namespaces": [
+    {
+      "binding": "DEEPCRAWL_AUTH_KV",
+      "id": "c561d789c7c644a3876386c942fed38e",
+      "preview_id": "7239e995aa304fcaa1532d118360f66c"
+    }
+  ],
   "env": {
     "production": {
       "vars": {
         "NEXT_PUBLIC_APP_URL": "https://app.deepcrawl.dev",
         "AUTH_WORKER_NODE_ENV": "production",
         "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
-      }
+      },
+      "kv_namespaces": [
+        {
+          "binding": "DEEPCRAWL_AUTH_KV",
+          "id": "c561d789c7c644a3876386c942fed38e",
+          "preview_id": "7239e995aa304fcaa1532d118360f66c"
+        }
+      ]
     }
   }
   /**
