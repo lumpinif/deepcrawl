@@ -1,7 +1,7 @@
 import AppNavTabs from '@/components/app-nav-tabs';
+import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
-import type { NavigationMode } from '@/components/providers';
 import { auth } from '@deepcrawl/auth/lib/auth';
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import { SidebarInset } from '@deepcrawl/ui/components/ui/sidebar';

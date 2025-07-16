@@ -1,3 +1,4 @@
+import type { NavigationMode } from '@/components/providers';
 import type { Session } from '@deepcrawl/auth/types';
 import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
@@ -6,7 +7,6 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import Link from 'next/link';
 import { LayoutToggle } from '../layout-toggle';
 import { UserDropdown } from '../user/user-dropdown';
-import type { NavigationMode } from '@/components/providers';
 
 export async function SiteHeader({
   user,
