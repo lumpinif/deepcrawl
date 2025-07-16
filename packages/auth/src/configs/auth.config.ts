@@ -128,6 +128,7 @@ export const DEVELOPMENT_ORIGINS = [
 
 export const MAX_SESSIONS = 2;
 
+// BUG: OAUTH PROXY CURRENTLY DOES NOT WORK IN LOCALHOST WITH AUTH WORKER
 const USE_OAUTH_PROXY = true;
 
 const getBaseURL = (envUrl: string | undefined): string => {
@@ -377,11 +378,12 @@ export function createAuthConfig(env: Env) {
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
-        redirectURI: USE_OAUTH_PROXY
-          ? useAuthWorker
-            ? `${PROD_AUTH_WORKER_URL}/api/auth/callback/google`
-            : `${PROD_APP_URL}/api/auth/callback/google`
-          : undefined,
+        // GOOGLE AUTH SUPPORTS MORE THAN ONE REDIRECT URI, SO WE DON'T NEED TO USE THE PROXY
+        // redirectURI: USE_OAUTH_PROXY
+        //   ? useAuthWorker
+        //     ? `${PROD_AUTH_WORKER_URL}/api/auth/callback/google`
+        //     : `${PROD_APP_URL}/api/auth/callback/google`
+        //   : undefined,
       },
     },
     account: {
@@ -403,7 +405,7 @@ export function createAuthConfig(env: Env) {
         domain: isDevelopment ? 'localhost' : '.deepcrawl.dev',
       },
       defaultCookieAttributes: {
-        partitioned: true, // New browser standards will mandate this for foreign cookies
+        partitioned: isDevelopment ? undefined : true, // New browser standards will mandate this for foreign cookies
       },
     },
     rateLimit: {
