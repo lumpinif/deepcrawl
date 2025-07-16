@@ -403,7 +403,6 @@ export function createAuthConfig(env: Env) {
         domain: isDevelopment ? 'localhost' : '.deepcrawl.dev',
       },
       defaultCookieAttributes: {
-        secure: !isDevelopment, // HTTP for localhost dev, HTTPS for production
         partitioned: true, // New browser standards will mandate this for foreign cookies
       },
     },
