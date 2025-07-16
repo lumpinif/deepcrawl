@@ -1,27 +1,24 @@
-import type { NavigationMode } from '@/lib/types';
 import type { Session } from '@deepcrawl/auth/types';
 import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { SidebarTrigger } from '@deepcrawl/ui/components/ui/sidebar';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { LayoutToggle } from '../layout-toggle';
 import { UserDropdown } from '../user/user-dropdown';
+import type { NavigationMode } from '@/components/providers';
 
 export async function SiteHeader({
   user,
   deviceSessions,
   className,
+  navigationMode,
 }: {
   user: Session['user'];
   deviceSessions: Session[];
   className?: string;
+  navigationMode: NavigationMode;
 }) {
-  const cookieStore = await cookies();
-  const navigationMode =
-    (cookieStore.get('navigation:mode')?.value as NavigationMode) || 'sidebar';
-
   return (
     <header
       className={cn(

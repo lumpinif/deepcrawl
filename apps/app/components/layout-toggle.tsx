@@ -1,6 +1,6 @@
 'use client';
 
-import type { NavigationMode } from '@/lib/types';
+import type { NavigationMode } from '@/components/providers';
 import { LayoutPanelLeftIcon } from '@deepcrawl/ui/components/icons/layout-panel-left';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {

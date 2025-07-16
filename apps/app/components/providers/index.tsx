@@ -7,6 +7,8 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { QueryProviders } from './query.provider';
 
+export type NavigationMode = 'sidebar' | 'header';
+
 export async function Providers({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
   const sidebarState = cookieStore.get('sidebar:state')?.value;

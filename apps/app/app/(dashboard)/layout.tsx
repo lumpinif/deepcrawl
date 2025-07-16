@@ -1,7 +1,7 @@
 import AppNavTabs from '@/components/app-nav-tabs';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
-import type { NavigationMode } from '@/lib/types';
+import type { NavigationMode } from '@/components/providers';
 import { auth } from '@deepcrawl/auth/lib/auth';
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import { SidebarInset } from '@deepcrawl/ui/components/ui/sidebar';
@@ -18,6 +18,7 @@ export default async function DashboardLayout({
   // Create a new Headers object from Next.js headers to avoid modification issues
   const requestHeaders = new Headers(await headers());
 
+  // TODO: CONSIDER MIGRATING TO REACT QUERY ADVANCED SSR PATTERN
   // Get session first to check authentication
   const [currentSession, listDeviceSessions] = await Promise.all([
     auth.api.getSession({
@@ -62,7 +63,11 @@ export default async function DashboardLayout({
       <>
         <AppSidebar />
         <SidebarInset className={defaultInsetClassname}>
-          <SiteHeader user={session.user} deviceSessions={deviceSessions} />
+          <SiteHeader
+            user={session.user}
+            deviceSessions={deviceSessions}
+            navigationMode={navigationMode}
+          />
           <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
             <div
               className={cn(
@@ -85,6 +90,7 @@ export default async function DashboardLayout({
         className="h-16"
         user={session.user}
         deviceSessions={deviceSessions}
+        navigationMode={navigationMode}
       />
       <AppNavTabs />
       <main className={cn(mainContentContainerClassName, '2xl:px-[8rem]')}>
