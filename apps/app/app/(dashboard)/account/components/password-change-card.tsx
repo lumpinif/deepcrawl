@@ -1,7 +1,12 @@
 'use client';
 
 import { SpinnerButton } from '@/components/spinner-button';
-import { useAuthSession, useChangePassword } from '@/hooks/auth.hooks';
+import {
+  useAuthSession,
+  useChangePassword,
+  useHasPassword,
+  useSetPassword,
+} from '@/hooks/auth.hooks';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -18,12 +23,20 @@ import { useState } from 'react';
 
 export function PasswordChangeCard() {
   const { data: session, isLoading } = useAuthSession();
-  const { mutate: changePassword, isPending } = useChangePassword(() => {
-    setIsChangingPassword(false);
-  });
+  const hasPassword = useHasPassword();
+  const { mutate: changePassword, isPending: isChangingPending } =
+    useChangePassword(() => {
+      setIsChangingPassword(false);
+    });
+  const { mutate: setPassword, isPending: isSettingPending } = useSetPassword(
+    () => {
+      setIsSettingPassword(false);
+    },
+  );
   const user = session?.user;
 
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isSettingPassword, setIsSettingPassword] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -33,6 +46,8 @@ export function PasswordChangeCard() {
     new: '',
     confirm: '',
   });
+
+  const isPending = isChangingPending || isSettingPending;
 
   if (isLoading) {
     return (
@@ -77,6 +92,8 @@ export function PasswordChangeCard() {
   const passwordsMatch = passwords.new === passwords.confirm;
   const isFormValid =
     passwords.current && passwords.new && passwords.confirm && passwordsMatch;
+  const isSetPasswordFormValid =
+    passwords.new && passwords.confirm && passwordsMatch;
 
   const handlePasswordChange = async () => {
     if (passwords.new !== passwords.confirm) {
@@ -93,12 +110,24 @@ export function PasswordChangeCard() {
     setPasswords({ current: '', new: '', confirm: '' });
   };
 
+  const handleSetPassword = async () => {
+    if (passwords.new !== passwords.confirm) {
+      return;
+    }
+
+    setPassword(passwords.new);
+
+    // Reset form after submission
+    setPasswords({ current: '', new: '', confirm: '' });
+  };
+
   const handleCancel = () => {
     setPasswords({ current: '', new: '', confirm: '' });
     setShowCurrentPassword(false);
     setShowNewPassword(false);
     setShowConfirmPassword(false);
     setIsChangingPassword(false);
+    setIsSettingPassword(false);
   };
 
   return (
@@ -117,7 +146,7 @@ export function PasswordChangeCard() {
         <div
           className={cn(
             'flex items-center justify-between rounded-lg p-3 max-sm:flex-col max-sm:gap-y-2',
-            isChangingPassword && 'max-sm:hidden',
+            (isChangingPassword || isSettingPassword) && 'max-sm:hidden',
           )}
         >
           <div className="flex items-center gap-3 max-sm:hidden">
@@ -125,22 +154,32 @@ export function PasswordChangeCard() {
               <div className="font-medium text-sm">
                 {isChangingPassword
                   ? 'Changing Password'
-                  : 'Password Management'}
+                  : isSettingPassword
+                    ? 'Setting Password'
+                    : 'Password Management'}
               </div>
               <div className="text-muted-foreground text-xs">
-                Update your account password
+                {hasPassword
+                  ? 'Update your account password'
+                  : 'Set a password for your account'}
               </div>
             </div>
           </div>
-          {!isChangingPassword && (
+          {!isChangingPassword && !isSettingPassword && (
             <Button
               size="sm"
               variant="outline"
               disabled={isPending}
               className="max-sm:w-full"
-              onClick={() => setIsChangingPassword(!isChangingPassword)}
+              onClick={() => {
+                if (hasPassword) {
+                  setIsChangingPassword(true);
+                } else {
+                  setIsSettingPassword(true);
+                }
+              }}
             >
-              Change Password
+              {hasPassword ? 'Change Password' : 'Set Password'}
             </Button>
           )}
         </div>
@@ -274,8 +313,110 @@ export function PasswordChangeCard() {
           </div>
         )}
 
+        {/* Set Password Form */}
+        {isSettingPassword && (
+          <div className="space-y-6 rounded-lg p-3">
+            <div className="rounded-lg bg-muted/50 p-3 text-sm">
+              <p className="text-muted-foreground">
+                You signed up using a social account. Set a password to enable
+                email/password login.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="set-new-password">New Password</Label>
+              <div className="relative">
+                <Input
+                  id="set-new-password"
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={passwords.new}
+                  onChange={(e) =>
+                    setPasswords((prev) => ({ ...prev, new: e.target.value }))
+                  }
+                  placeholder="Enter your new password"
+                  disabled={isPending}
+                  className="!bg-background"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  disabled={isPending}
+                >
+                  {showNewPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="set-confirm-password">Confirm Password</Label>
+              <div className="relative">
+                <Input
+                  id="set-confirm-password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={passwords.confirm}
+                  onChange={(e) =>
+                    setPasswords((prev) => ({
+                      ...prev,
+                      confirm: e.target.value,
+                    }))
+                  }
+                  placeholder="Confirm your new password"
+                  disabled={isPending}
+                  className="!bg-background"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  disabled={isPending}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+              {passwords.confirm && !passwordsMatch && (
+                <div className="text-destructive text-sm">
+                  Passwords do not match
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 max-sm:w-full">
+              <SpinnerButton
+                size="sm"
+                className="min-w-32 max-sm:flex-1"
+                isLoading={isPending}
+                onClick={handleSetPassword}
+                disabled={!isSetPasswordFormValid || isPending}
+              >
+                Set Password
+              </SpinnerButton>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isPending}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Password Requirements */}
-        {isChangingPassword && (
+        {(isChangingPassword || isSettingPassword) && (
           <div className="flex justify-end space-y-1 text-muted-foreground text-xs max-sm:justify-center">
             <div className="font-medium">Password Requirements:</div>
             <ul className="ml-2 list-inside list-disc space-y-1">

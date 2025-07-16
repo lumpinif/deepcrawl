@@ -568,3 +568,36 @@ export async function deleteApiKey(keyId: string) {
 //     );
 //   }
 // }
+
+/**
+ * Set a password for users who don't have one (e.g., OAuth users)
+ * This is a server-only operation for security
+ */
+export async function setPassword(newPassword: string) {
+  const requestHeaders = await headers();
+
+  try {
+    const result = await auth.api.setPassword({
+      body: {
+        newPassword,
+      },
+      headers: requestHeaders,
+    });
+
+    return result;
+  } catch (error) {
+    // Check if user already has a password
+    if (
+      error instanceof Error &&
+      error.message.includes('already has a password')
+    ) {
+      throw new Error(
+        'User already has a password. Please use change password instead.',
+      );
+    }
+    console.error('Failed to set password:', error);
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to set password',
+    );
+  }
+}

@@ -4,6 +4,7 @@ import {
   createApiKey,
   deleteApiKey,
   removeUserPasskey,
+  setPassword,
   updateApiKey,
   updateMostRecentPasskeyName,
 } from '@/app/actions/auth';
@@ -97,6 +98,21 @@ export const useUserPasskeys = () => {
  */
 export const useLinkedAccounts = () => {
   return useQuery(linkedAccountsQueryOptions());
+};
+
+/**
+ * Hook to check if the current user has a password set
+ * Returns true if user has a credential account (email/password)
+ */
+export const useHasPassword = () => {
+  const { data: linkedAccounts = [] } = useLinkedAccounts();
+
+  // Check if user has credential provider (email/password) account
+  const hasCredentialAccount = linkedAccounts.some(
+    (account) => account.providerId === 'credential',
+  );
+
+  return hasCredentialAccount;
 };
 
 /**
@@ -211,7 +227,11 @@ export const useCanUnlinkProvider = (providerId: string) => {
   const { data: passkeys = [] } = useUserPasskeys();
 
   // Check available authentication methods
-  const hasPassword = !!session?.user?.emailVerified; // Users with verified email can use email auth
+  // Check if user has credential provider (email/password) account
+  const hasCredentialAccount = linkedAccounts.some(
+    (account) => account.providerId === 'credential',
+  );
+  const hasPassword = hasCredentialAccount;
   const hasPasskeys = passkeys.length > 0;
   const otherOAuthAccounts = linkedAccounts.filter(
     (account) => account.providerId !== providerId,
@@ -356,6 +376,40 @@ export const useChangePassword = (onSuccessCallback?: () => void) => {
     onError: (error) => {
       console.error('Password change failed:', error);
       toast.error('Failed to update password. Please try again.');
+    },
+  });
+};
+
+/**
+ * Hook for setting a new password for OAuth users who don't have one
+ */
+export const useSetPassword = (onSuccessCallback?: () => void) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (newPassword: string) => {
+      return setPassword(newPassword);
+    },
+    onSuccess: () => {
+      toast.success('Password set successfully!');
+
+      // Invalidate linked accounts to update hasPassword state
+      queryClient.invalidateQueries({
+        queryKey: userQueryKeys.linkedAccounts,
+      });
+
+      // Call the custom callback if provided
+      onSuccessCallback?.();
+    },
+    onError: (error: Error) => {
+      console.error('Set password failed:', error);
+      if (error.message.includes('already has a password')) {
+        toast.error(
+          'You already have a password. Please use change password instead.',
+        );
+      } else {
+        toast.error('Failed to set password. Please try again.');
+      }
     },
   });
 };
