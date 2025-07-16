@@ -395,7 +395,6 @@ export function createAuthConfig(env: Env) {
       // IP address tracking for rate limiting and session security
       ipAddress: {
         ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for', 'x-real-ip'],
-        disableIpTracking: false,
       },
       // Unified cross-domain cookie configuration
       // Works for both auth worker and integrated auth, all environments
@@ -413,25 +412,54 @@ export function createAuthConfig(env: Env) {
         domain: isDevelopment ? undefined : '.deepcrawl.dev',
       },
     },
-    // rateLimit: {
-    // window: 60, // time window in seconds
-    // max: 100, // max requests in the window
-    // customRules: {
-    //     "/sign-in/email": {
-    //         window: 10,
-    //         max: 3,
-    //     },
-    //     "/two-factor/*": async (request)=> {
-    //         // custom function to return rate limit window and max
-    //         return {
-    //             window: 10,
-    //             max: 3,
-    //         }
-    //     }
-    // },
-    //   storage: 'secondary-storage',
-    //   modelName: 'rateLimit', //optional by default "rateLimit" is used
-    // },
+    rateLimit: {
+      customRules: {
+        '/sign-in/email': {
+          window: 10,
+          max: 3,
+        },
+        '/sign-up/email': {
+          window: 10,
+          max: 3,
+        },
+        '/forgot-password': {
+          window: 10,
+          max: 3,
+        },
+        '/reset-password': {
+          window: 10,
+          max: 3,
+        },
+        '/verify-email': {
+          window: 10,
+          max: 3,
+        },
+        '/two-factor/*': {
+          window: 10,
+          max: 3,
+        },
+        '/magic-link/*': {
+          window: 10,
+          max: 3,
+        },
+        '/organization/accept-invitation': {
+          window: 10,
+          max: 3,
+        },
+        '/change-password': {
+          window: 10,
+          max: 3,
+        },
+        '/change-email': {
+          window: 10,
+          max: 3,
+        },
+        '/passkey/*': {
+          window: 10,
+          max: 3,
+        },
+      },
+    },
   } satisfies BetterAuthOptions;
 
   return config;
