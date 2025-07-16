@@ -399,17 +399,12 @@ export function createAuthConfig(env: Env) {
       // Unified cross-domain cookie configuration
       // Works for both auth worker and integrated auth, all environments
       crossSubDomainCookies: {
-        enabled: !isDevelopment, // Only enable in production for .deepcrawl.dev
-        domain: isDevelopment ? undefined : '.deepcrawl.dev',
+        enabled: true,
+        domain: isDevelopment ? 'localhost' : '.deepcrawl.dev',
       },
       defaultCookieAttributes: {
-        // For localhost development: use 'none' + secure: false (works in some browsers)
-        // For production: use 'none' + secure: true for cross-domain
         secure: !isDevelopment, // HTTP for localhost dev, HTTPS for production
-        sameSite: 'none', // 'none' for cross-origin in both dev and prod
-        partitioned: !isDevelopment, // Enable partitioned cookies in production
-        // Let browser handle domain properly in development
-        domain: isDevelopment ? undefined : '.deepcrawl.dev',
+        partitioned: true, // New browser standards will mandate this for foreign cookies
       },
     },
     rateLimit: {
