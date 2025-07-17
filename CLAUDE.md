@@ -109,9 +109,6 @@ cd packages/auth
 # Generate auth schema for development
 pnpm auth:generate
 
-# Generate auth schema for production
-pnpm auth:generate:prod
-
 # Email template development
 pnpm email:dev
 pnpm email:export
