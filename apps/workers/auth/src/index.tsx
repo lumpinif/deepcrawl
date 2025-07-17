@@ -14,8 +14,4 @@ export default class AuthWorker extends WorkerEntrypoint<
   async fetch(request: Request) {
     return app.fetch(request, this.env, this.ctx);
   }
-
-  async add(a: number, b: number) {
-    return a + b;
-  }
 }
