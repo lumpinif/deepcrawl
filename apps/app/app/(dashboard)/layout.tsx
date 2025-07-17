@@ -1,7 +1,3 @@
-import AppNavTabs from '@/components/app-nav-tabs';
-import type { NavigationMode } from '@/components/providers';
-import { AppSidebar } from '@/components/sidebar/app-sidebar';
-import { SiteHeader } from '@/components/site-header';
 import { auth } from '@deepcrawl/auth/lib/auth';
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import { SidebarInset } from '@deepcrawl/ui/components/ui/sidebar';
@@ -9,6 +5,10 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
+import AppNavTabs from '@/components/app-nav-tabs';
+import type { NavigationMode } from '@/components/providers';
+import { AppSidebar } from '@/components/sidebar/app-sidebar';
+import { SiteHeader } from '@/components/site-header';
 
 export default async function DashboardLayout({
   children,

@@ -1,8 +1,7 @@
-import type { getAuthClient } from '@/middlewares/auth.client';
 import type { Session } from '@deepcrawl/auth/types';
 import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
-
 import type { Context as HonoContext } from 'hono';
+import type { getAuthClient } from '@/middlewares/auth.client';
 
 export interface AppVariables {
   /** Better Auth Client */

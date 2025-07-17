@@ -1,12 +1,5 @@
 'use client';
 
-import { SpinnerButton } from '@/components/spinner-button';
-import {
-  useAuthSession,
-  useDeviceSessions,
-  useRevokeDeviceSession,
-  useSetActiveSession,
-} from '@/hooks/auth.hooks';
 import { MAX_SESSIONS } from '@deepcrawl/auth/configs/auth.config';
 import type { Session } from '@deepcrawl/auth/types';
 import {
@@ -41,6 +34,13 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
+import { SpinnerButton } from '@/components/spinner-button';
+import {
+  useAuthSession,
+  useDeviceSessions,
+  useRevokeDeviceSession,
+  useSetActiveSession,
+} from '@/hooks/auth.hooks';
 
 function UserAvatar({ user }: { user: Session['user'] }) {
   return (

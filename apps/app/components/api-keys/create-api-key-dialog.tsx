@@ -1,8 +1,5 @@
 'use client';
 
-import CopyButton from '@/components/copy-button';
-import { SpinnerButton } from '@/components/spinner-button';
-import { useCreateApiKey } from '@/hooks/auth.hooks';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Dialog,
@@ -24,6 +21,9 @@ import {
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { CheckCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import CopyButton from '@/components/copy-button';
+import { SpinnerButton } from '@/components/spinner-button';
+import { useCreateApiKey } from '@/hooks/auth.hooks';
 
 interface CreateApiKeyDialogProps {
   open: boolean;

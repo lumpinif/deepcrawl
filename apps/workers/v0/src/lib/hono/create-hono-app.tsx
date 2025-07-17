@@ -1,16 +1,15 @@
 import { Hono } from 'hono';
-
-import type { AppBindings } from '@/lib/context';
-import { checkAuthMiddleware } from '@/middlewares/check.auth';
-import deepCrawlCors from '@/middlewares/cors';
-import { requireAuthMiddleware } from '@/middlewares/require.auth';
-import { serviceFetcherMiddleware } from '@/middlewares/service.fetcher';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
+import type { AppBindings } from '@/lib/context';
+import { checkAuthMiddleware } from '@/middlewares/check.auth';
+import deepCrawlCors from '@/middlewares/cors';
+import { requireAuthMiddleware } from '@/middlewares/require.auth';
+import { serviceFetcherMiddleware } from '@/middlewares/service.fetcher';
 
 export default function createHonoApp() {
   const app = new Hono<AppBindings>();

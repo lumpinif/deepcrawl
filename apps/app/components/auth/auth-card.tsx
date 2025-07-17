@@ -1,12 +1,5 @@
 'use client';
 
-import { useIsHydrated } from '@/hooks/use-hydrated';
-import { type AuthView, authViewRoutes } from '@/routes/auth';
-import {
-  getAuthViewByPath,
-  getAuthViewDetailedDescription,
-  getAuthViewTitle,
-} from '@/utils';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -23,6 +16,13 @@ import {
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useIsHydrated } from '@/hooks/use-hydrated';
+import { type AuthView, authViewRoutes } from '@/routes/auth';
+import {
+  getAuthViewByPath,
+  getAuthViewDetailedDescription,
+  getAuthViewTitle,
+} from '@/utils';
 import { AuthCallback } from './auth-callback';
 import { AuthForm } from './auth-form';
 import { Logout } from './logout';
@@ -185,21 +185,19 @@ export function AuthCard({
                   return null;
                 }
                 return (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <Separator className="!w-auto grow" />
-                      <span className="flex-shrink-0 text-muted-foreground text-sm">
-                        {view === 'login'
-                          ? 'Or continue with'
-                          : view === 'signUp'
-                            ? 'Sign up below'
-                            : view === 'magicLink'
-                              ? 'Or continue with magic link'
-                              : null}
-                      </span>
-                      <Separator className="!w-auto grow" />
-                    </div>
-                  </>
+                  <div className="flex items-center gap-2">
+                    <Separator className="!w-auto grow" />
+                    <span className="flex-shrink-0 text-muted-foreground text-sm">
+                      {view === 'login'
+                        ? 'Or continue with'
+                        : view === 'signUp'
+                          ? 'Sign up below'
+                          : view === 'magicLink'
+                            ? 'Or continue with magic link'
+                            : null}
+                    </span>
+                    <Separator className="!w-auto grow" />
+                  </div>
                 );
               default:
                 return null;

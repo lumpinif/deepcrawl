@@ -23,15 +23,14 @@ export type { LinksTree as Tree };
 
 // Type-only exports for better IDE support
 export * from './common/response-schemas';
-export * from './services/scrape/types';
-export * from './services/html-cleaning/types';
-export * from './services/link/types';
-export * from './services/metadata/types';
-export * from './routers/links/types';
-
 export * from './routers/links';
+export * from './routers/links/types';
 export * from './routers/read';
-export * from './services/scrape';
 export * from './services/html-cleaning';
+export * from './services/html-cleaning/types';
 export * from './services/link';
+export * from './services/link/types';
 export * from './services/metadata';
+export * from './services/metadata/types';
+export * from './services/scrape';
+export * from './services/scrape/types';

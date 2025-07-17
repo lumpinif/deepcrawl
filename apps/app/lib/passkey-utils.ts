@@ -45,22 +45,24 @@ export function generatePasskeyName(
     // Platform authenticators (biometrics, device PIN)
     if (os === 'Windows') {
       return `${browser} on Windows Hello`;
-    } else if (os === 'macOS') {
-      return `${browser} on Touch ID`;
-    } else if (os === 'iOS') {
-      return `${browser} on Face ID`;
-    } else if (os === 'Android') {
-      return `${browser} on Android Biometrics`;
-    } else {
-      return `${browser} on ${os}`;
     }
-  } else if (deviceType === 'cross-platform') {
-    // Cross-platform authenticators (security keys, phone)
-    return `Security Key via ${browser}`;
-  } else {
-    // Default/auto-detected
+    if (os === 'macOS') {
+      return `${browser} on Touch ID`;
+    }
+    if (os === 'iOS') {
+      return `${browser} on Face ID`;
+    }
+    if (os === 'Android') {
+      return `${browser} on Android Biometrics`;
+    }
     return `${browser} on ${os}`;
   }
+  if (deviceType === 'cross-platform') {
+    // Cross-platform authenticators (security keys, phone)
+    return `Security Key via ${browser}`;
+  }
+  // Default/auto-detected
+  return `${browser} on ${os}`;
 }
 
 /**

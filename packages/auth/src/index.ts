@@ -1,31 +1,27 @@
 export * from './configs';
-export * from './lib';
-
 // Auth configuration
 export { createAuthConfig } from './configs/auth.config';
-
-// Configuration validation utilities
-export {
-  validateAuthConfiguration,
-  assertValidAuthConfiguration,
-} from './utils/config-validator';
-
-// Email utilities
-export {
-  createResendClient,
-  sendEmail,
-  validateEmailConfig,
-  type SendEmailOptions,
-} from './utils/email';
-
+export * from './lib';
 // Email templates
 export {
   EmailVerification,
-  MagicLink,
-  PasswordReset,
-  OrganizationInvitation,
   type EmailVerificationProps,
+  MagicLink,
   type MagicLinkProps,
-  type PasswordResetProps,
+  OrganizationInvitation,
   type OrganizationInvitationProps,
+  PasswordReset,
+  type PasswordResetProps,
 } from './templates';
+// Configuration validation utilities
+export {
+  assertValidAuthConfiguration,
+  validateAuthConfiguration,
+} from './utils/config-validator';
+// Email utilities
+export {
+  createResendClient,
+  type SendEmailOptions,
+  sendEmail,
+  validateEmailConfig,
+} from './utils/email';

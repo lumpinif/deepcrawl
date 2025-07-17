@@ -1,10 +1,5 @@
 'use client';
 
-import { SpinnerButton } from '@/components/spinner-button';
-import { useAuthRedirect } from '@/hooks/auth.hooks';
-import { getAuthErrorMessage } from '@/lib/auth-errors';
-import { authClient } from '@/lib/auth.client';
-import { authViewRoutes } from '@/routes/auth';
 import {
   Form,
   FormControl,
@@ -21,6 +16,11 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import { SpinnerButton } from '@/components/spinner-button';
+import { useAuthRedirect } from '@/hooks/auth.hooks';
+import { authClient } from '@/lib/auth.client';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
+import { authViewRoutes } from '@/routes/auth';
 import { useIsHydrated } from '../../../hooks/use-hydrated';
 
 export interface ForgotPasswordFormProps {
@@ -42,10 +42,10 @@ export function ForgotPasswordForm({
     email: z
       .string()
       .min(1, {
-        message: `Email is required`,
+        message: 'Email is required',
       })
       .email({
-        message: `Email is invalid`,
+        message: 'Email is invalid',
       }),
   });
 

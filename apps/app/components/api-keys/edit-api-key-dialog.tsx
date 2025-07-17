@@ -1,7 +1,5 @@
 'use client';
 
-import { SpinnerButton } from '@/components/spinner-button';
-import { useUpdateApiKey } from '@/hooks/auth.hooks';
 import type { ApiKeyResponse } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
@@ -16,6 +14,8 @@ import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { Switch } from '@deepcrawl/ui/components/ui/switch';
 import { useEffect, useState } from 'react';
+import { SpinnerButton } from '@/components/spinner-button';
+import { useUpdateApiKey } from '@/hooks/auth.hooks';
 
 interface EditApiKeyDialogProps {
   open: boolean;

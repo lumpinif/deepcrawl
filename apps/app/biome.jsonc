@@ -1,7 +1,13 @@
 {
-  "extends": ["../../biome.jsonc"],
+  "root": false,
+  "extends": "//",
   "files": {
-    "ignore": ["node_modules", ".next", "./src/components/ui/*"]
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/.next",
+      "!src/components/ui/**/*"
+    ]
   },
   "linter": {
     "enabled": true,
@@ -13,14 +19,23 @@
         "useValidAnchor": "off",
         "useSemanticElements": "off", // Rule is buggy, revisit later
         "noSvgWithoutTitle": "off", // We do not intend to adhere to this rule
-        // "useMediaCaption": "off", // We would need a cultural change to turn this on
         "noAutofocus": "off", // We're highly intentional about when we use autofocus
-        "noBlankTarget": "off", // Covered by Conformance
         "useFocusableInteractive": "off", // Disable focusable interactive element requirement
         "useAriaPropsForRole": "off", // Disable required ARIA attributes check
         "useKeyWithClickEvents": "off" // Disable keyboard event requirement with click events
+      },
+      "style": {
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error"
       }
-    },
-    "ignore": ["node_modules", ".next", "./src/components/ui/*"]
+    }
   }
 }

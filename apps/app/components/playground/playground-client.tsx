@@ -1,11 +1,7 @@
 'use client';
 
-import {
-  extractLinksAction,
-  getMarkdownAction,
-  readUrlAction,
-} from '@/app/actions/deepcrawl';
-import { SpinnerButton } from '@/components/spinner-button';
+import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
+import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import {
   Card,
@@ -15,9 +11,6 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
-
-import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
-import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Copy } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
@@ -25,6 +18,12 @@ import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
+import {
+  extractLinksAction,
+  getMarkdownAction,
+  readUrlAction,
+} from '@/app/actions/deepcrawl';
+import { SpinnerButton } from '@/components/spinner-button';
 import {
   ExtractLinksGridIcon,
   GetMarkdownGridIcon,
@@ -218,9 +217,8 @@ export function PlaygroundClient() {
   const formatExecutionTime = (ms: number): string => {
     if (ms < 1000) {
       return `${ms} ms`;
-    } else {
-      return `${(ms / 1000).toFixed(2)} s`;
     }
+    return `${(ms / 1000).toFixed(2)} s`;
   };
 
   const getErrorMessage = (
@@ -301,7 +299,6 @@ export function PlaygroundClient() {
       </Label>
       <div className="flex w-full items-center justify-between gap-4">
         <div className="flex-1 space-y-2">
-          {/* biome-ignore lint/nursery/noStaticElementInteractions: <explanation> */}
           <div
             className="relative"
             onMouseEnter={() => linkIconRef.current?.startAnimation()}

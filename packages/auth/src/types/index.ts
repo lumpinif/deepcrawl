@@ -91,7 +91,7 @@ export type ApiKey = {
    * Extra metadata about the apiKey
    */
 
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: false positive
   metadata: Record<string, any> | null;
   /**
    * Permissions for the API key

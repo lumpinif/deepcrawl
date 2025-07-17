@@ -1,6 +1,6 @@
+import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { retry } from '@/middlewares/os.retry';
 import { publicProcedures } from '@/orpc';
-import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { processReadRequest } from './read.processor';
 
 export const readGETHandler = publicProcedures

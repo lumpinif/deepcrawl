@@ -1,8 +1,8 @@
 import { TailwindIndicator } from '@deepcrawl/ui/components/theme/tailwind-indicator';
 import { SidebarProvider } from '@deepcrawl/ui/components/ui/sidebar';
 import { TooltipProvider } from '@deepcrawl/ui/components/ui/tooltip';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { cookies } from 'next/headers';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { QueryProviders } from './query.provider';

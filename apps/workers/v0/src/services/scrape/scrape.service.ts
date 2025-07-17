@@ -1,15 +1,13 @@
-import type { Options, ReadabilityResult } from '@paoramen/cheer-reader';
-import type { CheerioOptions } from 'cheerio';
-
-import { Readability } from '@paoramen/cheer-reader';
-import * as cheerio from 'cheerio';
-
 import type { LinksOptions, MetaFiles } from '@deepcrawl/types';
 import type {
   MetadataOptions,
   PageMetadata,
 } from '@deepcrawl/types/services/metadata';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
+import type { Options, ReadabilityResult } from '@paoramen/cheer-reader';
+import { Readability } from '@paoramen/cheer-reader';
+import type { CheerioOptions } from 'cheerio';
+import * as cheerio from 'cheerio';
 
 import { RobotsParser } from '@/utils/meta/robots-parser';
 import { SitemapParser } from '@/utils/meta/sitemap-parser';

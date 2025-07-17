@@ -1,6 +1,6 @@
+import { createMiddleware } from 'hono/factory';
 import { createAuth } from '@/lib/better-auth';
 import type { AppContext } from '@/lib/context';
-import { createMiddleware } from 'hono/factory';
 
 export const authInstanceMiddleware = createMiddleware<AppContext>(
   async (c, next) => {

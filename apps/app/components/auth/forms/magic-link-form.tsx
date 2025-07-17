@@ -1,14 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-
-import { SpinnerButton } from '@/components/spinner-button';
-import { useAuthRedirect } from '@/hooks/auth.hooks';
-import { getAuthErrorMessage } from '@/lib/auth-errors';
-import { authClient } from '@/lib/auth.client';
 import {
   Form,
   FormControl,
@@ -19,7 +10,15 @@ import {
 } from '@deepcrawl/ui/components/ui/form';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { cn } from '@deepcrawl/ui/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import * as z from 'zod';
+import { SpinnerButton } from '@/components/spinner-button';
+import { useAuthRedirect } from '@/hooks/auth.hooks';
+import { authClient } from '@/lib/auth.client';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { useIsHydrated } from '../../../hooks/use-hydrated';
 
 export interface MagicLinkFormProps {
@@ -41,8 +40,8 @@ export function MagicLinkForm({
   const formSchema = z.object({
     email: z
       .string()
-      .min(1, { message: `Email is required` })
-      .email({ message: `Email is invalid` }),
+      .min(1, { message: 'Email is required' })
+      .email({ message: 'Email is invalid' }),
   });
 
   const form = useForm({

@@ -22,7 +22,7 @@ import {
 } from '@/config/constants';
 import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
 import type { AppContext } from '@/lib/context';
-import { LinkService, type _linksSets } from '@/services/link/link.service';
+import { type _linksSets, LinkService } from '@/services/link/link.service';
 import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
 import { kvPutWithRetry } from '@/utils/kv/retry';

@@ -1,7 +1,7 @@
 'use client';
 
-import type { NavigationMode } from '@/components/providers';
 import { LayoutPanelLeftIcon } from '@deepcrawl/ui/components/icons/layout-panel-left';
+import { LayoutPanelTopIcon } from '@deepcrawl/ui/components/icons/layout-panel-top';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Tooltip,
@@ -9,8 +9,7 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
-
-import { LayoutPanelTopIcon } from '@deepcrawl/ui/components/icons/layout-panel-top';
+import type { NavigationMode } from '@/components/providers';
 
 interface LayoutToggleProps {
   currentMode: NavigationMode;

@@ -1,11 +1,11 @@
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { Suspense } from 'react';
 import {
   ApiKeysPageClient,
   ApiKeysPageSkeleton,
 } from '@/components/api-keys/api-keys-page-client';
-import { apiKeysQueryOptions } from '@/lib/query-options';
 import { getQueryClient } from '@/lib/query.client';
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { Suspense } from 'react';
+import { apiKeysQueryOptions } from '@/lib/query-options';
 
 export const dynamic = 'force-dynamic';
 

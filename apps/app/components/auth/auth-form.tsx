@@ -1,10 +1,9 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-
 import { type AuthView, authViewRoutes } from '@/routes/auth';
 import { getAuthViewByPath } from '@/utils';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthCallback } from './auth-callback';
 import { ForgotPasswordForm } from './forms/forgot-password-form';
 import { MagicLinkForm } from './forms/magic-link-form';

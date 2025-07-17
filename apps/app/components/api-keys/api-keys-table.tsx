@@ -1,20 +1,17 @@
 'use client';
 
-import { SpinnerButton } from '@/components/spinner-button';
-import { useDeleteApiKey, useUpdateApiKey } from '@/hooks/auth.hooks';
+import type { ApiKeyResponse } from '@deepcrawl/auth/types';
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogTitle,
 } from '@deepcrawl/ui/components/ui/alert-dialog';
-import { AlertDialogTitle } from '@deepcrawl/ui/components/ui/alert-dialog';
-import { AlertDialogFooter } from '@deepcrawl/ui/components/ui/alert-dialog';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
-
-import type { ApiKeyResponse } from '@deepcrawl/auth/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +30,8 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
+import { SpinnerButton } from '@/components/spinner-button';
+import { useDeleteApiKey, useUpdateApiKey } from '@/hooks/auth.hooks';
 import { EditApiKeyDialog } from './edit-api-key-dialog';
 
 interface ApiKeysTableProps {

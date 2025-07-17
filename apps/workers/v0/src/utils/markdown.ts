@@ -13,9 +13,9 @@ import type { TranslatorConfigObject } from 'node-html-markdown';
 export function removeNavigationAidLinks(markdownContent: string): string {
   // Remove markdown links
   let cleaned = markdownContent
-    .replace(/\[(Skip to Content)\]\(#[^\)]*\)/gi, '')
+    .replace(/\[(Skip to Content)\]\(#[^)]*\)/gi, '')
     .replace(
-      /\[(Return to top|Back to top|Scroll to top|Go to top|Top)\]\(#[^\)]*\)/gi,
+      /\[(Return to top|Back to top|Scroll to top|Go to top|Top)\]\(#[^)]*\)/gi,
       '',
     );
 
@@ -202,9 +202,9 @@ const preCodeTranslators: TranslatorConfigObject = {
 
           // Increase fence size if code contains fence-like sequences
           const fenceRegex = new RegExp(`^${fenceChar}{3,}`, 'gm');
-          // biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
+          // biome-ignore lint/suspicious/noImplicitAnyLet: false positive
           let match;
-          // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+          // biome-ignore lint/suspicious/noAssignInExpressions: false positive
           while ((match = fenceRegex.exec(codeText))) {
             if (match[0].length >= fenceSize) {
               fenceSize = match[0].length + 1;

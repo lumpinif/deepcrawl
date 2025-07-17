@@ -1,4 +1,3 @@
-import type { LinkService } from '@/services/link/link.service';
 import type { ExtractedLinks, LinkExtractionOptions } from '@deepcrawl/types';
 import type {
   SkippedLinks,
@@ -7,8 +6,8 @@ import type {
   VisitedUrl,
 } from '@deepcrawl/types/routers/links';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
-
 import { PLATFORM_URLS } from '@/config/constants';
+import type { LinkService } from '@/services/link/link.service';
 
 export function getTreeNameForUrl(url: string): string {
   try {
@@ -656,7 +655,7 @@ export async function mergeNewLinksIntoTree({
       segments.push(...linkUrlObj.pathname.split('/').filter(Boolean));
 
       // Traverse/Create Nodes, starting from the existing root
-      // biome-ignore lint/style/noNonNullAssertion: <explanation>
+      // biome-ignore lint/style/noNonNullAssertion: false positive
       let currentNode = urlMap.get(normalizedRootUrl)!; // Should exist
       let currentPathUrl = normalizedRootUrl; // Start building path from root
 

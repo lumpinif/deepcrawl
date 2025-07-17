@@ -1,11 +1,11 @@
 'use server';
 
-import type { ActiveOrganization } from '@/lib/auth.client-types';
 import { auth } from '@deepcrawl/auth/lib/auth';
 import type { Session } from '@deepcrawl/auth/types';
 import { getDrizzleDB, schema } from '@deepcrawl/db';
 import { desc, eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
+import type { ActiveOrganization } from '@/lib/auth.client-types';
 
 /**
  * SIMPLIFIED CACHING STRATEGY

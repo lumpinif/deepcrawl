@@ -1,11 +1,10 @@
 'use client';
 
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
-import * as React from 'react';
-
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { cn } from '@deepcrawl/ui/lib/utils';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import * as React from 'react';
 
 const PasswordInput = ({
   ref,

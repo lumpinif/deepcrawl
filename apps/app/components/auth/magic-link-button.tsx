@@ -1,8 +1,7 @@
-import { LockIcon, MailIcon } from 'lucide-react';
-
-import { type AuthView, authViewRoutes } from '@/routes/auth';
 import { Button } from '@deepcrawl/ui/components/ui/button';
+import { LockIcon, MailIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { type AuthView, authViewRoutes } from '@/routes/auth';
 
 interface MagicLinkButtonProps {
   isSubmitting?: boolean;

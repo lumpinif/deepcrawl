@@ -1,10 +1,10 @@
-import { useAuthRedirect } from '@/hooks/auth.hooks';
-import { getAuthErrorMessage } from '@/lib/auth-errors';
-import { authClient } from '@/lib/auth.client';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { SocialProvider } from 'better-auth/social-providers';
 import { toast } from 'sonner';
+import { useAuthRedirect } from '@/hooks/auth.hooks';
+import { authClient } from '@/lib/auth.client';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 import type { Provider } from './social-providers';
 
 interface ProviderButtonProps {

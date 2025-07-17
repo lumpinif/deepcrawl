@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuthSession } from '@/hooks/auth.hooks';
 import {
   Avatar,
   AvatarFallback,
@@ -22,6 +21,7 @@ import {
   IconUser,
 } from '@tabler/icons-react';
 import { CalendarDays, Loader2, Mail } from 'lucide-react';
+import { useAuthSession } from '@/hooks/auth.hooks';
 
 export function UserAvatarCard() {
   const { data: session, isLoading } = useAuthSession();

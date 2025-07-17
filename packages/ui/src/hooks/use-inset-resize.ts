@@ -198,21 +198,18 @@ export function useInsetResize({
           // For left-positioned handle (right panel)
           // Width increases as mouse moves left (negative deltaX)
           return initialWidth - deltaX;
-        } else {
-          // For right-positioned handle (left panel)
-          // Width increases as mouse moves right (positive deltaX)
-          return initialWidth + deltaX;
         }
-      } else {
-        // For standard sidebars at window edges
-        if (direction === 'left') {
-          // For left-positioned handle (right panel)
-          return window.innerWidth - e.clientX;
-        } else {
-          // For right-positioned handle (left panel)
-          return e.clientX;
-        }
+        // For right-positioned handle (left panel)
+        // Width increases as mouse moves right (positive deltaX)
+        return initialWidth + deltaX;
       }
+      // For standard sidebars at window edges
+      if (direction === 'left') {
+        // For left-positioned handle (right panel)
+        return window.innerWidth - e.clientX;
+      }
+      // For right-positioned handle (left panel)
+      return e.clientX;
     },
     [direction, isNested],
   );

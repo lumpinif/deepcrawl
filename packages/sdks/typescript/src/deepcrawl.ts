@@ -1,9 +1,9 @@
 import type {
+  contract,
   LinksGETOutput,
   LinksPOSTInput,
   LinksPOSTOutput,
   ReadPOSTOutput,
-  contract,
 } from '@deepcrawl/contracts';
 import type { LinksOptions, ReadOptions } from '@deepcrawl/types';
 import { createORPCClient, isDefinedError, safe } from '@orpc/client';

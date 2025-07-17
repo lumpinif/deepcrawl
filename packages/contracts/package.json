@@ -11,7 +11,10 @@
       "require": "./src/index.ts"
     }
   },
-  "files": ["src", "README.md"],
+  "files": [
+    "src",
+    "README.md"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "check": "biome check --write && pnpm typecheck"
@@ -25,7 +28,13 @@
     "@deepcrawl/typescript-config": "workspace:*",
     "typescript": "^5.8.3"
   },
-  "keywords": ["deepcrawl", "api", "contracts", "orpc", "openapi"],
+  "keywords": [
+    "deepcrawl",
+    "api",
+    "contracts",
+    "orpc",
+    "openapi"
+  ],
   "author": "Felix Lu(Lyu) <@felixlu1018>",
   "license": "MIT",
   "packageManager": "pnpm@10.12.1"

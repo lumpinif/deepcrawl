@@ -68,7 +68,6 @@ const LinkIcon = forwardRef<LinkIconHandle, LinkIconProps>(
       [controls, onMouseLeave],
     );
     return (
-      // biome-ignore lint/nursery/noStaticElementInteractions: <explanation>
       <div
         className={cn(className)}
         onMouseEnter={handleMouseEnter}

@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuthSession } from '@/hooks/auth.hooks';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import {
   Card,
@@ -12,6 +11,7 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { IconShieldLockFilled, IconShieldOff } from '@tabler/icons-react';
 import { Loader2, Mail } from 'lucide-react';
+import { useAuthSession } from '@/hooks/auth.hooks';
 
 export function UserEmailCard() {
   const { data: session, isLoading } = useAuthSession();

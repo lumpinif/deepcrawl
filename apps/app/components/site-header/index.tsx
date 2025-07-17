@@ -1,10 +1,10 @@
-import type { NavigationMode } from '@/components/providers';
 import type { Session } from '@deepcrawl/auth/types';
 import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { SidebarTrigger } from '@deepcrawl/ui/components/ui/sidebar';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import Link from 'next/link';
+import type { NavigationMode } from '@/components/providers';
 import { LayoutToggle } from '../layout-toggle';
 import { UserDropdown } from '../user/user-dropdown';
 

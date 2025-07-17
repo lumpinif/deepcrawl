@@ -18,7 +18,11 @@
       "default": "./src/index.ts"
     }
   },
-  "keywords": ["deepcrawl", "auth", "authentication"],
+  "keywords": [
+    "deepcrawl",
+    "auth",
+    "authentication"
+  ],
   "dependencies": {
     "@react-email/components": "^0.0.42",
     "@types/react": "^19.1.5",

@@ -1,6 +1,6 @@
-import type { AppBindings } from '@/lib/context';
 import type { Session } from '@deepcrawl/auth/types';
 import { createMiddleware } from 'hono/factory';
+import type { AppBindings } from '@/lib/context';
 import { getAuthClient } from './auth.client';
 
 export const checkAuthMiddleware = createMiddleware<AppBindings>(

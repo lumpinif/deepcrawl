@@ -1,5 +1,16 @@
 'use client';
 
+import type { ApiKey, Session } from '@deepcrawl/auth/types';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
+import { toast } from 'sonner';
+import { z } from 'zod';
 import {
   createApiKey,
   deleteApiKey,
@@ -8,11 +19,11 @@ import {
   updateApiKey,
   updateMostRecentPasskeyName,
 } from '@/app/actions/auth';
+import { authClient } from '@/lib/auth.client';
 import {
   getAuthErrorMessage,
   isWebAuthnCancellationError,
 } from '@/lib/auth-errors';
-import { authClient } from '@/lib/auth.client';
 import { generatePasskeyName } from '@/lib/passkey-utils';
 import { userQueryKeys } from '@/lib/query-keys';
 import {
@@ -26,17 +37,6 @@ import {
 } from '@/lib/query-options';
 import { getSearchParam } from '@/utils';
 import { copyToClipboard } from '@/utils/clipboard';
-import type { ApiKey, Session } from '@deepcrawl/auth/types';
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { useCallback } from 'react';
-import { toast } from 'sonner';
-import { z } from 'zod';
 
 // Type definitions for session data
 type SessionData = Session['session'];

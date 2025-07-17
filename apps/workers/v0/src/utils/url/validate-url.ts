@@ -94,7 +94,7 @@ const urlWithProtocolSchema = z
 
 function extractActualUrl(inputUrl: string): string {
   // If it's already a valid URL with protocol, return it
-  if (inputUrl.match(/^https?:\/\/[^\/]+\.[^\/]+/i)) {
+  if (inputUrl.match(/^https?:\/\/[^/]+\.[^/]+/i)) {
     return inputUrl;
   }
 
@@ -143,7 +143,7 @@ export function validateURL(url: string): ValidationResult {
     const actualUrl = extractActualUrl(url);
 
     // Early validation for obviously invalid formats
-    if (!/^https?:\/\/[^\/]+\.[^\/]+/i.test(actualUrl)) {
+    if (!/^https?:\/\/[^/]+\.[^/]+/i.test(actualUrl)) {
       return {
         isValid: false,
         error:

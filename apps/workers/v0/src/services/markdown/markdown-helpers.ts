@@ -37,5 +37,5 @@ export function processMultiLineLinks(markdownContent: string): string {
  * @returns Processed markdown content with skip links removed
  */
 export function removeSkipToContentLinks(markdownContent: string): string {
-  return markdownContent.replace(/\[Skip to Content\]\(#[^\)]*\)/gi, '');
+  return markdownContent.replace(/\[Skip to Content\]\(#[^)]*\)/gi, '');
 }

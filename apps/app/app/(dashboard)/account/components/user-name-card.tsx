@@ -1,7 +1,5 @@
 'use client';
 
-import { SpinnerButton } from '@/components/spinner-button';
-import { useAuthSession, useUpdateUserName } from '@/hooks/auth.hooks';
 import {
   Card,
   CardContent,
@@ -16,6 +14,8 @@ import { Edit3, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { SpinnerButton } from '@/components/spinner-button';
+import { useAuthSession, useUpdateUserName } from '@/hooks/auth.hooks';
 
 // Validation schema for display name
 const displayNameSchema = z

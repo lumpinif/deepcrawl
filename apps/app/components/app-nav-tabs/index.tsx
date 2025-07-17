@@ -1,9 +1,9 @@
 'use client';
 
-import { NAVGATION_ITEMS } from '@/lib/navigation-config';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { NAVGATION_ITEMS } from '@/lib/navigation-config';
 
 export default function AppNavTabs() {
   const router = useRouter();

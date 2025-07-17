@@ -1,4 +1,3 @@
-import { copyToClipboard } from '@/utils/clipboard';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Tooltip,
@@ -8,6 +7,7 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { Check, Copy } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { copyToClipboard } from '@/utils/clipboard';
 
 interface CopyButtonProps {
   textToCopy: string;

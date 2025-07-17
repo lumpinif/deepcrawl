@@ -1,17 +1,16 @@
 import { Hono } from 'hono';
-
-import type { AppContext } from '@/lib/context';
-import {
-  authContextMiddleware,
-  authInstanceMiddleware,
-} from '@/middlewares/auth';
-import { deepCrawlCors } from '@/middlewares/cors';
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, onError, serveEmojiFavicon } from 'stoker/middlewares';
+import type { AppContext } from '@/lib/context';
+import {
+  authContextMiddleware,
+  authInstanceMiddleware,
+} from '@/middlewares/auth';
+import { deepCrawlCors } from '@/middlewares/cors';
 
 export default function createHonoApp() {
   const app = new Hono<AppContext>();

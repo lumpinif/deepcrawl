@@ -1,24 +1,29 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+  "root": true,
   "files": {
-    "ignoreUnknown": false,
-    "ignore": [
-      "**/bun.lockb",
-      "**/package-lock.json",
-      "**/yarn.lock",
-      "**/pnpm-lock.yaml",
-      "./apps/main/src/lib/editor/react-renderer.tsx",
-      "node_modules",
-      ".wrangler",
-      "node_modules/**/*",
-      ".turbo",
-      ".next",
-      "public",
-      ".vercel",
-      ".react-email",
-      "dist",
-      "./dist/**/*",
-      "worker-configuration.d.ts"
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!**/bun.lockb",
+      "!**/package-lock.json",
+      "!**/yarn.lock",
+      "!**/pnpm-lock.yaml",
+      "!./apps/main/src/lib/editor/react-renderer.tsx",
+      "!node_modules",
+      "!wrangler",
+      "!.wrangler/**",
+      "!drizzle",
+      "!drizzle/**",
+      "!node_modules/**/*",
+      "!.turbo/**",
+      "!.next/**",
+      "!public/**",
+      "!.vercel/**",
+      "!.react-email/**",
+      "!dist/**",
+      "!./dist/**/*",
+      "!worker-configuration.d.ts"
     ]
   },
   "vcs": {
@@ -28,7 +33,6 @@
     "useIgnoreFile": true
   },
   "formatter": {
-    "ignore": ["node_modules", ".next"],
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
@@ -37,25 +41,17 @@
     "attributePosition": "auto"
   },
   "linter": {
-    "ignore": ["node_modules", ".next"],
     "enabled": true,
     "rules": {
       "recommended": true,
       "nursery": {
-        "useSortedClasses": "info",
-        "noStaticElementInteractions": "warn",
-        "noHeadImportInDocument": "warn",
-        "noDocumentImportInPage": "warn",
-        "noDuplicateElseIf": "warn",
-        "noIrregularWhitespace": "warn",
-        "useValidAutocomplete": "warn"
+        "useSortedClasses": "info"
       },
       "a11y": {
+        "noStaticElementInteractions": "off",
         "useSemanticElements": "off", // Rule is buggy, revisit later
         "noSvgWithoutTitle": "off", // We do not intend to adhere to this rule
-        // "useMediaCaption": "off", // We would need a cultural change to turn this on
         "noAutofocus": "off", // We're highly intentional about when we use autofocus
-        "noBlankTarget": "off", // Covered by Conformance
         "useFocusableInteractive": "off", // Disable focusable interactive element requirement
         "useAriaPropsForRole": "off", // Disable required ARIA attributes check
         "useKeyWithClickEvents": "off" // Disable keyboard event requirement with click events
@@ -66,12 +62,20 @@
         "useDefaultParameterLast": "warn", // Not in recommended ruleset, turning on manually
         "useExponentiationOperator": "off", // Obscure and arguably not easily readable
         "noUnusedTemplateLiteral": "off", // Stylistic opinion
-        "noUselessElse": "off" // Stylistic opinion
+        "noUselessElse": "off", // Stylistic opinion
+        "useArrayLiterals": "warn",
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error"
       },
       "correctness": {
+        "noUnusedVariables": "off",
+        "noUnusedFunctionParameters": "off",
         "noUnusedImports": "warn", // Not in recommended ruleset, turning on manually
-        "useArrayLiterals": "warn", // Not in recommended ruleset, turning on manually
-        "noNewSymbol": "warn", // Not in recommended ruleset, turning on manually
         "useJsxKeyInIterable": "off", // Rule is buggy, revisit later
         "useExhaustiveDependencies": "off" // Community feedback on this rule has been poor, we will continue with ESLint
       },
@@ -80,15 +84,25 @@
       },
       "suspicious": {
         "noArrayIndexKey": "off",
-        "noShadowRestrictedNames": "off"
+        "noShadowRestrictedNames": "off",
+        "noHeadImportInDocument": "error",
+        "noDocumentImportInPage": "error",
+        "noDuplicateElseIf": "error",
+        "noIrregularWhitespace": "error",
+        "noDocumentCookie": "off"
       },
       "security": {
-        // "noDangerouslySetInnerHtml": "off"
+        // "noDangerouslySetInnerHtml": "off",
+        "noBlankTarget": "warn"
       }
     }
   },
-  "organizeImports": {
-    "enabled": true
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "javascript": {
     "jsxRuntime": "reactClassic",

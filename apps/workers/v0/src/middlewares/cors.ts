@@ -1,10 +1,10 @@
-import type { AppBindings } from '@/lib/context';
 import {
   ALLOWED_ORIGINS,
   DEVELOPMENT_ORIGINS,
 } from '@deepcrawl/auth/configs/auth.config';
 import { cors } from 'hono/cors';
 import { createMiddleware } from 'hono/factory';
+import type { AppBindings } from '@/lib/context';
 
 /**
  * Hybrid CORS middleware: supports both dashboard cookies and public API access

@@ -1,3 +1,4 @@
+import { queryOptions } from '@tanstack/react-query';
 import {
   fetchApiKeys,
   fetchAuthSession,
@@ -7,7 +8,6 @@ import {
   fetchOrganization,
   fetchUserPasskeys,
 } from '@/app/actions/auth';
-import { queryOptions } from '@tanstack/react-query';
 import { userQueryKeys } from './query-keys';
 
 /**

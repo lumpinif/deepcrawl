@@ -1,18 +1,5 @@
 'use client';
 
-import { PasskeyCleanupGuide } from '@/components/passkey-cleanup-guide';
-import { SpinnerButton } from '@/components/spinner-button';
-import {
-  useAddPasskey,
-  useAuthSession,
-  useCanUnlinkProvider,
-  useLinkSocialProvider,
-  useLinkedAccounts,
-  useRemovePasskey,
-  useUnlinkSocialProvider,
-  useUserPasskeys,
-} from '@/hooks/auth.hooks';
-import { getDeviceTypeDescription } from '@/lib/passkey-utils';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -41,6 +28,19 @@ import {
   UserCheck,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { PasskeyCleanupGuide } from '@/components/passkey-cleanup-guide';
+import { SpinnerButton } from '@/components/spinner-button';
+import {
+  useAddPasskey,
+  useAuthSession,
+  useCanUnlinkProvider,
+  useLinkedAccounts,
+  useLinkSocialProvider,
+  useRemovePasskey,
+  useUnlinkSocialProvider,
+  useUserPasskeys,
+} from '@/hooks/auth.hooks';
+import { getDeviceTypeDescription } from '@/lib/passkey-utils';
 
 // Helper function to safely format dates from server data
 const formatDate = (date: Date | string | null): string => {
@@ -420,33 +420,29 @@ export function ProvidersManagementCard() {
                       </SpinnerButton>
                     )}
                   </>
-                ) : (
-                  <>
-                    {provider.id === 'passkeys' ? (
-                      <SpinnerButton
-                        size="sm"
-                        variant="outline"
-                        className="w-20 max-sm:w-full"
-                        isLoading={isAddingPasskey}
-                        onClick={handleAddPasskey}
-                        disabled={isAnyProviderProcessing || !canUnlink}
-                      >
-                        Add
-                      </SpinnerButton>
-                    ) : provider.id === 'google' || provider.id === 'github' ? (
-                      <SpinnerButton
-                        size="sm"
-                        variant="outline"
-                        className="w-24 max-sm:w-full"
-                        isLoading={isThisProviderLinking}
-                        onClick={() => handleConnectProvider(provider.id)}
-                        disabled={isAnyProviderProcessing || !canUnlink}
-                      >
-                        Connect
-                      </SpinnerButton>
-                    ) : null}
-                  </>
-                )}
+                ) : provider.id === 'passkeys' ? (
+                  <SpinnerButton
+                    size="sm"
+                    variant="outline"
+                    className="w-20 max-sm:w-full"
+                    isLoading={isAddingPasskey}
+                    onClick={handleAddPasskey}
+                    disabled={isAnyProviderProcessing || !canUnlink}
+                  >
+                    Add
+                  </SpinnerButton>
+                ) : provider.id === 'google' || provider.id === 'github' ? (
+                  <SpinnerButton
+                    size="sm"
+                    variant="outline"
+                    className="w-24 max-sm:w-full"
+                    isLoading={isThisProviderLinking}
+                    onClick={() => handleConnectProvider(provider.id)}
+                    disabled={isAnyProviderProcessing || !canUnlink}
+                  >
+                    Connect
+                  </SpinnerButton>
+                ) : null}
               </div>
             </div>
           );

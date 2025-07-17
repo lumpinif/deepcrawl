@@ -1,7 +1,6 @@
 import { LinksOptionsSchema as baseLinkOptionsSchema } from '@deepcrawl/types/routers/links';
-
-import { targetUrlHelper } from '@/utils/url/target-url-helper';
 import z from 'zod/v4';
+import { targetUrlHelper } from '@/utils/url/target-url-helper';
 
 // Extend the base schema and override only the url field to use targetUrlHelper
 export const LinksOptionsSchema = baseLinkOptionsSchema.extend({

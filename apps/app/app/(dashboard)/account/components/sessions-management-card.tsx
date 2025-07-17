@@ -1,13 +1,5 @@
 'use client';
 
-import { SpinnerButton } from '@/components/spinner-button';
-import {
-  useAuthSession,
-  useListSessions,
-  useRevokeAllOtherSessions,
-  useRevokeSession,
-} from '@/hooks/auth.hooks';
-
 import type { Session } from '@deepcrawl/auth/types';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import {
@@ -21,6 +13,13 @@ import { Loader2, Monitor, Smartphone, Wifi } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
+import { SpinnerButton } from '@/components/spinner-button';
+import {
+  useAuthSession,
+  useListSessions,
+  useRevokeAllOtherSessions,
+  useRevokeSession,
+} from '@/hooks/auth.hooks';
 
 export function SessionsManagementCard() {
   const { data: currentSession } = useAuthSession();

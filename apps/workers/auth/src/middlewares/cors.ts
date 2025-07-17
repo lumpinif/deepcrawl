@@ -1,10 +1,10 @@
-import type { AppContext } from '@/lib/context';
 import {
   ALLOWED_ORIGINS,
   DEVELOPMENT_ORIGINS,
 } from '@deepcrawl/auth/configs/auth.config';
 import { cors } from 'hono/cors';
 import { createMiddleware } from 'hono/factory';
+import type { AppContext } from '@/lib/context';
 
 /**
  * CORS middleware for DeepCrawl auth service - only allows trusted origins

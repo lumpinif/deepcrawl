@@ -1,11 +1,5 @@
 'use client';
 
-import { GalleryVerticalEnd } from 'lucide-react';
-
-import * as React from 'react';
-
-import { NavMain } from '@/components/sidebar/nav-main';
-import { NAVGATION_ITEMS } from '@/lib/navigation-config';
 // import { NavUser } from '@/components/sidebar/nav-user';
 // import { TeamSwitcher } from '@/components/sidebar/team-switcher';
 import type { Session } from '@deepcrawl/auth/types';
@@ -18,7 +12,11 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@deepcrawl/ui/components/ui/sidebar';
+import { GalleryVerticalEnd } from 'lucide-react';
 import Link from 'next/link';
+import * as React from 'react';
+import { NavMain } from '@/components/sidebar/nav-main';
+import { NAVGATION_ITEMS } from '@/lib/navigation-config';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   session?: Session;

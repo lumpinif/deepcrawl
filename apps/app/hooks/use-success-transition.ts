@@ -1,14 +1,16 @@
-import { useAuthSession } from '@/hooks/auth.hooks';
-import { userQueryKeys } from '@/lib/query-keys';
-import { getSearchParam } from '@/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
+import { useAuthSession } from '@/hooks/auth.hooks';
+import { userQueryKeys } from '@/lib/query-keys';
+import { getSearchParam } from '@/utils';
 
 export function useOnSuccessTransition({
   redirectTo: redirectToProp = '/',
-}: { redirectTo?: string }) {
+}: {
+  redirectTo?: string;
+}) {
   const getRedirectTo = useCallback(() => {
     // Priority order for determining redirect destination:
     // 1. Explicit prop passed to the hook

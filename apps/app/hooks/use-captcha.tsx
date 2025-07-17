@@ -45,7 +45,7 @@ export function useCaptcha() {
     recaptchaNet: false,
     enterprise: false,
   };
-  // biome-ignore lint/suspicious/noExplicitAny:
+  // biome-ignore lint/suspicious/noExplicitAny: false positive
   const captchaRef = useRef<any>(null);
 
   const executeCaptcha = async (action: string) => {

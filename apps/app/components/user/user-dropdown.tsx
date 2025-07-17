@@ -1,8 +1,7 @@
 'use client';
 
-import { ChevronsDownUpIcon, ChevronsUpDownIcon, LogOut } from 'lucide-react';
-
 import type { Session } from '@deepcrawl/auth/types';
+import { ThemeGroupToggle } from '@deepcrawl/ui/components/theme/toggle';
 import {
   Avatar,
   AvatarFallback,
@@ -17,22 +16,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@deepcrawl/ui/components/ui/dropdown-menu';
-
-import {
-  useAuthSession,
-  useDeviceSessions,
-  useSetActiveSession,
-} from '@/hooks/auth.hooks';
-import { ThemeGroupToggle } from '@deepcrawl/ui/components/theme/toggle';
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@deepcrawl/ui/components/ui/popover';
+import { ChevronsDownUpIcon, ChevronsUpDownIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
+import {
+  useAuthSession,
+  useDeviceSessions,
+  useSetActiveSession,
+} from '@/hooks/auth.hooks';
 
 function UserAvatar({ user }: { user: Session['user'] }) {
   return (
@@ -49,7 +46,10 @@ function UserAvatar({ user }: { user: Session['user'] }) {
 export function UserDropdown({
   user: userProp,
   deviceSessions: deviceSessionsProps,
-}: { user: Session['user']; deviceSessions: Session[] }) {
+}: {
+  user: Session['user'];
+  deviceSessions: Session[];
+}) {
   const router = useRouter();
   const { data: currentSession } = useAuthSession();
   const { data: deviceSessionsQuery } = useDeviceSessions();
@@ -96,7 +96,7 @@ export function UserDropdown({
             <PopoverTrigger
               asChild
               disabled={!hasMultipleSessions}
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
+              // biome-ignore lint/nursery/useSortedClasses: false positive
               className="group/popover w-full focus:bg-accent justify-between hover:[&:not([disabled])]:bg-accent
               focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
             >

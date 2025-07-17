@@ -1,11 +1,11 @@
 'use client';
 
-import { useSuspenseApiKeys } from '@/hooks/auth.hooks';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import { useSuspenseApiKeys } from '@/hooks/auth.hooks';
 import { PageHeader } from '../page-elements';
 import { ApiKeysTable } from './api-keys-table';
 import { CreateApiKeyDialog } from './create-api-key-dialog';

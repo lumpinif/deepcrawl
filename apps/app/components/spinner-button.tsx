@@ -1,11 +1,9 @@
 'use client';
 
+import { Button, type ButtonProps } from '@deepcrawl/ui/components/ui/button';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import { AnimatePresence, motion } from 'motion/react';
 import { useMemo } from 'react';
-
-import { cn } from '@deepcrawl/ui/lib/utils';
-
-import { Button, type ButtonProps } from '@deepcrawl/ui/components/ui/button';
 import { LoadingSpinner } from './loading-spinner';
 
 type ButtonState = 'idle' | 'loading' | 'success' | 'error';

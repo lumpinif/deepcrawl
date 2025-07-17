@@ -1,12 +1,5 @@
 'use client';
 
-import { SpinnerButton } from '@/components/spinner-button';
-import {
-  useAuthSession,
-  useChangePassword,
-  useHasPassword,
-  useSetPassword,
-} from '@/hooks/auth.hooks';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -20,6 +13,13 @@ import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Eye, EyeOff, Key, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { SpinnerButton } from '@/components/spinner-button';
+import {
+  useAuthSession,
+  useChangePassword,
+  useHasPassword,
+  useSetPassword,
+} from '@/hooks/auth.hooks';
 
 export function PasswordChangeCard() {
   const { data: session, isLoading } = useAuthSession();

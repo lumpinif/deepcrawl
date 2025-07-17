@@ -1,4 +1,3 @@
-import { SpinnerButton } from '@/components/spinner-button';
 import GithubIcon from '@deepcrawl/ui/components/icons/github-icon';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
@@ -12,6 +11,7 @@ import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import Link from 'next/link';
+import { SpinnerButton } from '@/components/spinner-button';
 import { PasswordInput } from './password-input';
 
 export function LoginCard({

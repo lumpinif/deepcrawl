@@ -1,6 +1,6 @@
-import type { AppContext } from '@/lib/context';
 import { createAuthClientConfig } from '@deepcrawl/auth/configs/auth.client.config';
 import { type ClientOptions, createAuthClient } from 'better-auth/client';
+import type { AppContext } from '@/lib/context';
 
 export function getAuthClient(c: AppContext, options: ClientOptions = {}) {
   const baseAuthClientConfig = createAuthClientConfig({

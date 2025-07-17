@@ -1,5 +1,5 @@
-import type { AppBindings } from '@/lib/context';
 import { createMiddleware } from 'hono/factory';
+import type { AppBindings } from '@/lib/context';
 
 export const serviceFetcherMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {

@@ -11,7 +11,7 @@
     "check": "turbo check && turbo check && pnpm sherif:fix"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.0.6",
     "@deepcrawl/typescript-config": "workspace:*",
     "better-auth": "^1.2.12",
     "dotenv-cli": "^8.0.0",
@@ -20,7 +20,7 @@
     "wrangler": "^4.23.3",
     "zod": "^3.25.74"
   },
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@10.13.1",
   "engines": {
     "node": ">=20"
   }

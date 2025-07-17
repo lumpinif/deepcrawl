@@ -1,9 +1,5 @@
 'use client';
 
-import { useAuthSession } from '@/hooks/auth.hooks';
-import { getAuthErrorMessage } from '@/lib/auth-errors';
-import { authClient } from '@/lib/auth.client';
-import { userQueryKeys } from '@/lib/query-keys';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,6 +13,10 @@ import {
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useAuthSession } from '@/hooks/auth.hooks';
+import { authClient } from '@/lib/auth.client';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
+import { userQueryKeys } from '@/lib/query-keys';
 
 export interface UnifiedVerificationFormProps {
   className?: string;

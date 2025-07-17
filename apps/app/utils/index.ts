@@ -1,5 +1,5 @@
-import type { AuthView, AuthViewRoutes } from '@/routes/auth';
 import z from 'zod';
+import type { AuthView, AuthViewRoutes } from '@/routes/auth';
 
 // Re-export utilities
 export { copyToClipboard } from './clipboard';

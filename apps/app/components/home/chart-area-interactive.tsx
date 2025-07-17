@@ -1,8 +1,5 @@
 'use client';
 
-import * as React from 'react';
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
-
 import {
   Card,
   CardAction,
@@ -29,6 +26,8 @@ import {
   ToggleGroupItem,
 } from '@deepcrawl/ui/components/ui/toggle-group';
 import { useIsMobile } from '@deepcrawl/ui/hooks/use-mobile';
+import * as React from 'react';
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 export const description = 'An interactive area chart';
 

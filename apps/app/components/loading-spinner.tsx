@@ -23,7 +23,9 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       <div className="absolute top-1/2 left-1/2 h-[var(--spinner-size)] w-[var(--spinner-size)]">
         {bars.map((_, i) => (
           <div
-            className={`absolute top-[-3.9%] left-[-10%] h-[8%] w-[24%] animate-spinner rounded-md bg-muted-foreground`}
+            className={
+              'absolute top-[-3.9%] left-[-10%] h-[8%] w-[24%] animate-spinner rounded-md bg-muted-foreground'
+            }
             key={`spinner-bar-${i}`}
             style={{
               animationDelay: `-${1.2 - i * 0.1}s`,

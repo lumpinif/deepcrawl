@@ -53,7 +53,6 @@ const LayoutPanelLeftIcon = forwardRef<
   );
 
   return (
-    // biome-ignore lint/nursery/noStaticElementInteractions: <explanation>
     <div
       className={cn(className)}
       onMouseEnter={handleMouseEnter}

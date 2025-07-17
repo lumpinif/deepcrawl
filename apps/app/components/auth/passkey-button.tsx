@@ -1,13 +1,12 @@
+import { Button } from '@deepcrawl/ui/components/ui/button';
 import { KeyIcon } from 'lucide-react';
-
+import { toast } from 'sonner';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
+import { authClient } from '@/lib/auth.client';
 import {
   getAuthErrorMessage,
   isWebAuthnCancellationError,
 } from '@/lib/auth-errors';
-import { authClient } from '@/lib/auth.client';
-import { Button } from '@deepcrawl/ui/components/ui/button';
-import { toast } from 'sonner';
 
 interface PasskeyButtonProps {
   isSubmitting?: boolean;

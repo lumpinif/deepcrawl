@@ -1,8 +1,5 @@
 'use client';
 
-import React from 'react';
-
-import type { NavigationItem } from '@/lib/navigation-config';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -12,14 +9,11 @@ import {
   SidebarMenuItem,
 } from '@deepcrawl/ui/components/ui/sidebar';
 import Link from 'next/link';
-
 import { useRouter } from 'next/navigation';
+import React from 'react';
+import type { NavigationItem } from '@/lib/navigation-config';
 
-export function NavMain({
-  items,
-}: {
-  items: NavigationItem[];
-}) {
+export function NavMain({ items }: { items: NavigationItem[] }) {
   const router = useRouter();
 
   const handleHoverToPrefetch = (url: string) => {

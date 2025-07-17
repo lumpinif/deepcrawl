@@ -1,8 +1,8 @@
 'use server';
 
-import { DeepcrawlApp } from '@deepcrawl-sdk/ts';
 import type { LinksPOSTOutput, ReadPOSTOutput } from '@deepcrawl-sdk/ts';
 import {
+  DeepcrawlApp,
   DeepcrawlAuthError,
   DeepcrawlError,
   DeepcrawlLinksError,
