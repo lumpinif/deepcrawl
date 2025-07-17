@@ -26,6 +26,10 @@
       "apps/**": true,
       "packages/**": true
     },
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.biome": "explicit",
+      "source.fixAll.biome": "explicit"
+    },
     "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css"
   }
 }
