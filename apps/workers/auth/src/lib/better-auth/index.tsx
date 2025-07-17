@@ -11,17 +11,18 @@ export function createAuth(env: CloudflareBindings) {
     ...authConfigs,
     secondaryStorage: {
       get: async (key: string) => {
-        return env.DEEPCRAWL_AUTH_KV.get(key);
+        const value = await env.DEEPCRAWL_AUTH_KV.get(key);
+        return value;
       },
       set: async (key: string, value: string, ttl?: number) => {
-        return env.DEEPCRAWL_AUTH_KV.put(
-          key,
-          value,
-          ttl ? { expirationTtl: ttl } : undefined,
-        );
+        if (ttl) {
+          await env.DEEPCRAWL_AUTH_KV.put(key, value, { expirationTtl: ttl });
+        } else {
+          await env.DEEPCRAWL_AUTH_KV.put(key, value);
+        }
       },
       delete: async (key: string) => {
-        return env.DEEPCRAWL_AUTH_KV.delete(key);
+        await env.DEEPCRAWL_AUTH_KV.delete(key);
       },
     },
     rateLimit: {
