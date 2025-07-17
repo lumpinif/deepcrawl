@@ -205,6 +205,8 @@ export function createAuthConfig(env: Env) {
     trustedOrigins,
     database: drizzleAdapter(db, { provider: 'pg', schema: schema }),
     session: {
+      storeSessionInDatabase: true, // Store sessions in both DB and secondary storage
+      preserveSessionInDatabase: false, // Clean up DB when removing from secondary storage
       cookieCache: {
         enabled: true,
         maxAge: 5 * 60, // Cache session data in cookie for 5 minutes
