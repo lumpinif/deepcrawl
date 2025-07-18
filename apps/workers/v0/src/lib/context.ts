@@ -12,6 +12,8 @@ export interface AppVariables {
   user: Session['user'] | null;
   /** Current Session */
   session: Session['session'] | null;
+  /** API Key extracted from headers */
+  apiKey: string | null;
 }
 
 export interface AppBindings {
