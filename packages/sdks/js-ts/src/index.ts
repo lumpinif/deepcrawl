@@ -17,31 +17,6 @@ export type DeepCrawlClient = CRC<
   typeof import('@deepcrawl/contracts').contract
 >;
 
-export type {
-  Inputs,
-  LinksGETInput,
-  LinksGETOutput,
-  LinksPOSTInput,
-  LinksPOSTOutput,
-  Outputs,
-  ReadGETInput,
-  ReadGETOutput,
-  ReadPOSTInput,
-  ReadPOSTOutput,
-} from '@deepcrawl/contracts';
-
-export type {
-  HTMLCleaningOptions,
-  LinkExtractionOptions,
-  LinksErrorResponse,
-  LinksOptions,
-  LinksSuccessResponse,
-  MetadataOptions,
-  PageMetadata,
-  ReadErrorResponse,
-  ReadOptions,
-  ReadPostResponse,
-  ReadStringResponse,
-  ReadSuccessResponse,
-  ScrapedData,
-} from '@deepcrawl/types';
+// Re-export all types from internal packages
+export type * from '@deepcrawl/contracts';
+export type * from '@deepcrawl/types';
