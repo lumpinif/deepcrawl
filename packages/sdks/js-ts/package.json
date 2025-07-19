@@ -1,7 +1,7 @@
 {
-  "name": "@deepcrawl-sdk/ts",
-  "version": "0.0.4",
-  "description": "TypeScript SDK for DeepCrawl API - A powerful web scraping and crawling service",
+  "name": "deepcrawl",
+  "version": "0.1.0",
+  "description": "JavaScript/TypeScript SDK for DeepCrawl API - A powerful web scraping and crawling service",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
@@ -24,8 +24,8 @@
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "check": "biome check --write && pnpm typecheck",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "clean": "rimraf dist",
+    "prepublishOnly": "pnpm run check &&pnpm run clean && pnpm run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
@@ -46,7 +46,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lumpinif/deepcrawl",
-    "directory": "packages/sdks/typescript"
+    "directory": "packages/sdks/js-ts"
   },
   "bugs": {
     "url": "https://github.com/lumpinif/deepcrawl/issues"

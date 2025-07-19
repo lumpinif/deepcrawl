@@ -1,4 +1,4 @@
-# @deepcrawl-sdk/ts
+# deepcrawl
 
 Official TypeScript SDK for DeepCrawl API - A powerful web scraping and crawling service.
 
@@ -13,30 +13,24 @@ Official TypeScript SDK for DeepCrawl API - A powerful web scraping and crawling
 ## Installation
 
 ```bash
-npm install @deepcrawl-sdk/ts
+npm install deepcrawl
 # or
-yarn add @deepcrawl-sdk/ts
+yarn add deepcrawl
 # or
-pnpm add @deepcrawl-sdk/ts
+pnpm add deepcrawl
 ```
 
 ## Quick Start
 
 ```typescript
-import DeepcrawlApp, { ReadPostResponse } from '@deepcrawl-sdk/ts';
+import DeepcrawlApp, { ReadPostResponse } from 'deepcrawl';
 
 const app = new DeepcrawlApp({
   apiKey: "dc-YOUR_API_KEY"
 });
 
 // Read a website
-const readResponse: ReadPostResponse = await app.readUrl('https://deepcrawl.dev', {
-  metadata: true,
-  markdown: true,
-  cleanedHtml: false,
-  robots: false,
-  rawHtml: false,
-});
+const readResponse: ReadPostResponse = await app.readUrl('https://deepcrawl.dev');
 
 if (!readResponse.success) {
   throw new Error(`Failed to read: ${readResponse.error}`);
@@ -160,7 +154,7 @@ import type {
   PageMetadata,
   DeepCrawlConfig,
   RequestOptions,
-} from '@deepcrawl-sdk/ts';
+} from 'deepcrawl';
 ```
 
 ## Error Handling
@@ -168,7 +162,7 @@ import type {
 The SDK provides custom error classes for different types of failures:
 
 ```typescript
-import { DeepCrawlError, DeepCrawlAuthError, DeepCrawlNetworkError } from '@deepcrawl-sdk/ts';
+import { DeepCrawlError, DeepCrawlAuthError, DeepCrawlNetworkError } from 'deepcrawl';
 
 try {
   const result = await app.readUrl('https://example.com');
@@ -203,7 +197,7 @@ The SDK works perfectly in Next.js server actions and automatically handles head
 // app/actions/scrape.ts
 'use server'
 
-import DeepcrawlApp from '@deepcrawl-sdk/ts';
+import DeepcrawlApp from 'deepcrawl';
 import { headers } from 'next/headers';
 
 export async function scrapeUrl(url: string) {
