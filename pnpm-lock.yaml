@@ -507,12 +507,6 @@ importers:
 
   packages/sdks/js-ts:
     dependencies:
-      '@deepcrawl/contracts':
-        specifier: workspace:*
-        version: link:../../contracts
-      '@deepcrawl/types':
-        specifier: workspace:*
-        version: link:../../types
       '@orpc/client':
         specifier: ^1.6.6
         version: 1.6.8
@@ -523,6 +517,12 @@ importers:
         specifier: ^3.25.74
         version: 3.25.76
     devDependencies:
+      '@deepcrawl/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
+      '@deepcrawl/types':
+        specifier: workspace:*
+        version: link:../../types
       '@deepcrawl/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config

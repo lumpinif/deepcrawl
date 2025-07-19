@@ -1,14 +1,13 @@
 {
   "name": "deepcrawl",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "description": "JavaScript/TypeScript SDK for DeepCrawl API - A powerful web scraping and crawling service",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
@@ -53,17 +52,7 @@
   },
   "homepage": "https://github.com/lumpinif/deepcrawl#readme",
   "publishConfig": {
-    "access": "public",
-    "main": "./dist/index.js",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.mjs",
-        "require": "./dist/index.js"
-      }
-    }
+    "access": "public"
   },
   "packageManager": "pnpm@10.12.1",
   "dependencies": {
