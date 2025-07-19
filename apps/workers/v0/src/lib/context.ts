@@ -8,12 +8,12 @@ export interface AppVariables {
   authClient: ReturnType<typeof getAuthClient> | null;
   /** Service Bindings Fetcher */
   serviceFetcher: typeof fetch;
+  /** Custom Service Bindings Fetcher */
+  customFetcher: typeof fetch;
   /** Current User */
   user: Session['user'] | null;
   /** Current Session */
   session: Session['session'] | null;
-  /** API Key extracted from headers */
-  apiKey: string | null;
 }
 
 export interface AppBindings {

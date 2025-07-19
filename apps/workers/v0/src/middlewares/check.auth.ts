@@ -6,26 +6,9 @@ import { getAuthClient } from './auth.client';
 export const checkAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     const serviceFetcher = c.var.serviceFetcher;
+    const customFetcher = c.var.customFetcher;
 
-    // Custom Service Bindings Fetch for Better Auth client
-    const customFetcher = async (
-      input: RequestInfo | URL,
-      init?: RequestInit,
-    ) => {
-      const headers = new Headers(init?.headers);
-
-      // Forward session cookies
-      const cookieHeader = c.req.header('cookie');
-      if (cookieHeader) {
-        headers.set('cookie', cookieHeader);
-      }
-
-      return serviceFetcher(input, {
-        ...init,
-        headers,
-      });
-    };
-
+    // fallback to cookies auth if api key is not found
     try {
       // 1. Try Better Auth client with service bindings first
       const authClient = getAuthClient(c, {
