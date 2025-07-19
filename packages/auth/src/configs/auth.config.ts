@@ -250,6 +250,19 @@ export function createAuthConfig(env: Env) {
             };
           },
         },
+        customAPIKeyGetter: (ctx) => {
+          // First try x-api-key header
+          const apiKeyHeader = ctx.headers?.get('x-api-key');
+          if (apiKeyHeader) return apiKeyHeader;
+
+          // Then try Authorization Bearer header
+          const authHeader = ctx.headers?.get('authorization');
+          if (authHeader?.startsWith('Bearer ')) {
+            return authHeader.replace('Bearer ', '');
+          }
+
+          return null;
+        },
       }),
       multiSession({
         maximumSessions: MAX_SESSIONS + 1, // better-auth issue: 3 is actually allowing max 2 sessions
