@@ -15,7 +15,7 @@ This is a monorepo containing a web scraping and crawling service with the follo
   - `@deepcrawl/types`: Shared TypeScript types and schemas
   - `@deepcrawl/contracts`: API contract definitions for oRPC
   - `@deepcrawl/ui`: shadcn/ui component library
-  - `@deepcrawl-sdk/ts`: TypeScript SDK for DeepCrawl API
+  - `deepcrawl`: TypeScript SDK for DeepCrawl API
 
 ## Common Commands
 
@@ -116,8 +116,8 @@ pnpm email:export
 
 ### SDK Development
 ```bash
-# TypeScript SDK (run from packages/sdks/typescript/)
-cd packages/sdks/typescript
+# TypeScript SDK (run from packages/sdks/js-ts/)
+cd packages/sdks/js-ts
 
 # Build SDK for distribution
 pnpm build
@@ -225,13 +225,13 @@ This project uses Vitest for testing the TypeScript SDK. For other parts of the 
 
 ### SDK Testing
 The TypeScript SDK has a complete test suite using Vitest:
-- Unit tests in `packages/sdks/typescript/src/__tests__/`
+- Unit tests in `packages/sdks/js-ts/src/__tests__/`
 - Integration tests available
 - Run tests with `pnpm test` from the SDK directory
 - Coverage reports available with `pnpm test:coverage`
 
 ### SDK Package Details
-The TypeScript SDK (`@deepcrawl-sdk/ts`) provides:
+The TypeScript SDK (`deepcrawl`) provides:
 - Client library for DeepCrawl API
 - Methods: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`
 - Built with tsup for both CommonJS and ESM formats

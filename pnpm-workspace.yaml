@@ -1,5 +1,5 @@
 packages:
   - "apps/*"
   - "packages/*"
-  - "packages/sdks/typescript"
+  - "packages/sdks/js-ts"
   - "apps/workers/*"
