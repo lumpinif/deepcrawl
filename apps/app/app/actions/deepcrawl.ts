@@ -1,6 +1,6 @@
 'use server';
 
-import type { LinksPOSTOutput, ReadPOSTOutput } from '@deepcrawl-sdk/ts';
+import type { LinksPOSTOutput, ReadPOSTOutput } from 'deepcrawl';
 import {
   DeepcrawlApp,
   DeepcrawlAuthError,
@@ -8,7 +8,7 @@ import {
   DeepcrawlLinksError,
   DeepcrawlNetworkError,
   DeepcrawlReadError,
-} from '@deepcrawl-sdk/ts';
+} from 'deepcrawl';
 import { headers } from 'next/headers';
 
 interface ApiCallInput {
