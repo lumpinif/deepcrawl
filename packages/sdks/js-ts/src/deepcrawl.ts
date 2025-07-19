@@ -87,6 +87,7 @@ export class DeepcrawlApp {
 
         return {
           Authorization: `Bearer ${this.config.apiKey}`,
+          'x-api-key': this.config.apiKey,
           'Content-Type': 'application/json',
           'User-Agent': `${packageJSON.name}@${packageJSON.version}`,
           ...extractedHeaders,
