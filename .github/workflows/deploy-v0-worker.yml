@@ -1,0 +1,50 @@
+name: Deploy V0 Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/workers/v0/**'
+      - '.github/workflows/deploy-v0-worker.yml'
+
+jobs:
+  deploy:
+    name: ⚡ Deploy V0 Worker
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+     TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+     TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+    steps:
+      - name: 🔍 Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+
+      - name: 📦 Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: 🛠️ Install dependencies
+        run: pnpm install
+
+      - name: 🚀 Deploy V0 Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: 'apps/workers/v0'
+          packageManager: 'pnpm'
+          environment: 'production'
+          command: deploy --env production --minify
+          secrets: |
+            DATABASE_URL
+            BETTER_AUTH_URL
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
