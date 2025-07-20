@@ -44,7 +44,7 @@ const fetchWithFallback = async (
 ): Promise<{ response: Response; source: string }> => {
   // Try service binding first
   let response = await serviceFetcher(request);
-  logDebug(env, '🚀 ~ SERVICE BINDINGS RPC FETCHER:', response.statusText);
+  logDebug(env, '🚀 SERVICE BINDINGS RPC FETCHER:', response.statusText);
 
   if (response.ok) {
     const text = await response.clone().text();
@@ -59,8 +59,16 @@ const fetchWithFallback = async (
   return { response, source: 'direct fetch' };
 };
 
-export const checkAuthMiddleware = createMiddleware<AppBindings>(
+export const checkCookieAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
+    if (c.get('session') && c.get('user')) {
+      logDebug(
+        c.env,
+        '✅ Skipping [checkCookieAuthMiddleware] Session and user found',
+      );
+      return next();
+    }
+
     const serviceFetcher = c.var.serviceFetcher;
     const customFetcher = c.var.customFetcher;
 
@@ -75,7 +83,7 @@ export const checkAuthMiddleware = createMiddleware<AppBindings>(
       const authSession = await authClient.getSession();
       logDebug(
         c.env,
-        '🚀 ~ BETTER-AUTH CLIENT WITH SBF:',
+        '🛡️  BETTER-AUTH CLIENT WITH SBF:',
         authSession.data?.session ? 'OK' : 'NO SESSION',
       );
 

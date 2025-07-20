@@ -6,10 +6,11 @@ import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
 import type { AppBindings } from '@/lib/context';
-import { checkAuthMiddleware } from '@/middlewares/check.auth';
+import { apiKeyAuthMiddleware } from '@/middlewares/api-key.auth';
+import { checkCookieAuthMiddleware } from '@/middlewares/cookie.auth';
 import deepCrawlCors from '@/middlewares/cors';
 import { requireAuthMiddleware } from '@/middlewares/require.auth';
-import { serviceFetcherMiddleware } from '@/middlewares/service.fetcher';
+import { serviceFetcherMiddleware } from '@/middlewares/service.fetchers';
 
 export default function createHonoApp() {
   const app = new Hono<AppBindings>();
@@ -19,14 +20,15 @@ export default function createHonoApp() {
 
   // Apply other middleware in order
   app
+    .use('*', serveEmojiFavicon('⚡'))
     .use('*', logger())
     .use('*', requestId())
     .use('*', secureHeaders())
     .use('*', trimTrailingSlash())
-    .use('*', serveEmojiFavicon('⚡'))
 
     .use('*', serviceFetcherMiddleware)
-    .use('*', checkAuthMiddleware)
+    .use('*', apiKeyAuthMiddleware)
+    .use('*', checkCookieAuthMiddleware)
     .use('*', requireAuthMiddleware)
 
     .use('*', prettyJSON());
