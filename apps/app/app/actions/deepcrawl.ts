@@ -25,7 +25,7 @@ interface ApiResponse {
 }
 
 const apiKey =
-  process.env.DEEP_CRAWL_API_KEY ?? 'use_header_auth_instead_api_key';
+  process.env.DEEP_CRAWL_API_KEY ?? 'USE_COOKIE_AUTH_INSTEAD_OF_API_KEY';
 
 async function createDeepcrawlClient() {
   return new DeepcrawlApp({
