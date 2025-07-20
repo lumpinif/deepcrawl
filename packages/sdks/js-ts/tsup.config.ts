@@ -12,6 +12,7 @@ export default defineConfig({
   splitting: false,
   minify: false, // Keep readable for debugging
   target: 'es2020',
-  // Generate TypeScript declaration files
-  dts: true,
+  dts: {
+    resolve: true,
+  },
 });

@@ -1,7 +1,7 @@
 // Export contract types for advanced users
-export type { contract as DeepCrawlContract } from '@deepcrawl/contracts';
+export type { contract as DeepcrawlContract } from '@deepcrawl/contracts';
 export type { ContractRouterClient } from '@orpc/contract';
-export { DeepcrawlApp as default, DeepcrawlApp } from './deepcrawl';
+export { DeepcrawlApp } from './deepcrawl';
 export {
   DeepcrawlAuthError,
   type DeepcrawlConfig,
@@ -13,7 +13,7 @@ export {
 
 // Type helper for creating custom clients
 import type { ContractRouterClient as CRC } from '@orpc/contract';
-export type DeepCrawlClient = CRC<
+export type DeepcrawlClient = CRC<
   typeof import('@deepcrawl/contracts').contract
 >;
 
