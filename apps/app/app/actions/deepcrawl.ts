@@ -1,6 +1,5 @@
 'use server';
 
-import type { LinksPOSTOutput, ReadPOSTOutput } from 'deepcrawl';
 import {
   DeepcrawlApp,
   DeepcrawlAuthError,
@@ -99,7 +98,7 @@ export async function readUrlAction({
 }: ApiCallInput): Promise<ApiResponse> {
   try {
     const dc = await createDeepcrawlClient();
-    const data: ReadPOSTOutput = await dc.readUrl(url);
+    const data = await dc.readUrl(url);
 
     return {
       data,
@@ -155,7 +154,7 @@ export async function extractLinksAction({
 }: ApiCallInput): Promise<ApiResponse> {
   try {
     const dc = await createDeepcrawlClient();
-    const data: LinksPOSTOutput = await dc.extractLinks(url);
+    const data = await dc.extractLinks(url);
 
     return {
       data,
