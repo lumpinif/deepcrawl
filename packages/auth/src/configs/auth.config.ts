@@ -230,14 +230,7 @@ export function createAuthConfig(env: Env) {
         startingCharactersConfig: {
           charactersLength: 10, // default 6
         },
-        apiKeyHeaders: ['authorization', 'x-api-key'],
-        rateLimit: {
-          enabled: true,
-          timeWindow: 1000 * 60 * 60 * 24, // 1 day
-          maxRequests: 100, // 100 requests per day
-        },
-        /* An API Key can represent a valid session, so we automatically mock a session for the user if we find a valid API key in the request headers. QUESTION: Should we disable this? */
-        // disableSessionForAPIKeys: true,
+        apiKeyHeaders: ['x-api-key'],
         enableMetadata: true,
         permissions: {
           defaultPermissions: async (userId, ctx) => {
@@ -253,10 +246,12 @@ export function createAuthConfig(env: Env) {
         customAPIKeyGetter: (ctx) => {
           // First try x-api-key header
           const apiKeyHeader = ctx.headers?.get('x-api-key');
+
           if (apiKeyHeader) return apiKeyHeader;
 
           // Then try Authorization Bearer header
           const authHeader = ctx.headers?.get('authorization');
+
           if (authHeader?.startsWith('Bearer ')) {
             return authHeader.replace('Bearer ', '');
           }
