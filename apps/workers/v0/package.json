@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "mdlint": "markdownlint-cli2 --config .markdownlint-cli2.jsonc --fix",
     "check": "biome check --write && pnpm mdlint && pnpm typecheck",
-    "cf-typegen": "wrangler types --env-interface=CloudflareBindings && pnpm typecheck",
+    "cf-typegen": "wrangler types --c wrangler.jsonc --c ../auth/wrangler.jsonc --env-interface=CloudflareBindings && pnpm typecheck",
     "gen:openapi": "tsx ./src/lib/orpc/generate-openapi-yaml.ts"
   },
   "dependencies": {
