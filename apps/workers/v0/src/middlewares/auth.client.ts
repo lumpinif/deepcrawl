@@ -20,14 +20,3 @@ export function getAuthClient(c: AppContext, options: ClientOptions = {}) {
     ...options,
   });
 }
-
-// export const authClientMiddleware = (options: ClientOptions = {}) =>
-//   createMiddleware<AppBindings>(async (c, next) => {
-//     const authClient = getAuthClient(c, options);
-
-//     if (authClient) {
-//       c.set('authClient', authClient);
-//     }
-
-//     return next();
-//   });

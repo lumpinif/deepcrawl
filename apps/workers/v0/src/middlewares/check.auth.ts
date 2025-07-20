@@ -1,16 +1,71 @@
 import type { Session } from '@deepcrawl/auth/types';
 import { createMiddleware } from 'hono/factory';
-import type { AppBindings } from '@/lib/context';
+import type { AppBindings, AppContext, AppVariables } from '@/lib/context';
+import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { getAuthClient } from './auth.client';
+
+interface AuthResult {
+  user: Session['user'] | null;
+  session: Session['session'] | null;
+}
+
+const setAuthContext = (c: AppContext, result: AuthResult) => {
+  c.set('user', result.user);
+  c.set('session', result.session);
+};
+
+const parseSessionResponse = async (
+  response: Response,
+  env: AppBindings['Bindings'],
+  source: string,
+): Promise<AuthResult> => {
+  try {
+    const responseText = await response.text();
+
+    if (!responseText?.trim()) {
+      logWarn(env, `⚠️ [checkAuth] Empty response from ${source}`);
+      return { user: null, session: null };
+    }
+
+    const session: Session = JSON.parse(responseText);
+    return session?.session
+      ? { user: session.user, session: session.session }
+      : { user: null, session: null };
+  } catch (error) {
+    logError(env, `❌ [checkAuth] JSON parse failed (${source}):`, error);
+    return { user: null, session: null };
+  }
+};
+
+const fetchWithFallback = async (
+  request: Request,
+  serviceFetcher: AppVariables['serviceFetcher'],
+  env: AppBindings['Bindings'],
+): Promise<{ response: Response; source: string }> => {
+  // Try service binding first
+  let response = await serviceFetcher(request);
+  logDebug(env, '🚀 ~ SERVICE BINDINGS RPC FETCHER:', response.statusText);
+
+  if (response.ok) {
+    const text = await response.clone().text();
+    if (text?.trim()) {
+      return { response, source: 'service binding' };
+    }
+  }
+
+  // Fallback to direct fetch
+  logDebug(env, `⚠️ [checkAuth] Service binding failed, trying direct fetch...`);
+  response = await fetch(request);
+  return { response, source: 'direct fetch' };
+};
 
 export const checkAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     const serviceFetcher = c.var.serviceFetcher;
     const customFetcher = c.var.customFetcher;
 
-    // fallback to cookies auth if api key is not found
     try {
-      // 1. Try Better Auth client with service bindings first
+      // 1. Try Better Auth client first
       const authClient = getAuthClient(c, {
         fetchOptions: {
           customFetchImpl: customFetcher,
@@ -18,79 +73,40 @@ export const checkAuthMiddleware = createMiddleware<AppBindings>(
       });
 
       const authSession = await authClient.getSession();
-
-      if (c.env.WORKER_NODE_ENV === 'development') {
-        console.log(
-          '🚀 ~ BETTER-AUTH CLIENT WITH SBF:',
-          authSession.data?.session ? 'OK' : 'NO SESSION',
-        );
-      }
+      logDebug(
+        c.env,
+        '🚀 ~ BETTER-AUTH CLIENT WITH SBF:',
+        authSession.data?.session ? 'OK' : 'NO SESSION',
+      );
 
       if (authSession.data) {
-        c.set('user', authSession.data.user);
-        c.set('session', authSession.data.session);
+        setAuthContext(c, {
+          user: authSession.data.user,
+          session: authSession.data.session,
+        });
         return next();
       }
 
-      // 2. Fallback to direct service binding call if Better Auth client fails
+      // 2. Fallback to direct API calls
       const authUrl = `${c.env.BETTER_AUTH_URL}/api/auth/get-session`;
-      const headers = new Headers(c.req.raw.headers);
-
       const request = new Request(authUrl, {
-        headers: headers,
+        headers: new Headers(c.req.raw.headers),
       });
 
-      let response = await serviceFetcher(request);
+      const { response, source } = await fetchWithFallback(
+        request,
+        serviceFetcher,
+        c.env,
+      );
 
-      if (c.env.WORKER_NODE_ENV === 'development') {
-        console.log('🚀 ~ SERVICE BINDINGS RPC FETCHER:', response.statusText);
-      }
-
-      let usingDirectFetch = false;
-
-      // 3. Final fallback to direct fetch if service binding fails
-      if (!response.ok) {
-        if (c.env.WORKER_NODE_ENV === 'development') {
-          console.log(
-            `⚠️ [checkAuth] Service binding failed, trying direct fetch...`,
-          );
-        }
-        response = await fetch(request);
-        usingDirectFetch = true;
-      }
-
-      // Parse response - gracefully handle any parsing errors
-      try {
-        const responseText = await response.text();
-        const session: Session = JSON.parse(responseText);
-
-        if (session?.session) {
-          c.set('user', session.user);
-          c.set('session', session.session);
-        } else {
-          c.set('user', null);
-          c.set('session', null);
-        }
-      } catch (parseError) {
-        // Don't throw - just log and set null values
-        if (c.env.WORKER_NODE_ENV === 'development') {
-          console.error(
-            `❌ [checkAuth] JSON parse failed (${usingDirectFetch ? 'direct fetch' : 'service binding'}):`,
-            parseError,
-          );
-        }
-        c.set('user', null);
-        c.set('session', null);
-      }
+      const authResult = await parseSessionResponse(response, c.env, source);
+      setAuthContext(c, authResult);
 
       return next();
     } catch (error) {
       // Never throw - always continue gracefully
-      if (c.env.WORKER_NODE_ENV === 'development') {
-        console.error(`❌ [checkAuth] Authentication error:`, error);
-      }
-      c.set('user', null);
-      c.set('session', null);
+      logError(c.env, `❌ [checkAuth] Authentication error:`, error);
+      setAuthContext(c, { user: null, session: null });
       return next();
     }
   },
