@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a monorepo containing a web scraping and crawling service with the following main components:
 
-- **apps/workers/deepcrawl-v0/**: Main Cloudflare Worker application providing web scraping and reading APIs
+- **apps/workers/v0/**: Main Cloudflare Worker application providing web scraping and reading APIs
 - **apps/workers/auth/**: Authentication worker using Better Auth
 - **apps/app/**: Next.js dashboard application for managing the service
 - **packages/**: Shared packages including:
@@ -30,7 +30,7 @@ pnpm dev
 pnpm dev:dashboard
 
 # Start deepcrawl worker in development mode
-cd apps/workers/deepcrawl-v0 && pnpm dev
+cd apps/workers/v0 && pnpm dev
 
 # Start auth worker in development mode  
 cd apps/workers/auth && pnpm dev
@@ -48,7 +48,7 @@ pnpm typecheck
 pnpm check
 
 # Deploy deepcrawl worker to production
-cd apps/workers/deepcrawl-v0 && pnpm deploy
+cd apps/workers/v0 && pnpm deploy
 ```
 
 ### Testing and Quality
@@ -60,7 +60,7 @@ pnpm sherif
 pnpm sherif:fix
 
 # Format and lint deepcrawl worker
-cd apps/workers/deepcrawl-v0 && pnpm check
+cd apps/workers/v0 && pnpm check
 
 # Format and lint dashboard app
 cd apps/app && pnpm check
@@ -72,10 +72,10 @@ pnpm check
 ### OpenAPI and Types
 ```bash
 # Generate OpenAPI YAML for deepcrawl worker
-cd apps/workers/deepcrawl-v0 && pnpm gen:openapi
+cd apps/workers/v0 && pnpm gen:openapi
 
 # Generate Cloudflare Worker types
-cd apps/workers/deepcrawl-v0 && pnpm cf-typegen
+cd apps/workers/v0 && pnpm cf-typegen
 ```
 
 ### Database Management
@@ -151,22 +151,34 @@ tsx src/test.ts
 
 ## Architecture Overview
 
-### DeepCrawl Worker (apps/workers/deepcrawl-v0/)
+### DeepCrawl Worker (apps/workers/v0/)
 - **Framework**: Hono.js with Cloudflare Workers
 - **API Pattern**: Dual API approach using both oRPC and Hono/Zod-OpenAPI
 - **Services**:
   - `ScrapeService`: Web scraping with Puppeteer and Cheerio
-  - `HTMLCleaning`: Content cleaning and processing
+  - `HTMLCleaningService`: Content sanitization and processing
   - `MetadataService`: Extract page metadata
-  - `LinkService`: Link extraction and processing
-- **Storage**: Cloudflare KV for caching (READ_STORE, LINKS_STORE)
+  - `LinkService`: Link extraction and normalization
+- **Storage**: Cloudflare KV for caching (DEEPCRAWL_V0_READ_STORE, DEEPCRAWL_V0_LINKS_STORE)
 - **AI**: Cloudflare AI binding for content processing
 
 ### Key Service Patterns
-- **oRPC**: Type-safe RPC endpoints at `/rpc/*`
-- **OpenAPI**: RESTful endpoints at `/read`, `/links`, `/docs`, `/openapi`
-- **Context**: Shared context pattern for dependency injection
-- **Middleware**: CORS, rate limiting, validation, error handling
+- **Dual API System**: Both oRPC and OpenAPI/REST share the same business logic through a unified contract system
+  - **oRPC**: Type-safe RPC endpoints at `/rpc/*` for SDK consumption
+  - **OpenAPI**: RESTful endpoints at `/read`, `/links`, `/docs`, `/openapi` for general API access
+- **Context Pattern**: Shared `AppContext` includes Hono context, auth client, service fetchers, user/session data
+- **Middleware Stack** (in order):
+  1. CORS (`deepCrawlCors`)
+  2. Emoji Favicon
+  3. Logger
+  4. Request ID
+  5. Secure Headers
+  6. Trailing Slash Trimming
+  7. Service Fetcher (for service bindings)
+  8. API Key Auth (non-blocking, attempts authentication)
+  9. Cookie Auth (fallback for dashboard users)
+  10. Require Auth (enforces authentication)
+  11. Pretty JSON
 
 ### Frontend (apps/app/)
 - **Framework**: Next.js 14 with App Router
@@ -178,6 +190,12 @@ tsx src/test.ts
 - **Framework**: Hono.js with Better Auth
 - **Features**: OAuth providers, passkeys, magic links
 - **Database**: Configured for user management
+- **Authentication Flow**:
+  - **API Key Authentication**: Primary method via `x-api-key` header or Authorization Bearer token
+  - **Cookie Authentication**: Fallback for dashboard users
+  - **Service Bindings**: Auth worker communicates with main worker via Cloudflare Service Bindings
+  - **Special API Key**: `USE_COOKIE_AUTH_INSTEAD_OF_API_KEY` bypasses API key auth for dashboard
+- **Router Structure**: Auth endpoints organized in `router/auth.ts`
 
 ## Development Workflow
 
@@ -189,11 +207,11 @@ tsx src/test.ts
 
 ## Key Files and Directories
 
-- `apps/workers/deepcrawl-v0/src/app.ts`: Main application entry point
-- `apps/workers/deepcrawl-v0/src/orpc.ts`: oRPC server configuration
-- `apps/workers/deepcrawl-v0/src/contract/`: API contract definitions
-- `apps/workers/deepcrawl-v0/src/services/`: Core business logic
-- `apps/workers/deepcrawl-v0/wrangler.jsonc`: Cloudflare Worker configuration
+- `apps/workers/v0/src/app.ts`: Main application entry point
+- `apps/workers/v0/src/orpc.ts`: oRPC server configuration
+- `apps/workers/v0/src/contract/`: API contract definitions
+- `apps/workers/v0/src/services/`: Core business logic
+- `apps/workers/v0/wrangler.jsonc`: Cloudflare Worker configuration
 - `apps/app/app/actions/`: Next.js server actions
 - `turbo.json`: Monorepo build pipeline configuration
 
@@ -232,17 +250,26 @@ The TypeScript SDK has a complete test suite using Vitest:
 
 ### SDK Package Details
 The TypeScript SDK (`deepcrawl`) provides:
-- Client library for DeepCrawl API
-- Methods: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`
-- Built with tsup for both CommonJS and ESM formats
-- Published to npm with version management
+- **Client library** for DeepCrawl API
+- **Methods**: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`
+- **Built with tsup** for both CommonJS and ESM formats
+- **Published to npm** with version management
+- **RPC-First Design**: Uses oRPC's RPCLink for efficient communication
+- **Universal Runtime Support**: Works in Node.js, browsers, Edge Runtime, and Server Actions
+- **Automatic Header Forwarding**: In Next.js Server Actions, automatically extracts auth headers
+- **Custom Error Classes**: 
+  - `DeepcrawlError`: Base error class
+  - `DeepcrawlAuthError`: Authentication failures
+  - `DeepcrawlNetworkError`: Network issues
+  - `DeepcrawlReadError`: Read operation errors
+  - `DeepcrawlLinksError`: Link extraction errors
 
 ## Worker Development
 
 ### DeepCrawl Worker Development
 ```bash
 # Development with remote Cloudflare environment
-cd apps/workers/deepcrawl-v0
+cd apps/workers/v0
 pnpm dev  # Uses port 8080
 
 # Generate Cloudflare Worker types
@@ -285,10 +312,21 @@ pnpm ui add button  # Example: add button component
 ## Important Notes
 
 - **Node.js**: Requires Node.js >= 20
-- **Package Manager**: Uses pnpm@10.12.4 with workspaces
+- **Package Manager**: Uses pnpm@10.13.1 with workspaces
 - **Deployment**: Cloudflare Workers for backend services
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Authentication**: Better Auth with multiple providers (GitHub, Google, passkeys, magic links)
 - **UI Components**: shadcn/ui with Tailwind CSS
 - **Build System**: Turbo for monorepo orchestration, tsup for SDK builds
 - **Code Quality**: Biome for formatting/linting (80 char line width, 2-space indentation)
+- **Development Utilities**:
+  - Custom logging utilities for development environment (`logDebug`)
+  - Markdown linting with markdownlint-cli2
+  - Automatic Cloudflare Worker types generation
+- **Environment URLs**:
+  - Development: `http://localhost:8080` (DeepCrawl Worker)
+  - Production: `https://api.deepcrawl.dev`
+- **Worker Configuration**:
+  - Smart Placement enabled for optimal performance
+  - Observability enabled for production monitoring
+  - Service bindings for inter-worker communication
