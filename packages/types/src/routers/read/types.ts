@@ -154,14 +154,14 @@ export const MetricsSchema = z
     ],
   });
 
-export const ReadSuccessResponseSchema = z
-  .object({
-    ...ReadResponseBaseSchema.shape,
-    success: z.literal(true).meta({
-      description: 'Indicates that the operation was successful',
-      examples: [true],
-    }), // override to enforce success: true
-    ...ScrapedDataSchema.omit({ rawHtml: true }).shape,
+export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
+  success: z.literal(true).meta({
+    description: 'Indicates that the operation was successful',
+    examples: [true],
+  }),
+})
+  .extend(ScrapedDataSchema.omit({ rawHtml: true }).shape)
+  .extend({
     markdown: z
       .string()
       .optional()

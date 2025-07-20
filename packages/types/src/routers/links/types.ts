@@ -242,11 +242,9 @@ export const LinksOptionsSchema = z
         '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
       examples: [false],
     }),
-
-    ...TreeOptionsSchema.shape,
-
-    ...ContentOptionsSchema.shape,
   })
+  .extend(TreeOptionsSchema.shape)
+  .extend(ContentOptionsSchema.shape)
   .meta({
     title: 'LinksOptions',
     description: 'Configuration options for links extraction operation',
@@ -652,11 +650,9 @@ const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
   rawHtml: true,
 });
 
-export const LinksSuccessResponseSchema = z
-  .object({
-    ...LinksResponseBaseSchema.shape,
-    ...PartialScrapedDataSchema.shape,
-  })
+export const LinksSuccessResponseSchema = LinksResponseBaseSchema.extend(
+  PartialScrapedDataSchema.shape,
+)
   .extend({
     success: z.literal(true).meta({
       description: 'Indicates that the operation was successful',
@@ -746,31 +742,28 @@ export const LinksSuccessResponseSchema = z
     ],
   });
 
-export const LinksErrorResponseSchema = z
-  .object({
-    ...BaseErrorResponseSchema.shape,
-    timestamp: z.string().meta({
-      description: 'ISO timestamp when the error occurred',
-      examples: ['2024-01-15T10:30:00.000Z'],
-    }),
-    tree: LinksTreeSchema.optional().meta({
-      title: 'LinksTree',
-      description:
-        'LinksTree - Partial site map tree if available, or undefined if no tree could be generated',
-    }),
-  })
-  .meta({
-    title: 'LinksErrorResponse',
-    description: 'Error response from the links extraction operation',
-    examples: [
-      {
-        success: false,
-        targetUrl: 'https://example.com',
-        timestamp: '2024-01-15T10:30:00.000Z',
-        error: 'Failed to fetch: 404 Not Found',
-      },
-    ],
-  });
+export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
+  timestamp: z.string().meta({
+    description: 'ISO timestamp when the error occurred',
+    examples: ['2024-01-15T10:30:00.000Z'],
+  }),
+  tree: LinksTreeSchema.optional().meta({
+    title: 'LinksTree',
+    description:
+      'LinksTree - Partial site map tree if available, or undefined if no tree could be generated',
+  }),
+}).meta({
+  title: 'LinksErrorResponse',
+  description: 'Error response from the links extraction operation',
+  examples: [
+    {
+      success: false,
+      targetUrl: 'https://example.com',
+      timestamp: '2024-01-15T10:30:00.000Z',
+      error: 'Failed to fetch: 404 Not Found',
+    },
+  ],
+});
 
 /**
  * @name    can be imported as LinksTree or Tree
