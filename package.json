@@ -18,7 +18,7 @@
     "rimraf": "^6.0.1",
     "turbo": "^2.4.2",
     "typescript": "^5.8.3",
-    "wrangler": "^4.23.3",
+    "wrangler": "^4.25.0",
     "zod": "^3.25.74"
   },
   "packageManager": "pnpm@10.13.1",
