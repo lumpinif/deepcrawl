@@ -1,9 +1,9 @@
 import type {
   contract,
-  LinksGETOutput,
+  ExtractLinksOutput,
+  GetMarkdownOutput,
   LinksPOSTInput,
-  LinksPOSTOutput,
-  ReadPOSTOutput,
+  ReadUrlOutput,
 } from '@deepcrawl/contracts';
 import type { LinksOptions, ReadOptions } from '@deepcrawl/types';
 import { createORPCClient, isDefinedError, safe } from '@orpc/client';
@@ -124,7 +124,7 @@ export class DeepcrawlApp {
    * @param url - The URL to get the markdown for.
    * @returns The markdown.
    */
-  async getMarkdown(url: string): Promise<string> {
+  async getMarkdown(url: string): Promise<GetMarkdownOutput> {
     const [error, data] = await safe(this.client.read.getMarkdown({ url }));
 
     if (isDefinedError(error)) {
@@ -157,7 +157,7 @@ export class DeepcrawlApp {
   async readUrl(
     url: string,
     options: Omit<ReadOptions, 'url'> = {},
-  ): Promise<ReadPOSTOutput> {
+  ): Promise<ReadUrlOutput> {
     const readOptions: ReadOptions = {
       url,
       ...options,
@@ -184,27 +184,28 @@ export class DeepcrawlApp {
 
   /* Links GET */
   /**
+   * Use extractLinks instead.
    * @param url - The URL to get links from.
    * @returns The links.
    */
-  async getLinks(url: string): Promise<LinksGETOutput> {
-    const [error, data] = await safe(this.client.links.getLinks({ url }));
+  // async getLinks(url: string): Promise<GetLinksOutput> {
+  //   const [error, data] = await safe(this.client.links.getLinks({ url }));
 
-    if (isDefinedError(error)) {
-      // Throw specific links error with detailed information
-      throw new DeepcrawlLinksError(error.data);
-    }
-    // @ts-ignore TODO: FIX ERROR TYPE
-    if (!isDefinedError(error) && error?.code === 'UNAUTHORIZED') {
-      throw new DeepcrawlAuthError('Unauthorized');
-    }
+  //   if (isDefinedError(error)) {
+  //     // Throw specific links error with detailed information
+  //     throw new DeepcrawlLinksError(error.data);
+  //   }
+  //   // @ts-ignore TODO: FIX ERROR TYPE
+  //   if (!isDefinedError(error) && error?.code === 'UNAUTHORIZED') {
+  //     throw new DeepcrawlAuthError('Unauthorized');
+  //   }
 
-    if (error) {
-      throw new DeepcrawlNetworkError('Failed to get links', error);
-    }
+  //   if (error) {
+  //     throw new DeepcrawlNetworkError('Failed to get links', error);
+  //   }
 
-    return data;
-  }
+  //   return data;
+  // }
 
   /* Links POST */
   /**
@@ -215,7 +216,7 @@ export class DeepcrawlApp {
   async extractLinks(
     url: string,
     options: Omit<LinksOptions, 'url'> = {},
-  ): Promise<LinksPOSTOutput> {
+  ): Promise<ExtractLinksOutput> {
     const linksOptions: LinksPOSTInput = {
       url,
       ...options,
