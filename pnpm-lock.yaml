@@ -506,16 +506,6 @@ importers:
   packages/sdks: {}
 
   packages/sdks/js-ts:
-    dependencies:
-      '@orpc/client':
-        specifier: ^1.6.6
-        version: 1.6.8
-      '@orpc/contract':
-        specifier: ^1.6.8
-        version: 1.6.8
-      zod:
-        specifier: ^3.25.74
-        version: 3.25.76
     devDependencies:
       '@deepcrawl/contracts':
         specifier: workspace:*
@@ -526,6 +516,12 @@ importers:
       '@deepcrawl/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
+      '@orpc/client':
+        specifier: ^1.6.6
+        version: 1.6.8
+      '@orpc/contract':
+        specifier: ^1.6.8
+        version: 1.6.8
       '@vitest/ui':
         specifier: ^3.2.4
         version: 3.2.4(vitest@3.2.4)

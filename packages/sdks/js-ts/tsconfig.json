@@ -15,7 +15,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "@deepcrawl/types": ["../../types/src/index.ts"],
       "@deepcrawl/types/*": ["../../types/src/*"],
+      "@deepcrawl/contracts": ["../../contracts/src/index.ts"],
       "@deepcrawl/contracts/*": ["../../contracts/src/*"]
     }
   },

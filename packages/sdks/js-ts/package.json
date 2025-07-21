@@ -1,6 +1,6 @@
 {
   "name": "deepcrawl",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "JavaScript/TypeScript SDK for DeepCrawl API - A powerful web scraping and crawling service",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -55,15 +55,13 @@
     "access": "public"
   },
   "packageManager": "pnpm@10.12.1",
-  "dependencies": {
-    "@orpc/client": "^1.6.6",
-    "@orpc/contract": "^1.6.8",
-    "zod": "^3.25.74"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@deepcrawl/contracts": "workspace:*",
     "@deepcrawl/types": "workspace:*",
     "@deepcrawl/typescript-config": "workspace:*",
+    "@orpc/client": "^1.6.6",
+    "@orpc/contract": "^1.6.8",
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^18.0.1",
     "msw": "^2.10.3",
