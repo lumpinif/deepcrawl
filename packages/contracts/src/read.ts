@@ -1,6 +1,7 @@
 import {
   ReadErrorResponseSchema,
   ReadOptionsSchema,
+  type ReadStringResponse,
   ReadSuccessResponseSchema,
 } from '@deepcrawl/types';
 import { oc } from '@orpc/contract';
@@ -67,7 +68,8 @@ export const readGETContract = readOC
   );
 
 export type ReadGETInput = Inputs['read']['getMarkdown'];
-export type ReadGETOutput = Outputs['read']['getMarkdown'];
+// export type GetMarkdownOutput = Outputs['read']['getMarkdown']; // Blob type is the workaround but we want to return a text/markdown string response
+export type GetMarkdownOutput = ReadStringResponse;
 
 export const readPOSTContract = readOC
   .route({
@@ -81,4 +83,4 @@ export const readPOSTContract = readOC
   .output(ReadSuccessResponseSchema);
 
 export type ReadPOSTInput = Inputs['read']['readUrl'];
-export type ReadPOSTOutput = Outputs['read']['readUrl'];
+export type ReadUrlOutput = Outputs['read']['readUrl'];
