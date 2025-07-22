@@ -34,12 +34,12 @@ export default function createHonoApp() {
     .use('*', prettyJSON());
 
   // Register check-auth route
-  app.get('/check-auth', (c) => {
-    return c.json({
-      user: c.var.user,
-      session: c.var.session,
-    });
-  });
+  // app.get('/check-auth', (c) => {
+  //   return c.json({
+  //     user: c.var.user,
+  //     session: c.var.session,
+  //   });
+  // });
 
   app.notFound(notFound);
 
