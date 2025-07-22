@@ -21,7 +21,7 @@ import {
   PLATFORM_URLS,
 } from '@/config/constants';
 import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
-import type { AppContext } from '@/lib/context';
+import type { ORPCContext } from '@/lib/context';
 import { type _linksSets, LinkService } from '@/services/link/link.service';
 import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
@@ -69,7 +69,7 @@ export function createLinksErrorResponse({
  * Process a link request for both GET and POST handlers
  */
 export async function processLinksRequest(
-  c: AppContext,
+  c: ORPCContext,
   params: LinksOptions,
 ): Promise<LinksResponse> {
   const {

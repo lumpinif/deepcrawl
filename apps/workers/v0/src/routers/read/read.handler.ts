@@ -1,10 +1,10 @@
 import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { retry } from '@/middlewares/os.retry';
-import { publicProcedures } from '@/orpc';
+import { authed } from '@/orpc';
 import { processReadRequest } from './read.processor';
 
-export const readGETHandler = publicProcedures
-  .use(retry({ times: 3 }))
+export const readGETHandler = authed
+  .use(retry({ times: 2 }))
   .read.getMarkdown.handler(async ({ input, context: c, errors }) => {
     const { url } = input;
 
@@ -33,8 +33,8 @@ export const readGETHandler = publicProcedures
     }
   });
 
-export const readPOSTHandler = publicProcedures
-  .use(retry({ times: 3 }))
+export const readPOSTHandler = authed
+  .use(retry({ times: 2 }))
   .read.readUrl.handler(async ({ input, context: c, errors }) => {
     const { url, ...rest } = input;
     try {

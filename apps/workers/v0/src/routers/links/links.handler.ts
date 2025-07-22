@@ -3,14 +3,14 @@ import type {
   LinksSuccessResponse,
 } from '@deepcrawl/types';
 import { retry } from '@/middlewares/os.retry';
-import { publicProcedures } from '@/orpc';
+import { authed } from '@/orpc';
 import {
   createLinksErrorResponse,
   processLinksRequest,
 } from './links.processor';
 
-export const linksGETHandler = publicProcedures
-  .use(retry({ times: 3 }))
+export const linksGETHandler = authed
+  .use(retry({ times: 2 }))
   .links.getLinks.handler(async ({ input, context: c, errors }) => {
     const { url, ...rest } = input;
 
@@ -41,8 +41,8 @@ export const linksGETHandler = publicProcedures
     }
   });
 
-export const linksPOSTHandler = publicProcedures
-  .use(retry({ times: 3 }))
+export const linksPOSTHandler = authed
+  .use(retry({ times: 2 }))
   .links.extractLinks.handler(async ({ input, context: c, errors }) => {
     const { url, ...rest } = input;
 
