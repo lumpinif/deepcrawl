@@ -24,7 +24,7 @@ app.use('/rpc/*', async (c, next) => {
   const context = await createContext({ context: c });
   const { matched, response } = await rpcHandler.handle(c.req.raw, {
     prefix: '/rpc',
-    context: context,
+    context,
   });
 
   if (matched) {
@@ -47,7 +47,7 @@ for (const route of routes) {
     app.on(method, route.path, async (c) => {
       const context = await createContext({ context: c });
       const { matched, response } = await openAPIHandler.handle(c.req.raw, {
-        context: context,
+        context,
       });
 
       if (matched && response) {
