@@ -1,6 +1,5 @@
 import { onError } from '@orpc/server';
 import { RPCHandler } from '@orpc/server/fetch';
-import { ResponseHeadersPlugin } from '@orpc/server/plugins';
 import { router } from '@/routers';
 
 export const rpcHandler = new RPCHandler(router, {
@@ -9,5 +8,5 @@ export const rpcHandler = new RPCHandler(router, {
       console.error('❌ RPCHandler error', error);
     }),
   ],
-  plugins: [new ResponseHeadersPlugin()],
+  // plugins: [new ResponseHeadersPlugin()],
 });

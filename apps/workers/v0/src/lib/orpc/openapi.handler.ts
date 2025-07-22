@@ -18,7 +18,6 @@ import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
 import { onError } from '@orpc/server';
-import { ResponseHeadersPlugin } from '@orpc/server/plugins';
 import {
   experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
   experimental_ZodToJsonSchemaConverter as ZodV4ToJsonSchemaConverter,
@@ -118,7 +117,7 @@ export const openAPIHandler = new OpenAPIHandler(router, {
     }),
   ],
   plugins: [
-    new ResponseHeadersPlugin(),
+    // new ResponseHeadersPlugin(),
     new ZodSmartCoercionPlugin(),
     new OpenAPIReferencePlugin({
       schemaConverters: SchemaConverters,
