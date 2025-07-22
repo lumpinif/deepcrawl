@@ -18,10 +18,12 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
     logDebug(c.env, '🗝️ apiKey:', apiKey);
 
-    // If no API key provided, skip to next middleware (cookie auth)
     if (!apiKey) {
       logDebug(c.env, '🗝️ No API key provided, skipping to next auth method');
-      return next();
+      return c.json(
+        { success: false, error: 'Unauthorized: No API key provided' },
+        401,
+      );
     }
 
     try {
