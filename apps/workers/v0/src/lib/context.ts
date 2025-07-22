@@ -10,10 +10,8 @@ export interface AppVariables {
   serviceFetcher: typeof fetch;
   /** Custom Service Bindings Fetcher */
   customFetcher: typeof fetch;
-  /** Current User */
-  user: Session['user'] | null;
   /** Current Session */
-  session: Session['session'] | null;
+  session: Session | null;
 }
 
 export interface AppBindings {
@@ -21,16 +19,24 @@ export interface AppBindings {
   Variables: AppVariables;
 }
 
-export interface AppContext
-  extends HonoContext<AppBindings>,
-    ResponseHeadersPluginContext {}
+export interface AppContext extends HonoContext<AppBindings> {}
 
 export type CreateContextOptions = {
   context: AppContext;
 };
 
+export interface ORPCContext extends ResponseHeadersPluginContext {
+  env: AppBindings['Bindings'];
+  var: AppVariables;
+  headers: HonoContext['header'];
+}
+
 export async function createContext({
   context,
-}: CreateContextOptions): Promise<AppContext> {
-  return context;
+}: CreateContextOptions): Promise<ORPCContext> {
+  return {
+    env: context.env,
+    var: context.var,
+    headers: context.header,
+  };
 }
