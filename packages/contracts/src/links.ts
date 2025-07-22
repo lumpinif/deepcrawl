@@ -1,36 +1,16 @@
 import {
-  LinksErrorResponseSchema,
   LinksOptionsSchema,
   LinksSuccessResponseSchema,
 } from '@deepcrawl/types';
 import { oc } from '@orpc/contract';
-import { oo } from '@orpc/openapi';
+import { errorSpec } from '@/errors';
 import type { Inputs, Outputs } from '.';
 
 const tags = ['Extract Links'];
 
-const errorConfig = {
-  LINKS_ERROR_RESPONSE: {
-    status: 500,
-    message: 'Failed to extract links from URL',
-    data: LinksErrorResponseSchema,
-  },
-};
-
 const linksOC = oc.errors({
-  LINKS_ERROR_RESPONSE: oo.spec(
-    errorConfig.LINKS_ERROR_RESPONSE,
-    (currentOperation) => ({
-      ...currentOperation,
-      responses: {
-        ...currentOperation.responses,
-        500: {
-          ...currentOperation.responses?.[500],
-          description: 'Links extraction failed',
-        },
-      },
-    }),
-  ),
+  RATE_LIMITED: errorSpec.RATE_LIMITED,
+  LINKS_ERROR_RESPONSE: errorSpec.LINKS_ERROR_RESPONSE,
 });
 
 export const linksGETContract = linksOC
