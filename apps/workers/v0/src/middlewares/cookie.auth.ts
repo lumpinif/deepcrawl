@@ -4,36 +4,28 @@ import type { AppBindings, AppContext, AppVariables } from '@/lib/context';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { getAuthClient } from './auth.client';
 
-interface AuthResult {
-  user: Session['user'] | null;
-  session: Session['session'] | null;
-}
-
-const setAuthContext = (c: AppContext, result: AuthResult) => {
-  c.set('user', result.user);
-  c.set('session', result.session);
+const setAuthContext = (c: AppContext, session: Session | null) => {
+  c.set('session', session);
 };
 
 const parseSessionResponse = async (
   response: Response,
   env: AppBindings['Bindings'],
   source: string,
-): Promise<AuthResult> => {
+): Promise<Session | null> => {
   try {
     const responseText = await response.text();
 
     if (!responseText?.trim()) {
       logWarn(env, `⚠️ [checkAuth] Empty response from ${source}`);
-      return { user: null, session: null };
+      return null;
     }
 
     const session: Session = JSON.parse(responseText);
-    return session?.session
-      ? { user: session.user, session: session.session }
-      : { user: null, session: null };
+    return session;
   } catch (error) {
     logError(env, `❌ [checkAuth] JSON parse failed (${source}):`, error);
-    return { user: null, session: null };
+    return null;
   }
 };
 
@@ -59,13 +51,14 @@ const fetchWithFallback = async (
   return { response, source: 'direct fetch' };
 };
 
-export const checkCookieAuthMiddleware = createMiddleware<AppBindings>(
+export const cookieAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
-    if (c.get('session') && c.get('user')) {
-      logDebug(
-        c.env,
-        '✅ Skipping [checkCookieAuthMiddleware] Session and user found',
-      );
+    if (
+      c.get('session') ||
+      c.get('session')?.session ||
+      c.get('session')?.user
+    ) {
+      logDebug(c.env, '✅ Skipping [checkCookieAuthMiddleware] Session found');
       return next();
     }
 
@@ -88,10 +81,7 @@ export const checkCookieAuthMiddleware = createMiddleware<AppBindings>(
       );
 
       if (authSession.data) {
-        setAuthContext(c, {
-          user: authSession.data.user,
-          session: authSession.data.session,
-        });
+        setAuthContext(c, authSession.data);
         return next();
       }
 
@@ -107,14 +97,14 @@ export const checkCookieAuthMiddleware = createMiddleware<AppBindings>(
         c.env,
       );
 
-      const authResult = await parseSessionResponse(response, c.env, source);
-      setAuthContext(c, authResult);
+      const session = await parseSessionResponse(response, c.env, source);
+      setAuthContext(c, session);
 
       return next();
     } catch (error) {
       // Never throw - always continue gracefully
       logError(c.env, `❌ [checkAuth] Authentication error:`, error);
-      setAuthContext(c, { user: null, session: null });
+      setAuthContext(c, null);
       return next();
     }
   },

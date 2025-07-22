@@ -105,8 +105,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       const session = sessionData as Session;
 
       // Set validated session data
-      c.set('session', session.session);
-      c.set('user', session.user);
+      c.set('session', session);
 
       logDebug(c.env, '✅ API key authenticated successfully:', {
         userId: session.user.id,
