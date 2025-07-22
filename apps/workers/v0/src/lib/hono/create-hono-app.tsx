@@ -6,10 +6,10 @@ import { secureHeaders } from 'hono/secure-headers';
 import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
 import type { AppBindings } from '@/lib/context';
-import { apiKeyAuthMiddleware } from '@/middlewares/api-key.auth';
-import { cookieAuthMiddleware } from '@/middlewares/cookie.auth';
-import deepCrawlCors from '@/middlewares/cors';
-import { serviceFetcherMiddleware } from '@/middlewares/service.fetchers';
+import { apiKeyAuthMiddleware } from '@/middlewares/api-key-auth.hono';
+import { cookieAuthMiddleware } from '@/middlewares/cookie-auth.hono';
+import deepCrawlCors from '@/middlewares/cors.hono';
+import { serviceFetcherMiddleware } from '@/middlewares/service-fetchers.hono';
 
 export default function createHonoApp() {
   const app = new Hono<AppBindings>();

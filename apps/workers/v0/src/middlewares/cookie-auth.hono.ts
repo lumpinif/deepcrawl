@@ -2,7 +2,7 @@ import type { Session } from '@deepcrawl/auth/types';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings, AppContext, AppVariables } from '@/lib/context';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
-import { getAuthClient } from './auth.client';
+import { getAuthClient } from './client.auth';
 
 const setAuthContext = (c: AppContext, session: Session | null) => {
   c.set('session', session);

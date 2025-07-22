@@ -2,7 +2,7 @@ import type {
   LinksErrorResponse,
   LinksSuccessResponse,
 } from '@deepcrawl/types';
-import { retry } from '@/middlewares/os.retry';
+import { retry } from '@/middlewares/retry.orpc';
 import { authed } from '@/orpc';
 import {
   createLinksErrorResponse,
