@@ -1,4 +1,5 @@
 import { os } from '@orpc/server';
+import type { ORPCContext } from '@/lib/context';
 
 export function retry(options: { times: number }) {
   /**
@@ -9,8 +10,12 @@ export function retry(options: { times: number }) {
     .$context<{ canRetry?: boolean }>()
     .middleware(({ context, next }) => {
       const canRetry = context.canRetry ?? true;
+      const appContext = context as ORPCContext;
+      const session = appContext.var?.session;
+      const { user, session: userSession } = session ?? {};
+      const isAuthenticated = !!session && !!user && !!userSession;
 
-      if (!canRetry) {
+      if (!canRetry || !isAuthenticated) {
         return next();
       }
 
