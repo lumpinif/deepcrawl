@@ -103,14 +103,48 @@ export class DeepcrawlApp {
         new ClientRetryPlugin({
           default: {
             retry: ({ path }) => {
-              // Retry read operations up to 3 times
-              if (path[0] === 'read') return 3;
+              // Retry read operations up to 2 times
+              if (path[0] === 'read') return 2;
               // Retry link operations up to 2 times
               if (path[0] === 'links') return 2;
               return 0;
             },
             retryDelay: ({ attemptIndex }) =>
               Math.min(1000 * Math.pow(2, attemptIndex), 10000), // Exponential backoff
+            shouldRetry: ({ error }) => {
+              // Only retry on network errors
+              if (error instanceof Error) {
+                // Common network error patterns
+                const networkErrorPatterns = [
+                  'ECONNREFUSED',
+                  'ENOTFOUND',
+                  'ETIMEDOUT',
+                  'ECONNRESET',
+                  'ENETUNREACH',
+                  'EHOSTUNREACH',
+                  'EPIPE',
+                  'ECONNABORTED',
+                  'Network request failed',
+                  'fetch failed',
+                  'socket hang up',
+                  'request timed out',
+                ];
+                const errorMessage = error.message.toLowerCase();
+                const isNetworkError = networkErrorPatterns.some((pattern) =>
+                  errorMessage.includes(pattern.toLowerCase()),
+                );
+                if (isNetworkError) return true;
+                // Check for specific error types that indicate network issues
+                if ('cause' in error && error.cause instanceof Error) {
+                  const causeMessage = error.cause.message.toLowerCase();
+                  return networkErrorPatterns.some((pattern) =>
+                    causeMessage.includes(pattern.toLowerCase()),
+                  );
+                }
+              }
+
+              return false;
+            },
           },
         }),
       ],
