@@ -8,6 +8,7 @@ export {
   DeepcrawlError,
   DeepcrawlLinksError,
   DeepcrawlNetworkError,
+  DeepcrawlRateLimitError,
   DeepcrawlReadError,
 } from './types';
 

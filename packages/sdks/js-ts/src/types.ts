@@ -73,6 +73,32 @@ export class DeepcrawlReadError extends DeepcrawlError {
 }
 
 /**
+ * Error thrown when rate limit is exceeded
+ * Contains retry information from the API response
+ */
+export class DeepcrawlRateLimitError extends DeepcrawlError {
+  public readonly operation: string;
+  public readonly retryAfter: number;
+
+  constructor(errorResponse: {
+    message?: string;
+    data: {
+      operation: string;
+      retryAfter: number;
+    };
+  }) {
+    const message =
+      errorResponse.message ||
+      `Rate limit exceeded for operation: ${errorResponse.data.operation}. Retry after ${errorResponse.data.retryAfter} seconds.`;
+    super(message);
+    this.name = 'DeepcrawlRateLimitError';
+    this.operation = errorResponse.data.operation;
+    this.retryAfter = errorResponse.data.retryAfter;
+    this.status = 429;
+  }
+}
+
+/**
  * Error thrown when extracting links fails
  * Contains detailed information from the API response
  */
