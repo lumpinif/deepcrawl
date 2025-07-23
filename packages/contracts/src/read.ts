@@ -1,5 +1,6 @@
 import {
   ReadOptionsSchema,
+  type ReadStringResponse,
   // type ReadStringResponse,
   ReadSuccessResponseSchema,
 } from '@deepcrawl/types';
@@ -25,22 +26,21 @@ export const readGETContract = readOC
   })
   .input(ReadOptionsSchema.pick({ url: true }))
   // WORKAROUND: Return a Blob to bypass ORPC's JSON serialization since we'd like to return a text/markdown string response - but this introduces some latency
-  // .output(
-  //   z.instanceof(Blob).refine((blob) => blob.type === 'text/markdown', {
-  //     message: 'Blob must have text/markdown MIME type',
-  //   }),
   .output(
-    z.string().meta({
-      description: 'The page markdown content',
-      examples: [
-        '# Example Page\n\nThis is an example markdown content extracted from the webpage.\n\n## Main Content\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      ],
-    }),
+    z
+      .instanceof(Blob)
+      .refine((blob) => blob.type === 'text/markdown', {
+        message: 'Blob must have text/markdown MIME type',
+      })
+      .meta({
+        description: 'The page markdown content',
+        examples: ['# Example Page\n\nMarkdown content...'],
+      }),
   );
 
 export type ReadGETInput = Inputs['read']['getMarkdown'];
-export type GetMarkdownOutput = Outputs['read']['getMarkdown']; // Blob type is the workaround but we want to return a text/markdown string response
-// export type GetMarkdownOutput = ReadStringResponse;
+// export type GetMarkdownOutput = Outputs['read']['getMarkdown']; // Blob type is the workaround but we want to return a text/markdown string response
+export type GetMarkdownOutput = ReadStringResponse;
 
 export const readPOSTContract = readOC
   .route({

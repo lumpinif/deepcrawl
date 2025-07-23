@@ -258,6 +258,10 @@ export class DeepcrawlApp {
       handleORPCError(error, 'read', 'Failed to fetch markdown');
     }
 
+    if (data instanceof Blob) {
+      return await data.text();
+    }
+
     return data as GetMarkdownOutput;
   }
 
