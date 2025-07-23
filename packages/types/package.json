@@ -50,6 +50,5 @@
     "types",
     "typescript",
     "zod"
-  ],
-  "dependencies": {}
+  ]
 }

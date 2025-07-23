@@ -24,7 +24,7 @@
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "check": "biome check --write && pnpm typecheck",
     "clean": "rimraf dist",
-    "prepublishOnly": "pnpm run check &&pnpm run clean && pnpm run build",
+    "prepublishOnly": "pnpm run check && pnpm run clean && pnpm run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
