@@ -2,10 +2,29 @@ import {
   LinksErrorResponseSchema,
   ReadErrorResponseSchema,
 } from '@deepcrawl/types/index';
+import type { ErrorMap, ErrorMapItem } from '@orpc/contract';
 import { oo } from '@orpc/openapi';
 import { z } from 'zod/v4';
 
-export const errorConfig = {
+const RateLimitedSchema = z.object({
+  operation: z.string().meta({
+    description: 'The operation that was rate limited',
+    examples: ['read GET', 'read POST', 'links GET', 'links POST'],
+  }),
+  retryAfter: z
+    .number()
+    .int()
+    .meta({
+      description: 'The time to retry in seconds',
+      examples: [10],
+    }),
+});
+
+export const errorConfig: {
+  READ_ERROR_RESPONSE: ErrorMapItem<typeof ReadErrorResponseSchema>;
+  LINKS_ERROR_RESPONSE: ErrorMapItem<typeof LinksErrorResponseSchema>;
+  RATE_LIMITED: ErrorMapItem<typeof RateLimitedSchema>;
+} = {
   READ_ERROR_RESPONSE: {
     status: 500,
     message: 'Failed to read content from URL',
@@ -19,21 +38,9 @@ export const errorConfig = {
   RATE_LIMITED: {
     status: 429,
     message: 'Rate limit exceeded',
-    data: z.object({
-      operation: z.string().meta({
-        description: 'The operation that was rate limited',
-        examples: ['read GET', 'read POST', 'links GET', 'links POST'],
-      }),
-      retryAfter: z
-        .number()
-        .int()
-        .meta({
-          description: 'The time to retry in seconds',
-          examples: [10],
-        }),
-    }),
+    data: RateLimitedSchema,
   },
-};
+} satisfies ErrorMap;
 
 export const errorSpec = {
   RATE_LIMITED: oo.spec(errorConfig.RATE_LIMITED, (currentOperation) => ({
@@ -88,4 +95,4 @@ export const errorSpec = {
       },
     }),
   ),
-};
+} satisfies ErrorMap;

@@ -5,7 +5,8 @@ import {
 } from '@deepcrawl/types';
 import { oc } from '@orpc/contract';
 import { z } from 'zod/v4';
-import { errorSpec, type Inputs, type Outputs } from '.';
+import type { Inputs, Outputs } from '.';
+import { errorSpec } from './errors';
 
 const tags = ['Read URL'];
 
