@@ -148,7 +148,7 @@ importers:
         version: link:../../packages/sdks/js-ts
       drizzle-orm:
         specifier: ^0.44.2
-        version: 0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(kysely@0.28.2)
+        version: 0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(@upstash/redis@1.35.1)(kysely@0.28.2)
       framer-motion:
         specifier: ^12.23.3
         version: 12.23.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -262,7 +262,7 @@ importers:
         version: 1.0.1
       drizzle-orm:
         specifier: ^0.44.2
-        version: 0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(kysely@0.28.2)
+        version: 0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(@upstash/redis@1.35.1)(kysely@0.28.2)
       hono:
         specifier: ^4.7.10
         version: 4.8.4
@@ -330,6 +330,12 @@ importers:
       '@scalar/openapi-to-markdown':
         specifier: ^0.2.2
         version: 0.2.20(typescript@5.8.3)
+      '@upstash/ratelimit':
+        specifier: ^2.0.5
+        version: 2.0.5(@upstash/redis@1.35.1)
+      '@upstash/redis':
+        specifier: ^1.35.1
+        version: 1.35.1
       cheerio:
         specifier: ^1.0.0
         version: 1.1.0
@@ -449,7 +455,7 @@ importers:
         version: 1.0.1
       drizzle-orm:
         specifier: ^0.44.2
-        version: 0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(kysely@0.28.2)
+        version: 0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(@upstash/redis@1.35.1)(kysely@0.28.2)
     devDependencies:
       '@deepcrawl/typescript-config':
         specifier: workspace:*
@@ -3469,6 +3475,18 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
+
+  '@upstash/core-analytics@0.0.10':
+    resolution: {integrity: sha512-7qJHGxpQgQr9/vmeS1PktEwvNAF7TI4iJDi8Pu2CFZ9YUGHZH4fOP5TfYlZ4aVxfopnELiE4BS4FBjyK7V1/xQ==}
+    engines: {node: '>=16.0.0'}
+
+  '@upstash/ratelimit@2.0.5':
+    resolution: {integrity: sha512-1FRv0cs3ZlBjCNOCpCmKYmt9BYGIJf0J0R3pucOPE88R21rL7jNjXG+I+rN/BVOvYJhI9niRAS/JaSNjiSICxA==}
+    peerDependencies:
+      '@upstash/redis': ^1.34.3
+
+  '@upstash/redis@1.35.1':
+    resolution: {integrity: sha512-sIMuAMU9IYbE2bkgDby8KLoQKRiBMXn0moXxqLvUmQ7VUu2CvulZLtK8O0x3WQZFvvZhU5sRC2/lOVZdGfudkA==}
 
   '@vitest/eslint-plugin@1.3.4':
     resolution: {integrity: sha512-EOg8d0jn3BAiKnR55WkFxmxfWA3nmzrbIIuOXyTe6A72duryNgyU+bdBEauA97Aab3ho9kLmAwgPX63Ckj4QEg==}
@@ -10759,6 +10777,19 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
+  '@upstash/core-analytics@0.0.10':
+    dependencies:
+      '@upstash/redis': 1.35.1
+
+  '@upstash/ratelimit@2.0.5(@upstash/redis@1.35.1)':
+    dependencies:
+      '@upstash/core-analytics': 0.0.10
+      '@upstash/redis': 1.35.1
+
+  '@upstash/redis@1.35.1':
+    dependencies:
+      uncrypto: 0.1.3
+
   '@vitest/eslint-plugin@1.3.4(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)(vitest@3.2.4)':
     dependencies:
       '@typescript-eslint/utils': 8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
@@ -10785,7 +10816,6 @@ snapshots:
     optionalDependencies:
       msw: 2.10.3(@types/node@20.8.3)(typescript@5.8.3)
       vite: 7.0.4(@types/node@20.8.3)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0)
-    optional: true
 
   '@vitest/mocker@3.2.4(msw@2.10.3(@types/node@22.16.3)(typescript@5.8.3))(vite@7.0.4(@types/node@22.16.3)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0))':
     dependencies:
@@ -10825,7 +10855,7 @@ snapshots:
       sirv: 3.0.1
       tinyglobby: 0.2.14
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@22.16.3)(@vitest/ui@3.2.4)(happy-dom@18.0.1)(jiti@2.4.2)(lightningcss@1.30.1)(msw@2.10.3(@types/node@22.16.3)(typescript@5.8.3))(terser@5.43.1)(yaml@2.8.0)
+      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@20.8.3)(@vitest/ui@3.2.4)(happy-dom@18.0.1)(jiti@2.4.2)(lightningcss@1.30.1)(msw@2.10.3(@types/node@20.8.3)(typescript@5.8.3))(terser@5.43.1)(yaml@2.8.0)
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -11693,11 +11723,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(kysely@0.28.2):
+  drizzle-orm@0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(@upstash/redis@1.35.1)(kysely@0.28.2):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20250711.0
       '@neondatabase/serverless': 1.0.1
       '@types/pg': 8.15.4
+      '@upstash/redis': 1.35.1
       kysely: 0.28.2
 
   dunder-proto@1.0.1:
@@ -11997,7 +12028,7 @@ snapshots:
       '@typescript-eslint/parser': 8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
       eslint: 9.31.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.31.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2))
       eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.31.0(jiti@2.4.2))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.31.0(jiti@2.4.2))
       eslint-plugin-react: 7.37.5(eslint@9.31.0(jiti@2.4.2))
@@ -12030,7 +12061,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.31.0(jiti@2.4.2)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.1
@@ -12055,14 +12086,14 @@ snapshots:
     dependencies:
       eslint: 9.31.0(jiti@2.4.2)
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.31.0(jiti@2.4.2)):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
       eslint: 9.31.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.31.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2))
     transitivePeerDependencies:
       - supports-color
 
@@ -12114,7 +12145,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.31.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.31.0(jiti@2.4.2))
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -16010,7 +16041,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-    optional: true
 
   vite-node@3.2.4(@types/node@22.16.3)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0):
     dependencies:
@@ -16048,7 +16078,6 @@ snapshots:
       lightningcss: 1.30.1
       terser: 5.43.1
       yaml: 2.8.0
-    optional: true
 
   vite@7.0.4(@types/node@22.16.3)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0):
     dependencies:
@@ -16109,7 +16138,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-    optional: true
 
   vitest@3.2.4(@types/debug@4.1.12)(@types/node@22.16.3)(@vitest/ui@3.2.4)(happy-dom@18.0.1)(jiti@2.4.2)(lightningcss@1.30.1)(msw@2.10.3(@types/node@22.16.3)(typescript@5.8.3))(terser@5.43.1)(yaml@2.8.0):
     dependencies:

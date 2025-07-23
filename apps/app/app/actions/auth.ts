@@ -391,7 +391,7 @@ export async function createApiKey({
         // Server-only properties with default values
         rateLimitEnabled: true,
         rateLimitTimeWindow: 1000 * 60 * 60 * 24, // 24 hours
-        rateLimitMax: 100, // 100 requests per day
+        rateLimitMax: 1000, // NOTE: SHOULD BE EQUAL TO OR HIGHER THAN THE HIGHEST SERVICE RATE LIMIT
         // Note: permissions will use defaultPermissions from auth config
       },
     });
