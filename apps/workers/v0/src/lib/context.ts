@@ -1,9 +1,12 @@
-import type { Session } from '@deepcrawl/auth/types';
+import type { Auth, Session } from '@deepcrawl/auth/types';
 import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
+import type { Ratelimit } from '@upstash/ratelimit';
 import type { Context as HonoContext } from 'hono';
 import type { getAuthClient } from '@/middlewares/client.auth';
 
 export interface AppVariables {
+  /** Auth Instance */
+  auth: Auth;
   /** Better Auth Client */
   authClient: ReturnType<typeof getAuthClient> | null;
   /** Service Bindings Fetcher */
@@ -12,6 +15,10 @@ export interface AppVariables {
   customFetcher: typeof fetch;
   /** Current Session */
   session: Session | null;
+  /** User IP */
+  userIP: string | null;
+  /** Rate Limiter */
+  rateLimiter: Ratelimit;
 }
 
 export interface AppBindings {
@@ -28,7 +35,7 @@ export type CreateContextOptions = {
 export interface ORPCContext extends ResponseHeadersPluginContext {
   env: AppBindings['Bindings'];
   var: AppVariables;
-  headers: HonoContext['header'];
+  executionCtx: ExecutionContext;
 }
 
 export async function createContext({
@@ -37,6 +44,6 @@ export async function createContext({
   return {
     env: context.env,
     var: context.var,
-    headers: context.header,
+    executionCtx: context.executionCtx,
   };
 }

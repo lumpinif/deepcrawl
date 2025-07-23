@@ -7,6 +7,7 @@ import { trimTrailingSlash } from 'hono/trailing-slash';
 import { notFound, serveEmojiFavicon } from 'stoker/middlewares';
 import type { AppBindings } from '@/lib/context';
 import { apiKeyAuthMiddleware } from '@/middlewares/api-key-auth.hono';
+import { connInfoMiddleware } from '@/middlewares/connInfo.hono';
 import { cookieAuthMiddleware } from '@/middlewares/cookie-auth.hono';
 import deepCrawlCors from '@/middlewares/cors.hono';
 import { serviceFetcherMiddleware } from '@/middlewares/service-fetchers.hono';
@@ -28,6 +29,7 @@ export default function createHonoApp() {
     .use('*', serviceFetcherMiddleware)
     .use('*', apiKeyAuthMiddleware)
     .use('*', cookieAuthMiddleware)
+    .use('*', connInfoMiddleware)
 
     .use('*', prettyJSON());
 
