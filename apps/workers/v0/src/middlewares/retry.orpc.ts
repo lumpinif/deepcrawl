@@ -1,12 +1,12 @@
-import { os } from '@orpc/server';
 import type { ORPCContext } from '@/lib/context';
+import { publicProcedures } from '@/orpc';
 
 export function retry(options: { times: number }) {
   /**
    * Best practices for dedupe-middlewares
    * {@link https://orpc.unnoq.com/docs/best-practices/dedupe-middleware}
    */
-  return os
+  return publicProcedures
     .$context<{ canRetry?: boolean }>()
     .middleware(({ context, next }) => {
       const canRetry = context.canRetry ?? true;
