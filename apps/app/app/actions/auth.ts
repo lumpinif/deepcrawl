@@ -388,10 +388,6 @@ export async function createApiKey({
         prefix: prefix || 'dc_',
         metadata,
         userId: session.user.id, // Required for server-side creation
-        // Server-only properties with default values
-        rateLimitEnabled: true,
-        rateLimitTimeWindow: 1000 * 60 * 60 * 24, // 24 hours
-        rateLimitMax: 1000, // NOTE: SHOULD BE EQUAL TO OR HIGHER THAN THE HIGHEST SERVICE RATE LIMIT
         // Note: permissions will use defaultPermissions from auth config
       },
     });
