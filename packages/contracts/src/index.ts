@@ -20,5 +20,6 @@ export const contract = oc.router({
 export type Inputs = InferContractRouterInputs<typeof contract>;
 export type Outputs = InferContractRouterOutputs<typeof contract>;
 
+export * from './errors';
 export * from './links';
 export * from './read';
