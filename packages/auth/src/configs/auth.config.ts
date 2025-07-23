@@ -409,8 +409,6 @@ export function createAuthConfig(env: Env) {
       },
     },
     rateLimit: {
-      window: 60,
-      max: 1000,
       customRules: {
         '/sign-in/email': {
           window: 10,
