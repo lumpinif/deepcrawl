@@ -15,8 +15,8 @@ importers:
         specifier: workspace:*
         version: link:packages/typescript-config
       better-auth:
-        specifier: ^1.2.12
-        version: 1.2.12
+        specifier: ^1.3.3
+        version: 1.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       dotenv-cli:
         specifier: ^8.0.0
         version: 8.0.0
@@ -268,7 +268,7 @@ importers:
         version: 4.8.4
       stoker:
         specifier: ^1.4.2
-        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0)
+        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@4.0.5))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.0.5))(hono@4.8.4)(openapi3-ts@4.5.0)
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250711.0
@@ -299,28 +299,28 @@ importers:
         version: 0.2.2(@cloudflare/workers-types@4.20250711.0)(hono@4.8.4)
       '@hono/zod-openapi':
         specifier: ^0.19.9
-        version: 0.19.9(hono@4.8.4)(zod@3.25.76)
+        version: 0.19.9(hono@4.8.4)(zod@4.0.5)
       '@hono/zod-validator':
         specifier: ^0.5.0
-        version: 0.5.0(hono@4.8.4)(zod@3.25.76)
+        version: 0.5.0(hono@4.8.4)(zod@4.0.5)
       '@orpc/client':
-        specifier: ^1.6.6
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
       '@orpc/contract':
-        specifier: ^1.6.8
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
       '@orpc/openapi':
-        specifier: ^1.6.6
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
       '@orpc/openapi-client':
-        specifier: ^1.6.6
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
       '@orpc/server':
-        specifier: ^1.6.6
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
       '@orpc/zod':
-        specifier: ^1.6.6
-        version: 1.6.8(@orpc/contract@1.6.8)(@orpc/server@1.6.8)(zod@3.25.76)
+        specifier: ^1.7.4
+        version: 1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@4.0.5)
       '@paoramen/cheer-reader':
         specifier: npm:@jsr/paoramen__cheer-reader@^0.1.2
         version: '@jsr/paoramen__cheer-reader@0.1.2'
@@ -359,13 +359,13 @@ importers:
         version: 13.0.0
       stoker:
         specifier: ^1.4.2
-        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0)
+        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@4.0.5))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.0.5))(hono@4.8.4)(openapi3-ts@4.5.0)
       xss:
         specifier: ^1.0.15
         version: 1.0.15
       zod-to-json-schema:
         specifier: ^3.24.6
-        version: 3.24.6(zod@3.25.76)
+        version: 3.24.6(zod@4.0.5)
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^4.13.2
@@ -408,7 +408,7 @@ importers:
         version: 19.1.8
       better-auth-harmony:
         specifier: ^1.2.5
-        version: 1.2.5(better-auth@1.2.12)
+        version: 1.2.5(better-auth@1.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -438,11 +438,11 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@orpc/contract':
-        specifier: ^1.6.8
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
       '@orpc/openapi':
-        specifier: ^1.6.6
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
     devDependencies:
       '@deepcrawl/typescript-config':
         specifier: workspace:*
@@ -526,11 +526,11 @@ importers:
         specifier: workspace:*
         version: link:../../typescript-config
       '@orpc/client':
-        specifier: ^1.6.6
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
       '@orpc/contract':
-        specifier: ^1.6.8
-        version: 1.6.8
+        specifier: ^1.7.4
+        version: 1.7.4
       '@vitest/ui':
         specifier: ^3.2.4
         version: 3.2.4(vitest@3.2.4)
@@ -552,9 +552,6 @@ importers:
 
   packages/types:
     dependencies:
-      '@orpc/zod':
-        specifier: ^1.6.6
-        version: 1.6.8(@orpc/contract@1.6.8)(@orpc/server@1.6.8)(zod@3.25.76)
       typescript:
         specifier: '>=5.0.0'
         version: 5.8.3
@@ -2054,20 +2051,23 @@ packages:
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
 
-  '@orpc/client@1.6.8':
-    resolution: {integrity: sha512-Kx3CNe/hVJMQK583o3eyZJKi/YPXz5W8wdns9Bae7haZ7k8zShdqhwszgZHTiacSKYj1kw/2HwRphLsYOCGxZA==}
+  '@orpc/client@1.7.4':
+    resolution: {integrity: sha512-74wUIp3/LWmYU7ENhUVtHvF3KNcobA3rikPHg2q4fmtcczgdn6R/cKv1rbYKKPkGFpyY9LDk0K7zjbeNbN4IFA==}
 
-  '@orpc/contract@1.6.8':
-    resolution: {integrity: sha512-+BmsAOaQHH0whsaiyBd4QTHkVrc6FaRbwIvBZTuP7yypGMCUjGYPpVgdG6OkZDFLMZaPV1kpRedTU9ISsfW0hw==}
+  '@orpc/contract@1.7.4':
+    resolution: {integrity: sha512-lQAYxo1WZYfEc/WsB0aluc1v0tuAVPmZponhQPK0DdB3MNR9x0wys4Wldf5xtnZ47ilFVt2p1w59qAjR/DwA8g==}
 
-  '@orpc/openapi-client@1.6.8':
-    resolution: {integrity: sha512-f5wZsDXA+yEAms1GbIMX3EpInc4cbLIu1yWhXG7m1IrwxDjtbKSrkZCuv6+KYMQxFoLhqeqn0mkkZDNb4XC1Pg==}
+  '@orpc/json-schema@1.7.4':
+    resolution: {integrity: sha512-8U4sKuoUB+2ETEpZ85flESa7oV8uaID0Ony0b9dd8iT5cyXxeOPqiL6eD5XK2WiiLwULEHv0NJG4SqeujBNBYA==}
 
-  '@orpc/openapi@1.6.8':
-    resolution: {integrity: sha512-WCfI6Phl3Y1bSTQLNWzBnPwdvJUZ5tDhCBdb+W6LuDmpwZXhYcntXJxF1wg3AwWajjy6gOuyukRLIoLPlOTWiA==}
+  '@orpc/openapi-client@1.7.4':
+    resolution: {integrity: sha512-G587hb4L3fSMvQY3R5151YZ0PqM23JSfEhUmZsq9QpLiARrDmnUfSKsrGQbv2WZRulX8l1A3fLbZp/lAJ5iLkg==}
 
-  '@orpc/server@1.6.8':
-    resolution: {integrity: sha512-J1twGRMT2SYTUuLqKbEuncOWqi0lqr7HayHsFhpiJcYJD8ITEv2JDl7C/pYig8909wBvbxnnEQ0Ijv+/0v2taA==}
+  '@orpc/openapi@1.7.4':
+    resolution: {integrity: sha512-m1ipxYv7sx0LlaWyL6tO5tZM+0GSW3215kLdVVUHFYkjOBICm1M2juxsM+G7Ce89/os+cCzqqXTrldxitVSFJQ==}
+
+  '@orpc/server@1.7.4':
+    resolution: {integrity: sha512-J1+09abwzLjSVP46/2hDGW/835WLFacX1rfGuBpJPD2cCxVUEQOrzhoIuxezFYhW5u2Y4PPrqanLjayuo673sw==}
     peerDependencies:
       crossws: '>=0.3.4'
       ws: '>=8.18.1'
@@ -2077,30 +2077,30 @@ packages:
       ws:
         optional: true
 
-  '@orpc/shared@1.6.8':
-    resolution: {integrity: sha512-hhcOD/1zQgI/EUJhPAYPSh1SLtnmKB+zcxfxxPmgX6tz5+Q0Zn/1Jbv8L0vuEnEoC5Yoq/WY+asB+scWQ1mwFg==}
+  '@orpc/shared@1.7.4':
+    resolution: {integrity: sha512-CUEsKZcCPENheqAJqhH6tG/wTCrGHUmWD5nro6afiVC/H8ujb5cI7HVvZxn4nXh4Vw2W7fxBiY4cx7sKGUm1vg==}
 
-  '@orpc/standard-server-aws-lambda@1.6.8':
-    resolution: {integrity: sha512-WMLeNbq0evd5orrmwsfn5EyVTdWcN9puMEE55CTjNMxWrFxdtDuHhuvb9eX6AoV7UaH/Rf2fS7TNvpzP03YDUA==}
+  '@orpc/standard-server-aws-lambda@1.7.4':
+    resolution: {integrity: sha512-VH9ZEhwSUwv6bAa+1ShHNgolH0h0SG9xPcadewGVkuDk/DP/TB/chd85pyV+3qmu1bsbBTr2b7cAFqdwdMMGww==}
 
-  '@orpc/standard-server-fetch@1.6.8':
-    resolution: {integrity: sha512-QSA3QOxh/9ltkXzFVx6JPrEOV7r4/JJrmeBLKe0/cGHaBKcf3Trz57UBQ576crovcw7SbX0XB22DVdyCO+Gq8Q==}
+  '@orpc/standard-server-fetch@1.7.4':
+    resolution: {integrity: sha512-BpuknICqaIX7oUZDjTW8r6XIgTaG7sd7Y7jTTT7Ci4S30/VGAYPfJtZV9MJjpdglBMiLQOSbFoseWb9WnGQqKA==}
 
-  '@orpc/standard-server-node@1.6.8':
-    resolution: {integrity: sha512-N3LexD5mRY+CG4WH//5HeKGsBgbLzI/IRlLSHmFb0Ijvq9YAJYcrlR1qeEDCzx8bkCSU+Q4Qus63J+9Uw6oZpw==}
+  '@orpc/standard-server-node@1.7.4':
+    resolution: {integrity: sha512-I3UgUu0EI1Asuaex8R5ut3+b8ZUAYOAnbsieaxBbglUn48ffRiDw+wGi3MNZtbDrJEhN/4TmkUuvpbQpO7da8w==}
 
-  '@orpc/standard-server-peer@1.6.8':
-    resolution: {integrity: sha512-Rt1l8zk4zQvw9vhIL642O9H8Df3VSdq1dLBy0qi4yTp9kvH6UAlH8uClRxnfezDJa6IC9RecVBlxtC0+32Ml0Q==}
+  '@orpc/standard-server-peer@1.7.4':
+    resolution: {integrity: sha512-EVx4nm3HGq4072s4CadTtbv9c/Mf2NW3TL7o8tRqUMyrhBpF20mfRmw982s8S1iYBCC33ObUT5v+prhJ09pSpw==}
 
-  '@orpc/standard-server@1.6.8':
-    resolution: {integrity: sha512-/COGF1G28DXqWmSvDREjoN0MdIVgi795iCsI4j+L0O+nsw11nHqaIGv+rK0j/jTjioCZtV/Pfsq6KggLLW11Lw==}
+  '@orpc/standard-server@1.7.4':
+    resolution: {integrity: sha512-O0R18fMwCL9BqnCPJELiRpCo+vEB7QA+pqlPiH4J3FNWrJuNv5cVzjJ8/iXuaXMXxXRH51H03EKjsCW4uq8dUA==}
 
-  '@orpc/zod@1.6.8':
-    resolution: {integrity: sha512-pv1CIOBfedm+2i3MdJZ41cKwuX5I1rWiN7r1xZ+AjiqhxamlmcpHLgPwCejuk/X//6yqb5eYlRa+mKQvCsQDTA==}
+  '@orpc/zod@1.7.4':
+    resolution: {integrity: sha512-mwr4jBx/8g/ApJOEfFJiPh5txa+wwNex8y7JW6H0VFL5ghUqOlPOjQdiyuWnu04DaRlVQRJTQPaKOn9K0wmUfA==}
     peerDependencies:
-      '@orpc/contract': 1.6.8
-      '@orpc/server': 1.6.8
-      zod: '>=3.24.2'
+      '@orpc/contract': 1.7.4
+      '@orpc/server': 1.7.4
+      zod: '>=3.25.0'
 
   '@peculiar/asn1-android@2.3.16':
     resolution: {integrity: sha512-a1viIv3bIahXNssrOIkXZIlI2ePpZaNmR30d4aBL99mu2rO+mT9D6zBsp7H6eROWGtmwv0Ionp5olJurIo09dw==}
@@ -3793,8 +3793,16 @@ packages:
     peerDependencies:
       better-auth: ^1.0.3
 
-  better-auth@1.2.12:
-    resolution: {integrity: sha512-YicCyjQ+lxb7YnnaCewrVOjj3nPVa0xcfrOJK7k5MLMX9Mt9UnJ8GYaVQNHOHLyVxl92qc3C758X1ihqAUzm4w==}
+  better-auth@1.3.3:
+    resolution: {integrity: sha512-q1aD2nNpGfEI2ckYu+pBjN+23CIRctOpmREkWyJDJdoYW1q9EPs1Xdb+KhFztg2rMmsoUN8I9Xm5mUWMxiWuLw==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
 
   better-call@1.0.12:
     resolution: {integrity: sha512-ssq5OfB9Ungv2M1WVrRnMBomB0qz1VKuhkY2WxjHaLtlsHoSe9EPolj1xf7xf8LY9o3vfk3Rx6rCWI4oVHeBRg==}
@@ -5645,8 +5653,8 @@ packages:
     resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
     hasBin: true
 
-  jose@6.0.11:
-    resolution: {integrity: sha512-QxG7EaliDARm1O1S8BGakqncGT9s25bKL1WSf6/oa17Tkqwi8D2ZNglqCF+DsYF88/rV66Q/Q2mFAy697E1DUg==}
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
@@ -8151,6 +8159,9 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
+  zod@4.0.5:
+    resolution: {integrity: sha512-/5UuuRPStvHXu7RS+gmvRf4NXrNxpSllGwDnCBcJZtQsKrviYXm54yDGV2KYNLT5kq0lHGcl7lqWJLgSaG+tgA==}
+
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
@@ -8217,10 +8228,10 @@ snapshots:
       package-manager-detector: 1.3.0
       tinyexec: 1.0.1
 
-  '@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76)':
+  '@asteasolutions/zod-to-openapi@7.3.4(zod@4.0.5)':
     dependencies:
       openapi3-ts: 4.5.0
-      zod: 3.25.76
+      zod: 4.0.5
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -8816,23 +8827,23 @@ snapshots:
       '@cloudflare/workers-types': 4.20250711.0
       hono: 4.8.4
 
-  '@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76)':
+  '@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.0.5)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.4(zod@3.25.76)
-      '@hono/zod-validator': 0.7.0(hono@4.8.4)(zod@3.25.76)
+      '@asteasolutions/zod-to-openapi': 7.3.4(zod@4.0.5)
+      '@hono/zod-validator': 0.7.0(hono@4.8.4)(zod@4.0.5)
       hono: 4.8.4
       openapi3-ts: 4.5.0
-      zod: 3.25.76
+      zod: 4.0.5
 
-  '@hono/zod-validator@0.5.0(hono@4.8.4)(zod@3.25.76)':
+  '@hono/zod-validator@0.5.0(hono@4.8.4)(zod@4.0.5)':
     dependencies:
       hono: 4.8.4
-      zod: 3.25.76
+      zod: 4.0.5
 
-  '@hono/zod-validator@0.7.0(hono@4.8.4)(zod@3.25.76)':
+  '@hono/zod-validator@0.7.0(hono@4.8.4)(zod@4.0.5)':
     dependencies:
       hono: 4.8.4
-      zod: 3.25.76
+      zod: 4.0.5
 
   '@hookform/resolvers@5.1.1(react-hook-form@7.60.0(react@19.1.0))':
     dependencies:
@@ -9241,93 +9252,105 @@ snapshots:
 
   '@open-draft/until@2.1.0': {}
 
-  '@orpc/client@1.6.8':
+  '@orpc/client@1.7.4':
     dependencies:
-      '@orpc/shared': 1.6.8
-      '@orpc/standard-server': 1.6.8
-      '@orpc/standard-server-fetch': 1.6.8
-      '@orpc/standard-server-peer': 1.6.8
+      '@orpc/shared': 1.7.4
+      '@orpc/standard-server': 1.7.4
+      '@orpc/standard-server-fetch': 1.7.4
+      '@orpc/standard-server-peer': 1.7.4
 
-  '@orpc/contract@1.6.8':
+  '@orpc/contract@1.7.4':
     dependencies:
-      '@orpc/client': 1.6.8
-      '@orpc/shared': 1.6.8
+      '@orpc/client': 1.7.4
+      '@orpc/shared': 1.7.4
       '@standard-schema/spec': 1.0.0
       openapi-types: 12.1.3
 
-  '@orpc/openapi-client@1.6.8':
+  '@orpc/json-schema@1.7.4':
     dependencies:
-      '@orpc/client': 1.6.8
-      '@orpc/contract': 1.6.8
-      '@orpc/shared': 1.6.8
-      '@orpc/standard-server': 1.6.8
+      '@orpc/contract': 1.7.4
+      '@orpc/openapi': 1.7.4
+      '@orpc/server': 1.7.4
+      '@orpc/shared': 1.7.4
+      json-schema-typed: 8.0.1
+    transitivePeerDependencies:
+      - crossws
+      - ws
 
-  '@orpc/openapi@1.6.8':
+  '@orpc/openapi-client@1.7.4':
     dependencies:
-      '@orpc/client': 1.6.8
-      '@orpc/contract': 1.6.8
-      '@orpc/openapi-client': 1.6.8
-      '@orpc/server': 1.6.8
-      '@orpc/shared': 1.6.8
-      '@orpc/standard-server': 1.6.8
+      '@orpc/client': 1.7.4
+      '@orpc/contract': 1.7.4
+      '@orpc/shared': 1.7.4
+      '@orpc/standard-server': 1.7.4
+
+  '@orpc/openapi@1.7.4':
+    dependencies:
+      '@orpc/client': 1.7.4
+      '@orpc/contract': 1.7.4
+      '@orpc/openapi-client': 1.7.4
+      '@orpc/server': 1.7.4
+      '@orpc/shared': 1.7.4
+      '@orpc/standard-server': 1.7.4
       json-schema-typed: 8.0.1
       rou3: 0.7.3
     transitivePeerDependencies:
       - crossws
       - ws
 
-  '@orpc/server@1.6.8':
+  '@orpc/server@1.7.4':
     dependencies:
-      '@orpc/client': 1.6.8
-      '@orpc/contract': 1.6.8
-      '@orpc/shared': 1.6.8
-      '@orpc/standard-server': 1.6.8
-      '@orpc/standard-server-aws-lambda': 1.6.8
-      '@orpc/standard-server-fetch': 1.6.8
-      '@orpc/standard-server-node': 1.6.8
-      '@orpc/standard-server-peer': 1.6.8
+      '@orpc/client': 1.7.4
+      '@orpc/contract': 1.7.4
+      '@orpc/shared': 1.7.4
+      '@orpc/standard-server': 1.7.4
+      '@orpc/standard-server-aws-lambda': 1.7.4
+      '@orpc/standard-server-fetch': 1.7.4
+      '@orpc/standard-server-node': 1.7.4
+      '@orpc/standard-server-peer': 1.7.4
 
-  '@orpc/shared@1.6.8':
+  '@orpc/shared@1.7.4':
     dependencies:
       radash: 12.1.1
       type-fest: 4.41.0
 
-  '@orpc/standard-server-aws-lambda@1.6.8':
+  '@orpc/standard-server-aws-lambda@1.7.4':
     dependencies:
-      '@orpc/shared': 1.6.8
-      '@orpc/standard-server': 1.6.8
-      '@orpc/standard-server-fetch': 1.6.8
-      '@orpc/standard-server-node': 1.6.8
+      '@orpc/shared': 1.7.4
+      '@orpc/standard-server': 1.7.4
+      '@orpc/standard-server-fetch': 1.7.4
+      '@orpc/standard-server-node': 1.7.4
 
-  '@orpc/standard-server-fetch@1.6.8':
+  '@orpc/standard-server-fetch@1.7.4':
     dependencies:
-      '@orpc/shared': 1.6.8
-      '@orpc/standard-server': 1.6.8
+      '@orpc/shared': 1.7.4
+      '@orpc/standard-server': 1.7.4
 
-  '@orpc/standard-server-node@1.6.8':
+  '@orpc/standard-server-node@1.7.4':
     dependencies:
-      '@orpc/shared': 1.6.8
-      '@orpc/standard-server': 1.6.8
-      '@orpc/standard-server-fetch': 1.6.8
+      '@orpc/shared': 1.7.4
+      '@orpc/standard-server': 1.7.4
+      '@orpc/standard-server-fetch': 1.7.4
 
-  '@orpc/standard-server-peer@1.6.8':
+  '@orpc/standard-server-peer@1.7.4':
     dependencies:
-      '@orpc/shared': 1.6.8
-      '@orpc/standard-server': 1.6.8
+      '@orpc/shared': 1.7.4
+      '@orpc/standard-server': 1.7.4
 
-  '@orpc/standard-server@1.6.8':
+  '@orpc/standard-server@1.7.4':
     dependencies:
-      '@orpc/shared': 1.6.8
+      '@orpc/shared': 1.7.4
 
-  '@orpc/zod@1.6.8(@orpc/contract@1.6.8)(@orpc/server@1.6.8)(zod@3.25.76)':
+  '@orpc/zod@1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@4.0.5)':
     dependencies:
-      '@orpc/contract': 1.6.8
-      '@orpc/openapi': 1.6.8
-      '@orpc/server': 1.6.8
-      '@orpc/shared': 1.6.8
+      '@orpc/contract': 1.7.4
+      '@orpc/json-schema': 1.7.4
+      '@orpc/openapi': 1.7.4
+      '@orpc/server': 1.7.4
+      '@orpc/shared': 1.7.4
       escape-string-regexp: 5.0.0
       wildcard-match: 5.1.4
-      zod: 3.25.76
+      zod: 4.0.5
     transitivePeerDependencies:
       - crossws
       - ws
@@ -11158,14 +11181,14 @@ snapshots:
 
   basic-ftp@5.0.5: {}
 
-  better-auth-harmony@1.2.5(better-auth@1.2.12):
+  better-auth-harmony@1.2.5(better-auth@1.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)):
     dependencies:
-      better-auth: 1.2.12
+      better-auth: 1.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       libphonenumber-js: 1.12.10
       mailchecker: 6.0.17
       validator: 13.15.15
 
-  better-auth@1.2.12:
+  better-auth@1.3.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@better-auth/utils': 0.2.5
       '@better-fetch/fetch': 1.1.18
@@ -11175,10 +11198,13 @@ snapshots:
       '@simplewebauthn/server': 13.1.2
       better-call: 1.0.12
       defu: 6.1.4
-      jose: 6.0.11
+      jose: 5.10.0
       kysely: 0.28.2
       nanostores: 0.11.4
-      zod: 3.25.76
+      zod: 4.0.5
+    optionalDependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   better-call@1.0.12:
     dependencies:
@@ -12055,7 +12081,7 @@ snapshots:
       '@typescript-eslint/parser': 8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
       eslint: 9.31.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.31.0(jiti@2.4.2))
       eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.31.0(jiti@2.4.2))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.31.0(jiti@2.4.2))
       eslint-plugin-react: 7.37.5(eslint@9.31.0(jiti@2.4.2))
@@ -12088,7 +12114,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2)):
+  eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.31.0(jiti@2.4.2)):
     dependencies:
       '@nolyfill/is-core-module': 1.0.39
       debug: 4.4.1
@@ -12113,14 +12139,14 @@ snapshots:
     dependencies:
       eslint: 9.31.0(jiti@2.4.2)
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2)):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.31.0(jiti@2.4.2)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
       eslint: 9.31.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.31.0(jiti@2.4.2))
     transitivePeerDependencies:
       - supports-color
 
@@ -12172,7 +12198,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.31.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2)))(eslint@9.31.0(jiti@2.4.2))
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.36.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.31.0(jiti@2.4.2))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -13345,7 +13371,7 @@ snapshots:
 
   jiti@2.4.2: {}
 
-  jose@6.0.11: {}
+  jose@5.10.0: {}
 
   joycon@3.1.1: {}
 
@@ -15376,12 +15402,12 @@ snapshots:
 
   stdin-discarder@0.2.2: {}
 
-  stoker@1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0):
+  stoker@1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@4.0.5))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.0.5))(hono@4.8.4)(openapi3-ts@4.5.0):
     dependencies:
       hono: 4.8.4
     optionalDependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.4(zod@3.25.76)
-      '@hono/zod-openapi': 0.19.9(hono@4.8.4)(zod@3.25.76)
+      '@asteasolutions/zod-to-openapi': 7.3.4(zod@4.0.5)
+      '@hono/zod-openapi': 0.19.9(hono@4.8.4)(zod@4.0.5)
       openapi3-ts: 4.5.0
 
   stop-iteration-iterator@1.1.0:
@@ -16454,14 +16480,16 @@ snapshots:
       cookie: 1.0.2
       youch-core: 0.3.3
 
-  zod-to-json-schema@3.24.6(zod@3.25.76):
+  zod-to-json-schema@3.24.6(zod@4.0.5):
     dependencies:
-      zod: 3.25.76
+      zod: 4.0.5
 
   zod@3.22.3: {}
 
   zod@3.24.1: {}
 
   zod@3.25.76: {}
+
+  zod@4.0.5: {}
 
   zwitch@2.0.4: {}
