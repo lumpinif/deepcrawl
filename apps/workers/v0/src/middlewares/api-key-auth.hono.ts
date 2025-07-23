@@ -5,6 +5,7 @@ import { logDebug } from '@/utils/loggers';
 
 export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
+    const start = performance.now();
     // First, try to get API key from x-api-key header
     const xApiKey = c.req.header('x-api-key');
     const authHeader = c.req.header('authorization');
@@ -16,10 +17,10 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       return next();
     }
 
-    logDebug(c.env, '🗝️ apiKey:', apiKey);
+    logDebug(c.env, '🔑 apiKey:', apiKey);
 
     if (!apiKey) {
-      logDebug(c.env, '🗝️ No API key provided, skipping to next auth method');
+      logDebug(c.env, '🔑 No API key provided, skipping to next auth method');
       return c.json(
         { success: false, error: 'Unauthorized: No API key provided' },
         401,
@@ -27,51 +28,80 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
     }
 
     try {
-      const request = new Request(
-        `${c.env.BETTER_AUTH_URL}/getSessionWithAPIKey`,
-        {
-          method: 'POST',
-          headers: {
-            'x-api-key': apiKey,
-            'Content-Type': 'application/json',
+      let sessionData: Session | undefined;
+
+      // First, try using the service binding RPC call
+      try {
+        logDebug(
+          c.env,
+          '🔄 Attempting RPC call to AUTH_WORKER.getSessionWithAPIKey',
+        );
+        const rpcStartTime = performance.now();
+
+        sessionData = (await c.env.AUTH_WORKER.getSessionWithAPIKey(
+          apiKey,
+        )) as Session;
+
+        const rpcEndTime = performance.now();
+        logDebug(
+          c.env,
+          '✅ RPC call successful, took:',
+          ((rpcEndTime - rpcStartTime) / 1000).toFixed(3),
+          'seconds',
+        );
+      } catch (rpcError) {
+        logDebug(
+          c.env,
+          '⚠️ RPC call failed, falling back to HTTP fetch:',
+          rpcError,
+        );
+
+        // Fallback to HTTP fetch approach
+        const request = new Request(
+          `${c.env.BETTER_AUTH_URL}/getSessionWithAPIKey`,
+          {
+            method: 'POST',
+            headers: {
+              'x-api-key': apiKey,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ apiKey }),
           },
-          body: JSON.stringify({ apiKey }),
-        },
-      );
+        );
 
-      const fetcher = c.var.serviceFetcher;
-      const response = await fetcher(request);
+        const fetcher = c.var.serviceFetcher;
+        const response = await fetcher(request);
 
-      // Check if the request was successful
-      if (!response.ok) {
-        const errorText = await response.text();
-        logDebug(c.env, '🚨 Auth service error:', {
-          status: response.status,
-          error: errorText,
-        });
+        // Check if the request was successful
+        if (!response.ok) {
+          const errorText = await response.text();
+          logDebug(c.env, '🚨 Auth service error:', {
+            status: response.status,
+            error: errorText,
+          });
 
-        // For service errors, let it through - auth guard will handle
-        if (response.status === 404 || response.status >= 500) {
-          logDebug(
-            c.env,
-            '⚠️ Auth service issue, proceeding to next middleware',
-          );
+          // For service errors, let it through - auth guard will handle
+          if (response.status === 404 || response.status >= 500) {
+            logDebug(
+              c.env,
+              '⚠️ Auth service issue, proceeding to next middleware',
+            );
+            return next();
+          }
+
+          // For invalid API key, also proceed - let auth guard decide
+          logDebug(c.env, '⚠️ Invalid API key, proceeding to next middleware');
           return next();
         }
 
-        // For invalid API key, also proceed - let auth guard decide
-        logDebug(c.env, '⚠️ Invalid API key, proceeding to next middleware');
-        return next();
-      }
-
-      // Parse response
-      let sessionData: Session;
-      try {
-        sessionData = await response.json();
-      } catch (parseError) {
-        logDebug(c.env, '🚨 Failed to parse auth response:', parseError);
-        // Continue to next middleware on parse errors
-        return next();
+        // Parse response
+        try {
+          sessionData = await response.json();
+        } catch (parseError) {
+          logDebug(c.env, '🚨 Failed to parse auth response:', parseError);
+          // Continue to next middleware on parse errors
+          return next();
+        }
       }
 
       // Validate session structure
@@ -111,6 +141,14 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
         userId: session.user.id,
         sessionId: session.session.id,
       });
+
+      const end = performance.now();
+      logDebug(
+        c.env,
+        '⌚ API key auth middleware took:',
+        ((end - start) / 1000).toFixed(3),
+        'seconds',
+      );
 
       return next();
     } catch (error) {

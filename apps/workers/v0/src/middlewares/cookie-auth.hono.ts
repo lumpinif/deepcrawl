@@ -53,6 +53,7 @@ const fetchWithFallback = async (
 
 export const cookieAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
+    const start = performance.now();
     if (
       c.get('session') ||
       c.get('session')?.session ||
@@ -82,6 +83,13 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
 
       if (authSession.data) {
         setAuthContext(c, authSession.data);
+        const end = performance.now();
+        logDebug(
+          c.env,
+          '⌚ Cookie auth middleware took:',
+          ((end - start) / 1000).toFixed(3),
+          'seconds',
+        );
         return next();
       }
 
@@ -100,6 +108,13 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
       const session = await parseSessionResponse(response, c.env, source);
       setAuthContext(c, session);
 
+      const end = performance.now();
+      logDebug(
+        c.env,
+        '⌚ Cookie auth middleware took:',
+        ((end - start) / 1000).toFixed(3),
+        'seconds',
+      );
       return next();
     } catch (error) {
       // Never throw - always continue gracefully
