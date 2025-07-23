@@ -43,13 +43,6 @@ interface Env {
   IS_WORKERD?: boolean;
 }
 
-// Secondary storage interface for potential future use with rate limiting
-// interface SecondaryStorage {
-//   get: (key: string) => Promise<string | null>;
-//   set: (key: string, value: string, ttl?: number) => Promise<void>;
-//   delete: (key: string) => Promise<void>;
-// }
-
 const PROD_APP_URL = 'https://app.deepcrawl.dev';
 const PROD_AUTH_WORKER_URL = 'https://auth.deepcrawl.dev';
 
@@ -416,6 +409,8 @@ export function createAuthConfig(env: Env) {
       },
     },
     rateLimit: {
+      window: 60,
+      max: 1000,
       customRules: {
         '/sign-in/email': {
           window: 10,
