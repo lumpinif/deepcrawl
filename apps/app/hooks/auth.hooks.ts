@@ -852,36 +852,37 @@ export const useDeleteApiKey = () => {
 
   return useMutation({
     mutationFn: async (keyId: string) => {
+      // DISABLED: WE ARE NOT CREATING USING PLAYGROUND API KEYS FOR USERS FOR NOW
       // Get current API keys to check if this is a protected playground key
-      const currentApiKeys = queryClient.getQueryData<ApiKey[]>(
-        userQueryKeys.apiKeys,
-      );
+      // const currentApiKeys = queryClient.getQueryData<ApiKey[]>(
+      //   userQueryKeys.apiKeys,
+      // );
 
-      const keyToDelete = currentApiKeys?.find((key) => key.id === keyId);
+      // const keyToDelete = currentApiKeys?.find((key) => key.id === keyId);
 
-      if (keyToDelete) {
-        // Check if this is a protected PLAYGROUND_API_KEY
-        let metadata = keyToDelete.metadata;
-        if (typeof metadata === 'string') {
-          try {
-            metadata = JSON.parse(metadata);
-          } catch (e) {
-            metadata = null;
-          }
-        }
+      // if (keyToDelete) {
+      //   // Check if this is a protected PLAYGROUND_API_KEY
+      //   let metadata = keyToDelete.metadata;
+      //   if (typeof metadata === 'string') {
+      //     try {
+      //       metadata = JSON.parse(metadata);
+      //     } catch (e) {
+      //       metadata = null;
+      //     }
+      //   }
 
-        if (
-          keyToDelete.name === 'PLAYGROUND_API_KEY' &&
-          metadata &&
-          typeof metadata === 'object' &&
-          (metadata as Record<string, unknown>).type === 'auto-generated' &&
-          (metadata as Record<string, unknown>).purpose === 'playground'
-        ) {
-          throw new Error(
-            'This key is managed by the system and cannot be deleted',
-          );
-        }
-      }
+      //   if (
+      //     keyToDelete.name === 'PLAYGROUND_API_KEY' &&
+      //     metadata &&
+      //     typeof metadata === 'object' &&
+      //     (metadata as Record<string, unknown>).type === 'auto-generated' &&
+      //     (metadata as Record<string, unknown>).purpose === 'playground'
+      //   ) {
+      //     throw new Error(
+      //       'This key is managed by the system and cannot be deleted',
+      //     );
+      //   }
+      // }
 
       return await deleteApiKey(keyId);
     },
