@@ -43,6 +43,13 @@
       "when": 1750333960188,
       "tag": "0005_blushing_steel_serpent",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1753282687457,
+      "tag": "0006_secret_jamie_braddock",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ import {
   organization,
 } from 'better-auth/plugins';
 import { passkey } from 'better-auth/plugins/passkey';
+import { emailHarmony } from 'better-auth-harmony';
 import EmailVerification from '../templates/email-verification';
 import MagicLink from '../templates/magic-link';
 import OrganizationInvitation from '../templates/organization-invitation';
@@ -121,6 +122,15 @@ export const DEVELOPMENT_ORIGINS = [
 
 export const MAX_SESSIONS = 2;
 
+/**
+ * This is better-auth built-in rate limiting only used for API Keys validation, and we implement cache for API Keys sessions
+ * Currently same as the user-scope free rate limit in backend services worker, but it is better to have max requests higher than the highest service rate limit
+ */
+export const BA_API_KEY_RATE_LIMIT = {
+  maxRequests: 20,
+  timeWindow: 1000 * 60, // 60 seconds
+} as const;
+
 // BUG: OAUTH PROXY CURRENTLY DOES NOT WORK IN LOCALHOST WITH AUTH WORKER
 const USE_OAUTH_PROXY = true;
 
@@ -219,9 +229,15 @@ export function createAuthConfig(env: Env) {
       admin(),
       oneTap(),
       openAPI(),
+      emailHarmony(),
       apiKey({
         startingCharactersConfig: {
           charactersLength: 10, // default 6
+        },
+        rateLimit: {
+          enabled: true,
+          maxRequests: BA_API_KEY_RATE_LIMIT.maxRequests,
+          timeWindow: BA_API_KEY_RATE_LIMIT.timeWindow,
         },
         apiKeyHeaders: ['x-api-key'],
         enableMetadata: true,

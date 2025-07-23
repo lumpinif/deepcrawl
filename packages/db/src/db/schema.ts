@@ -24,6 +24,7 @@ export const user = pgTable('user', {
   banned: boolean('banned'),
   banReason: text('ban_reason'),
   banExpires: timestamp('ban_expires'),
+  normalizedEmail: text('normalized_email').unique(),
 });
 
 export const session = pgTable('session', {
@@ -86,8 +87,8 @@ export const apikey = pgTable('apikey', {
   lastRefillAt: timestamp('last_refill_at'),
   enabled: boolean('enabled').default(true),
   rateLimitEnabled: boolean('rate_limit_enabled').default(true),
-  rateLimitTimeWindow: integer('rate_limit_time_window').default(86400000),
-  rateLimitMax: integer('rate_limit_max').default(100),
+  rateLimitTimeWindow: integer('rate_limit_time_window').default(60000),
+  rateLimitMax: integer('rate_limit_max').default(20),
   requestCount: integer('request_count'),
   remaining: integer('remaining'),
   lastRequest: timestamp('last_request'),
