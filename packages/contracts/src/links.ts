@@ -3,8 +3,7 @@ import {
   LinksSuccessResponseSchema,
 } from '@deepcrawl/types';
 import { oc } from '@orpc/contract';
-import { errorSpec } from '@/errors';
-import type { Inputs, Outputs } from '.';
+import { errorSpec, type Inputs, type Outputs } from '.';
 
 const tags = ['Extract Links'];
 
