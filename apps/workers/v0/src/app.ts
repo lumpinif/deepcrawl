@@ -5,6 +5,13 @@ import createHonoApp from '@/lib/hono/create-hono-app';
 import { openAPIHandler } from '@/lib/orpc/openapi.handler';
 import { rpcHandler } from '@/lib/orpc/rpc.handler';
 
+// Preload heavy modules during worker initialization to reduce cold start time
+import '@/services/scrape/scrape.service';
+import '@/services/link/link.service';
+import '@/services/html-cleaning/html-cleaning.service';
+import 'cheerio';
+import '@paoramen/cheer-reader';
+
 export const EPHEMERAL_CACHE = new Map();
 
 const app = createHonoApp();

@@ -1,6 +1,7 @@
 import { type Duration, Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis/cloudflare';
 import { EPHEMERAL_CACHE } from '@/app';
+import type { AppBindings } from '@/lib/context';
 import { publicProcedures } from '@/orpc';
 import { logDebug } from '@/utils/loggers';
 
@@ -53,6 +54,33 @@ const RATE_LIMIT_RULES: Record<
   },
 } as const;
 
+// Create rate limiters at module level to reuse across requests
+const rateLimiters = new Map<string, Ratelimit>();
+
+function getRateLimiter(
+  operation: keyof typeof RATE_LIMIT_RULES,
+  env: AppBindings['Bindings'],
+): Ratelimit {
+  const key = `${operation}-free`; // Using free tier for now
+
+  let ratelimit = rateLimiters.get(key);
+  if (!ratelimit) {
+    ratelimit = new Ratelimit({
+      redis: Redis.fromEnv(env),
+      limiter: Ratelimit.slidingWindow(
+        RATE_LIMIT_RULES[operation].free.limit,
+        RATE_LIMIT_RULES[operation].free.window,
+      ),
+      ephemeralCache: EPHEMERAL_CACHE,
+      analytics: true,
+      prefix: `ratelimit:${operation}`,
+    });
+    rateLimiters.set(key, ratelimit);
+  }
+
+  return ratelimit;
+}
+
 export function rateLimitMiddleware({
   operation,
 }: {
@@ -62,17 +90,7 @@ export function rateLimitMiddleware({
     const user = c.var.session?.user;
     const identifier = `${user?.id ?? 'anonymous'}-${c.var.userIP ?? 'unknown-ip'}`;
 
-    const ratelimit = new Ratelimit({
-      redis: Redis.fromEnv(c.env),
-      limiter: Ratelimit.slidingWindow(
-        RATE_LIMIT_RULES[operation].free.limit,
-        RATE_LIMIT_RULES[operation].free.window,
-      ),
-      ephemeralCache: EPHEMERAL_CACHE,
-      analytics: true,
-      prefix: `ratelimit:${operation}:${identifier}`,
-    });
-
+    const ratelimit = getRateLimiter(operation, c.env);
     const result = await ratelimit.limit(identifier);
     c.executionCtx.waitUntil(result.pending);
 

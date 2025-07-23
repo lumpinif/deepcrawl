@@ -30,6 +30,10 @@ import * as helpers from '@/utils/links/helpers';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
 
+// Create service instances at module level for reuse across requests
+const scrapeService = new ScrapeService();
+const linkService = new LinkService();
+
 // Helper function to check if a URL exists in the Set of visited URLs
 function isUrlInVisitedSet(
   urlSet: Set<VisitedUrl>,
@@ -136,9 +140,6 @@ export async function processLinksRequest(
   let linksPostResponse: LinksResponse | undefined;
 
   try {
-    const scrapeService = new ScrapeService();
-    const linkService = new LinkService();
-
     // --- Validate and Normalize Input URL & Identify Root ---
     targetUrl = targetUrlHelper(url);
 

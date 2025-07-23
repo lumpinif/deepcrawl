@@ -26,6 +26,16 @@ import {
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
 
+// Create service instance at module level for reuse across requests
+const scrapeService = new ScrapeService();
+
+// Pre-configure NodeHtmlMarkdown at module level to avoid per-request setup
+const markdownConverter = new NodeHtmlMarkdown(
+  /* options */ {},
+  /* customTransformers */ nhmCustomTranslators,
+  /* customCodeBlockTranslators */ nhmTranslators,
+);
+
 /**
  * Calculates performance metrics for the read operation.
  * @param startTime - Timestamp in milliseconds when the operation started.
@@ -105,18 +115,7 @@ function hasMeaningfulMarkdown(markdown: string): boolean {
  */
 function getMarkdown({ html }: { html: string }): string {
   try {
-    const nhm = new NodeHtmlMarkdown(
-      {
-        bulletMarker: '-',
-        codeBlockStyle: 'fenced',
-        emDelimiter: '_',
-        strongDelimiter: '**',
-        codeFence: '```',
-        useInlineLinks: true,
-      },
-      nhmTranslators,
-      nhmCustomTranslators,
-    );
+    const nhm = markdownConverter;
 
     let nhmMarkdown = nhm.translate(html);
     nhmMarkdown = processMultiLineLinks(nhmMarkdown);
@@ -229,7 +228,6 @@ export async function processReadRequest(
       }
     }
 
-    const scrapeService = new ScrapeService();
     const isGithubUrl = targetUrl.startsWith('https://github.com');
 
     const {
