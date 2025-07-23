@@ -14,18 +14,17 @@ import {
   SkippedUrlSchema,
   VisitedUrlSchema,
 } from '@deepcrawl/types';
+import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from '@orpc/json-schema';
 import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
 import { onError } from '@orpc/server';
-import {
-  experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
-  experimental_ZodToJsonSchemaConverter as ZodV4ToJsonSchemaConverter,
-} from '@orpc/zod/zod4';
+import { ZodToJsonSchemaConverter } from '@orpc/zod/zod4';
+
 import { router } from '@/routers';
 import packageJSON from '../../../package.json' with { type: 'json' };
 
-export const SchemaConverters = [new ZodV4ToJsonSchemaConverter()];
+export const SchemaConverters = [new ZodToJsonSchemaConverter()];
 
 export const OpenAPISpecGenerateOptions = {
   info: {
@@ -117,8 +116,7 @@ export const openAPIHandler = new OpenAPIHandler(router, {
     }),
   ],
   plugins: [
-    // new ResponseHeadersPlugin(),
-    new ZodSmartCoercionPlugin(),
+    new SmartCoercionPlugin({ schemaConverters: SchemaConverters }),
     new OpenAPIReferencePlugin({
       schemaConverters: SchemaConverters,
       specGenerateOptions: OpenAPISpecGenerateOptions,
