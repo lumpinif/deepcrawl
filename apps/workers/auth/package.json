@@ -1,11 +1,12 @@
 {
   "name": "deepcrawl-worker-auth",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "pnpm run clean && wrangler dev",
     "dev:remote": "wrangler dev --remote",
     "dev:prod": "wrangler dev --remote --env=production",
     "deploy": "pnpm run cf-typegen && pnpm run db:sync:prod && wrangler secret bulk --env=production .dev.vars.production && wrangler deploy --env=production --minify",
     "check": "biome check --write && pnpm typecheck",
+    "clean": "rimraf .wrangler .turbo",
     "typecheck": "tsc --noEmit",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings && pnpm typecheck",
     "db:sync": "turbo run db:sync --filter=@deepcrawl/db",
