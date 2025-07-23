@@ -1,6 +1,11 @@
 import { createAuthConfig } from '@deepcrawl/auth/configs/auth.config';
 import { betterAuth } from 'better-auth';
 
+export const API_KEY_CACHE_CONFIG = {
+  TTL_SECONDS: 300, // 5 minutes cache
+  KEY_PREFIX: 'api_key_session:',
+} as const;
+
 export function createAuth(env: CloudflareBindings) {
   const authConfigs = createAuthConfig({
     ...env,

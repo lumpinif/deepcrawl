@@ -1,7 +1,8 @@
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import type { AppContext } from '@/lib/context';
 import createHonoApp from '@/lib/hono/create-hono-app';
-import { createAuth } from './lib/better-auth';
+import { logDebug } from '@/utils/loggers';
+import { API_KEY_CACHE_CONFIG, createAuth } from './lib/better-auth';
 import { validateAPIKeyRouter } from './router/auth';
 
 const app = createHonoApp();
@@ -15,18 +16,104 @@ app.route('/', validateAPIKeyRouter);
 export default class AuthWorker extends WorkerEntrypoint<
   AppContext['Bindings']
 > {
+  // Cache the auth instance to avoid recreating it on every RPC call
+  private _authInstance: ReturnType<typeof createAuth> | null = null;
+
+  private getAuthInstance() {
+    if (!this._authInstance) {
+      this._authInstance = createAuth(this.env);
+    }
+    return this._authInstance;
+  }
+
   async fetch(request: Request) {
     return app.fetch(request, this.env, this.ctx);
   }
 
   // cf services binding rpc call (no correct types generated in the consumer worker for now)
   async getSessionWithAPIKey(apiKey: string) {
-    const auth = createAuth(this.env);
-    const session = await auth.api.getSession({
+    const startTime = performance.now();
+    const cacheKey = `${API_KEY_CACHE_CONFIG.KEY_PREFIX}${apiKey}`;
+    const cacheTTL = API_KEY_CACHE_CONFIG.TTL_SECONDS;
+
+    try {
+      // Try to get cached session first
+      const cachedSession = await this.env.DEEPCRAWL_AUTH_KV.get(cacheKey);
+      if (cachedSession) {
+        const parsedSession = JSON.parse(cachedSession);
+
+        // Validate that cached session is still valid (not expired)
+        if (parsedSession?.session?.expiresAt) {
+          const expiresAt = new Date(parsedSession.session.expiresAt);
+          if (expiresAt > new Date()) {
+            const endTime = performance.now();
+            logDebug(
+              `🎯 API key auth CACHE HIT - took: ${((endTime - startTime) / 1000).toFixed(3)}s`,
+            );
+            return parsedSession;
+          }
+          // If expired, remove from cache and continue to fresh lookup
+          await this.env.DEEPCRAWL_AUTH_KV.delete(cacheKey);
+          logDebug('🗑️ Removed expired session from cache');
+        } else if (parsedSession?.session) {
+          const endTime = performance.now();
+          logDebug(
+            `🎯 API key auth CACHE HIT (no expiry) - took: ${((endTime - startTime) / 1000).toFixed(3)}s`,
+          );
+          return parsedSession;
+        }
+      }
+    } catch (cacheError) {
+      // Log cache error but continue with fresh lookup
+      logDebug('❌ Cache lookup failed:', cacheError);
+    }
+
+    // Cache miss - get fresh session from database
+    logDebug('📀 API key auth CACHE MISS - querying database');
+    const dbStartTime = performance.now();
+
+    // Use the cached auth instance for database validation
+    const auth = this.getAuthInstance();
+    const sessionData = await auth.api.getSession({
       headers: new Headers({
         'x-api-key': apiKey,
       }),
     });
-    return session;
+
+    const dbEndTime = performance.now();
+    logDebug(
+      `💾 Database query took: ${((dbEndTime - dbStartTime) / 1000).toFixed(3)}s`,
+    );
+
+    // Cache successful validations
+    if (sessionData?.session && sessionData?.user) {
+      try {
+        await this.env.DEEPCRAWL_AUTH_KV.put(
+          cacheKey,
+          JSON.stringify(sessionData),
+          { expirationTtl: cacheTTL },
+        );
+        logDebug('💾 Cached session for', cacheTTL, 'seconds');
+      } catch (cacheError) {
+        // Log cache write error but don't fail the request
+        logDebug('❌ Cache write failed:', cacheError);
+      }
+    } else {
+      logDebug('⚠️ Not caching invalid session');
+    }
+
+    const endTime = performance.now();
+    logDebug(
+      `🔍 Total API key auth took: ${((endTime - startTime) / 1000).toFixed(3)}s`,
+    );
+    return sessionData;
+  }
+
+  // Utility method to clear specific API key cache for security/maintenance
+  // Useful when an API key is compromised or disabled and needs immediate invalidation
+  async clearApiKeyCache(apiKey: string) {
+    const cacheKey = `${API_KEY_CACHE_CONFIG.KEY_PREFIX}${apiKey}`;
+    await this.env.DEEPCRAWL_AUTH_KV.delete(cacheKey);
+    logDebug(`🗑️ Cleared cache for API key: ${apiKey.slice(0, 10)}...`);
   }
 }
