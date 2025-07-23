@@ -2,7 +2,7 @@ import type {
   LinksErrorResponse,
   LinksSuccessResponse,
 } from '@deepcrawl/types';
-import { retry } from '@/middlewares/retry.orpc';
+import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
 import {
   createLinksErrorResponse,
@@ -10,7 +10,7 @@ import {
 } from './links.processor';
 
 export const linksGETHandler = authed
-  .use(retry({ times: 2 }))
+  .use(rateLimitMiddleware({ operation: 'getLinks' }))
   .links.getLinks.handler(async ({ input, context: c, errors }) => {
     const { url, ...rest } = input;
 
@@ -42,7 +42,7 @@ export const linksGETHandler = authed
   });
 
 export const linksPOSTHandler = authed
-  .use(retry({ times: 2 }))
+  .use(rateLimitMiddleware({ operation: 'extractLinks' }))
   .links.extractLinks.handler(async ({ input, context: c, errors }) => {
     const { url, ...rest } = input;
 

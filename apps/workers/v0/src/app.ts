@@ -5,6 +5,8 @@ import createHonoApp from '@/lib/hono/create-hono-app';
 import { openAPIHandler } from '@/lib/orpc/openapi.handler';
 import { rpcHandler } from '@/lib/orpc/rpc.handler';
 
+export const EPHEMERAL_CACHE = new Map();
+
 const app = createHonoApp();
 
 // Health check

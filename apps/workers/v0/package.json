@@ -32,6 +32,8 @@
     "@paoramen/cheer-reader": "npm:@jsr/paoramen__cheer-reader@^0.1.2",
     "@scalar/hono-api-reference": "^0.9.1",
     "@scalar/openapi-to-markdown": "^0.2.2",
+    "@upstash/ratelimit": "^2.0.5",
+    "@upstash/redis": "^1.35.1",
     "cheerio": "^1.0.0",
     "hono": "^4.7.10",
     "hono-rate-limiter": "^0.4.2",

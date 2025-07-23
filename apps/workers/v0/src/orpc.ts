@@ -1,6 +1,7 @@
 import { contract } from '@deepcrawl/contracts';
 import { implement, ORPCError } from '@orpc/server';
 import type { ORPCContext } from '@/lib/context';
+import { retry } from './middlewares/retry.orpc';
 import { logDebug } from './utils/loggers';
 
 /**
@@ -10,22 +11,24 @@ import { logDebug } from './utils/loggers';
  */
 export const publicProcedures = implement(contract).$context<ORPCContext>();
 
-export const authed = publicProcedures.use(({ context, next }) => {
-  if (
-    !context.var.session ||
-    !context.var.session.user ||
-    !context.var.session.session
-  ) {
-    throw new ORPCError('UNAUTHORIZED', {
-      status: 401,
-      cause: 'No session found',
-      message: 'Authentication failed',
+export const authed = publicProcedures
+  .use(({ context, next }) => {
+    if (
+      !context.var.session ||
+      !context.var.session.user ||
+      !context.var.session.session
+    ) {
+      throw new ORPCError('UNAUTHORIZED', {
+        status: 401,
+        cause: 'No session found',
+        message: 'Authentication failed',
+      });
+    }
+
+    logDebug(context.env, '✅ [ORPC] AUTHENTICATED');
+
+    return next({
+      context,
     });
-  }
-
-  logDebug(context.env, '✅ [ORPC] AUTHENTICATED');
-
-  return next({
-    context,
-  });
-});
+  })
+  .use(retry({ times: 2 }));

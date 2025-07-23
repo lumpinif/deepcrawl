@@ -1,10 +1,10 @@
 import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
-import { retry } from '@/middlewares/retry.orpc';
+import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
 import { processReadRequest } from './read.processor';
 
 export const readGETHandler = authed
-  .use(retry({ times: 2 }))
+  .use(rateLimitMiddleware({ operation: 'getMarkdown' }))
   .read.getMarkdown.handler(async ({ input, context: c, errors }) => {
     const { url } = input;
 
@@ -19,7 +19,8 @@ export const readGETHandler = authed
       );
 
       // WORKAROUND: Return a Blob with text/markdown MIME type to bypass ORPC's JSON serialization
-      return new Blob([result], { type: 'text/markdown' });
+      // return new Blob([result], { type: 'text/markdown' });
+      return result;
     } catch (error) {
       const readErrorResponse: ReadErrorResponse = {
         success: false,
@@ -34,7 +35,7 @@ export const readGETHandler = authed
   });
 
 export const readPOSTHandler = authed
-  .use(retry({ times: 2 }))
+  .use(rateLimitMiddleware({ operation: 'readURL' }))
   .read.readUrl.handler(async ({ input, context: c, errors }) => {
     const { url, ...rest } = input;
     try {
