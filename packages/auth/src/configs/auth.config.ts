@@ -212,7 +212,7 @@ export function createAuthConfig(env: Env) {
       preserveSessionInDatabase: false, // Clean up DB when removing from secondary storage
       cookieCache: {
         enabled: true,
-        maxAge: 5 * 60, // Cache session data in cookie for 5 minutes
+        maxAge: 10 * 60, // Cache session data in cookie for 10 minutes
       },
     },
     plugins: [
