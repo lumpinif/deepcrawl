@@ -65,46 +65,114 @@ export class ScrapeService {
     url: string,
     options: { isIframeAllowed?: boolean } = { isIframeAllowed: true },
   ): Promise<string | FetchPageResult> {
-    const response = await fetch(url);
+    // Add timeout configuration for production reliability
+    const timeoutMs = 10000; // 10 seconds timeout
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => abortController.abort(), timeoutMs);
 
-    // Check if the response is successful
-    if (!response.ok) {
-      throw new Error(`HTTP status ${response.status}`);
-    }
+    console.log('[PERF] Scraping fetchPage started:', {
+      url,
+      timeoutMs,
+      timestamp: new Date().toISOString(),
+    });
 
-    // Check content type to ensure it's HTML or text
-    const contentType = response.headers.get('content-type') || '';
+    const fetchStart = Date.now();
 
-    // More lenient content type check - if it contains text or html in any form
-    if (
-      !contentType.toLowerCase().includes('html') &&
-      !contentType.toLowerCase().includes('text') &&
-      !contentType.toLowerCase().includes('xml')
-    ) {
-      throw new Error(
-        `URL content type "${contentType}" is not allowed for scraping`,
+    try {
+      const response = await fetch(url, {
+        signal: abortController.signal,
+        // Add additional fetch options for better reliability
+        headers: {
+          'User-Agent': 'Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)',
+          Accept:
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+          'Accept-Encoding': 'gzip, deflate',
+          DNT: '1',
+          Connection: 'keep-alive',
+          'Upgrade-Insecure-Requests': '1',
+        },
+      });
+
+      clearTimeout(timeoutId);
+      const fetchTime = Date.now() - fetchStart;
+
+      console.log('[PERF] Scraping fetchPage response received:', {
+        url,
+        fetchTime,
+        status: response.status,
+        contentType: response.headers.get('content-type'),
+        timestamp: new Date().toISOString(),
+      });
+
+      // Check if the response is successful
+      if (!response.ok) {
+        throw new Error(`HTTP status ${response.status}`);
+      }
+
+      // Check content type to ensure it's HTML or text
+      const contentType = response.headers.get('content-type') || '';
+
+      // More lenient content type check - if it contains text or html in any form
+      if (
+        !contentType.toLowerCase().includes('html') &&
+        !contentType.toLowerCase().includes('text') &&
+        !contentType.toLowerCase().includes('xml')
+      ) {
+        throw new Error(
+          `URL content type "${contentType}" is not allowed for scraping`,
+        );
+      }
+
+      const textStart = Date.now();
+      const html = await response.text();
+      const textTime = Date.now() - textStart;
+
+      console.log('[PERF] Scraping fetchPage text extracted:', {
+        url,
+        textTime,
+        htmlSize: html.length,
+        totalTime: Date.now() - fetchStart,
+        timestamp: new Date().toISOString(),
+      });
+
+      if (!options.isIframeAllowed) {
+        return html;
+      }
+
+      // Extract relevant headers
+      const xFrameOptions = response.headers.get('x-frame-options');
+      const contentSecurityPolicy = response.headers.get(
+        'content-security-policy',
       );
+
+      // Determine if iframe embedding is allowed
+      const isIframeAllowed = this.isIframeAllowed(
+        xFrameOptions,
+        contentSecurityPolicy,
+      );
+
+      return { html, isIframeAllowed };
+    } catch (error) {
+      clearTimeout(timeoutId); // Ensure timeout is cleared on error
+
+      const errorTime = Date.now() - fetchStart;
+      console.error('[PERF] Scraping fetchPage error:', {
+        url,
+        errorTime,
+        error: error instanceof Error ? error.message : String(error),
+        errorName: error instanceof Error ? error.name : 'Unknown',
+        isTimeout: error instanceof Error && error.name === 'AbortError',
+        timestamp: new Date().toISOString(),
+      });
+
+      // Provide more specific error messages
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`Request timeout after ${timeoutMs}ms for URL: ${url}`);
+      }
+
+      throw error;
     }
-
-    const html = await response.text();
-
-    if (!options.isIframeAllowed) {
-      return html;
-    }
-
-    // Extract relevant headers
-    const xFrameOptions = response.headers.get('x-frame-options');
-    const contentSecurityPolicy = response.headers.get(
-      'content-security-policy',
-    );
-
-    // Determine if iframe embedding is allowed
-    const isIframeAllowed = this.isIframeAllowed(
-      xFrameOptions,
-      contentSecurityPolicy,
-    );
-
-    return { html, isIframeAllowed };
   }
 
   private async fetchMetaFiles(
