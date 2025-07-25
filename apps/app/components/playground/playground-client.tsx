@@ -96,6 +96,9 @@ export function PlaygroundClient() {
   // Add ref for LinkIcon
   const linkIconRef = useRef<LinkIconHandle>(null);
 
+  // Add deduplication ref to prevent multiple simultaneous requests
+  const activeRequestsRef = useRef<Set<string>>(new Set());
+
   // Timer effect to update current execution time
   useEffect(() => {
     const interval = setInterval(() => {
@@ -122,6 +125,23 @@ export function PlaygroundClient() {
       return;
     }
 
+    // Create unique request key for deduplication
+    const requestKey = `${operation}-${url}`;
+
+    // Check if this exact request is already in progress
+    if (activeRequestsRef.current.has(requestKey)) {
+      console.warn('[PERF] Duplicate request prevented:', {
+        operation,
+        url,
+        requestKey,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    // Add to active requests
+    activeRequestsRef.current.add(requestKey);
+
     const frontendStart = Date.now();
     const startTime = Date.now();
     setExecutionStartTime((prev) => ({ ...prev, [operation]: startTime }));
@@ -131,8 +151,11 @@ export function PlaygroundClient() {
       operation,
       label,
       url,
+      requestKey,
+      activeRequests: Array.from(activeRequestsRef.current),
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
+      callStack: new Error().stack?.split('\n').slice(1, 4).join(' | '), // Show first 3 stack frames
     });
 
     try {
@@ -149,6 +172,7 @@ export function PlaygroundClient() {
       console.log('[PERF] Frontend calling server action:', {
         operation,
         url,
+        requestKey,
         timestamp: new Date().toISOString(),
       });
 
@@ -170,6 +194,7 @@ export function PlaygroundClient() {
       console.log('[PERF] Frontend server action completed:', {
         operation,
         url,
+        requestKey,
         actionCallTime,
         executionTime,
         hasError: !!result.error,
@@ -198,6 +223,7 @@ export function PlaygroundClient() {
         console.error('[PERF] Frontend operation failed:', {
           operation,
           url,
+          requestKey,
           executionTime,
           errorType: result.errorType,
           errorMessage,
@@ -217,6 +243,7 @@ export function PlaygroundClient() {
         console.log('[PERF] Frontend operation successful:', {
           operation,
           url,
+          requestKey,
           executionTime,
           dataSize:
             typeof result.data === 'string'
@@ -235,6 +262,7 @@ export function PlaygroundClient() {
       console.error('[PERF] Frontend operation exception:', {
         operation,
         url,
+        requestKey,
         executionTime,
         error: errorMessage,
         errorStack: error instanceof Error ? error.stack : undefined,
@@ -257,9 +285,13 @@ export function PlaygroundClient() {
       console.log('[PERF] Frontend executeApiCall finished:', {
         operation,
         url,
+        requestKey,
         totalFrontendTime,
         timestamp: new Date().toISOString(),
       });
+
+      // Remove from active requests
+      activeRequestsRef.current.delete(requestKey);
 
       setIsLoading((prev) => ({ ...prev, [operation]: false }));
       setExecutionStartTime((prev) => {
