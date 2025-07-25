@@ -2,9 +2,10 @@ import type { Auth, Session } from '@deepcrawl/auth/types';
 import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
 import type { Ratelimit } from '@upstash/ratelimit';
 import type { Context as HonoContext } from 'hono';
+import type { RequestIdVariables } from 'hono/request-id';
 import type { getAuthClient } from '@/middlewares/client.auth';
 
-export interface AppVariables {
+export interface AppVariables extends RequestIdVariables {
   /** Auth Instance */
   auth: Auth;
   /** Better Auth Client */
