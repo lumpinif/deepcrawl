@@ -204,7 +204,15 @@ export class DeepcrawlApp {
             },
             retryDelay: ({ attemptIndex }) =>
               Math.min(1000 * Math.pow(2, attemptIndex), 10000), // Exponential backoff
-            shouldRetry: ({ error }) => {
+            shouldRetry: ({ error, path, attemptIndex }) => {
+              // Log retry attempt
+              console.log('[PERF] SDK retry attempt:', {
+                path: path.join('.'),
+                attemptIndex,
+                error: error instanceof Error ? error.message : String(error),
+                timestamp: new Date().toISOString(),
+              });
+
               // Only retry on network errors
               if (error instanceof Error) {
                 // Common network error patterns
@@ -226,15 +234,45 @@ export class DeepcrawlApp {
                 const isNetworkError = networkErrorPatterns.some((pattern) =>
                   errorMessage.includes(pattern.toLowerCase()),
                 );
-                if (isNetworkError) return true;
+                if (isNetworkError) {
+                  console.log('[PERF] SDK retrying network error:', {
+                    path: path.join('.'),
+                    attemptIndex,
+                    errorMessage,
+                    willRetry: true,
+                    timestamp: new Date().toISOString(),
+                  });
+                  return true;
+                }
                 // Check for specific error types that indicate network issues
                 if ('cause' in error && error.cause instanceof Error) {
                   const causeMessage = error.cause.message.toLowerCase();
-                  return networkErrorPatterns.some((pattern) =>
+                  const hasNetworkCause = networkErrorPatterns.some((pattern) =>
                     causeMessage.includes(pattern.toLowerCase()),
                   );
+                  if (hasNetworkCause) {
+                    console.log(
+                      '[PERF] SDK retrying network error (from cause):',
+                      {
+                        path: path.join('.'),
+                        attemptIndex,
+                        causeMessage,
+                        willRetry: true,
+                        timestamp: new Date().toISOString(),
+                      },
+                    );
+                    return true;
+                  }
                 }
               }
+
+              console.log('[PERF] SDK not retrying error:', {
+                path: path.join('.'),
+                attemptIndex,
+                error: error instanceof Error ? error.message : String(error),
+                willRetry: false,
+                timestamp: new Date().toISOString(),
+              });
 
               return false;
             },
@@ -252,11 +290,37 @@ export class DeepcrawlApp {
    * @returns The markdown.
    */
   async getMarkdown(url: string): Promise<GetMarkdownOutput> {
+    const operationStart = Date.now();
+
+    console.log('[PERF] SDK getMarkdown started:', {
+      url,
+      baseUrl: this.config.baseUrl,
+      timestamp: new Date().toISOString(),
+    });
+
     const [error, data] = await safe(this.client.read.getMarkdown({ url }));
 
     if (error) {
+      const errorTime = Date.now() - operationStart;
+      console.error('[PERF] SDK getMarkdown error:', {
+        url,
+        errorTime,
+        errorCode: isORPCError(error) ? error.code : 'unknown',
+        errorStatus: isORPCError(error) ? error.status : undefined,
+        errorMessage: error.message,
+        timestamp: new Date().toISOString(),
+      });
+
       handleORPCError(error, 'read', 'Failed to fetch markdown');
     }
+
+    const successTime = Date.now() - operationStart;
+    console.log('[PERF] SDK getMarkdown completed:', {
+      url,
+      responseTime: successTime,
+      responseType: data instanceof Blob ? 'Blob' : typeof data,
+      timestamp: new Date().toISOString(),
+    });
 
     if (data instanceof Blob) {
       return await data.text();
@@ -275,6 +339,15 @@ export class DeepcrawlApp {
     url: string,
     options: Omit<ReadOptions, 'url'> = {},
   ): Promise<ReadUrlOutput> {
+    const operationStart = Date.now();
+
+    console.log('[PERF] SDK readUrl started:', {
+      url,
+      options: Object.keys(options),
+      baseUrl: this.config.baseUrl,
+      timestamp: new Date().toISOString(),
+    });
+
     const readOptions: ReadOptions = {
       url,
       ...options,
@@ -283,8 +356,25 @@ export class DeepcrawlApp {
     const [error, data] = await safe(this.client.read.readUrl(readOptions));
 
     if (error) {
+      const errorTime = Date.now() - operationStart;
+      console.error('[PERF] SDK readUrl error:', {
+        url,
+        errorTime,
+        errorCode: isORPCError(error) ? error.code : 'unknown',
+        errorStatus: isORPCError(error) ? error.status : undefined,
+        errorMessage: error.message,
+        timestamp: new Date().toISOString(),
+      });
+
       handleORPCError(error, 'read', 'Failed to read URL');
     }
+
+    const successTime = Date.now() - operationStart;
+    console.log('[PERF] SDK readUrl completed:', {
+      url,
+      responseTime: successTime,
+      timestamp: new Date().toISOString(),
+    });
 
     return data as ReadUrlOutput;
   }
@@ -324,6 +414,15 @@ export class DeepcrawlApp {
     url: string,
     options: Omit<LinksOptions, 'url'> = {},
   ): Promise<ExtractLinksOutput> {
+    const operationStart = Date.now();
+
+    console.log('[PERF] SDK extractLinks started:', {
+      url,
+      options: Object.keys(options),
+      baseUrl: this.config.baseUrl,
+      timestamp: new Date().toISOString(),
+    });
+
     const linksOptions: LinksPOSTInput = {
       url,
       ...options,
@@ -334,8 +433,25 @@ export class DeepcrawlApp {
     );
 
     if (error) {
+      const errorTime = Date.now() - operationStart;
+      console.error('[PERF] SDK extractLinks error:', {
+        url,
+        errorTime,
+        errorCode: isORPCError(error) ? error.code : 'unknown',
+        errorStatus: isORPCError(error) ? error.status : undefined,
+        errorMessage: error.message,
+        timestamp: new Date().toISOString(),
+      });
+
       handleORPCError(error, 'links', 'Failed to extract links');
     }
+
+    const successTime = Date.now() - operationStart;
+    console.log('[PERF] SDK extractLinks completed:', {
+      url,
+      responseTime: successTime,
+      timestamp: new Date().toISOString(),
+    });
 
     return data as ExtractLinksOutput;
   }
