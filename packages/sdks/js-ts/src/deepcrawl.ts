@@ -204,7 +204,7 @@ export class DeepcrawlApp {
 
     if (!this.httpsAgent) {
       try {
-        const https = await import('node:https');
+        const https = await import('https');
         this.httpsAgent = new https.Agent({
           keepAlive: true,
           maxSockets: 10,
