@@ -87,6 +87,11 @@ export class ScrapeService {
     try {
       const response = await fetch(url, {
         signal: abortController.signal,
+        cf: {
+          cacheTtl: 300, // Cache at CF edge for 5 minutes
+          cacheEverything: true, // Cache all responses
+          timeout: DEFAULT_FETCH_TIMEOUT,
+        },
         headers: {
           'User-Agent': 'Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)',
           Accept:
