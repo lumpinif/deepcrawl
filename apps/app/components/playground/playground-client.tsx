@@ -3,7 +3,6 @@
 import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
 import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
-import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -15,13 +14,12 @@ import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import {
   DeepcrawlApp,
-  DeepcrawlAuthError,
   DeepcrawlError,
   DeepcrawlLinksError,
-  DeepcrawlNetworkError,
+  DeepcrawlRateLimitError,
   DeepcrawlReadError,
 } from 'deepcrawl';
-import { Copy, X } from 'lucide-react';
+import { AlertTriangle, Copy, RefreshCw } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -39,9 +37,20 @@ interface ApiResponse {
   error?: string;
   status?: number;
   executionTime?: number;
-  errorType?: 'auth' | 'network' | 'read' | 'links' | 'unknown';
+  errorType?:
+    | 'read'
+    | 'links'
+    | 'rateLimit'
+    | 'auth'
+    | 'validation'
+    | 'network'
+    | 'server'
+    | 'unknown';
   targetUrl?: string;
   timestamp?: string;
+  retryable?: boolean;
+  retryAfter?: number;
+  userMessage?: string;
 }
 
 const apiOptions = [
@@ -74,9 +83,6 @@ const apiOptions = [
 const apiOptionValues = ['getMarkdown', 'readUrl', 'extractLinks'] as const;
 
 // Get API key from environment or use a demo key
-// If you want to use your own API key, you can set it in the .env.local file
-// NEXT_PUBLIC_DEEPCRAWL_API_KEY=your-api-key
-// We don't use API key in playground, but it's still here for reference
 const API_KEY =
   process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY || 'demo-key-for-playground';
 
@@ -123,9 +129,6 @@ export function PlaygroundClient() {
   // Add deduplication ref to prevent multiple simultaneous requests
   const activeRequestsRef = useRef<Set<string>>(new Set());
 
-  // Add ref for abort controllers
-  const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
-
   // Timer effect to update current execution time
   useEffect(() => {
     const interval = setInterval(() => {
@@ -143,194 +146,264 @@ export function PlaygroundClient() {
     return () => clearInterval(interval);
   }, [executionStartTime, isLoading]);
 
+  /**
+   * World-class error handling that showcases the SDK's capabilities
+   */
+  const handleError = (
+    error: unknown,
+    operation: 'getMarkdown' | 'readUrl' | 'extractLinks',
+    label: string,
+    executionTime: number,
+  ): ApiResponse => {
+    // Demonstrate our world-class error handling patterns
+    if (error instanceof DeepcrawlError) {
+      // Pattern 1: Type-safe instanceof checks
+      if (error instanceof DeepcrawlReadError) {
+        const response = {
+          error: error.message,
+          userMessage: error.userMessage,
+          status: error.status,
+          executionTime,
+          errorType: 'read' as const,
+          targetUrl: error.targetUrl,
+          retryable: false,
+        };
+
+        toast.error(`Read failed: ${error.userMessage}`, {
+          description: `invalid input: ${error.targetUrl}`,
+          action: {
+            label: 'Retry',
+            onClick: () => executeApiCall(operation, label),
+          },
+        });
+
+        return response;
+      }
+
+      if (error instanceof DeepcrawlLinksError) {
+        const response = {
+          error: error.message,
+          userMessage: error.userMessage,
+          status: error.status,
+          executionTime,
+          errorType: 'links' as const,
+          targetUrl: error.targetUrl,
+          timestamp: error.timestamp,
+          retryable: false,
+        };
+
+        toast.error(`Links extraction failed: ${error.userMessage}`, {
+          description: `invalid input: ${error.targetUrl}`,
+          action: {
+            label: 'Retry',
+            onClick: () => executeApiCall(operation, label),
+          },
+        });
+
+        return response;
+      }
+
+      if (error instanceof DeepcrawlRateLimitError) {
+        const response = {
+          error: error.message,
+          userMessage: error.userMessage,
+          status: error.status,
+          executionTime,
+          errorType: 'rateLimit' as const,
+          retryable: true,
+          retryAfter: error.retryAfter,
+        };
+
+        toast.error(`Rate limited: ${error.userMessage}`, {
+          description: `Retry after ${error.retryAfter} seconds`,
+          action: {
+            label: `Retry in ${error.retryAfter}s`,
+            onClick: () => {
+              setTimeout(() => {
+                executeApiCall(operation, label);
+              }, error.retryAfter * 1000);
+            },
+          },
+        });
+
+        return response;
+      }
+
+      // Pattern 2: Static type guards (alternative pattern)
+      if (DeepcrawlError.isAuthError(error)) {
+        console.log(
+          '🔐 [PLAYGROUND] Detected auth error via static type guard',
+        );
+        const response = {
+          error: error.message,
+          userMessage: error.userMessage,
+          status: error.status,
+          executionTime,
+          errorType: 'auth' as const,
+          retryable: false,
+        };
+
+        toast.error(`Authentication failed: ${error.userMessage}`, {
+          description: 'Please check your API key',
+        });
+
+        return response;
+      }
+
+      if (DeepcrawlError.isValidationError(error)) {
+        const response = {
+          error: error.message,
+          userMessage: error.userMessage,
+          status: error.status,
+          executionTime,
+          errorType: 'validation' as const,
+          retryable: false,
+        };
+
+        toast.error(`Validation error: ${error.userMessage}`, {
+          description: 'Please check your request parameters',
+        });
+
+        return response;
+      }
+
+      // Pattern 3: Instance methods (fluent style)
+      if (error.isNetwork?.()) {
+        console.log(
+          '⚠️ [PLAYGROUND] Detected network error via isNetwork() method',
+        );
+        const response = {
+          error: error.message,
+          userMessage: error.userMessage,
+          status: error.status,
+          executionTime,
+          errorType: 'network' as const,
+          retryable: true,
+        };
+
+        toast.error(`Network error: ${error.userMessage}`, {
+          description: 'Please check your connection and try again',
+          action: {
+            label: 'Retry',
+            onClick: () => executeApiCall(operation, label),
+          },
+        });
+
+        return response;
+      }
+
+      // Fallback for other DeepcrawlError types
+      const response = {
+        error: error.message,
+        userMessage: error.userMessage || error.message,
+        status: error.status,
+        executionTime,
+        errorType: 'server' as const,
+        retryable: error.isNetwork?.() || error.isRateLimit?.(),
+        retryAfter: DeepcrawlError.isRateLimitError(error)
+          ? error.retryAfter
+          : undefined,
+      };
+
+      toast.error(`${label} failed: ${error.userMessage || error.message}`);
+      return response;
+    }
+
+    // Handle non-SDK errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const response = {
+      error: errorMessage,
+      userMessage: errorMessage,
+      status: 500,
+      executionTime,
+      errorType: 'unknown' as const,
+      retryable: false,
+    };
+
+    toast.error(`${label} failed: ${errorMessage}`);
+    return response;
+  };
+
   const executeApiCall = async (
     operation: 'getMarkdown' | 'readUrl' | 'extractLinks',
     label: string,
   ) => {
-    if (!url.trim()) {
-      toast.error('Please enter a URL');
-      return;
-    }
+    if (!sdkClient.current) return;
 
-    // Create unique request key for deduplication
+    // Prevent duplicate requests
     const requestKey = `${operation}-${url}`;
-
-    // Check if this exact request is already in progress
     if (activeRequestsRef.current.has(requestKey)) {
+      toast.info('Request already in progress');
       return;
     }
 
-    // Create new AbortController for this request
-    const abortController = new AbortController();
-
-    // Store the controller so it can be cancelled
-    if (!abortControllersRef.current) {
-      abortControllersRef.current = new Map();
-    }
-    abortControllersRef.current.set(operation, abortController);
-
-    // Add to active requests
+    setIsLoading((prev) => ({ ...prev, [operation]: true }));
     activeRequestsRef.current.add(requestKey);
 
     const startTime = Date.now();
-    setExecutionStartTime((prev) => ({ ...prev, [operation]: startTime }));
-    setIsLoading((prev) => ({ ...prev, [operation]: true }));
 
     try {
-      let result: {
-        data?: unknown;
-        error?: string;
-        status?: number;
-        errorType?: 'auth' | 'network' | 'read' | 'links' | 'unknown';
-        targetUrl?: string;
-        timestamp?: string;
-      };
-
-      if (!sdkClient.current) {
-        throw new Error('SDK client not initialized');
-      }
+      let result: unknown;
+      let targetUrl = url;
 
       switch (operation) {
         case 'getMarkdown': {
-          const markdown = await sdkClient.current.getMarkdown(url, {
-            signal: abortController.signal,
-          });
-          result = { data: markdown, status: 200 };
+          result = await sdkClient.current.getMarkdown(url);
           break;
         }
         case 'readUrl': {
-          const readData = await sdkClient.current.readUrl(
-            url,
-            {},
-            {
-              signal: abortController.signal,
-            },
-          );
-          result = { data: readData, status: 200 };
+          const readData = await sdkClient.current.readUrl(url, {});
+          result = readData;
+          targetUrl = readData?.targetUrl || url;
           break;
         }
         case 'extractLinks': {
-          const linksData = await sdkClient.current.extractLinks(
-            url,
-            {},
-            {
-              signal: abortController.signal,
-            },
-          );
-          result = { data: linksData, status: 200 };
+          const linksData = await sdkClient.current.extractLinks(url, {});
+          result = linksData;
+          targetUrl = linksData?.targetUrl || url;
           break;
         }
       }
 
       const executionTime = Date.now() - startTime;
-
-      if (result.error) {
-        setResponses((prev) => ({
-          ...prev,
-          [operation]: {
-            error: result.error,
-            status: result.status,
-            executionTime,
-            errorType: result.errorType,
-            targetUrl: result.targetUrl,
-            timestamp: result.timestamp,
-          },
-        }));
-
-        // Enhanced error toast based on error type
-        const errorMessage = getErrorMessage(result.error);
-        toast.error(`${label} failed: ${errorMessage}`);
-      } else {
-        setResponses((prev) => ({
-          ...prev,
-          [operation]: {
-            data: result.data,
-            status: result.status,
-            executionTime,
-          },
-        }));
-        toast.success(`${label} completed successfully`);
-      }
-    } catch (error: unknown) {
-      const executionTime = Date.now() - startTime;
-
-      // Check if it was aborted
-      if (error instanceof Error && error.name === 'AbortError') {
-        setResponses((prev) => ({
-          ...prev,
-          [operation]: {
-            error: 'Request cancelled by user',
-            status: 0,
-            executionTime,
-            errorType: 'unknown',
-          },
-        }));
-        toast.info(`${label} cancelled`);
-        return;
-      }
-
-      // Handle SDK-specific errors
-      let errorType: ApiResponse['errorType'] = 'unknown';
-      let errorMessage = 'An error occurred';
-      let status = 500;
-      let targetUrl: string | undefined;
-
-      if (error instanceof DeepcrawlAuthError) {
-        errorType = 'auth';
-        errorMessage = error.message;
-        status = error.status || 401;
-      } else if (error instanceof DeepcrawlReadError) {
-        errorType = 'read';
-        errorMessage = error.message;
-        status = error.status || 400;
-        targetUrl = error.targetUrl;
-      } else if (error instanceof DeepcrawlLinksError) {
-        errorType = 'links';
-        errorMessage = error.message;
-        status = error.status || 400;
-        targetUrl = error.targetUrl;
-      } else if (error instanceof DeepcrawlNetworkError) {
-        errorType = 'network';
-        errorMessage = error.message;
-        status = error.status || 503;
-      } else if (error instanceof DeepcrawlError) {
-        errorMessage = error.message;
-        status = error.status || 500;
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
-      }
 
       setResponses((prev) => ({
         ...prev,
         [operation]: {
-          error: errorMessage,
-          status,
+          data: result,
+          status: 200,
           executionTime,
-          errorType,
           targetUrl,
+          timestamp: new Date().toISOString(),
+          errorType: undefined,
+          retryable: false,
         },
       }));
 
-      toast.error(`${label} failed: ${errorMessage}`);
+      toast.success(`${label} completed successfully`, {
+        description: `Processed in ${formatExecutionTime(executionTime)}`,
+      });
+    } catch (error) {
+      const executionTime = Date.now() - startTime;
+      const errorResponse = handleError(error, operation, label, executionTime);
+
+      setResponses((prev) => ({
+        ...prev,
+        [operation]: errorResponse,
+      }));
     } finally {
-      // Remove from active requests
-      activeRequestsRef.current.delete(requestKey);
-
-      // Clean up abort controller
-      abortControllersRef.current?.delete(operation);
-
+      // Always cleanup - prevent memory leaks
       setIsLoading((prev) => ({ ...prev, [operation]: false }));
-      setExecutionStartTime((prev) => {
-        const updated = { ...prev };
-        delete updated[operation];
-        return updated;
-      });
-      setCurrentExecutionTime((prev) => {
-        const updated = { ...prev };
-        delete updated[operation];
-        return updated;
-      });
+      activeRequestsRef.current.delete(requestKey);
+      setCurrentExecutionTime((prev) => ({ ...prev, [operation]: 0 }));
     }
+  };
+
+  const handleRetry = (
+    operation: 'getMarkdown' | 'readUrl' | 'extractLinks',
+    label: string,
+  ) => {
+    executeApiCall(operation, label);
   };
 
   const copyToClipboard = (text: string) => {
@@ -349,8 +422,30 @@ export function PlaygroundClient() {
     return `${(ms / 1000).toFixed(2)} s`;
   };
 
-  const getErrorMessage = (defaultError?: string): string => {
-    return defaultError || 'An unknown error occurred';
+  const getErrorIcon = (errorType?: string) => {
+    switch (errorType) {
+      case 'rateLimit':
+        return <RefreshCw className="h-4 w-4" />;
+      case 'network':
+        return <AlertTriangle className="h-4 w-4" />;
+      default:
+        return <AlertTriangle className="h-4 w-4" />;
+    }
+  };
+
+  const getErrorColor = (errorType?: string) => {
+    switch (errorType) {
+      case 'rateLimit':
+        return 'border-orange-500/50 bg-orange-500/5';
+      case 'network':
+        return 'border-blue-500/50 bg-blue-500/5';
+      case 'auth':
+        return 'border-red-500/50 bg-red-500/5';
+      case 'validation':
+        return 'border-yellow-500/50 bg-yellow-500/5';
+      default:
+        return 'border-destructive/50 bg-destructive/5';
+    }
   };
 
   return (
@@ -371,13 +466,6 @@ export function PlaygroundClient() {
               selectedOption?.value === option.value && 'bg-muted/50',
             )}
           >
-            {/* Timer in top right corner */}
-            {isLoading[option.value] && currentExecutionTime[option.value] && (
-              <div className="absolute top-2 right-2 animate-pulse rounded-md px-2 py-1 font-mono text-green-500 text-xs">
-                {formatExecutionTime(currentExecutionTime[option.value] || 0)}
-              </div>
-            )}
-
             <div className="absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100">
               <Badge
                 variant="outline"
@@ -444,39 +532,22 @@ export function PlaygroundClient() {
             />
           </div>
         </div>
-        {isLoading[selectedOption?.value || ''] ? (
-          <Button
-            className="w-32"
-            variant="destructive"
-            onClick={() => {
-              const controller = abortControllersRef.current?.get(
-                selectedOption?.value || '',
-              );
-              if (controller) {
-                controller.abort();
-              }
-            }}
-          >
-            <X className="mr-2 h-4 w-4" />
-            Cancel
-          </Button>
-        ) : (
-          <SpinnerButton
-            className="w-32"
-            onClick={() =>
-              executeApiCall(
-                selectedOption?.value as
-                  | 'getMarkdown'
-                  | 'readUrl'
-                  | 'extractLinks',
-                selectedOption?.label || '',
-              )
-            }
-            isLoading={isLoading[selectedOption?.value || '']}
-          >
-            {selectedOption?.label}
-          </SpinnerButton>
-        )}
+        {/* Execute button */}
+        <SpinnerButton
+          className="w-32"
+          onClick={() =>
+            executeApiCall(
+              selectedOption?.value as
+                | 'getMarkdown'
+                | 'readUrl'
+                | 'extractLinks',
+              selectedOption?.label || '',
+            )
+          }
+          isLoading={isLoading[selectedOption?.value || '']}
+        >
+          {selectedOption?.label}
+        </SpinnerButton>
       </div>
 
       {/* Results Section */}
@@ -505,7 +576,11 @@ export function PlaygroundClient() {
                         {response.status || 'Unknown'}
                       </Badge>
                       {response.errorType && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge
+                          variant="outline"
+                          className="flex items-center gap-1 text-xs"
+                        >
+                          {getErrorIcon(response.errorType)}
                           {response.errorType}
                         </Badge>
                       )}
@@ -514,21 +589,44 @@ export function PlaygroundClient() {
                           {formatExecutionTime(response.executionTime)}
                         </Badge>
                       )}
+                      {response.retryable && (
+                        <Badge variant="outline" className="text-xs">
+                          Retryable
+                        </Badge>
+                      )}
                     </div>
-                    <SpinnerButton
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        copyToClipboard(
-                          response.error
-                            ? response.error
-                            : formatResponseData(response.data),
-                        )
-                      }
-                    >
-                      <Copy className="h-4 w-4" />
-                      Copy
-                    </SpinnerButton>
+                    <div className="flex items-center gap-2">
+                      {response.retryable && (
+                        <SpinnerButton
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const operation = selectedOption?.value as
+                              | 'getMarkdown'
+                              | 'readUrl'
+                              | 'extractLinks';
+                            handleRetry(operation, selectedOption?.label || '');
+                          }}
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                          Retry
+                        </SpinnerButton>
+                      )}
+                      <SpinnerButton
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          copyToClipboard(
+                            response.error
+                              ? response.error
+                              : formatResponseData(response.data),
+                          )
+                        }
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copy
+                      </SpinnerButton>
+                    </div>
                   </div>
 
                   <div
@@ -536,14 +634,32 @@ export function PlaygroundClient() {
                       'relative rounded-lg border p-4 text-sm lg:p-6',
                       'max-h-[calc(100svh-20rem)] overflow-auto',
                       response.error
-                        ? 'border-destructive/50 bg-destructive/5'
+                        ? getErrorColor(response.errorType)
                         : 'bg-muted/50',
                     )}
                   >
                     {response.error ? (
-                      <pre className="whitespace-pre-wrap font-mono">
-                        {response.error}
-                      </pre>
+                      <div className="space-y-2">
+                        {response.userMessage &&
+                          response.userMessage !== response.error && (
+                            <div className="font-medium text-sm">
+                              {response.userMessage}
+                            </div>
+                          )}
+                        <pre className="whitespace-pre-wrap font-mono text-xs opacity-75">
+                          {response.error}
+                        </pre>
+                        {response.targetUrl && (
+                          <div className="text-muted-foreground text-xs">
+                            invalid input: {response.targetUrl}
+                          </div>
+                        )}
+                        {response.retryAfter && (
+                          <div className="text-orange-600 text-xs">
+                            Retry after: {response.retryAfter} seconds
+                          </div>
+                        )}
+                      </div>
                     ) : selectedOption?.value === 'getMarkdown' &&
                       typeof response.data === 'string' ? (
                       <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:border prose-table:border prose-td:border prose-th:border prose-blockquote:border-muted-foreground prose-blockquote:border-l-4 prose-pre:bg-muted prose-th:bg-muted prose-blockquote:pl-4 prose-headings:font-semibold prose-a:text-primary prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:no-underline hover:prose-a:underline">
