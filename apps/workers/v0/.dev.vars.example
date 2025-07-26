@@ -1,7 +1,21 @@
-# env variables
-BETTER_AUTH_URL=
+# Used by Wrangler in local development
+# In production, these should be set as Cloudflare Worker Secrets.
+
+BETTER_AUTH_URL=http://localhost:8787
+BETTER_AUTH_SECRET=
 
 DATABASE_URL=
+
+# Github
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+
+# Google
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Resend
+RESEND_API_KEY=
 
 UPSTASH_REDIS_REST_URL="****"
 UPSTASH_REDIS_REST_TOKEN="****"
