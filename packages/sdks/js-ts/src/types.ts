@@ -1,3 +1,6 @@
+import type { ClientOptions } from '@orpc/client';
+import type { ClientRetryPluginContext } from '@orpc/client/plugins';
+
 interface StandardHeaders {
   [key: string]: string | string[] | undefined;
 }
@@ -23,6 +26,10 @@ export interface DeepcrawlConfig {
   fetch?: typeof fetch; // Allow custom fetch implementation
   fetchOptions?: RequestInit;
 }
+
+export interface DeepCrawlClientContext extends ClientRetryPluginContext {}
+
+export type DeepcrawlClientOptions = ClientOptions<DeepCrawlClientContext>;
 
 export class DeepcrawlError extends Error {
   constructor(

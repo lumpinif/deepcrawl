@@ -18,14 +18,13 @@ import {
   safe,
 } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
-import {
-  ClientRetryPlugin,
-  type ClientRetryPluginContext,
-} from '@orpc/client/plugins';
+import { ClientRetryPlugin } from '@orpc/client/plugins';
 import type { ContractRouterClient } from '@orpc/contract';
 import packageJSON from '../package.json' with { type: 'json' };
 import {
+  type DeepCrawlClientContext,
   DeepcrawlAuthError,
+  type DeepcrawlClientOptions,
   type DeepcrawlConfig,
   DeepcrawlError,
   DeepcrawlLinksError,
@@ -33,8 +32,6 @@ import {
   DeepcrawlRateLimitError,
   DeepcrawlReadError,
 } from './types';
-
-interface DeepCrawlClientContext extends ClientRetryPluginContext {}
 
 /**
  * Type guard to check if error is an ORPCError instance
@@ -252,10 +249,16 @@ export class DeepcrawlApp {
   /* Read GET */
   /**
    * @param url - The URL to get the markdown for.
+   * @param options - Optional configuration including abort signal
    * @returns The markdown.
    */
-  async getMarkdown(url: string): Promise<GetMarkdownOutput> {
-    const [error, data] = await safe(this.client.read.getMarkdown({ url }));
+  async getMarkdown(
+    url: string,
+    options?: DeepcrawlClientOptions,
+  ): Promise<GetMarkdownOutput> {
+    const [error, data] = await safe(
+      this.client.read.getMarkdown({ url }, { signal: options?.signal }),
+    );
 
     if (error) {
       handleORPCError(error, 'read', 'Failed to fetch markdown');
@@ -272,18 +275,22 @@ export class DeepcrawlApp {
   /**
    * @param url - The URL to read.
    * @param options - The options to use for the reading.
+   * @param requestOptions - Optional configuration including abort signal
    * @returns The read result.
    */
   async readUrl(
     url: string,
     options: Omit<ReadOptions, 'url'> = {},
+    requestOptions?: DeepcrawlClientOptions,
   ): Promise<ReadUrlOutput> {
     const readOptions: ReadOptions = {
       url,
       ...options,
     };
 
-    const [error, data] = await safe(this.client.read.readUrl(readOptions));
+    const [error, data] = await safe(
+      this.client.read.readUrl(readOptions, { signal: requestOptions?.signal }),
+    );
 
     if (error) {
       handleORPCError(error, 'read', 'Failed to read URL');
@@ -321,11 +328,13 @@ export class DeepcrawlApp {
   /**
    * @param url - The URL to extract links from.
    * @param options - The options to use for the extraction.
+   * @param requestOptions - Optional configuration including abort signal
    * @returns The extracted links.
    */
   async extractLinks(
     url: string,
     options: Omit<LinksOptions, 'url'> = {},
+    requestOptions?: DeepcrawlClientOptions,
   ): Promise<ExtractLinksOutput> {
     const linksOptions: LinksPOSTInput = {
       url,
@@ -333,7 +342,9 @@ export class DeepcrawlApp {
     };
 
     const [error, data] = await safe(
-      this.client.links.extractLinks(linksOptions),
+      this.client.links.extractLinks(linksOptions, {
+        signal: requestOptions?.signal,
+      }),
     );
 
     if (error) {
