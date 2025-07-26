@@ -21,10 +21,13 @@ export const readGETHandler = authed
       // WORKAROUND: Return a Blob with text/markdown MIME type to bypass ORPC's JSON serialization
       return new Blob([result], { type: 'text/markdown' });
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
       const readErrorResponse: ReadErrorResponse = {
         success: false,
         targetUrl: url,
-        error: 'Failed to read url',
+        error: errorMessage,
       };
 
       throw errors.READ_ERROR_RESPONSE({
@@ -51,10 +54,13 @@ export const readPOSTHandler = authed
 
       return result as ReadSuccessResponse;
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
       const readErrorResponse: ReadErrorResponse = {
         success: false,
         targetUrl: url,
-        error: 'Failed to read url',
+        error: errorMessage,
       };
 
       throw errors.READ_ERROR_RESPONSE({

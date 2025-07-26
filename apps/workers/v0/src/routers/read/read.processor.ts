@@ -335,8 +335,13 @@ export async function processReadRequest(
 
     return readResponse as ReadSuccessResponse;
   } catch (error) {
-    logError('[ERROR] Read processor error:', error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : 'Failed to process read request with unknown error';
 
-    throw new Error('Failed to read url');
+    logError('[ERROR] Read processor error:', errorMessage);
+
+    throw new Error(errorMessage);
   }
 }

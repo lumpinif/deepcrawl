@@ -670,11 +670,11 @@ export async function processLinksRequest(
   } catch (error) {
     logError('❌ [LINKS PROCESSOR] error:', error);
 
-    const err =
+    const errorMessage =
       error instanceof Error
-        ? `${error.name}: ${error.message} - ${error.stack}`
-        : String(error);
+        ? error.message
+        : 'Failed to process links request with unknown error';
 
-    throw new Error(err);
+    throw new Error(errorMessage);
   }
 }
