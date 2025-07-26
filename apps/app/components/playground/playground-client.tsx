@@ -74,6 +74,9 @@ const apiOptions = [
 const apiOptionValues = ['getMarkdown', 'readUrl', 'extractLinks'] as const;
 
 // Get API key from environment or use a demo key
+// If you want to use your own API key, you can set it in the .env.local file
+// NEXT_PUBLIC_DEEPCRAWL_API_KEY=your-api-key
+// We don't use API key in playground, but it's still here for reference
 const API_KEY =
   process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY || 'demo-key-for-playground';
 
