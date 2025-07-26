@@ -10,6 +10,7 @@ import {
   ImageSrcNormalizeHandler,
   LinkNormalizeHandler,
 } from '@/services/html-cleaning/handlers/link-normalize';
+import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { validateURL } from '@/utils/url/validate-url';
 
 export interface _linksSets {
@@ -247,7 +248,7 @@ export class LinkService {
         }
       } catch (error) {
         // Skip invalid URLs
-        console.error(`Error processing link: ${link}`, error);
+        logError(`Error processing link: ${link}`, error);
       }
     }
 
@@ -336,9 +337,7 @@ export class LinkService {
       return urlString;
     } catch (error) {
       // Return the original URL instead of throwing an error
-      console.warn(
-        `Warning: Could not normalize URL "${url}": ${String(error)}`,
-      );
+      logWarn(`Warning: Could not normalize URL "${url}": ${String(error)}`);
       return url;
     }
   }
@@ -390,7 +389,7 @@ export class LinkService {
 
           // Skip framework-specific resources
           if (this.isFrameworkResource(url)) {
-            console.log(`Skipping framework resource: ${url}`);
+            logDebug(`Skipping framework resource: ${url}`);
             continue;
           }
 
@@ -432,11 +431,11 @@ export class LinkService {
             }
           }
         } catch (error) {
-          console.error('Failed to categorize URL:', { url, error });
+          logError('Failed to categorize URL:', { url, error });
         }
       }
     } catch (error) {
-      console.error('Failed to parse base URL:', { baseUrl, error });
+      logError('Failed to parse base URL:', { baseUrl, error });
     }
 
     // --- Sorting removed to preserve page/discovery order ---
@@ -456,7 +455,7 @@ export class LinkService {
           pathSegmentCount: this.getPathSegmentCount(url),
         });
       } catch (error) {
-        console.error('Error pre-computing sort metadata:', { url, error });
+        logError('Error pre-computing sort metadata:', { url, error });
         sortMetadata.set(url, {
           isTargetDomain: false,
           pathSegmentCount: Number.POSITIVE_INFINITY,
@@ -542,7 +541,7 @@ export class LinkService {
       // Count segments by splitting on slashes
       return path.split('/').length;
     } catch (error) {
-      console.error('Failed to parse URL for segment counting:', {
+      logError('Failed to parse URL for segment counting:', {
         url,
         error,
       });

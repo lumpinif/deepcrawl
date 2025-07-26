@@ -8,10 +8,9 @@ import type { Options, ReadabilityResult } from '@paoramen/cheer-reader';
 import { Readability } from '@paoramen/cheer-reader';
 import type { CheerioOptions } from 'cheerio';
 import * as cheerio from 'cheerio';
-
+import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { RobotsParser } from '@/utils/meta/robots-parser';
 import { SitemapParser } from '@/utils/meta/sitemap-parser';
-
 import { HTMLCleaning } from '../html-cleaning/html-cleaning.service';
 
 interface MetaFilesOptions {
@@ -70,7 +69,7 @@ export class ScrapeService {
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeoutMs);
 
-    console.log('[PERF] Scraping fetchPage started:', {
+    logDebug('[PERF] Scraping fetchPage started:', {
       url,
       timeoutMs,
       timestamp: new Date().toISOString(),
@@ -97,7 +96,7 @@ export class ScrapeService {
       clearTimeout(timeoutId);
       const fetchTime = Date.now() - fetchStart;
 
-      console.log('[PERF] Scraping fetchPage response received:', {
+      logDebug('[PERF] Scraping fetchPage response received:', {
         url,
         fetchTime,
         status: response.status,
@@ -128,7 +127,7 @@ export class ScrapeService {
       const html = await response.text();
       const textTime = Date.now() - textStart;
 
-      console.log('[PERF] Scraping fetchPage text extracted:', {
+      logDebug('[PERF] Scraping fetchPage text extracted:', {
         url,
         textTime,
         htmlSize: html.length,
@@ -157,7 +156,7 @@ export class ScrapeService {
       clearTimeout(timeoutId); // Ensure timeout is cleared on error
 
       const errorTime = Date.now() - fetchStart;
-      console.error('[PERF] Scraping fetchPage error:', {
+      logError('[PERF] Scraping fetchPage error:', {
         url,
         errorTime,
         error: error instanceof Error ? error.message : String(error),
@@ -211,7 +210,7 @@ export class ScrapeService {
               result.sitemapXML = content;
             }
           } catch (error) {
-            console.log(`Error fetching sitemap from ${sitemapUrl}:`, error);
+            logError(`Error fetching sitemap from ${sitemapUrl}:`, error);
           }
         }
       }
@@ -234,7 +233,7 @@ export class ScrapeService {
               return content;
             }
           } catch (error) {
-            console.log(`Error fetching sitemap from ${sitemapUrl}:`, error);
+            logError(`Error fetching sitemap from ${sitemapUrl}:`, error);
           }
           return null;
         });
@@ -289,7 +288,7 @@ export class ScrapeService {
             const absoluteUrl = new URL(src, url).href;
             $(element).attr('src', absoluteUrl);
           } catch (urlError) {
-            console.warn('Error converting image URL:', urlError);
+            logWarn('Error converting image URL:', urlError);
           }
         }
       });
@@ -316,7 +315,7 @@ export class ScrapeService {
 
       return result;
     } catch (error) {
-      console.error('Error in Reader Cleaning:', error);
+      logError('Error in Reader Cleaning:', error);
       throw new Error('Failed to clean HTML with reader cleaning!');
     }
   }
@@ -545,7 +544,7 @@ export class ScrapeService {
               dataResults.metaFiles = metaFiles;
             })
             .catch((error) => {
-              console.error('Error fetching meta files:', error);
+              logError('Error fetching meta files:', error);
               // Continue even if meta files fail
             }),
         );
@@ -591,7 +590,7 @@ export class ScrapeService {
                 dataResults.cleanedHtml = cleanedHtml;
               })
               .catch((error) => {
-                console.error('Error cleaning HTML:', error);
+                logError('Error cleaning HTML:', error);
                 // Continue even if HTML cleaning fails
               }),
           );

@@ -10,6 +10,7 @@ import { apiKeyAuthMiddleware } from '@/middlewares/api-key-auth.hono';
 import { connInfoMiddleware } from '@/middlewares/connInfo.hono';
 import { cookieAuthMiddleware } from '@/middlewares/cookie-auth.hono';
 import deepCrawlCors from '@/middlewares/cors.hono';
+import { servicesAppMiddleware } from '@/middlewares/serivces.app';
 import { serviceFetcherMiddleware } from '@/middlewares/service-fetchers.hono';
 
 export default function createHonoApp() {
@@ -31,6 +32,7 @@ export default function createHonoApp() {
     .use('*', cookieAuthMiddleware)
     .use('*', connInfoMiddleware)
 
+    .use('*', servicesAppMiddleware)
     .use('*', prettyJSON());
 
   // Register check-auth route

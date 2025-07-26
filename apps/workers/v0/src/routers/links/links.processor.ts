@@ -22,17 +22,13 @@ import {
 } from '@/config/constants';
 import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
 import type { ORPCContext } from '@/lib/context';
-import { type _linksSets, LinkService } from '@/services/link/link.service';
-import { ScrapeService } from '@/services/scrape/scrape.service';
+import type { _linksSets } from '@/services/link/link.service';
 import { formatDuration } from '@/utils/formater';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
+import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
-
-// Create service instances at module level for reuse across requests
-const scrapeService = new ScrapeService();
-const linkService = new LinkService();
 
 // Helper function to check if a URL exists in the Set of visited URLs
 function isUrlInVisitedSet(
@@ -89,6 +85,21 @@ export async function processLinksRequest(
   } = params;
   const timestamp = new Date().toISOString();
   const startRequestTime = performance.now();
+
+  // Use app-level services from context for optimal performance
+  const serviceAccessStart = Date.now();
+  const scrapeService = c.var.scrapeService;
+  const linkService = c.var.linkService;
+  const serviceAccessTime = Date.now() - serviceAccessStart;
+
+  logDebug('[PERF] Links processor using request-scoped services:', {
+    url,
+    serviceAccessTime,
+    hasScrapeService: !!scrapeService,
+    hasLinkService: !!linkService,
+    timestamp: new Date().toISOString(),
+    requestId: c.var.requestId,
+  });
 
   // config
   const withTree = isTree !== false; // True by default, false only if explicitly set to false
@@ -311,7 +322,7 @@ export async function processLinksRequest(
             linkService.mergeLinks(extractedKinLinks, _linksSets);
           } catch (error) {
             // Log the error and add to skipped URLs
-            console.error(`Error processing path ${kin}:`, error);
+            logError(`Error processing path ${kin}:`, error);
             const errorMessage =
               error instanceof Error ? error.message : String(error);
             skippedUrls.set(kin, `Failed to process: ${errorMessage}`);
@@ -367,7 +378,7 @@ export async function processLinksRequest(
         }
       } catch (error) {
         // Log the error and add to skipped URLs
-        console.error(`Error processing root URL ${rootUrl}:`, error);
+        logError(`Error processing root URL ${rootUrl}:`, error);
         const errorMessage =
           error instanceof Error ? error.message : String(error);
         skippedUrls.set(rootUrl, `Failed to process: ${errorMessage}`);
@@ -407,7 +418,7 @@ export async function processLinksRequest(
         }
       }
     } catch (error) {
-      console.error(
+      logError(
         `Error reading from DEEPCRAWL_V0_LINKS_STORE for ${rootUrl}:`,
         error,
       );
@@ -572,7 +583,7 @@ export async function processLinksRequest(
           },
         );
       } catch (error) {
-        console.warn(
+        logWarn(
           `[LINKS Endpoint] Failed to store sitemap in KV for ${rootUrl}. Error: ${error instanceof Error ? error.message : String(error)}`,
         );
         // Skip KV put on error, allowing the function to continue
@@ -667,7 +678,7 @@ export async function processLinksRequest(
 
     return linksPostResponse as LinksSuccessResponse;
   } catch (error) {
-    console.error('❌ [LINKS PROCESSOR] error:', error);
+    logError('❌ [LINKS PROCESSOR] error:', error);
 
     const err =
       error instanceof Error

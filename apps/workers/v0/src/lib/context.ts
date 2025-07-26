@@ -3,7 +3,10 @@ import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
 import type { Ratelimit } from '@upstash/ratelimit';
 import type { Context as HonoContext } from 'hono';
 import type { RequestIdVariables } from 'hono/request-id';
+import type { NodeHtmlMarkdown } from 'node-html-markdown';
 import type { getAuthClient } from '@/middlewares/client.auth';
+import type { LinkService } from '@/services/link/link.service';
+import type { ScrapeService } from '@/services/scrape/scrape.service';
 
 export interface AppVariables extends RequestIdVariables {
   /** Auth Instance */
@@ -20,6 +23,10 @@ export interface AppVariables extends RequestIdVariables {
   userIP: string | null;
   /** Rate Limiter */
   rateLimiter: Ratelimit;
+  /** Shared Services - Created at app level for performance */
+  scrapeService: ScrapeService;
+  linkService: LinkService;
+  markdownConverter: NodeHtmlMarkdown;
 }
 
 export interface AppBindings {

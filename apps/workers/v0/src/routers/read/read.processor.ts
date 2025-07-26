@@ -6,35 +6,21 @@ import type {
   ReadSuccessResponse,
   ScrapedData,
 } from '@deepcrawl/types/index';
-
-import { NodeHtmlMarkdown } from 'node-html-markdown';
-
+import type { NodeHtmlMarkdown } from 'node-html-markdown';
 import { KV_CACHE_EXPIRATION_TTL } from '@/config/constants';
 import { ENABLE_READ_CACHE } from '@/config/default-options';
 import type { ORPCContext } from '@/lib/context';
-import { ScrapeService } from '@/services/scrape/scrape.service';
 import { formatDuration } from '@/utils/formater';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
+import { logDebug, logError } from '@/utils/loggers';
 import {
   fixCodeBlockFormatting,
-  nhmCustomTranslators,
-  nhmTranslators,
   processMultiLineLinks,
   removeNavigationAidLinks,
 } from '@/utils/markdown';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
-
-// Create service instance at module level for reuse across requests
-const scrapeService = new ScrapeService();
-
-// Pre-configure NodeHtmlMarkdown at module level to avoid per-request setup
-const markdownConverter = new NodeHtmlMarkdown(
-  /* options */ {},
-  /* customTransformers */ nhmCustomTranslators,
-  /* customCodeBlockTranslators */ nhmTranslators,
-);
 
 /**
  * Calculates performance metrics for the read operation.
@@ -109,15 +95,19 @@ function hasMeaningfulMarkdown(markdown: string): boolean {
 }
 
 /**
- * Convert HTML to Markdown
- * @param param0 - HTML content to convert
+ * Convert HTML to Markdown using app-level converter
+ * @param param0 - HTML content and markdown converter
  * @returns Markdown content
  */
-function getMarkdown({ html }: { html: string }): string {
+function getMarkdown({
+  html,
+  markdownConverter,
+}: {
+  html: string;
+  markdownConverter: NodeHtmlMarkdown;
+}): string {
   try {
-    const nhm = markdownConverter;
-
-    let nhmMarkdown = nhm.translate(html);
+    let nhmMarkdown = markdownConverter.translate(html);
     nhmMarkdown = processMultiLineLinks(nhmMarkdown);
     nhmMarkdown = removeNavigationAidLinks(nhmMarkdown);
     nhmMarkdown = fixCodeBlockFormatting(nhmMarkdown);
@@ -303,6 +293,19 @@ export async function processReadRequest(
       requestId: c.var.requestId,
     });
 
+    // Use app-level service instance for optimal performance
+    const serviceAccessStart = Date.now();
+    const scrapeService = c.var.scrapeService;
+    const serviceAccessTime = Date.now() - serviceAccessStart;
+
+    console.log('[PERF] Read processor using request-scoped service:', {
+      url: targetUrl,
+      serviceAccessTime,
+      hasService: !!scrapeService,
+      timestamp: new Date().toISOString(),
+      requestId: c.var.requestId,
+    });
+
     const {
       title,
       rawHtml,
@@ -342,17 +345,20 @@ export async function processReadRequest(
       const markdownStart = Date.now();
 
       if (cleanedHtml) {
-        console.log('[PERF] Read processor markdown conversion started:', {
+        logDebug('[PERF] Read processor markdown conversion started:', {
           url: targetUrl,
           htmlSize: cleanedHtml.length,
           timestamp: new Date().toISOString(),
           requestId: c.var.requestId,
         });
 
-        const convertedMarkdown = getMarkdown({ html: cleanedHtml });
+        const convertedMarkdown = getMarkdown({
+          html: cleanedHtml,
+          markdownConverter: c.var.markdownConverter,
+        });
         const markdownTime = Date.now() - markdownStart;
 
-        console.log('[PERF] Read processor markdown conversion completed:', {
+        logDebug('[PERF] Read processor markdown conversion completed:', {
           url: targetUrl,
           markdownTime,
           markdownSize: convertedMarkdown.length,
@@ -368,7 +374,7 @@ export async function processReadRequest(
           // For POST requests with markdown=true but no meaningful content,
           // provide informative default markdown instead of undefined
           markdown = getDefaultMarkdown(title, targetUrl, description);
-          console.log(
+          logDebug(
             '[PERF] Read processor using default markdown (no meaningful content):',
             {
               url: targetUrl,
@@ -381,7 +387,7 @@ export async function processReadRequest(
         // For POST requests with markdown=true but no extractable content,
         // provide informative default markdown instead of undefined
         markdown = getDefaultMarkdown(title, targetUrl, description);
-        console.log(
+        logDebug(
           '[PERF] Read processor using default markdown (no cleaned HTML):',
           {
             url: targetUrl,
@@ -418,7 +424,7 @@ export async function processReadRequest(
     });
     const responseTime = Date.now() - responseStart;
 
-    console.log('[PERF] Read processor response prepared:', {
+    logDebug('[PERF] Read processor response prepared:', {
       url: targetUrl,
       responseTime,
       hasResponse: !!readResponse,
@@ -443,7 +449,7 @@ export async function processReadRequest(
             )
           : JSON.stringify(readResponse);
 
-        console.log('[PERF] Read processor cache write started:', {
+        logDebug('[PERF] Read processor cache write started:', {
           url: targetUrl,
           cacheValueSize: valueToCache.length,
           isGETRequest,
@@ -466,7 +472,7 @@ export async function processReadRequest(
         );
 
         const cacheWriteTime = Date.now() - cacheWriteStart;
-        console.log('[PERF] Read processor cache write completed:', {
+        logDebug('[PERF] Read processor cache write completed:', {
           url: targetUrl,
           cacheWriteTime,
           timestamp: new Date().toISOString(),
@@ -474,7 +480,7 @@ export async function processReadRequest(
         });
       } catch (error) {
         const cacheWriteErrorTime = Date.now() - processorStart;
-        console.error('[PERF] Read processor cache write error:', {
+        logError('[PERF] Read processor cache write error:', {
           url: targetUrl,
           cacheWriteErrorTime,
           error: error instanceof Error ? error.message : String(error),
@@ -487,7 +493,7 @@ export async function processReadRequest(
 
     const totalProcessorTime = Date.now() - processorStart;
 
-    console.log('[PERF] Read processor completed:', {
+    logDebug('[PERF] Read processor completed:', {
       url: targetUrl,
       totalProcessorTime,
       scrapeTime,
