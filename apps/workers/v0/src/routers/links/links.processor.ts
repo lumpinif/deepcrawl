@@ -192,6 +192,7 @@ export async function processLinksRequest(
           cleanedHtml: isCleanedHtml,
           robots: url === rootUrl && rest.robots,
           sitemapXML: url === rootUrl && rest.sitemapXML,
+          signal: c.signal,
         });
 
         // Add to visited URLs sets with current timestamp

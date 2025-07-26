@@ -36,22 +36,22 @@ export interface AppBindings {
 
 export interface AppContext extends HonoContext<AppBindings> {}
 
-export type CreateContextOptions = {
-  context: AppContext;
-};
-
 export interface ORPCContext extends ResponseHeadersPluginContext {
   env: AppBindings['Bindings'];
   var: AppVariables;
+  signal: AbortSignal;
   executionCtx: ExecutionContext;
 }
 
 export async function createContext({
   context,
-}: CreateContextOptions): Promise<ORPCContext> {
+}: {
+  context: AppContext;
+}): Promise<ORPCContext> {
   return {
     env: context.env,
     var: context.var,
+    signal: context.req.raw.signal,
     executionCtx: context.executionCtx,
   };
 }

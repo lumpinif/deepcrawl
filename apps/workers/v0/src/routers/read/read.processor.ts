@@ -306,6 +306,7 @@ export async function processReadRequest(
       metadata: isMetadata,
       metadataOptions,
       robots: isRobots,
+      signal: c.signal,
     });
 
     const scrapeTime = Date.now() - scrapeStart;

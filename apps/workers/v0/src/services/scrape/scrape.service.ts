@@ -63,11 +63,22 @@ export class ScrapeService {
 
   private async fetchPage(
     url: string,
-    options: { isIframeAllowed?: boolean } = { isIframeAllowed: true },
+    options: { 
+      isIframeAllowed?: boolean;
+      signal?: AbortSignal;
+    } = { isIframeAllowed: true },
   ): Promise<string | FetchPageResult> {
     // Add timeout configuration for production reliability
     const timeoutMs = DEFAULT_FETCH_TIMEOUT;
     const abortController = new AbortController();
+    
+    // If an external signal is provided, abort when it aborts
+    if (options.signal) {
+      options.signal.addEventListener('abort', () => {
+        abortController.abort();
+      });
+    }
+    
     const timeoutId = setTimeout(() => abortController.abort(), timeoutMs);
 
     logDebug('[PERF] Scraping fetchPage started:', {
@@ -165,6 +176,10 @@ export class ScrapeService {
 
       // Provide more specific error messages
       if (error instanceof Error && error.name === 'AbortError') {
+        // Check if it's our timeout or user abort
+        if (options.signal?.aborted) {
+          throw new Error(`Request cancelled by user for URL: ${url}`);
+        }
         throw new Error(`Request timeout after ${timeoutMs}ms for URL: ${url}`);
       }
 
@@ -174,7 +189,7 @@ export class ScrapeService {
 
   private async fetchMetaFiles(
     baseUrl: string,
-    options: MetaFilesOptions = {},
+    options: MetaFilesOptions & { signal?: AbortSignal } = {},
   ): Promise<MetaFiles> {
     const result: MetaFiles = {};
     const robotsParser = new RobotsParser();
@@ -497,6 +512,7 @@ export class ScrapeService {
       readerOptions?: Partial<Options>;
       cheerioOptions?: Partial<CheerioOptions>;
     };
+    signal?: AbortSignal;
   }): Promise<ScrapedData> {
     const {
       robots,
@@ -507,6 +523,7 @@ export class ScrapeService {
       metadataOptions,
       cleaningProcessor = 'html-rewriter',
       readerCleaningOptions,
+      signal,
     } = options;
 
     // Default isMetadata to true unless explicitly set to false
@@ -515,6 +532,7 @@ export class ScrapeService {
     try {
       const fetchResult = await this.fetchPage(url, {
         isIframeAllowed: metadataOptions?.isIframeAllowed ?? true,
+        signal,
       });
 
       const html =
@@ -537,7 +555,7 @@ export class ScrapeService {
 
       if (robots || sitemapXML) {
         promises.push(
-          this.fetchMetaFiles(url, { robots, sitemapXML })
+          this.fetchMetaFiles(url, { robots, sitemapXML, signal })
             .then((metaFiles) => {
               dataResults.metaFiles = metaFiles;
             })
