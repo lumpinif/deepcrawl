@@ -1,6 +1,6 @@
-import type { Agent } from 'node:https';
 import type { LinksErrorResponse, ReadErrorResponse } from '@deepcrawl/types';
 import type { ClientRetryPluginContext } from '@orpc/client/plugins';
+import type { Agent } from 'https';
 
 export interface DeepcrawlFetchOptions extends RequestInit {
   agent?: Agent;

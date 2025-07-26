@@ -1,4 +1,3 @@
-import type { Agent } from 'node:https';
 import type {
   contract,
   ExtractLinksOutput,
@@ -21,6 +20,7 @@ import {
 import { RPCLink } from '@orpc/client/fetch';
 import { ClientRetryPlugin } from '@orpc/client/plugins';
 import type { ContractRouterClient } from '@orpc/contract';
+import type { Agent } from 'https';
 import packageJSON from '../package.json' with { type: 'json' };
 import {
   type DeepCrawlClientContext,

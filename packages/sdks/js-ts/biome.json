@@ -1,4 +1,11 @@
 {
   "root": false,
-  "extends": "//"
+  "extends": "//",
+  "linter": {
+    "rules": {
+      "style": {
+        "useNodejsImportProtocol": "off"
+      }
+    }
+  }
 }
