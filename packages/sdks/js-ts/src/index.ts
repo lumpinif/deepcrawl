@@ -4,9 +4,7 @@ export type { ContractRouterClient } from '@orpc/contract';
 export { DeepcrawlApp } from './deepcrawl';
 export {
   // Infrastructure errors (oRPC/HTTP errors)
-  DeepcrawlAbortError,
   DeepcrawlAuthError,
-  type DeepcrawlClientOptions,
   // Configuration types
   type DeepcrawlConfig,
   // Base error class

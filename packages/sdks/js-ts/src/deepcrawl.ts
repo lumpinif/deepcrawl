@@ -23,9 +23,7 @@ import type { ContractRouterClient } from '@orpc/contract';
 import packageJSON from '../package.json' with { type: 'json' };
 import {
   type DeepCrawlClientContext,
-  DeepcrawlAbortError,
   DeepcrawlAuthError,
-  type DeepcrawlClientOptions,
   type DeepcrawlConfig,
   DeepcrawlLinksError,
   DeepcrawlNetworkError,
@@ -47,27 +45,6 @@ function isORPCError(error: unknown): error is ORPCError<string, unknown> {
     'status' in error &&
     'message' in error
   );
-}
-
-/**
- * Check if an error is an abort error (native AbortError or any error with name 'AbortError')
- */
-function isNativeAbortError(error: unknown): boolean {
-  if (error instanceof DeepcrawlAbortError) {
-    return true;
-  }
-
-  // Check for native AbortError or any error with name 'AbortError'
-  if (
-    error &&
-    typeof error === 'object' &&
-    'name' in error &&
-    error.name === 'AbortError'
-  ) {
-    return true;
-  }
-
-  return false;
 }
 
 /**
@@ -110,11 +87,6 @@ function handleDeepcrawlError(
   operation: 'read' | 'links',
   fallbackMessage: string,
 ): never {
-  // Handle native abort errors first
-  if (isNativeAbortError(error)) {
-    throw new DeepcrawlAbortError('Request was cancelled');
-  }
-
   // Handle oRPC errors with type-safe registry
   if (isORPCError(error)) {
     // Use isDefinedError to distinguish between defined contract errors vs infrastructure errors
@@ -172,6 +144,10 @@ function handleDeepcrawlError(
   }
 
   // Default to network error for all other cases
+  console.log('🔍 [SDK] Falling back to network error:', {
+    error,
+    fallbackMessage,
+  });
   throw new DeepcrawlNetworkError(fallbackMessage, error);
 }
 
@@ -267,11 +243,6 @@ export class DeepcrawlApp {
             retryDelay: ({ attemptIndex }) =>
               Math.min(1000 * Math.pow(2, attemptIndex), 10000), // Exponential backoff
             shouldRetry: ({ error, path, attemptIndex }) => {
-              // Never retry on abort errors
-              if (isNativeAbortError(error)) {
-                return false;
-              }
-
               if (error instanceof Error) {
                 const networkErrorPatterns = [
                   'ECONNREFUSED',
@@ -320,17 +291,10 @@ export class DeepcrawlApp {
   /* Read GET */
   /**
    * @param url - The URL to get the markdown for.
-   * @param options - Optional configuration including abort signal
    * @returns The markdown.
    */
-  async getMarkdown(
-    url: string,
-    options?: DeepcrawlClientOptions,
-  ): Promise<GetMarkdownOutput> {
-    const [error, data] = await this.safeClient.read.getMarkdown(
-      { url },
-      { signal: options?.signal },
-    );
+  async getMarkdown(url: string): Promise<GetMarkdownOutput> {
+    const [error, data] = await this.safeClient.read.getMarkdown({ url });
 
     if (error) {
       handleDeepcrawlError(error, 'read', 'Failed to fetch markdown');
@@ -347,22 +311,18 @@ export class DeepcrawlApp {
   /**
    * @param url - The URL to read.
    * @param options - The options to use for the reading.
-   * @param requestOptions - Optional configuration including abort signal
    * @returns The read result.
    */
   async readUrl(
     url: string,
     options: Omit<ReadOptions, 'url'> = {},
-    requestOptions?: DeepcrawlClientOptions,
   ): Promise<ReadUrlOutput> {
     const readOptions: ReadOptions = {
       url,
       ...options,
     };
 
-    const [error, data] = await this.safeClient.read.readUrl(readOptions, {
-      signal: requestOptions?.signal,
-    });
+    const [error, data] = await this.safeClient.read.readUrl(readOptions);
 
     if (error) {
       handleDeepcrawlError(error, 'read', 'Failed to read URL');
@@ -375,23 +335,19 @@ export class DeepcrawlApp {
   /**
    * @param url - The URL to extract links from.
    * @param options - The options to use for the extraction.
-   * @param requestOptions - Optional configuration including abort signal
    * @returns The extracted links.
    */
   async extractLinks(
     url: string,
     options: Omit<LinksOptions, 'url'> = {},
-    requestOptions?: DeepcrawlClientOptions,
   ): Promise<ExtractLinksOutput> {
     const linksOptions: LinksPOSTInput = {
       url,
       ...options,
     };
 
-    const [error, data] = await this.safeClient.links.extractLinks(
-      linksOptions,
-      { signal: requestOptions?.signal },
-    );
+    const [error, data] =
+      await this.safeClient.links.extractLinks(linksOptions);
 
     if (error) {
       handleDeepcrawlError(error, 'links', 'Failed to extract links');

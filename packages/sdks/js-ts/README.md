@@ -267,41 +267,7 @@ export function useScraping(apiKey: string) {
 }
 ```
 
-### 5. **Background Job with Cancellation**
 
-```typescript
-import { DeepcrawlApp, DeepcrawlError } from 'deepcrawl';
-
-class ScrapingJob {
-  private controller = new AbortController();
-  private deepcrawl = new DeepcrawlApp({ apiKey: process.env.DEEPCRAWL_API_KEY! });
-
-  async processUrls(urls: string[]) {
-    try {
-      for (const url of urls) {
-        if (this.controller.signal.aborted) break;
-        
-        const result = await this.deepcrawl.readUrl(url, {}, {
-          signal: this.controller.signal
-        });
-        
-        await this.processResult(result);
-      }
-    } catch (error) {
-      if (DeepcrawlError.isAbortError(error)) {
-        console.log('Job cancelled by user');
-        return { cancelled: true };
-      }
-      
-      throw error;
-    }
-  }
-  
-  cancel() {
-    this.controller.abort();
-  }
-}
-```
 
 ## 🛡️ **Error Handling Patterns**
 
@@ -350,7 +316,7 @@ try {
 - `DeepcrawlNotFoundError` - Resource not found
 - `DeepcrawlServerError` - Server-side error
 - `DeepcrawlNetworkError` - Network connectivity issues
-- `DeepcrawlAbortError` - Request was cancelled
+
 
 ### **Rich Error Properties**
 ```typescript

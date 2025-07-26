@@ -11,10 +11,6 @@ export interface DeepcrawlConfig {
   fetchOptions?: RequestInit;
 }
 
-export interface DeepcrawlClientOptions {
-  signal?: AbortSignal;
-}
-
 export interface DeepCrawlClientContext extends ClientRetryPluginContext {}
 
 /**
@@ -81,10 +77,6 @@ export abstract class DeepcrawlError<TData = unknown> extends Error {
     return error instanceof DeepcrawlNetworkError;
   }
 
-  static isAbortError(error: unknown): error is DeepcrawlAbortError {
-    return error instanceof DeepcrawlAbortError;
-  }
-
   /**
    * Instance methods for fluent checking
    */
@@ -118,10 +110,6 @@ export abstract class DeepcrawlError<TData = unknown> extends Error {
 
   isNetwork(): this is DeepcrawlNetworkError {
     return this instanceof DeepcrawlNetworkError;
-  }
-
-  isAbort(): this is DeepcrawlAbortError {
-    return this instanceof DeepcrawlAbortError;
   }
 }
 
@@ -272,19 +260,6 @@ export class DeepcrawlServerError extends DeepcrawlError<unknown> {
 export class DeepcrawlNetworkError extends DeepcrawlError<unknown> {
   constructor(message: string, originalError?: unknown) {
     super('NETWORK_ERROR', message, { originalError }, 503, false);
-  }
-
-  get userMessage(): string {
-    return this.message;
-  }
-}
-
-/**
- * Error for aborted requests
- */
-export class DeepcrawlAbortError extends DeepcrawlError<unknown> {
-  constructor(message = 'Request was cancelled') {
-    super('ABORT_ERROR', message, {}, 0, false);
   }
 
   get userMessage(): string {
