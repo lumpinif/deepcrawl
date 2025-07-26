@@ -84,8 +84,6 @@ export class ScrapeService {
       timeoutMs,
     );
 
-    const fetchStart = Date.now();
-
     try {
       const response = await fetch(url, {
         signal: abortController.signal,
