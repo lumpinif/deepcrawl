@@ -3,13 +3,22 @@ export type { contract as DeepcrawlContract } from '@deepcrawl/contracts';
 export type { ContractRouterClient } from '@orpc/contract';
 export { DeepcrawlApp } from './deepcrawl';
 export {
+  // Infrastructure errors (oRPC/HTTP errors)
+  DeepcrawlAbortError,
   DeepcrawlAuthError,
+  type DeepcrawlClientOptions,
+  // Configuration types
   type DeepcrawlConfig,
+  // Base error class
   DeepcrawlError,
   DeepcrawlLinksError,
   DeepcrawlNetworkError,
+  DeepcrawlNotFoundError,
   DeepcrawlRateLimitError,
+  // Custom business errors (API-specific errors)
   DeepcrawlReadError,
+  DeepcrawlServerError,
+  DeepcrawlValidationError,
 } from './types';
 
 // Type helper for creating custom clients

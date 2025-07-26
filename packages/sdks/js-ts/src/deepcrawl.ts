@@ -13,9 +13,9 @@ import type {
 } from '@deepcrawl/types';
 import {
   createORPCClient,
+  createSafeClient,
   isDefinedError,
   type ORPCError,
-  safe,
 } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import { ClientRetryPlugin } from '@orpc/client/plugins';
@@ -23,14 +23,17 @@ import type { ContractRouterClient } from '@orpc/contract';
 import packageJSON from '../package.json' with { type: 'json' };
 import {
   type DeepCrawlClientContext,
+  DeepcrawlAbortError,
   DeepcrawlAuthError,
   type DeepcrawlClientOptions,
   type DeepcrawlConfig,
-  DeepcrawlError,
   DeepcrawlLinksError,
   DeepcrawlNetworkError,
+  DeepcrawlNotFoundError,
   DeepcrawlRateLimitError,
   DeepcrawlReadError,
+  DeepcrawlServerError,
+  DeepcrawlValidationError,
 } from './types';
 
 /**
@@ -47,68 +50,125 @@ function isORPCError(error: unknown): error is ORPCError<string, unknown> {
 }
 
 /**
- * Unified error handler that maps oRPC errors to appropriate SDK errors
- * This provides a consistent error handling pattern across all methods
+ * Check if an error is an abort error (native AbortError or any error with name 'AbortError')
  */
-function handleORPCError(
+function isNativeAbortError(error: unknown): boolean {
+  if (error instanceof DeepcrawlAbortError) {
+    return true;
+  }
+
+  // Check for native AbortError or any error with name 'AbortError'
+  if (
+    error &&
+    typeof error === 'object' &&
+    'name' in error &&
+    error.name === 'AbortError'
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Scalable error registry that maps oRPC error codes to Deepcrawl error classes
+ * Adding new error types only requires updating this registry
+ */
+const ERROR_REGISTRY = {
+  // Custom business errors (defined in contracts)
+  READ_ERROR_RESPONSE: (
+    orpcError: ORPCError<'READ_ERROR_RESPONSE', ReadErrorResponse>,
+  ) => new DeepcrawlReadError(orpcError.data),
+
+  LINKS_ERROR_RESPONSE: (
+    orpcError: ORPCError<'LINKS_ERROR_RESPONSE', LinksErrorResponse>,
+  ) => new DeepcrawlLinksError(orpcError.data),
+
+  // Infrastructure errors
+  RATE_LIMITED: (
+    orpcError: ORPCError<
+      'RATE_LIMITED',
+      { operation: string; retryAfter: number }
+    >,
+  ) =>
+    new DeepcrawlRateLimitError({
+      message: orpcError.message,
+      data: orpcError.data,
+    }),
+} as const;
+
+/**
+ * Enhanced error handler that provides world-class error handling with:
+ * 1. Type-safe access to error data
+ * 2. Automatic error message extraction
+ * 3. Scalable error registry
+ * 4. Full oRPC compatibility
+ * 5. Improved error distinction using isDefinedError
+ */
+function handleDeepcrawlError(
   error: unknown,
   operation: 'read' | 'links',
   fallbackMessage: string,
 ): never {
-  // Check if error is an ORPCError instance
+  // Handle native abort errors first
+  if (isNativeAbortError(error)) {
+    throw new DeepcrawlAbortError('Request was cancelled');
+  }
+
+  // Handle oRPC errors with type-safe registry
   if (isORPCError(error)) {
-    // Handle contract-defined errors (these have defined: true)
+    // Use isDefinedError to distinguish between defined contract errors vs infrastructure errors
     if (isDefinedError(error)) {
-      switch (error.code) {
-        case 'RATE_LIMITED': {
-          const data = error.data as { operation: string; retryAfter: number };
-          throw new DeepcrawlRateLimitError({
-            message: error.message,
-            data,
-          });
-        }
-        case 'READ_ERROR_RESPONSE': {
-          const data = error.data as ReadErrorResponse;
-          throw new DeepcrawlReadError(data);
-        }
-        case 'LINKS_ERROR_RESPONSE': {
-          const data = error.data as LinksErrorResponse;
-          throw new DeepcrawlLinksError(data);
-        }
+      // Handle contract-defined errors with specific handlers
+      if (error.code === 'READ_ERROR_RESPONSE') {
+        throw ERROR_REGISTRY.READ_ERROR_RESPONSE(
+          error as ORPCError<'READ_ERROR_RESPONSE', ReadErrorResponse>,
+        );
+      }
+      if (error.code === 'LINKS_ERROR_RESPONSE') {
+        throw ERROR_REGISTRY.LINKS_ERROR_RESPONSE(
+          error as ORPCError<'LINKS_ERROR_RESPONSE', LinksErrorResponse>,
+        );
+      }
+      if (error.code === 'RATE_LIMITED') {
+        throw ERROR_REGISTRY.RATE_LIMITED(
+          error as ORPCError<
+            'RATE_LIMITED',
+            { operation: string; retryAfter: number }
+          >,
+        );
       }
     }
 
-    // Handle generic oRPC errors (not defined in contracts)
+    // Handle infrastructure errors (rate limiting, auth, etc.)
     switch (error.code) {
       case 'UNAUTHORIZED':
         throw new DeepcrawlAuthError(error.message || 'Unauthorized');
-
       case 'BAD_REQUEST':
+        throw new DeepcrawlValidationError(error.message || 'Bad request');
       case 'NOT_FOUND':
-        throw new DeepcrawlError(
-          error.message || fallbackMessage,
-          error,
-          error.status,
-        );
-
-      default:
-        // Check for rate limiting by status code as fallback
-        if (error.status === 429) {
-          throw new DeepcrawlRateLimitError({
-            message: error.message,
-            data: {
-              operation: operation,
-              retryAfter: 60, // Default retry after
-            },
-          });
-        }
-
-        throw new DeepcrawlError(
-          error.message || 'Server error',
-          error,
-          error.status,
+        throw new DeepcrawlNotFoundError(error.message || 'Not found');
+      case 'INTERNAL_SERVER_ERROR':
+        throw new DeepcrawlServerError(
+          error.message || 'Internal server error',
         );
     }
+
+    // Handle rate limiting by status code as fallback
+    if (error.status === 429) {
+      throw new DeepcrawlRateLimitError({
+        message: error.message,
+        data: {
+          operation: operation,
+          retryAfter: 60, // Default retry after
+        },
+      });
+    }
+
+    // Default to server error for unknown oRPC errors
+    throw new DeepcrawlServerError(
+      error.message || `Server error: ${error.code}`,
+    );
   }
 
   // Default to network error for all other cases
@@ -148,6 +208,11 @@ function extractAuthHeaders(
 
 export class DeepcrawlApp {
   public client: ContractRouterClient<typeof contract, DeepCrawlClientContext>;
+  private safeClient: ReturnType<
+    typeof createSafeClient<
+      ContractRouterClient<typeof contract, DeepCrawlClientContext>
+    >
+  >;
   private config: DeepcrawlConfig;
 
   constructor(config: DeepcrawlConfig) {
@@ -163,7 +228,7 @@ export class DeepcrawlApp {
     // Use custom fetch or globalThis.fetch with proper fallback
     const fetchImpl = this.config.fetch || globalThis.fetch;
     if (!fetchImpl) {
-      throw new DeepcrawlError(
+      throw new DeepcrawlServerError(
         'Fetch is not available. Please provide a fetch implementation or use Node.js 18+',
       );
     }
@@ -187,7 +252,7 @@ export class DeepcrawlApp {
         fetchImpl(request, {
           ...init,
           ...this.config.fetchOptions,
-          credentials: this.config.fetchOptions?.credentials || 'include', // Keep this to include cookies for cross-origin requests
+          credentials: this.config.fetchOptions?.credentials || 'include',
         }),
       plugins: [
         new ClientRetryPlugin({
@@ -202,6 +267,11 @@ export class DeepcrawlApp {
             retryDelay: ({ attemptIndex }) =>
               Math.min(1000 * Math.pow(2, attemptIndex), 10000), // Exponential backoff
             shouldRetry: ({ error, path, attemptIndex }) => {
+              // Never retry on abort errors
+              if (isNativeAbortError(error)) {
+                return false;
+              }
+
               if (error instanceof Error) {
                 const networkErrorPatterns = [
                   'ECONNREFUSED',
@@ -244,6 +314,7 @@ export class DeepcrawlApp {
     });
 
     this.client = createORPCClient(link);
+    this.safeClient = createSafeClient(this.client);
   }
 
   /* Read GET */
@@ -256,12 +327,13 @@ export class DeepcrawlApp {
     url: string,
     options?: DeepcrawlClientOptions,
   ): Promise<GetMarkdownOutput> {
-    const [error, data] = await safe(
-      this.client.read.getMarkdown({ url }, { signal: options?.signal }),
+    const [error, data] = await this.safeClient.read.getMarkdown(
+      { url },
+      { signal: options?.signal },
     );
 
     if (error) {
-      handleORPCError(error, 'read', 'Failed to fetch markdown');
+      handleDeepcrawlError(error, 'read', 'Failed to fetch markdown');
     }
 
     if (data instanceof Blob) {
@@ -288,41 +360,16 @@ export class DeepcrawlApp {
       ...options,
     };
 
-    const [error, data] = await safe(
-      this.client.read.readUrl(readOptions, { signal: requestOptions?.signal }),
-    );
+    const [error, data] = await this.safeClient.read.readUrl(readOptions, {
+      signal: requestOptions?.signal,
+    });
 
     if (error) {
-      handleORPCError(error, 'read', 'Failed to read URL');
+      handleDeepcrawlError(error, 'read', 'Failed to read URL');
     }
 
     return data as ReadUrlOutput;
   }
-
-  /* Links GET */
-  /**
-   * Use extractLinks instead.
-   * @param url - The URL to get links from.
-   * @returns The links.
-   */
-  // async getLinks(url: string): Promise<GetLinksOutput> {
-  //   const [error, data] = await safe(this.client.links.getLinks({ url }));
-
-  //   if (isDefinedError(error)) {
-  //     // Throw specific links error with detailed information
-  //     throw new DeepcrawlLinksError(error.data);
-  //   }
-  //   // @ts-ignore TODO: FIX ERROR TYPE
-  //   if (!isDefinedError(error) && error?.code === 'UNAUTHORIZED') {
-  //     throw new DeepcrawlAuthError('Unauthorized');
-  //   }
-
-  //   if (error) {
-  //     throw new DeepcrawlNetworkError('Failed to get links', error);
-  //   }
-
-  //   return data;
-  // }
 
   /* Links POST */
   /**
@@ -341,14 +388,13 @@ export class DeepcrawlApp {
       ...options,
     };
 
-    const [error, data] = await safe(
-      this.client.links.extractLinks(linksOptions, {
-        signal: requestOptions?.signal,
-      }),
+    const [error, data] = await this.safeClient.links.extractLinks(
+      linksOptions,
+      { signal: requestOptions?.signal },
     );
 
     if (error) {
-      handleORPCError(error, 'links', 'Failed to extract links');
+      handleDeepcrawlError(error, 'links', 'Failed to extract links');
     }
 
     return data as ExtractLinksOutput;
