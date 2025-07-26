@@ -1,5 +1,15 @@
+import type { Agent } from 'node:https';
 import type { LinksErrorResponse, ReadErrorResponse } from '@deepcrawl/types';
 import type { ClientRetryPluginContext } from '@orpc/client/plugins';
+
+export interface DeepcrawlFetchOptions extends RequestInit {
+  agent?: Agent;
+  cf?: {
+    cacheTtl: number;
+    timeout: number;
+    cacheEverything: boolean;
+  };
+}
 
 export interface DeepcrawlConfig {
   apiKey: string;
@@ -8,7 +18,7 @@ export interface DeepcrawlConfig {
     | Record<string, string | string[] | undefined>
     | { get(name: string): string | null }; // Next.js headers compatibility
   fetch?: typeof fetch;
-  fetchOptions?: RequestInit;
+  fetchOptions?: DeepcrawlFetchOptions;
 }
 
 export interface DeepCrawlClientContext extends ClientRetryPluginContext {}

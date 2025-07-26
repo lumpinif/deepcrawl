@@ -1,3 +1,4 @@
+import type { Agent } from 'node:https';
 import type {
   contract,
   ExtractLinksOutput,
@@ -190,12 +191,51 @@ export class DeepcrawlApp {
     >
   >;
   private config: DeepcrawlConfig;
+  private nodeEnv: 'nodeJs' | 'cf-worker' = 'nodeJs';
+  private httpsAgent?: Agent; // Node.js https.Agent
+
+  /**
+   * Lazy-load and cache the HTTPS agent for Node.js environments
+   */
+  private async getHttpsAgent(): Promise<Agent | undefined> {
+    if (this.nodeEnv !== 'nodeJs') {
+      return undefined;
+    }
+
+    if (!this.httpsAgent) {
+      try {
+        const https = await import('node:https');
+        this.httpsAgent = new https.Agent({
+          keepAlive: true,
+          maxSockets: 10,
+          maxFreeSockets: 5,
+          timeout: 60000,
+          keepAliveMsecs: 30000,
+        });
+      } catch (error) {
+        console.warn('Failed to initialize HTTPS agent:', error);
+        return undefined;
+      }
+    }
+
+    return this.httpsAgent;
+  }
 
   constructor(config: DeepcrawlConfig) {
     this.config = {
       baseUrl: config.baseUrl || 'https://api.deepcrawl.dev',
       ...config,
     };
+
+    // Detect runtime environment in a concise, declarative way
+    this.nodeEnv =
+      typeof process !== 'undefined' && !!process.versions?.node
+        ? 'nodeJs'
+        : typeof globalThis.caches !== 'undefined' &&
+            typeof (globalThis as { EdgeRuntime?: unknown }).EdgeRuntime ===
+              'undefined'
+          ? 'cf-worker'
+          : 'nodeJs';
 
     if (!this.config.apiKey) {
       throw new DeepcrawlAuthError('API key is required');
@@ -221,14 +261,26 @@ export class DeepcrawlApp {
           'x-api-key': this.config.apiKey,
           'Content-Type': 'application/json',
           'User-Agent': `${packageJSON.name}@${packageJSON.version}`,
+          ...(this.nodeEnv === 'nodeJs' ? { Connection: 'keep-alive' } : {}),
           ...extractedHeaders,
         };
       },
-      fetch: (request, init) =>
+      fetch: async (request, init) =>
         fetchImpl(request, {
           ...init,
           ...this.config.fetchOptions,
           credentials: this.config.fetchOptions?.credentials || 'include',
+          // @ts-ignore - Node.js specific option
+          agent:
+            this.config.fetchOptions?.agent || (await this.getHttpsAgent()),
+          cf:
+            this.nodeEnv === 'cf-worker'
+              ? this.config.fetchOptions?.cf || {
+                  cacheTtl: 60,
+                  timeout: 60000,
+                  cacheEverything: false,
+                }
+              : undefined,
         }),
       plugins: [
         new ClientRetryPlugin({
