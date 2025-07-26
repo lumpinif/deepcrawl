@@ -2,6 +2,8 @@ export const MAX_KIN_LIMIT = 30;
 export const MAX_VISITED_URLS_LIMIT = 1000;
 export const KV_CACHE_EXPIRATION_TTL = 86400 * 1; // 1 day
 
+export const DEFAULT_FETCH_TIMEOUT = 15000; // 15 seconds
+
 export const PLATFORM_URLS = [
   // GitHub
   'https://github.com',

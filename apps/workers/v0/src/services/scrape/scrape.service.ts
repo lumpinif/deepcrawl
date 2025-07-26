@@ -8,6 +8,7 @@ import type { Options, ReadabilityResult } from '@paoramen/cheer-reader';
 import { Readability } from '@paoramen/cheer-reader';
 import type { CheerioOptions } from 'cheerio';
 import * as cheerio from 'cheerio';
+import { DEFAULT_FETCH_TIMEOUT } from '@/config/constants';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { RobotsParser } from '@/utils/meta/robots-parser';
 import { SitemapParser } from '@/utils/meta/sitemap-parser';
@@ -65,7 +66,7 @@ export class ScrapeService {
     options: { isIframeAllowed?: boolean } = { isIframeAllowed: true },
   ): Promise<string | FetchPageResult> {
     // Add timeout configuration for production reliability
-    const timeoutMs = 10000; // 10 seconds timeout
+    const timeoutMs = DEFAULT_FETCH_TIMEOUT;
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeoutMs);
 
@@ -80,15 +81,12 @@ export class ScrapeService {
     try {
       const response = await fetch(url, {
         signal: abortController.signal,
-        // Add additional fetch options for better reliability
         headers: {
           'User-Agent': 'Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)',
           Accept:
             'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.5',
-          'Accept-Encoding': 'gzip, deflate',
           DNT: '1',
-          Connection: 'keep-alive',
           'Upgrade-Insecure-Requests': '1',
         },
       });
