@@ -1,12 +1,15 @@
 export class RobotsParser {
-  async parse(baseUrl: string): Promise<{
+  async parse(
+    baseUrl: string,
+    options?: { signal?: AbortSignal },
+  ): Promise<{
     sitemaps: string[];
     rules: { userAgent: string; allow: string[]; disallow: string[] }[];
     content: string | null;
   }> {
     try {
       const robotsUrl = new URL('/robots.txt', baseUrl).toString();
-      const response = await fetch(robotsUrl);
+      const response = await fetch(robotsUrl, { signal: options?.signal });
 
       if (!response.ok) {
         return { sitemaps: [], rules: [], content: null };

@@ -1,9 +1,10 @@
 export class SitemapParser {
   async parse(
     sitemapUrl: string,
+    options?: { signal?: AbortSignal },
   ): Promise<{ urls: string[]; content: string | null }> {
     try {
-      const response = await fetch(sitemapUrl);
+      const response = await fetch(sitemapUrl, { signal: options?.signal });
       if (!response.ok) {
         return { urls: [], content: null };
       }
@@ -26,7 +27,7 @@ export class SitemapParser {
         urls.length = 0;
 
         for (const subSitemapUrl of subSitemapUrls) {
-          const subResult = await this.parse(subSitemapUrl);
+          const subResult = await this.parse(subSitemapUrl, options);
           urls.push(...subResult.urls);
         }
       }
