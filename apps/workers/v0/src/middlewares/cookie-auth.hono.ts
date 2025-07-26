@@ -17,14 +17,14 @@ const parseSessionResponse = async (
     const responseText = await response.text();
 
     if (!responseText?.trim()) {
-      logWarn(env, `⚠️ [checkAuth] Empty response from ${source}`);
+      logWarn(`⚠️ [checkAuth] Empty response from ${source}`);
       return null;
     }
 
     const session: Session = JSON.parse(responseText);
     return session;
   } catch (error) {
-    logError(env, `❌ [checkAuth] JSON parse failed (${source}):`, error);
+    logError(`❌ [checkAuth] JSON parse failed (${source}):`, error);
     return null;
   }
 };
@@ -36,7 +36,7 @@ const fetchWithFallback = async (
 ): Promise<{ response: Response; source: string }> => {
   // Try service binding first
   let response = await serviceFetcher(request);
-  logDebug(env, '🚀 SERVICE BINDINGS RPC FETCHER:', response.statusText);
+  logDebug('🚀 SERVICE BINDINGS RPC FETCHER:', response.statusText);
 
   if (response.ok) {
     const text = await response.clone().text();
@@ -46,7 +46,7 @@ const fetchWithFallback = async (
   }
 
   // Fallback to direct fetch
-  logDebug(env, `⚠️ [checkAuth] Service binding failed, trying direct fetch...`);
+  logDebug('⚠️ [checkAuth] Service binding failed, trying direct fetch...');
   response = await fetch(request);
   return { response, source: 'direct fetch' };
 };
@@ -59,7 +59,7 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
       c.get('session')?.session ||
       c.get('session')?.user
     ) {
-      logDebug(c.env, '✅ Skipping [checkCookieAuthMiddleware] Session found');
+      logDebug('✅ Skipping [checkCookieAuthMiddleware] Session found');
       return next();
     }
 
@@ -76,7 +76,6 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
 
       const authSession = await authClient.getSession();
       logDebug(
-        c.env,
         '🛡️  BETTER-AUTH CLIENT WITH SBF:',
         authSession.data?.session ? 'OK' : 'NO SESSION',
       );
@@ -85,7 +84,6 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
         setAuthContext(c, authSession.data);
         const end = performance.now();
         logDebug(
-          c.env,
           '⌚ Cookie auth middleware took:',
           ((end - start) / 1000).toFixed(3),
           'seconds',
@@ -110,7 +108,6 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
 
       const end = performance.now();
       logDebug(
-        c.env,
         '⌚ Cookie auth middleware took:',
         ((end - start) / 1000).toFixed(3),
         'seconds',
@@ -118,7 +115,7 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
       return next();
     } catch (error) {
       // Never throw - always continue gracefully
-      logError(c.env, `❌ [checkAuth] Authentication error:`, error);
+      logError(`❌ [checkAuth] Authentication error:`, error);
       setAuthContext(c, null);
       return next();
     }

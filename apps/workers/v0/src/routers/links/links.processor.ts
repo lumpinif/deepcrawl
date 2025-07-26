@@ -26,7 +26,7 @@ import type { _linksSets } from '@/services/link/link.service';
 import { formatDuration } from '@/utils/formater';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
-import { logDebug, logError, logWarn } from '@/utils/loggers';
+import { logError, logWarn } from '@/utils/loggers';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
 
@@ -87,19 +87,8 @@ export async function processLinksRequest(
   const startRequestTime = performance.now();
 
   // Use app-level services from context for optimal performance
-  const serviceAccessStart = Date.now();
   const scrapeService = c.var.scrapeService;
   const linkService = c.var.linkService;
-  const serviceAccessTime = Date.now() - serviceAccessStart;
-
-  logDebug('[PERF] Links processor using request-scoped services:', {
-    url,
-    serviceAccessTime,
-    hasScrapeService: !!scrapeService,
-    hasLinkService: !!linkService,
-    timestamp: new Date().toISOString(),
-    requestId: c.var.requestId,
-  });
 
   // config
   const withTree = isTree !== false; // True by default, false only if explicitly set to false

@@ -13,7 +13,7 @@ import type { ORPCContext } from '@/lib/context';
 import { formatDuration } from '@/utils/formater';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
-import { logDebug, logError } from '@/utils/loggers';
+import { logError } from '@/utils/loggers';
 import {
   fixCodeBlockFormatting,
   processMultiLineLinks,
@@ -151,7 +151,6 @@ export async function processReadRequest(
   params: ReadOptions,
   isGETRequest = false,
 ): Promise<ReadResponse> {
-  const processorStart = Date.now();
   const {
     url,
     markdown: isMarkdown,
@@ -168,9 +167,7 @@ export async function processReadRequest(
 
   try {
     // Track URL normalization
-    const urlNormStart = Date.now();
     const targetUrl = targetUrlHelper(url, true);
-    const urlNormTime = Date.now() - urlNormStart;
 
     // override url with normalized target url
     params.url = targetUrl;
@@ -178,39 +175,17 @@ export async function processReadRequest(
     const startRequestTime = performance.now();
 
     // Track cache key generation
-    const cacheKeyStart = Date.now();
     const cacheKey = await getReadCacheKey(params, isGETRequest);
-    const cacheKeyTime = Date.now() - cacheKeyStart;
-
-    logDebug('[PERF] Read processor cache setup:', {
-      url: targetUrl,
-      urlNormTime,
-      cacheKeyTime,
-      cacheEnabled: ENABLE_READ_CACHE,
-      timestamp: new Date().toISOString(),
-      requestId: c.var.requestId,
-    });
 
     // Check cache first
     if (ENABLE_READ_CACHE) {
       try {
-        const cacheReadStart = Date.now();
         const { value: cachedResult, metadata } =
           await c.env.DEEPCRAWL_V0_READ_STORE.getWithMetadata<{
             title?: string;
             description?: string;
             timestamp?: string;
           }>(cacheKey);
-        const cacheReadTime = Date.now() - cacheReadStart;
-
-        logDebug('[PERF] Read processor cache lookup:', {
-          url: targetUrl,
-          cacheReadTime,
-          cacheHit: !!cachedResult,
-          cacheMetadata: metadata,
-          timestamp: new Date().toISOString(),
-          requestId: c.var.requestId,
-        });
 
         if (cachedResult) {
           // Check if cache is fresh (e.g., within the last day - matches expirationTtl)
@@ -221,16 +196,6 @@ export async function processReadRequest(
 
           if (cacheTimestamp > oneDayAgo) {
             isReadCacheFresh = true;
-            const totalTime = Date.now() - processorStart;
-
-            logDebug('[PERF] Read processor cache HIT (fresh):', {
-              url: targetUrl,
-              totalTime,
-              cacheAge: Date.now() - cacheTimestamp,
-              isGETRequest,
-              timestamp: new Date().toISOString(),
-              requestId: c.var.requestId,
-            });
 
             if (isGETRequest) {
               return cachedResult as ReadStringResponse;
@@ -244,53 +209,19 @@ export async function processReadRequest(
             const metrics = getMetrics(startRequestTime, performance.now());
             parsedResponse.metrics = metrics;
             return parsedResponse;
-          } else {
-            logDebug('[PERF] Read processor cache STALE:', {
-              url: targetUrl,
-              cacheAge: Date.now() - cacheTimestamp,
-              maxAge: KV_CACHE_EXPIRATION_TTL * 1000,
-              timestamp: new Date().toISOString(),
-              requestId: c.var.requestId,
-            });
           }
         }
       } catch (error) {
-        const cacheErrorTime = Date.now() - processorStart;
-        logError('[PERF] Read processor cache error:', {
-          url: targetUrl,
-          cacheErrorTime,
-          error: error instanceof Error ? error.message : String(error),
-          timestamp: new Date().toISOString(),
-          requestId: c.var.requestId,
-        });
+        logError('[ERROR] Read processor cache error:', error);
         // Proceed without cache if read fails
       }
     }
 
     // Track scraping operation
     const isGithubUrl = targetUrl.startsWith('https://github.com');
-    const scrapeStart = Date.now();
-
-    logDebug('[PERF] Read processor scraping started:', {
-      url: targetUrl,
-      isGithubUrl,
-      cleaningProcessor: !isGithubUrl ? 'html-rewriter' : 'reader',
-      timestamp: new Date().toISOString(),
-      requestId: c.var.requestId,
-    });
 
     // Use app-level service instance for optimal performance
-    const serviceAccessStart = Date.now();
     const scrapeService = c.var.scrapeService;
-    const serviceAccessTime = Date.now() - serviceAccessStart;
-
-    logDebug('[PERF] Read processor using request-scoped service:', {
-      url: targetUrl,
-      serviceAccessTime,
-      hasService: !!scrapeService,
-      timestamp: new Date().toISOString(),
-      requestId: c.var.requestId,
-    });
 
     const {
       title,
@@ -309,49 +240,13 @@ export async function processReadRequest(
       signal: c.signal,
     });
 
-    const scrapeTime = Date.now() - scrapeStart;
-
-    logDebug('[PERF] Read processor scraping completed:', {
-      url: targetUrl,
-      scrapeTime,
-      hasTitle: !!title,
-      hasDescription: !!description,
-      hasCleanedHtml: !!cleanedHtml,
-      hasRawHtml: !!rawHtml,
-      hasMetadata: !!metadata,
-      hasMetaFiles: !!metaFiles,
-      cleanedHtmlSize: cleanedHtml ? cleanedHtml.length : 0,
-      rawHtmlSize: rawHtml ? rawHtml.length : 0,
-      timestamp: new Date().toISOString(),
-      requestId: c.var.requestId,
-    });
-
     // Convert article content to markdown if available
     let markdown: string | undefined;
     if (isMarkdown || isGETRequest) {
-      const markdownStart = Date.now();
-
       if (cleanedHtml) {
-        logDebug('[PERF] Read processor markdown conversion started:', {
-          url: targetUrl,
-          htmlSize: cleanedHtml.length,
-          timestamp: new Date().toISOString(),
-          requestId: c.var.requestId,
-        });
-
         const convertedMarkdown = getMarkdown({
           html: cleanedHtml,
           markdownConverter: c.var.markdownConverter,
-        });
-        const markdownTime = Date.now() - markdownStart;
-
-        logDebug('[PERF] Read processor markdown conversion completed:', {
-          url: targetUrl,
-          markdownTime,
-          markdownSize: convertedMarkdown.length,
-          hasMeaningfulContent: hasMeaningfulMarkdown(convertedMarkdown),
-          timestamp: new Date().toISOString(),
-          requestId: c.var.requestId,
         });
 
         // Check if the converted markdown has meaningful content
@@ -361,27 +256,11 @@ export async function processReadRequest(
           // For POST requests with markdown=true but no meaningful content,
           // provide informative default markdown instead of undefined
           markdown = getDefaultMarkdown(title, targetUrl, description);
-          logDebug(
-            '[PERF] Read processor using default markdown (no meaningful content):',
-            {
-              url: targetUrl,
-              timestamp: new Date().toISOString(),
-              requestId: c.var.requestId,
-            },
-          );
         }
       } else if (isMarkdown) {
         // For POST requests with markdown=true but no extractable content,
         // provide informative default markdown instead of undefined
         markdown = getDefaultMarkdown(title, targetUrl, description);
-        logDebug(
-          '[PERF] Read processor using default markdown (no cleaned HTML):',
-          {
-            url: targetUrl,
-            timestamp: new Date().toISOString(),
-            requestId: c.var.requestId,
-          },
-        );
       }
     }
 
@@ -395,7 +274,6 @@ export async function processReadRequest(
     const endRequestTime = performance.now();
     const metrics = getMetrics(startRequestTime, endRequestTime);
 
-    const responseStart = Date.now();
     readResponse = cleanEmptyValues<ReadSuccessResponse>({
       success: true,
       cached: isReadCacheFresh,
@@ -409,15 +287,6 @@ export async function processReadRequest(
       rawHtml: isRawHtml ? rawHtml : undefined,
       metaFiles,
     });
-    const responseTime = Date.now() - responseStart;
-
-    logDebug('[PERF] Read processor response prepared:', {
-      url: targetUrl,
-      responseTime,
-      hasResponse: !!readResponse,
-      timestamp: new Date().toISOString(),
-      requestId: c.var.requestId,
-    });
 
     if (!readResponse) {
       throw new Error('Failed to process read request');
@@ -426,7 +295,6 @@ export async function processReadRequest(
     if (ENABLE_READ_CACHE) {
       // Cache the response
       try {
-        const cacheWriteStart = Date.now();
         const valueToCache = isGETRequest
           ? markdown ||
             getDefaultMarkdown(
@@ -435,14 +303,6 @@ export async function processReadRequest(
               readResponse?.description,
             )
           : JSON.stringify(readResponse);
-
-        logDebug('[PERF] Read processor cache write started:', {
-          url: targetUrl,
-          cacheValueSize: valueToCache.length,
-          isGETRequest,
-          timestamp: new Date().toISOString(),
-          requestId: c.var.requestId,
-        });
 
         await kvPutWithRetry(
           c.env.DEEPCRAWL_V0_READ_STORE,
@@ -457,38 +317,11 @@ export async function processReadRequest(
             },
           },
         );
-
-        const cacheWriteTime = Date.now() - cacheWriteStart;
-        logDebug('[PERF] Read processor cache write completed:', {
-          url: targetUrl,
-          cacheWriteTime,
-          timestamp: new Date().toISOString(),
-          requestId: c.var.requestId,
-        });
       } catch (error) {
-        const cacheWriteErrorTime = Date.now() - processorStart;
-        logError('[PERF] Read processor cache write error:', {
-          url: targetUrl,
-          cacheWriteErrorTime,
-          error: error instanceof Error ? error.message : String(error),
-          timestamp: new Date().toISOString(),
-          requestId: c.var.requestId,
-        });
+        logError('[ERROR] Read processor cache write error:', error);
         // Continue without caching if write fails
       }
     }
-
-    const totalProcessorTime = Date.now() - processorStart;
-
-    logDebug('[PERF] Read processor completed:', {
-      url: targetUrl,
-      totalProcessorTime,
-      scrapeTime,
-      isGETRequest,
-      finalMarkdownSize: markdown ? markdown.length : 0,
-      timestamp: new Date().toISOString(),
-      requestId: c.var.requestId,
-    });
 
     if (isGETRequest) {
       // For GET requests, always return markdown content only
@@ -502,15 +335,7 @@ export async function processReadRequest(
 
     return readResponse as ReadSuccessResponse;
   } catch (error) {
-    const errorTime = Date.now() - processorStart;
-    logError('[PERF] Read processor error:', {
-      url,
-      errorTime,
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString(),
-      requestId: c.var.requestId,
-    });
+    logError('[ERROR] Read processor error:', error);
 
     throw new Error('Failed to read url');
   }

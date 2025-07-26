@@ -3,14 +3,11 @@ import { NodeHtmlMarkdown } from 'node-html-markdown';
 import type { AppBindings } from '@/lib/context';
 import { LinkService } from '@/services/link/link.service';
 import { ScrapeService } from '@/services/scrape/scrape.service';
-import { logDebug } from '@/utils/loggers';
 import { nhmCustomTranslators, nhmTranslators } from '@/utils/markdown';
 
 // Request-scoped service factory to prevent resource leaks in workerd
 // This ensures proper IoContext lifecycle management while maintaining performance
 function createRequestScopedServices() {
-  const serviceCreationStart = Date.now();
-
   const services = {
     scrapeService: new ScrapeService(),
     linkService: new LinkService(),
@@ -20,14 +17,6 @@ function createRequestScopedServices() {
       nhmTranslators, // customCodeBlockTranslators
     ),
   };
-
-  const serviceCreationTime = Date.now() - serviceCreationStart;
-
-  logDebug('[PERF] Request-scoped services created:', {
-    timestamp: new Date().toISOString(),
-    services: Object.keys(services),
-    serviceCreationTime,
-  });
 
   return services;
 }

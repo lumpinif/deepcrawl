@@ -9,7 +9,7 @@ import { Readability } from '@paoramen/cheer-reader';
 import type { CheerioOptions } from 'cheerio';
 import * as cheerio from 'cheerio';
 import { DEFAULT_FETCH_TIMEOUT } from '@/config/constants';
-import { logDebug, logError, logWarn } from '@/utils/loggers';
+import { logError, logWarn } from '@/utils/loggers';
 import { RobotsParser } from '@/utils/meta/robots-parser';
 import { SitemapParser } from '@/utils/meta/sitemap-parser';
 import { HTMLCleaning } from '../html-cleaning/html-cleaning.service';
@@ -63,7 +63,7 @@ export class ScrapeService {
 
   private async fetchPage(
     url: string,
-    options: { 
+    options: {
       isIframeAllowed?: boolean;
       signal?: AbortSignal;
     } = { isIframeAllowed: true },
@@ -71,21 +71,18 @@ export class ScrapeService {
     // Add timeout configuration for production reliability
     const timeoutMs = DEFAULT_FETCH_TIMEOUT;
     const abortController = new AbortController();
-    
+
     // If an external signal is provided, abort when it aborts
     if (options.signal) {
       options.signal.addEventListener('abort', () => {
-        abortController.abort();
+        abortController.abort(options.signal?.reason || 'Request cancelled');
       });
     }
-    
-    const timeoutId = setTimeout(() => abortController.abort(), timeoutMs);
 
-    logDebug('[PERF] Scraping fetchPage started:', {
-      url,
+    const timeoutId = setTimeout(
+      () => abortController.abort('Request timeout'),
       timeoutMs,
-      timestamp: new Date().toISOString(),
-    });
+    );
 
     const fetchStart = Date.now();
 
@@ -103,15 +100,6 @@ export class ScrapeService {
       });
 
       clearTimeout(timeoutId);
-      const fetchTime = Date.now() - fetchStart;
-
-      logDebug('[PERF] Scraping fetchPage response received:', {
-        url,
-        fetchTime,
-        status: response.status,
-        contentType: response.headers.get('content-type'),
-        timestamp: new Date().toISOString(),
-      });
 
       // Check if the response is successful
       if (!response.ok) {
@@ -132,17 +120,7 @@ export class ScrapeService {
         );
       }
 
-      const textStart = Date.now();
       const html = await response.text();
-      const textTime = Date.now() - textStart;
-
-      logDebug('[PERF] Scraping fetchPage text extracted:', {
-        url,
-        textTime,
-        htmlSize: html.length,
-        totalTime: Date.now() - fetchStart,
-        timestamp: new Date().toISOString(),
-      });
 
       if (!options.isIframeAllowed) {
         return html;
@@ -163,16 +141,6 @@ export class ScrapeService {
       return { html, isIframeAllowed };
     } catch (error) {
       clearTimeout(timeoutId); // Ensure timeout is cleared on error
-
-      const errorTime = Date.now() - fetchStart;
-      logError('[PERF] Scraping fetchPage error:', {
-        url,
-        errorTime,
-        error: error instanceof Error ? error.message : String(error),
-        errorName: error instanceof Error ? error.name : 'Unknown',
-        isTimeout: error instanceof Error && error.name === 'AbortError',
-        timestamp: new Date().toISOString(),
-      });
 
       // Provide more specific error messages
       if (error instanceof Error && error.name === 'AbortError') {
@@ -197,7 +165,9 @@ export class ScrapeService {
 
     // Only fetch robots.txt if requested
     if (options.robots) {
-      const robotsResult = await robotsParser.parse(baseUrl);
+      const robotsResult = await robotsParser.parse(baseUrl, {
+        signal: options.signal,
+      });
       if (
         (robotsResult.rules.length > 0 || robotsResult.sitemaps.length > 0) &&
         robotsResult.content
@@ -212,13 +182,17 @@ export class ScrapeService {
       if (result.robots) {
         // Reuse the robots.txt parsing result from the options.robots block if available
         // or parse it now if we didn't request robots.txt earlier
-        const robotsResult = await robotsParser.parse(baseUrl);
+        const robotsResult = await robotsParser.parse(baseUrl, {
+          signal: options.signal,
+        });
 
         if (robotsResult.sitemaps.length > 0) {
           // Just use the first sitemap from robots.txt
           const sitemapUrl = robotsResult.sitemaps[0];
           try {
-            const { urls, content } = await sitemapParser.parse(sitemapUrl);
+            const { urls, content } = await sitemapParser.parse(sitemapUrl, {
+              signal: options.signal,
+            });
             if (urls.length > 0 && content) {
               result.sitemapXML = content;
             }
@@ -241,7 +215,9 @@ export class ScrapeService {
         const sitemapPromises = sitemapPaths.map(async (path) => {
           const sitemapUrl = new URL(path, baseUrl).toString();
           try {
-            const { urls, content } = await sitemapParser.parse(sitemapUrl);
+            const { urls, content } = await sitemapParser.parse(sitemapUrl, {
+              signal: options.signal,
+            });
             if (urls.length > 0 && content) {
               return content;
             }

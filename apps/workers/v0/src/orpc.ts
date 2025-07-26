@@ -18,14 +18,14 @@ export const authed = publicProcedures
       !context.var.session.user ||
       !context.var.session.session
     ) {
-      throw new ORPCError('UNAUTHORIZED', {
+      throw new ORPCError('UNAUTHORIZED:', {
         status: 401,
         cause: 'No session found',
         message: 'Authentication failed',
       });
     }
 
-    logDebug(context.env, '✅ [ORPC] AUTHENTICATED');
+    logDebug('✅ AUTHENTICATED:', context.var.session.user.email);
 
     return next({
       context,

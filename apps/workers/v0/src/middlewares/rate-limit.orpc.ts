@@ -94,7 +94,12 @@ export function rateLimitMiddleware({
     const result = await ratelimit.limit(identifier);
     c.executionCtx.waitUntil(result.pending);
 
-    logDebug(c.env, 'RATE_LIMIT_RESULT', result);
+    logDebug(
+      '🧮 RATE_LIMIT_RESULT - REMAINING/TOTAL:',
+      result.remaining,
+      '/',
+      result.limit,
+    );
 
     // If rate limit exceeded, throw error
     if (!result.success) {

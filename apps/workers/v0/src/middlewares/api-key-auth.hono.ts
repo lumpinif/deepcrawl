@@ -12,15 +12,15 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
     const apiKey = xApiKey ?? authHeader?.split(' ')[1];
 
-    if (apiKey === 'USE_COOKIE_AUTH_INSTEAD_OF_API_KEY') {
-      logDebug(c.env, '🏗️  skipping API key auth, using cookie auth instead');
+    if (apiKey === 'demo-key-for-playground') {
+      logDebug('🏗️  skipping API key auth, using cookie auth instead');
       return next();
     }
 
-    logDebug(c.env, '🔑 apiKey:', apiKey);
+    logDebug('🔑 apiKey:', apiKey);
 
     if (!apiKey) {
-      logDebug(c.env, '🔑 No API key provided, skipping to next auth method');
+      logDebug('🔑 No API key provided, skipping to next auth method');
       // return c.json(
       //   { success: false, error: 'Unauthorized: No API key provided' },
       //   401,
@@ -35,10 +35,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
       // First, try using the service binding RPC call
       try {
-        logDebug(
-          c.env,
-          '🔄 Attempting RPC call to AUTH_WORKER.getSessionWithAPIKey',
-        );
+        logDebug('🔄 Attempting RPC call to AUTH_WORKER.getSessionWithAPIKey');
         const rpcStartTime = performance.now();
 
         sessionData = (await c.env.AUTH_WORKER.getSessionWithAPIKey(
@@ -47,17 +44,12 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
         const rpcEndTime = performance.now();
         logDebug(
-          c.env,
           '✅ RPC call successful, took:',
           ((rpcEndTime - rpcStartTime) / 1000).toFixed(3),
           'seconds',
         );
       } catch (rpcError) {
-        logDebug(
-          c.env,
-          '⚠️ RPC call failed, falling back to HTTP fetch:',
-          rpcError,
-        );
+        logDebug('⚠️ RPC call failed, falling back to HTTP fetch:', rpcError);
 
         // Fallback to HTTP fetch approach
         const request = new Request(
@@ -78,22 +70,19 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
         // Check if the request was successful
         if (!response.ok) {
           const errorText = await response.text();
-          logDebug(c.env, '🚨 Auth service error:', {
+          logDebug('🚨 Auth service error:', {
             status: response.status,
             error: errorText,
           });
 
           // For service errors, let it through - auth guard will handle
           if (response.status === 404 || response.status >= 500) {
-            logDebug(
-              c.env,
-              '⚠️ Auth service issue, proceeding to next middleware',
-            );
+            logDebug('⚠️ Auth service issue, proceeding to next middleware');
             return next();
           }
 
           // For invalid API key, also proceed - let auth guard decide
-          logDebug(c.env, '⚠️ Invalid API key, proceeding to next middleware');
+          logDebug('⚠️ Invalid API key, proceeding to next middleware');
           return next();
         }
 
@@ -101,7 +90,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
         try {
           sessionData = await response.json();
         } catch (parseError) {
-          logDebug(c.env, '🚨 Failed to parse auth response:', parseError);
+          logDebug('🚨 Failed to parse auth response:', parseError);
           // Continue to next middleware on parse errors
           return next();
         }
@@ -109,13 +98,13 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
       // Validate session structure
       if (!sessionData || typeof sessionData !== 'object') {
-        logDebug(c.env, '🚨 Invalid session data structure:', sessionData);
+        logDebug('🚨 Invalid session data structure:', sessionData);
         return next();
       }
 
       // Check if session exists
       if (!sessionData.session || !sessionData.user) {
-        logDebug(c.env, '🚨 Missing session or user data:', {
+        logDebug('🚨 Missing session or user data:', {
           hasSession: !!sessionData.session,
           hasUser: !!sessionData.user,
         });
@@ -126,7 +115,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       if (sessionData.session.expiresAt) {
         const expiresAt = new Date(sessionData.session.expiresAt);
         if (expiresAt < new Date()) {
-          logDebug(c.env, '🚨 Session expired:', {
+          logDebug('🚨 Session expired:', {
             expiresAt: sessionData.session.expiresAt,
             now: new Date().toISOString(),
           });
@@ -140,14 +129,13 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       // Set validated session data
       c.set('session', session);
 
-      logDebug(c.env, '✅ API key authenticated successfully:', {
+      logDebug('✅ API key authenticated successfully:', {
         userId: session.user.id,
         sessionId: session.session.id,
       });
 
       const end = performance.now();
       logDebug(
-        c.env,
         '⌚ API key auth middleware took:',
         ((end - start) / 1000).toFixed(3),
         'seconds',
@@ -155,7 +143,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
       return next();
     } catch (error) {
-      logDebug(c.env, '🚨 Unexpected error in auth middleware:', error);
+      logDebug('🚨 Unexpected error in auth middleware:', error);
       // On any unexpected error, continue to next middleware
       return next();
     }
