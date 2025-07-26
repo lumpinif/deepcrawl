@@ -130,33 +130,15 @@ export function PlaygroundClient() {
 
     // Check if this exact request is already in progress
     if (activeRequestsRef.current.has(requestKey)) {
-      console.warn('[PERF] Duplicate request prevented:', {
-        operation,
-        url,
-        requestKey,
-        timestamp: new Date().toISOString(),
-      });
       return;
     }
 
     // Add to active requests
     activeRequestsRef.current.add(requestKey);
 
-    const frontendStart = Date.now();
     const startTime = Date.now();
     setExecutionStartTime((prev) => ({ ...prev, [operation]: startTime }));
     setIsLoading((prev) => ({ ...prev, [operation]: true }));
-
-    console.log('[PERF] Frontend executeApiCall started:', {
-      operation,
-      label,
-      url,
-      requestKey,
-      activeRequests: Array.from(activeRequestsRef.current),
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      callStack: new Error().stack?.split('\n').slice(1, 4).join(' | '), // Show first 3 stack frames
-    });
 
     try {
       let result: {
@@ -167,14 +149,6 @@ export function PlaygroundClient() {
         targetUrl?: string;
         timestamp?: string;
       };
-
-      const actionCallStart = Date.now();
-      console.log('[PERF] Frontend calling server action:', {
-        operation,
-        url,
-        requestKey,
-        timestamp: new Date().toISOString(),
-      });
 
       switch (operation) {
         case 'getMarkdown':
@@ -188,20 +162,7 @@ export function PlaygroundClient() {
           break;
       }
 
-      const actionCallTime = Date.now() - actionCallStart;
       const executionTime = Date.now() - startTime;
-
-      console.log('[PERF] Frontend server action completed:', {
-        operation,
-        url,
-        requestKey,
-        actionCallTime,
-        executionTime,
-        hasError: !!result.error,
-        errorType: result.errorType,
-        status: result.status,
-        timestamp: new Date().toISOString(),
-      });
 
       if (result.error) {
         setResponses((prev) => ({
@@ -219,16 +180,6 @@ export function PlaygroundClient() {
         // Enhanced error toast based on error type
         const errorMessage = getErrorMessage(result.errorType, result.error);
         toast.error(`${label} failed: ${errorMessage}`);
-
-        console.error('[PERF] Frontend operation failed:', {
-          operation,
-          url,
-          requestKey,
-          executionTime,
-          errorType: result.errorType,
-          errorMessage,
-          timestamp: new Date().toISOString(),
-        });
       } else {
         setResponses((prev) => ({
           ...prev,
@@ -239,35 +190,11 @@ export function PlaygroundClient() {
           },
         }));
         toast.success(`${label} completed successfully`);
-
-        console.log('[PERF] Frontend operation successful:', {
-          operation,
-          url,
-          requestKey,
-          executionTime,
-          dataSize:
-            typeof result.data === 'string'
-              ? result.data.length
-              : result.data
-                ? JSON.stringify(result.data).length
-                : 0,
-          timestamp: new Date().toISOString(),
-        });
       }
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'An error occurred';
       const executionTime = Date.now() - startTime;
-
-      console.error('[PERF] Frontend operation exception:', {
-        operation,
-        url,
-        requestKey,
-        executionTime,
-        error: errorMessage,
-        errorStack: error instanceof Error ? error.stack : undefined,
-        timestamp: new Date().toISOString(),
-      });
 
       setResponses((prev) => ({
         ...prev,
@@ -280,16 +207,6 @@ export function PlaygroundClient() {
       }));
       toast.error(`${label} failed: ${errorMessage}`);
     } finally {
-      const totalFrontendTime = Date.now() - frontendStart;
-
-      console.log('[PERF] Frontend executeApiCall finished:', {
-        operation,
-        url,
-        requestKey,
-        totalFrontendTime,
-        timestamp: new Date().toISOString(),
-      });
-
       // Remove from active requests
       activeRequestsRef.current.delete(requestKey);
 
