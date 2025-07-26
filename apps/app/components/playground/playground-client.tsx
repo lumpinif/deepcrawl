@@ -70,7 +70,7 @@ const apiOptions = [
 const apiOptionValues = ['getMarkdown', 'readUrl', 'extractLinks'] as const;
 
 export function PlaygroundClient() {
-  const [url, setUrl] = useState('https://example.com');
+  const [url, setUrl] = useState('https://hono.dev');
   const [selectedOptionValue, setSelectedOptionValue] = useQueryState(
     'option',
     parseAsStringLiteral(apiOptionValues).withDefault('getMarkdown'),
@@ -178,7 +178,7 @@ export function PlaygroundClient() {
         }));
 
         // Enhanced error toast based on error type
-        const errorMessage = getErrorMessage(result.errorType, result.error);
+        const errorMessage = getErrorMessage(result.error);
         toast.error(`${label} failed: ${errorMessage}`);
       } else {
         setResponses((prev) => ({
@@ -240,22 +240,8 @@ export function PlaygroundClient() {
     return `${(ms / 1000).toFixed(2)} s`;
   };
 
-  const getErrorMessage = (
-    errorType?: string,
-    defaultError?: string,
-  ): string => {
-    switch (errorType) {
-      case 'auth':
-        return 'Authentication failed - please check your API key';
-      case 'network':
-        return 'Network error - please check your connection and try again';
-      case 'read':
-        return 'Failed to read the URL - the page might be inaccessible';
-      case 'links':
-        return 'Failed to extract links - the page structure might be complex';
-      default:
-        return defaultError || 'An unknown error occurred';
-    }
+  const getErrorMessage = (defaultError?: string): string => {
+    return defaultError || 'An unknown error occurred';
   };
 
   return (
@@ -345,7 +331,7 @@ export function PlaygroundClient() {
                 }
               }}
               className="pl-10 font-mono"
-              placeholder="https://example.com"
+              placeholder="https://hono.dev"
             />
           </div>
         </div>
