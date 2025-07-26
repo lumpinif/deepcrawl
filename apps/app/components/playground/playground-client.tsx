@@ -3,6 +3,7 @@
 import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
 import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
+import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -12,17 +13,20 @@ import {
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { Copy } from 'lucide-react';
+import {
+  DeepcrawlApp,
+  DeepcrawlAuthError,
+  DeepcrawlError,
+  DeepcrawlLinksError,
+  DeepcrawlNetworkError,
+  DeepcrawlReadError,
+} from 'deepcrawl';
+import { Copy, X } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
-import {
-  extractLinksAction,
-  getMarkdownAction,
-  readUrlAction,
-} from '@/app/actions/deepcrawl';
 import { SpinnerButton } from '@/components/spinner-button';
 import {
   ExtractLinksGridIcon,
@@ -69,12 +73,29 @@ const apiOptions = [
 
 const apiOptionValues = ['getMarkdown', 'readUrl', 'extractLinks'] as const;
 
+// Get API key from environment or use a demo key
+const API_KEY =
+  process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY || 'demo-key-for-playground';
+
 export function PlaygroundClient() {
   const [url, setUrl] = useState('https://hono.dev');
   const [selectedOptionValue, setSelectedOptionValue] = useQueryState(
     'option',
     parseAsStringLiteral(apiOptionValues).withDefault('getMarkdown'),
   );
+
+  // Initialize SDK client
+  const sdkClient = useRef<DeepcrawlApp | null>(null);
+
+  useEffect(() => {
+    sdkClient.current = new DeepcrawlApp({
+      apiKey: API_KEY,
+      baseUrl:
+        process.env.NODE_ENV === 'development'
+          ? 'http://localhost:8080'
+          : 'https://api.deepcrawl.dev',
+    });
+  }, []);
 
   const selectedOption =
     apiOptions.find((option) => option.value === selectedOptionValue) ||
@@ -98,6 +119,9 @@ export function PlaygroundClient() {
 
   // Add deduplication ref to prevent multiple simultaneous requests
   const activeRequestsRef = useRef<Set<string>>(new Set());
+
+  // Add ref for abort controllers
+  const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
 
   // Timer effect to update current execution time
   useEffect(() => {
@@ -133,6 +157,15 @@ export function PlaygroundClient() {
       return;
     }
 
+    // Create new AbortController for this request
+    const abortController = new AbortController();
+
+    // Store the controller so it can be cancelled
+    if (!abortControllersRef.current) {
+      abortControllersRef.current = new Map();
+    }
+    abortControllersRef.current.set(operation, abortController);
+
     // Add to active requests
     activeRequestsRef.current.add(requestKey);
 
@@ -150,16 +183,40 @@ export function PlaygroundClient() {
         timestamp?: string;
       };
 
+      if (!sdkClient.current) {
+        throw new Error('SDK client not initialized');
+      }
+
       switch (operation) {
-        case 'getMarkdown':
-          result = await getMarkdownAction({ url });
+        case 'getMarkdown': {
+          const markdown = await sdkClient.current.getMarkdown(url, {
+            signal: abortController.signal,
+          });
+          result = { data: markdown, status: 200 };
           break;
-        case 'readUrl':
-          result = await readUrlAction({ url });
+        }
+        case 'readUrl': {
+          const readData = await sdkClient.current.readUrl(
+            url,
+            {},
+            {
+              signal: abortController.signal,
+            },
+          );
+          result = { data: readData, status: 200 };
           break;
-        case 'extractLinks':
-          result = await extractLinksAction({ url });
+        }
+        case 'extractLinks': {
+          const linksData = await sdkClient.current.extractLinks(
+            url,
+            {},
+            {
+              signal: abortController.signal,
+            },
+          );
+          result = { data: linksData, status: 200 };
           break;
+        }
       }
 
       const executionTime = Date.now() - startTime;
@@ -192,23 +249,72 @@ export function PlaygroundClient() {
         toast.success(`${label} completed successfully`);
       }
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'An error occurred';
       const executionTime = Date.now() - startTime;
+
+      // Check if it was aborted
+      if (error instanceof Error && error.name === 'AbortError') {
+        setResponses((prev) => ({
+          ...prev,
+          [operation]: {
+            error: 'Request cancelled by user',
+            status: 0,
+            executionTime,
+            errorType: 'unknown',
+          },
+        }));
+        toast.info(`${label} cancelled`);
+        return;
+      }
+
+      // Handle SDK-specific errors
+      let errorType: ApiResponse['errorType'] = 'unknown';
+      let errorMessage = 'An error occurred';
+      let status = 500;
+      let targetUrl: string | undefined;
+
+      if (error instanceof DeepcrawlAuthError) {
+        errorType = 'auth';
+        errorMessage = error.message;
+        status = error.status || 401;
+      } else if (error instanceof DeepcrawlReadError) {
+        errorType = 'read';
+        errorMessage = error.message;
+        status = error.status || 400;
+        targetUrl = error.targetUrl;
+      } else if (error instanceof DeepcrawlLinksError) {
+        errorType = 'links';
+        errorMessage = error.message;
+        status = error.status || 400;
+        targetUrl = error.targetUrl;
+      } else if (error instanceof DeepcrawlNetworkError) {
+        errorType = 'network';
+        errorMessage = error.message;
+        status = error.status || 503;
+      } else if (error instanceof DeepcrawlError) {
+        errorMessage = error.message;
+        status = error.status || 500;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
 
       setResponses((prev) => ({
         ...prev,
         [operation]: {
           error: errorMessage,
-          status: 500,
+          status,
           executionTime,
-          errorType: 'unknown',
+          errorType,
+          targetUrl,
         },
       }));
+
       toast.error(`${label} failed: ${errorMessage}`);
     } finally {
       // Remove from active requests
       activeRequestsRef.current.delete(requestKey);
+
+      // Clean up abort controller
+      abortControllersRef.current?.delete(operation);
 
       setIsLoading((prev) => ({ ...prev, [operation]: false }));
       setExecutionStartTime((prev) => {
@@ -335,21 +441,39 @@ export function PlaygroundClient() {
             />
           </div>
         </div>
-        <SpinnerButton
-          className="w-32"
-          onClick={() =>
-            executeApiCall(
-              selectedOption?.value as
-                | 'getMarkdown'
-                | 'readUrl'
-                | 'extractLinks',
-              selectedOption?.label || '',
-            )
-          }
-          isLoading={isLoading[selectedOption?.value || '']}
-        >
-          {selectedOption?.label}
-        </SpinnerButton>
+        {isLoading[selectedOption?.value || ''] ? (
+          <Button
+            className="w-32"
+            variant="destructive"
+            onClick={() => {
+              const controller = abortControllersRef.current?.get(
+                selectedOption?.value || '',
+              );
+              if (controller) {
+                controller.abort();
+              }
+            }}
+          >
+            <X className="mr-2 h-4 w-4" />
+            Cancel
+          </Button>
+        ) : (
+          <SpinnerButton
+            className="w-32"
+            onClick={() =>
+              executeApiCall(
+                selectedOption?.value as
+                  | 'getMarkdown'
+                  | 'readUrl'
+                  | 'extractLinks',
+                selectedOption?.label || '',
+              )
+            }
+            isLoading={isLoading[selectedOption?.value || '']}
+          >
+            {selectedOption?.label}
+          </SpinnerButton>
+        )}
       </div>
 
       {/* Results Section */}
