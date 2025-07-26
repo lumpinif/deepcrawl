@@ -162,20 +162,6 @@ export async function processReadRequest(
     rawHtml: isRawHtml,
   } = params;
 
-  console.log('[PERF] Read processor started:', {
-    url,
-    isGETRequest,
-    options: {
-      isMarkdown,
-      isCleanedHtml,
-      isMetadata,
-      isRobots,
-      isRawHtml,
-    },
-    timestamp: new Date().toISOString(),
-    requestId: c.var.requestId,
-  });
-
   let readResponse: ReadResponse | undefined;
   // Initialize cache flag
   let isReadCacheFresh = false;
@@ -196,7 +182,7 @@ export async function processReadRequest(
     const cacheKey = await getReadCacheKey(params, isGETRequest);
     const cacheKeyTime = Date.now() - cacheKeyStart;
 
-    console.log('[PERF] Read processor cache setup:', {
+    logDebug('[PERF] Read processor cache setup:', {
       url: targetUrl,
       urlNormTime,
       cacheKeyTime,
@@ -217,7 +203,7 @@ export async function processReadRequest(
           }>(cacheKey);
         const cacheReadTime = Date.now() - cacheReadStart;
 
-        console.log('[PERF] Read processor cache lookup:', {
+        logDebug('[PERF] Read processor cache lookup:', {
           url: targetUrl,
           cacheReadTime,
           cacheHit: !!cachedResult,
@@ -237,7 +223,7 @@ export async function processReadRequest(
             isReadCacheFresh = true;
             const totalTime = Date.now() - processorStart;
 
-            console.log('[PERF] Read processor cache HIT (fresh):', {
+            logDebug('[PERF] Read processor cache HIT (fresh):', {
               url: targetUrl,
               totalTime,
               cacheAge: Date.now() - cacheTimestamp,
@@ -259,7 +245,7 @@ export async function processReadRequest(
             parsedResponse.metrics = metrics;
             return parsedResponse;
           } else {
-            console.log('[PERF] Read processor cache STALE:', {
+            logDebug('[PERF] Read processor cache STALE:', {
               url: targetUrl,
               cacheAge: Date.now() - cacheTimestamp,
               maxAge: KV_CACHE_EXPIRATION_TTL * 1000,
@@ -270,7 +256,7 @@ export async function processReadRequest(
         }
       } catch (error) {
         const cacheErrorTime = Date.now() - processorStart;
-        console.error('[PERF] Read processor cache error:', {
+        logError('[PERF] Read processor cache error:', {
           url: targetUrl,
           cacheErrorTime,
           error: error instanceof Error ? error.message : String(error),
@@ -285,7 +271,7 @@ export async function processReadRequest(
     const isGithubUrl = targetUrl.startsWith('https://github.com');
     const scrapeStart = Date.now();
 
-    console.log('[PERF] Read processor scraping started:', {
+    logDebug('[PERF] Read processor scraping started:', {
       url: targetUrl,
       isGithubUrl,
       cleaningProcessor: !isGithubUrl ? 'html-rewriter' : 'reader',
@@ -298,7 +284,7 @@ export async function processReadRequest(
     const scrapeService = c.var.scrapeService;
     const serviceAccessTime = Date.now() - serviceAccessStart;
 
-    console.log('[PERF] Read processor using request-scoped service:', {
+    logDebug('[PERF] Read processor using request-scoped service:', {
       url: targetUrl,
       serviceAccessTime,
       hasService: !!scrapeService,
@@ -324,7 +310,7 @@ export async function processReadRequest(
 
     const scrapeTime = Date.now() - scrapeStart;
 
-    console.log('[PERF] Read processor scraping completed:', {
+    logDebug('[PERF] Read processor scraping completed:', {
       url: targetUrl,
       scrapeTime,
       hasTitle: !!title,
@@ -516,7 +502,7 @@ export async function processReadRequest(
     return readResponse as ReadSuccessResponse;
   } catch (error) {
     const errorTime = Date.now() - processorStart;
-    console.error('[PERF] Read processor error:', {
+    logError('[PERF] Read processor error:', {
       url,
       errorTime,
       error: error instanceof Error ? error.message : String(error),

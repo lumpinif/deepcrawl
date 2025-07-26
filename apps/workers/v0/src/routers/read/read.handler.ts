@@ -1,6 +1,7 @@
 import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
+import { logDebug, logError } from '@/utils/loggers';
 import { processReadRequest } from './read.processor';
 
 export const readGETHandler = authed
@@ -9,7 +10,7 @@ export const readGETHandler = authed
     const handlerStart = Date.now();
     const { url } = input;
 
-    console.log('[PERF] Workers readGETHandler started:', {
+    logDebug('[PERF] Workers readGETHandler started:', {
       url,
       operation: 'getMarkdown',
       timestamp: new Date().toISOString(),
@@ -29,7 +30,7 @@ export const readGETHandler = authed
       const processingTime = Date.now() - processingStart;
       const totalHandlerTime = Date.now() - handlerStart;
 
-      console.log('[PERF] Workers readGETHandler completed:', {
+      logDebug('[PERF] Workers readGETHandler completed:', {
         url,
         operation: 'getMarkdown',
         processingTime,
@@ -44,7 +45,7 @@ export const readGETHandler = authed
     } catch (error) {
       const errorTime = Date.now() - handlerStart;
 
-      console.error('[PERF] Workers readGETHandler error:', {
+      logError('[PERF] Workers readGETHandler error:', {
         url,
         operation: 'getMarkdown',
         errorTime,
@@ -71,7 +72,7 @@ export const readPOSTHandler = authed
     const handlerStart = Date.now();
     const { url, ...rest } = input;
 
-    console.log('[PERF] Workers readPOSTHandler started:', {
+    logDebug('[PERF] Workers readPOSTHandler started:', {
       url,
       operation: 'readUrl',
       options: Object.keys(rest),
@@ -93,7 +94,7 @@ export const readPOSTHandler = authed
       const processingTime = Date.now() - processingStart;
       const totalHandlerTime = Date.now() - handlerStart;
 
-      console.log('[PERF] Workers readPOSTHandler completed:', {
+      logDebug('[PERF] Workers readPOSTHandler completed:', {
         url,
         operation: 'readUrl',
         processingTime,
@@ -106,7 +107,7 @@ export const readPOSTHandler = authed
     } catch (error) {
       const errorTime = Date.now() - handlerStart;
 
-      console.error('[PERF] Workers readPOSTHandler error:', {
+      logError('[PERF] Workers readPOSTHandler error:', {
         url,
         operation: 'readUrl',
         errorTime,
