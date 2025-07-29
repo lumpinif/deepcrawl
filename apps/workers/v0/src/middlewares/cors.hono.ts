@@ -1,32 +1,22 @@
-import {
-  ALLOWED_ORIGINS,
-  DEVELOPMENT_ORIGINS,
-} from '@deepcrawl/auth/configs/auth.config';
 import { cors } from 'hono/cors';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings } from '@/lib/context';
 
 /**
- * Hybrid CORS middleware: supports both dashboard cookies and public API access
+ * CORS middleware for public API access
  */
 export const deepCrawlCors = createMiddleware<AppBindings>(async (c, next) => {
-  const origin = c.req.header('Origin');
-  const hasAuth = !!c.req.header('Authorization');
+  // First, try to get API key from x-api-key header
+  const xApiKey = c.req.header('x-api-key');
+  const authHeader = c.req.header('authorization');
 
-  // Check if origin is trusted (dashboard, auth worker, etc.)
-  const isTrusted =
-    origin &&
-    [...ALLOWED_ORIGINS, ...DEVELOPMENT_ORIGINS].some((allowed) => {
-      if (allowed.includes('*')) {
-        const pattern = allowed.replace(/\./g, '\\.').replace(/\*/g, '[^.]+');
-        return new RegExp(`^${pattern}$`).test(origin);
-      }
-      return allowed === origin;
-    });
+  const apiKey = xApiKey ?? authHeader?.split(' ')[1];
+
+  const hasAuth = !!apiKey;
 
   return cors({
     origin: (requestOrigin) => requestOrigin, // Allow all origins
-    credentials: isTrusted || hasAuth, // Enable credentials for trusted origins or auth requests
+    credentials: hasAuth,
     maxAge: 86400,
     allowMethods: ['GET', 'POST', 'OPTIONS'],
     allowHeaders: [
