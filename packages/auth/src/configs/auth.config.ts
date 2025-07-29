@@ -90,34 +90,6 @@ export const DEVELOPMENT_ORIGINS = [
   'http://127.0.0.1:8787', // Auth worker alternative
   'http://localhost:8080', // V0 worker
   'http://127.0.0.1:8080', // V0 worker alternative
-
-  // Cloudflare Workers preview URLs (for --remote development)
-  'https://*.nbr8rcs5kh.workers.dev', // Your specific workers.dev subdomain
-
-  // 🔧 TO ADD YOUR NETWORK CONFIGURATION:
-  // 1. Find your computer's IP address:
-  //    - Windows: Run `ipconfig` and look for IPv4 Address
-  //    - Mac: Run `ifconfig | grep "inet "` or check System Preferences > Network
-  //    - Linux: Run `ip addr show` or `hostname -I`
-  //
-  // 2. Uncomment and replace YOUR_COMPUTER_IP with your actual IP:
-  // ...generateNetworkOrigins('YOUR_COMPUTER_IP'), // e.g., '192.168.1.100'
-
-  ...generateNetworkOrigins('192.18.0.1'),
-  ...generateNetworkOrigins('192.168.50.198'),
-  ...generateNetworkOrigins('192.168.50.74'),
-
-  // 3. Common network examples (uncomment if they match your setup):
-  ...generateNetworkOrigins('192.168.1.100'), // Common home network IP
-  ...generateNetworkOrigins('192.168.0.100'), // Alternative common range
-  // ...generateNetworkOrigins('10.0.0.100'),    // Corporate network range
-  // ...generateNetworkOrigins('172.16.0.100'),  // Docker/container range
-
-  // 📱 TESTING FROM YOUR IPHONE:
-  // 1. Make sure your iPhone is on the same Wi-Fi network
-  // 2. Add your computer's IP using generateNetworkOrigins() above
-  // 3. On your iPhone, navigate to: http://YOUR_COMPUTER_IP:3000
-  // 4. The auth should now work seamlessly across devices!
 ];
 
 export const MAX_SESSIONS = 2;
