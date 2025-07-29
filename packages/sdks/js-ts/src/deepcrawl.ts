@@ -145,10 +145,6 @@ function handleDeepcrawlError(
   }
 
   // Default to network error for all other cases
-  console.log('🔍 [SDK] Falling back to network error:', {
-    error,
-    fallbackMessage,
-  });
   throw new DeepcrawlNetworkError(fallbackMessage, error);
 }
 
