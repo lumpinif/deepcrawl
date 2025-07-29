@@ -231,9 +231,6 @@ export function PlaygroundClient() {
 
       // Pattern 2: Static type guards (alternative pattern)
       if (DeepcrawlError.isAuthError(error)) {
-        console.log(
-          '🔐 [PLAYGROUND] Detected auth error via static type guard',
-        );
         const response = {
           error: error.message,
           userMessage: error.userMessage,
@@ -269,9 +266,6 @@ export function PlaygroundClient() {
 
       // Pattern 3: Instance methods (fluent style)
       if (error.isNetwork?.()) {
-        console.log(
-          '⚠️ [PLAYGROUND] Detected network error via isNetwork() method',
-        );
         const response = {
           error: error.message,
           userMessage: error.userMessage,
