@@ -259,18 +259,6 @@ export class DeepcrawlApp {
             ? 'browser'
             : 'nodeJs';
 
-    // Temporary debug logging to diagnose mobile Safari issues
-    if (typeof console !== 'undefined' && console.log) {
-      console.log('[DeepCrawl SDK] Environment detected:', this.nodeEnv, {
-        isBrowser,
-        hasWindow: typeof window !== 'undefined',
-        hasNavigator: typeof navigator !== 'undefined',
-        hasDocument: typeof document !== 'undefined',
-        userAgent:
-          typeof navigator !== 'undefined' ? navigator.userAgent : 'N/A',
-      });
-    }
-
     if (!this.config.apiKey) {
       throw new DeepcrawlAuthError('API key is required');
     }
