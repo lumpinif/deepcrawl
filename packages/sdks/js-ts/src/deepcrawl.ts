@@ -1,3 +1,4 @@
+import type { Agent, AgentOptions } from 'node:https';
 import type {
   contract,
   ExtractLinksOutput,
@@ -20,7 +21,7 @@ import {
 import { RPCLink } from '@orpc/client/fetch';
 import { ClientRetryPlugin } from '@orpc/client/plugins';
 import type { ContractRouterClient } from '@orpc/contract';
-import type { Agent } from 'https';
+import * as https from 'https';
 import packageJSON from '../package.json' with { type: 'json' };
 import {
   type DeepCrawlClientContext,
@@ -179,6 +180,24 @@ function extractAuthHeaders(
   return headers as Record<string, string | string[] | undefined>;
 }
 
+const HTTP_AGENT_OPTIONS = {
+  keepAlive: true,
+  maxSockets: 10,
+  maxFreeSockets: 5,
+  timeout: 60000,
+  keepAliveMsecs: 30000,
+} satisfies AgentOptions;
+
+const CF_AGENT_OPTIONS = {
+  cacheTtl: 60, // 60 seconds
+  timeout: 60000, // 60 seconds
+  cacheEverything: false, // false means cache only for 200 responses
+} satisfies {
+  cacheTtl: number;
+  timeout: number;
+  cacheEverything: boolean;
+};
+
 export class DeepcrawlApp {
   public client: ContractRouterClient<typeof contract, DeepCrawlClientContext>;
   private safeClient: ReturnType<
@@ -200,13 +219,8 @@ export class DeepcrawlApp {
 
     if (!this.httpsAgent) {
       try {
-        const https = await import('https');
         this.httpsAgent = new https.Agent({
-          keepAlive: true,
-          maxSockets: 10,
-          maxFreeSockets: 5,
-          timeout: 60000,
-          keepAliveMsecs: 30000,
+          ...HTTP_AGENT_OPTIONS,
         });
       } catch (error) {
         console.warn('Failed to initialize HTTPS agent:', error);
@@ -296,9 +310,7 @@ export class DeepcrawlApp {
           cf:
             this.nodeEnv === 'cf-worker'
               ? this.config.fetchOptions?.cf || {
-                  cacheTtl: 60,
-                  timeout: 60000,
-                  cacheEverything: false,
+                  ...CF_AGENT_OPTIONS,
                 }
               : undefined,
         }),
