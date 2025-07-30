@@ -12,13 +12,7 @@ import {
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import {
-  DeepcrawlApp,
-  DeepcrawlError,
-  DeepcrawlLinksError,
-  DeepcrawlRateLimitError,
-  DeepcrawlReadError,
-} from 'deepcrawl';
+import { DeepcrawlApp } from 'deepcrawl';
 import { AlertTriangle, Copy, RefreshCw } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useEffect, useRef, useState } from 'react';
@@ -31,8 +25,9 @@ import {
   GetMarkdownGridIcon,
   ReadUrlGridIcon,
 } from '../animate-ui/components/grid-icons';
+import { handlePlaygroundError } from './utils/error-handler';
 
-interface ApiResponse {
+export interface ApiResponse {
   data?: unknown;
   error?: string;
   status?: number;
@@ -52,6 +47,8 @@ interface ApiResponse {
   retryAfter?: number;
   userMessage?: string;
 }
+
+export type ApiOperation = 'getMarkdown' | 'readUrl' | 'extractLinks';
 
 const apiOptions = [
   {
@@ -146,182 +143,22 @@ export function PlaygroundClient() {
     return () => clearInterval(interval);
   }, [executionStartTime, isLoading]);
 
-  /**
-   * World-class error handling that showcases the SDK's capabilities
-   */
+  // Use centralized error handler
   const handleError = (
     error: unknown,
-    operation: 'getMarkdown' | 'readUrl' | 'extractLinks',
+    operation: ApiOperation,
     label: string,
     executionTime: number,
   ): ApiResponse => {
-    // Demonstrate our world-class error handling patterns
-    if (error instanceof DeepcrawlError) {
-      // Pattern 1: Type-safe instanceof checks
-      if (error instanceof DeepcrawlReadError) {
-        const response = {
-          error: error.message,
-          userMessage: error.userMessage,
-          status: error.status,
-          executionTime,
-          errorType: 'read' as const,
-          targetUrl: error.targetUrl,
-          retryable: false,
-        };
-
-        toast.error(`Read failed: ${error.userMessage}`, {
-          description: `invalid input: ${error.targetUrl}`,
-          action: {
-            label: 'Retry',
-            onClick: () => executeApiCall(operation, label),
-          },
-        });
-
-        return response;
-      }
-
-      if (error instanceof DeepcrawlLinksError) {
-        const response = {
-          error: error.message,
-          userMessage: error.userMessage,
-          status: error.status,
-          executionTime,
-          errorType: 'links' as const,
-          targetUrl: error.targetUrl,
-          timestamp: error.timestamp,
-          retryable: false,
-        };
-
-        toast.error(`Links extraction failed: ${error.userMessage}`, {
-          description: `invalid input: ${error.targetUrl}`,
-          action: {
-            label: 'Retry',
-            onClick: () => executeApiCall(operation, label),
-          },
-        });
-
-        return response;
-      }
-
-      if (error instanceof DeepcrawlRateLimitError) {
-        const response = {
-          error: error.message,
-          userMessage: error.userMessage,
-          status: error.status,
-          executionTime,
-          errorType: 'rateLimit' as const,
-          retryable: true,
-          retryAfter: error.retryAfter,
-        };
-
-        toast.error(`Rate limited: ${error.userMessage}`, {
-          description: `Retry after ${error.retryAfter} seconds`,
-          action: {
-            label: `Retry in ${error.retryAfter}s`,
-            onClick: () => {
-              setTimeout(() => {
-                executeApiCall(operation, label);
-              }, error.retryAfter * 1000);
-            },
-          },
-        });
-
-        return response;
-      }
-
-      // Pattern 2: Static type guards (alternative pattern)
-      if (DeepcrawlError.isAuthError(error)) {
-        const response = {
-          error: error.message,
-          userMessage: error.userMessage,
-          status: error.status,
-          executionTime,
-          errorType: 'auth' as const,
-          retryable: false,
-        };
-
-        toast.error(`Authentication failed: ${error.userMessage}`, {
-          description: 'Please check your API key',
-        });
-
-        return response;
-      }
-
-      if (DeepcrawlError.isValidationError(error)) {
-        const response = {
-          error: error.message,
-          userMessage: error.userMessage,
-          status: error.status,
-          executionTime,
-          errorType: 'validation' as const,
-          retryable: false,
-        };
-
-        toast.error(`Validation error: ${error.userMessage}`, {
-          description: 'Please check your request parameters',
-        });
-
-        return response;
-      }
-
-      // Pattern 3: Instance methods (fluent style)
-      if (error.isNetwork?.()) {
-        const response = {
-          error: error.message,
-          userMessage: error.userMessage,
-          status: error.status,
-          executionTime,
-          errorType: 'network' as const,
-          retryable: true,
-        };
-
-        toast.error(`Network error: ${error.userMessage}`, {
-          description: 'Please check your connection and try again',
-          action: {
-            label: 'Retry',
-            onClick: () => executeApiCall(operation, label),
-          },
-        });
-
-        return response;
-      }
-
-      // Fallback for other DeepcrawlError types
-      const response = {
-        error: error.message,
-        userMessage: error.userMessage || error.message,
-        status: error.status,
-        executionTime,
-        errorType: 'server' as const,
-        retryable: error.isNetwork?.() || error.isRateLimit?.(),
-        retryAfter: DeepcrawlError.isRateLimitError(error)
-          ? error.retryAfter
-          : undefined,
-      };
-
-      toast.error(`${label} failed: ${error.userMessage || error.message}`);
-      return response;
-    }
-
-    // Handle non-SDK errors
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    const response = {
-      error: errorMessage,
-      userMessage: errorMessage,
-      status: 500,
+    return handlePlaygroundError(error, {
+      operation,
+      label,
       executionTime,
-      errorType: 'unknown' as const,
-      retryable: false,
-    };
-
-    toast.error(`${label} failed: ${errorMessage}`);
-    return response;
+      onRetry: executeApiCall,
+    });
   };
 
-  const executeApiCall = async (
-    operation: 'getMarkdown' | 'readUrl' | 'extractLinks',
-    label: string,
-  ) => {
+  const executeApiCall = async (operation: ApiOperation, label: string) => {
     if (!sdkClient.current) return;
 
     // Prevent duplicate requests
@@ -393,10 +230,7 @@ export function PlaygroundClient() {
     }
   };
 
-  const handleRetry = (
-    operation: 'getMarkdown' | 'readUrl' | 'extractLinks',
-    label: string,
-  ) => {
+  const handleRetry = (operation: ApiOperation, label: string) => {
     executeApiCall(operation, label);
   };
 
@@ -513,10 +347,7 @@ export function PlaygroundClient() {
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   executeApiCall(
-                    selectedOption?.value as
-                      | 'getMarkdown'
-                      | 'readUrl'
-                      | 'extractLinks',
+                    selectedOption?.value as ApiOperation,
                     selectedOption?.label || '',
                   );
                 }
@@ -531,10 +362,7 @@ export function PlaygroundClient() {
           className="w-32"
           onClick={() =>
             executeApiCall(
-              selectedOption?.value as
-                | 'getMarkdown'
-                | 'readUrl'
-                | 'extractLinks',
+              selectedOption?.value as ApiOperation,
               selectedOption?.label || '',
             )
           }
@@ -595,10 +423,8 @@ export function PlaygroundClient() {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            const operation = selectedOption?.value as
-                              | 'getMarkdown'
-                              | 'readUrl'
-                              | 'extractLinks';
+                            const operation =
+                              selectedOption?.value as ApiOperation;
                             handleRetry(operation, selectedOption?.label || '');
                           }}
                         >
