@@ -205,8 +205,8 @@ export function createAuthConfig(env: Env) {
             return {
               // api.deepcrawl.dev services endpoints
               // Permissions follow a resource-based structure
-              read: ['GET', 'POST', 'PUT', 'DELETE'],
-              links: ['GET', 'POST', 'PUT', 'DELETE'],
+              read: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+              links: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
             };
           },
         },
