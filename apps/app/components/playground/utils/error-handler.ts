@@ -5,7 +5,7 @@ import {
   DeepcrawlReadError,
 } from 'deepcrawl';
 import { toast } from 'sonner';
-import type { ApiOperation, ApiResponse } from '../playground-client';
+import type { ApiOperation, PlaygroundResponse } from '../playground-client';
 
 export interface ErrorHandlerOptions {
   operation: ApiOperation;
@@ -17,7 +17,7 @@ export interface ErrorHandlerOptions {
 export const handlePlaygroundError = (
   error: unknown,
   options: ErrorHandlerOptions,
-): ApiResponse => {
+): PlaygroundResponse => {
   if (error instanceof DeepcrawlError) {
     return handleDeepcrawlError(error, options);
   }
@@ -28,7 +28,7 @@ export const handlePlaygroundError = (
 const handleDeepcrawlError = (
   error: DeepcrawlError,
   options: ErrorHandlerOptions,
-): ApiResponse => {
+): PlaygroundResponse => {
   const { operation, label, executionTime, onRetry } = options;
 
   // Handle specific error types first
@@ -73,8 +73,8 @@ const handleReadError = (
   operation: ApiOperation,
   label: string,
   onRetry: (operation: ApiOperation, label: string) => void,
-): ApiResponse => {
-  const response: ApiResponse = {
+): PlaygroundResponse => {
+  const response: PlaygroundResponse = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -101,8 +101,8 @@ const handleLinksError = (
   operation: ApiOperation,
   label: string,
   onRetry: (operation: ApiOperation, label: string) => void,
-): ApiResponse => {
-  const response: ApiResponse = {
+): PlaygroundResponse => {
+  const response: PlaygroundResponse = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -130,8 +130,8 @@ const handleRateLimitError = (
   operation: ApiOperation,
   label: string,
   onRetry: (operation: ApiOperation, label: string) => void,
-): ApiResponse => {
-  const response: ApiResponse = {
+): PlaygroundResponse => {
+  const response: PlaygroundResponse = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -159,8 +159,8 @@ const handleRateLimitError = (
 const handleAuthError = (
   error: DeepcrawlError,
   executionTime: number,
-): ApiResponse => {
-  const response: ApiResponse = {
+): PlaygroundResponse => {
+  const response: PlaygroundResponse = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -179,8 +179,8 @@ const handleAuthError = (
 const handleValidationError = (
   error: DeepcrawlError,
   executionTime: number,
-): ApiResponse => {
-  const response: ApiResponse = {
+): PlaygroundResponse => {
+  const response: PlaygroundResponse = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -202,8 +202,8 @@ const handleNetworkError = (
   operation: ApiOperation,
   label: string,
   onRetry: (operation: ApiOperation, label: string) => void,
-): ApiResponse => {
-  const response: ApiResponse = {
+): PlaygroundResponse => {
+  const response: PlaygroundResponse = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -227,11 +227,11 @@ const handleServerError = (
   error: DeepcrawlError,
   executionTime: number,
   label: string,
-): ApiResponse => {
+): PlaygroundResponse => {
   const isNetworkError = error.isNetwork();
   const isRateLimitError = error.isRateLimit();
 
-  const response: ApiResponse = {
+  const response: PlaygroundResponse = {
     error: error.message,
     userMessage: error.userMessage || error.message,
     status: error.status,
@@ -251,9 +251,9 @@ const handleGenericError = (
   error: unknown,
   executionTime: number,
   label: string,
-): ApiResponse => {
+): PlaygroundResponse => {
   const errorMessage = error instanceof Error ? error.message : String(error);
-  const response: ApiResponse = {
+  const response: PlaygroundResponse = {
     error: errorMessage,
     userMessage: errorMessage,
     status: 500,

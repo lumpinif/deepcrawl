@@ -12,7 +12,12 @@ import {
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { DeepcrawlApp } from 'deepcrawl';
+import {
+  DeepcrawlApp,
+  type ExtractLinksOutput,
+  type GetMarkdownOutput,
+  type ReadUrlOutput,
+} from 'deepcrawl';
 import { AlertTriangle, Copy, RefreshCw } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useEffect, useRef, useState } from 'react';
@@ -27,10 +32,11 @@ import {
 } from '../animate-ui/components/grid-icons';
 import { handlePlaygroundError } from './utils/error-handler';
 
-export interface ApiResponse {
-  data?: unknown;
-  error?: string;
-  status?: number;
+// Use only SDK types - no custom playground types needed
+export type ApiOperation = 'getMarkdown' | 'readUrl' | 'extractLinks';
+
+// Internal response wrapper that extends SDK data with UI metadata
+interface PlaygroundResponseMetadata {
   executionTime?: number;
   errorType?:
     | 'read'
@@ -41,14 +47,25 @@ export interface ApiResponse {
     | 'network'
     | 'server'
     | 'unknown';
-  targetUrl?: string;
-  timestamp?: string;
   retryable?: boolean;
   retryAfter?: number;
   userMessage?: string;
 }
 
-export type ApiOperation = 'getMarkdown' | 'readUrl' | 'extractLinks';
+// Union of all possible success data types from SDK
+export type ApiResponseData =
+  | GetMarkdownOutput
+  | ReadUrlOutput
+  | ExtractLinksOutput;
+
+// Playground response combines SDK data with UI metadata
+export type PlaygroundResponse = PlaygroundResponseMetadata & {
+  data?: ApiResponseData;
+  error?: string;
+  status?: number;
+  targetUrl?: string;
+  timestamp?: string;
+};
 
 const apiOptions = [
   {
@@ -111,7 +128,9 @@ export function PlaygroundClient() {
     readUrl: false,
     extractLinks: false,
   });
-  const [responses, setResponses] = useState<Record<string, ApiResponse>>({});
+  const [responses, setResponses] = useState<
+    Record<string, PlaygroundResponse>
+  >({});
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
   const [executionStartTime, setExecutionStartTime] = useState<
     Record<string, number>
@@ -149,7 +168,7 @@ export function PlaygroundClient() {
     operation: ApiOperation,
     label: string,
     executionTime: number,
-  ): ApiResponse => {
+  ): PlaygroundResponse => {
     return handlePlaygroundError(error, {
       operation,
       label,
@@ -185,13 +204,13 @@ export function PlaygroundClient() {
         case 'readUrl': {
           const readData = await sdkClient.current.readUrl(url, {});
           result = readData;
-          targetUrl = readData?.targetUrl || url;
+          targetUrl = (readData as ReadUrlOutput)?.targetUrl || url;
           break;
         }
         case 'extractLinks': {
           const linksData = await sdkClient.current.extractLinks(url, {});
           result = linksData;
-          targetUrl = linksData?.targetUrl || url;
+          targetUrl = (linksData as ExtractLinksOutput)?.targetUrl || url;
           break;
         }
       }
@@ -201,7 +220,7 @@ export function PlaygroundClient() {
       setResponses((prev) => ({
         ...prev,
         [operation]: {
-          data: result,
+          data: result as ApiResponseData,
           status: 200,
           executionTime,
           targetUrl,
