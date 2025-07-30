@@ -11,7 +11,7 @@ import type {
   PlaygroundResponse,
 } from './playground-client';
 
-interface DCResponseRendererProps {
+interface PGResponseArea {
   response: PlaygroundResponse;
   operation: DeepcrawlOperations;
   operationLabel?: string;
@@ -50,13 +50,13 @@ const formatResponseData = (data: unknown): string => {
   return JSON.stringify(data, null, 2);
 };
 
-export function DCResponseRenderer({
+export function PGResponseArea({
   response,
   operation,
   operationMethod,
   onRetry,
   formatTime,
-}: DCResponseRendererProps) {
+}: PGResponseArea) {
   const handleCopy = async (text: string) => {
     await copyToClipboard(text);
     toast.success('Copied to clipboard');

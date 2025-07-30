@@ -29,7 +29,7 @@ import { SpinnerButton } from '@/components/spinner-button';
 import { useDeepCrawlClient } from '@/hooks/playground/use-deepcrawl-client';
 import { useExecutionTimer } from '@/hooks/playground/use-execution-timer';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
-import { DCResponseRenderer } from './dc-response-renderer';
+import { PGResponseArea } from './pg-response-area';
 
 // Internal response wrapper that extends SDK data with UI metadata
 interface PlaygroundResponseMetadata {
@@ -348,7 +348,7 @@ export function PlaygroundClient() {
               if (!response) return null;
 
               return (
-                <DCResponseRenderer
+                <PGResponseArea
                   response={response}
                   operation={selectedOP?.operation as DeepcrawlOperations}
                   operationLabel={selectedOP?.label || ''}
