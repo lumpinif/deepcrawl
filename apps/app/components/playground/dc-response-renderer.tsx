@@ -65,7 +65,7 @@ export function DCResponseRenderer({
   return (
     <div className="space-y-3">
       {/* Response Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between overflow-x-auto max-sm:flex-col max-sm:items-start max-sm:gap-3">
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs">
             {operationMethod}
@@ -97,16 +97,11 @@ export function DCResponseRenderer({
             </Badge>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          {response.retryable && (
-            <SpinnerButton variant="outline" size="sm" onClick={onRetry}>
-              <RefreshCw className="h-4 w-4" />
-              Retry
-            </SpinnerButton>
-          )}
+        <div className="flex items-center gap-2 max-sm:w-full max-sm:flex-row-reverse max-sm:justify-between">
           <SpinnerButton
-            variant="outline"
             size="sm"
+            className="max-sm:flex-1"
+            variant="outline"
             onClick={() =>
               handleCopy(
                 response.error
@@ -118,6 +113,17 @@ export function DCResponseRenderer({
             <Copy className="h-4 w-4" />
             Copy
           </SpinnerButton>
+          {response.retryable && (
+            <SpinnerButton
+              size="sm"
+              variant="outline"
+              className="max-sm:flex-1"
+              onClick={onRetry}
+            >
+              <RefreshCw className="h-4 w-4" />
+              Retry
+            </SpinnerButton>
+          )}
         </div>
       </div>
 
