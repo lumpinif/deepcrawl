@@ -187,7 +187,7 @@ export class DeepcrawlApp {
     >
   >;
   private config: DeepcrawlConfig;
-  private nodeEnv: 'nodeJs' | 'cf-worker' = 'nodeJs';
+  private nodeEnv: 'nodeJs' | 'cf-worker' | 'browser' = 'nodeJs';
   private httpsAgent?: Agent; // Node.js https.Agent
 
   /**
@@ -223,7 +223,7 @@ export class DeepcrawlApp {
       ...config,
     };
 
-    // Detect runtime environment in a concise, declarative way
+    // Detect runtime environment with better browser detection
     this.nodeEnv =
       typeof process !== 'undefined' && !!process.versions?.node
         ? 'nodeJs'
@@ -231,7 +231,9 @@ export class DeepcrawlApp {
             typeof (globalThis as { EdgeRuntime?: unknown }).EdgeRuntime ===
               'undefined'
           ? 'cf-worker'
-          : 'nodeJs';
+          : typeof window !== 'undefined' || typeof navigator !== 'undefined'
+            ? 'browser'
+            : 'nodeJs';
 
     if (!this.config.apiKey) {
       throw new DeepcrawlAuthError('API key is required');
