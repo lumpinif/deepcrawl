@@ -5,7 +5,10 @@ import {
   DeepcrawlReadError,
 } from 'deepcrawl';
 import { toast } from 'sonner';
-import type { ApiOperation, PlaygroundResponse } from '../playground-client';
+import type {
+  ApiOperation,
+  PlaygroundResponse,
+} from '@/components/playground/playground-client';
 
 export interface ErrorHandlerOptions {
   operation: ApiOperation;
