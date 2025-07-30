@@ -52,8 +52,8 @@ app.use('/rpc/*', async (c, next) => {
 const routes = [
   { path: '/docs', methods: ['GET'] },
   { path: '/openapi', methods: ['GET'] },
-  { path: '/read', methods: ['GET', 'POST'] },
-  { path: '/links', methods: ['GET', 'POST'] },
+  { path: '/read', methods: ['GET', 'POST', 'OPTIONS'] },
+  { path: '/links', methods: ['GET', 'POST', 'OPTIONS'] },
 ] as const;
 
 for (const route of routes) {
