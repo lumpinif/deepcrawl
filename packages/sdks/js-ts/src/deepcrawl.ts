@@ -224,16 +224,38 @@ export class DeepcrawlApp {
     };
 
     // Detect runtime environment with better browser detection
+    const isBrowser =
+      typeof window !== 'undefined' ||
+      typeof navigator !== 'undefined' ||
+      typeof document !== 'undefined' ||
+      (typeof globalThis !== 'undefined' &&
+        ('window' in globalThis ||
+          'navigator' in globalThis ||
+          'document' in globalThis));
+
     this.nodeEnv =
-      typeof process !== 'undefined' && !!process.versions?.node
+      typeof process !== 'undefined' && !!process.versions?.node && !isBrowser
         ? 'nodeJs'
         : typeof globalThis.caches !== 'undefined' &&
             typeof (globalThis as { EdgeRuntime?: unknown }).EdgeRuntime ===
-              'undefined'
+              'undefined' &&
+            !isBrowser
           ? 'cf-worker'
-          : typeof window !== 'undefined' || typeof navigator !== 'undefined'
+          : isBrowser
             ? 'browser'
             : 'nodeJs';
+
+    // Temporary debug logging to diagnose mobile Safari issues
+    if (typeof console !== 'undefined' && console.log) {
+      console.log('[DeepCrawl SDK] Environment detected:', this.nodeEnv, {
+        isBrowser,
+        hasWindow: typeof window !== 'undefined',
+        hasNavigator: typeof navigator !== 'undefined',
+        hasDocument: typeof document !== 'undefined',
+        userAgent:
+          typeof navigator !== 'undefined' ? navigator.userAgent : 'N/A',
+      });
+    }
 
     if (!this.config.apiKey) {
       throw new DeepcrawlAuthError('API key is required');
