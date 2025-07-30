@@ -31,9 +31,6 @@ import { useExecutionTimer } from '@/hooks/playground/use-execution-timer';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
 import { ApiResponseRenderer } from './api-response-renderer';
 
-// Use only SDK types - no custom playground types needed
-export type ApiOperation = 'getMarkdown' | 'readUrl' | 'extractLinks';
-
 // Internal response wrapper that extends SDK data with UI metadata
 interface PlaygroundResponseMetadata {
   executionTime?: number;
@@ -52,21 +49,21 @@ interface PlaygroundResponseMetadata {
 }
 
 // Union of all possible success data types from SDK
-export type ApiResponseData =
+export type DCResponseData =
   | GetMarkdownOutput
   | ReadUrlOutput
   | ExtractLinksOutput;
 
 // Playground response combines SDK data with UI metadata
 export type PlaygroundResponse = PlaygroundResponseMetadata & {
-  data?: ApiResponseData;
+  data?: DCResponseData;
   error?: string;
   status?: number;
   targetUrl?: string;
   timestamp?: string;
 };
 
-const apiOptions = [
+const DeepcrawlFeatures = [
   {
     label: 'Get Markdown',
     value: 'getMarkdown',
@@ -93,7 +90,12 @@ const apiOptions = [
   },
 ] as const;
 
-const apiOptionValues = ['getMarkdown', 'readUrl', 'extractLinks'] as const;
+type DeepcrawlFeatureValues = (typeof DeepcrawlFeatures)[number]['value'];
+const features: readonly DeepcrawlFeatureValues[] = [
+  'getMarkdown',
+  'readUrl',
+  'extractLinks',
+] as const;
 
 // Get API key from environment or use a demo key
 const API_KEY =
@@ -101,9 +103,9 @@ const API_KEY =
 
 export function PlaygroundClient() {
   const [url, setUrl] = useState('https://hono.dev');
-  const [selectedOptionValue, setSelectedOptionValue] = useQueryState(
-    'option',
-    parseAsStringLiteral(apiOptionValues).withDefault('getMarkdown'),
+  const [selectedDCFeature, setSelectedDCFeature] = useQueryState(
+    'feature',
+    parseAsStringLiteral(features).withDefault('getMarkdown'),
   );
 
   // Initialize SDK client with custom hook
@@ -116,12 +118,12 @@ export function PlaygroundClient() {
   });
 
   // Initialize execution timer hook
-  const { startTimer, stopTimer, getElapsedTime, formatTime, currentTimes } =
+  const { startTimer, stopTimer, getElapsedTime, formatTime } =
     useExecutionTimer();
 
-  const selectedOption =
-    apiOptions.find((option) => option.value === selectedOptionValue) ||
-    apiOptions[0];
+  const selectedFeature =
+    DeepcrawlFeatures.find((feature) => feature.value === selectedDCFeature) ||
+    DeepcrawlFeatures[0];
   const [isLoading, setIsLoading] = useState<Record<string, boolean>>({
     getMarkdown: false,
     readUrl: false,
@@ -141,7 +143,7 @@ export function PlaygroundClient() {
   // Use centralized error handler
   const handleError = (
     error: unknown,
-    operation: ApiOperation,
+    operation: DeepcrawlFeatureValues,
     label: string,
     executionTime: number,
   ): PlaygroundResponse => {
@@ -153,7 +155,10 @@ export function PlaygroundClient() {
     });
   };
 
-  const executeApiCall = async (operation: ApiOperation, label: string) => {
+  const executeApiCall = async (
+    operation: DeepcrawlFeatureValues,
+    label: string,
+  ) => {
     if (!sdkClient || !isReady) {
       toast.error('SDK client not ready');
       return;
@@ -199,7 +204,7 @@ export function PlaygroundClient() {
       setResponses((prev) => ({
         ...prev,
         [operation]: {
-          data: result as ApiResponseData,
+          data: result as DCResponseData,
           status: 200,
           executionTime,
           targetUrl,
@@ -228,7 +233,7 @@ export function PlaygroundClient() {
     }
   };
 
-  const handleRetry = (operation: ApiOperation, label: string) => {
+  const handleRetry = (operation: DeepcrawlFeatureValues, label: string) => {
     executeApiCall(operation, label);
   };
 
@@ -240,19 +245,19 @@ export function PlaygroundClient() {
   return (
     <div className="min-h-[calc(100svh-theme(spacing.56)))] space-y-6 pb-10">
       <Label htmlFor="url" className="text-muted-foreground">
-        API Options
+        Main Features
       </Label>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {apiOptions.map((option) => (
+        {DeepcrawlFeatures.map((feature) => (
           <Card
-            key={option.value}
-            onClick={() => setSelectedOptionValue(option.value)}
-            onMouseEnter={() => setHoveredOption(option.value)}
+            key={feature.value}
+            onClick={() => setSelectedDCFeature(feature.value)}
+            onMouseEnter={() => setHoveredOption(feature.value)}
             onMouseLeave={() => setHoveredOption(null)}
             className={cn(
               'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-muted/50 hover:shadow-md',
-              selectedOption?.value === option.value && 'bg-muted/50',
+              selectedFeature?.value === feature.value && 'bg-muted/50',
             )}
           >
             <div className="absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100">
@@ -260,26 +265,26 @@ export function PlaygroundClient() {
                 variant="outline"
                 className="text-muted-foreground text-xs"
               >
-                {option.method} {option.endpoint}
+                {feature.method} {feature.endpoint}
               </Badge>
             </div>
 
             <div className="flex items-center justify-center">
-              <option.icon
+              <feature.icon
                 cellClassName="size-[3px]"
                 animate={
-                  hoveredOption === option.value ||
-                  Boolean(isLoading[option.value])
+                  hoveredOption === feature.value ||
+                  Boolean(isLoading[feature.value])
                 }
               />
             </div>
             <CardContent className="space-y-2 text-center">
               <div className="flex items-center justify-center">
                 <CardTitle className="flex items-center gap-2">
-                  {option.label}
+                  {feature.label}
                 </CardTitle>
               </div>
-              <CardDescription>{option.description}</CardDescription>
+              <CardDescription>{feature.description}</CardDescription>
             </CardContent>
           </Card>
         ))}
@@ -308,8 +313,8 @@ export function PlaygroundClient() {
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   executeApiCall(
-                    selectedOption?.value as ApiOperation,
-                    selectedOption?.label || '',
+                    selectedFeature?.value as DeepcrawlFeatureValues,
+                    selectedFeature?.label || '',
                   );
                 }
               }}
@@ -323,36 +328,37 @@ export function PlaygroundClient() {
           className="w-32"
           onClick={() =>
             executeApiCall(
-              selectedOption?.value as ApiOperation,
-              selectedOption?.label || '',
+              selectedFeature?.value as DeepcrawlFeatureValues,
+              selectedFeature?.label || '',
             )
           }
-          isLoading={isLoading[selectedOption?.value || '']}
+          isLoading={isLoading[selectedFeature?.value || '']}
         >
-          {selectedOption?.label}
+          {selectedFeature?.label}
         </SpinnerButton>
       </div>
 
       {/* Results Section */}
-      {responses[selectedOption?.value || ''] && (
+      {responses[selectedFeature?.value || ''] && (
         <>
           <Label htmlFor="url" className="text-muted-foreground">
             Results
           </Label>
           <div>
             {(() => {
-              const response = responses[selectedOption?.value || ''];
+              const response = responses[selectedFeature?.value || ''];
               if (!response) return null;
 
               return (
                 <ApiResponseRenderer
                   response={response}
-                  operation={selectedOption?.value as ApiOperation}
-                  operationLabel={selectedOption?.label || ''}
-                  operationMethod={selectedOption?.method || ''}
+                  operation={selectedFeature?.value as DeepcrawlFeatureValues}
+                  operationLabel={selectedFeature?.label || ''}
+                  operationMethod={selectedFeature?.method || ''}
                   onRetry={() => {
-                    const operation = selectedOption?.value as ApiOperation;
-                    handleRetry(operation, selectedOption?.label || '');
+                    const operation =
+                      selectedFeature?.value as DeepcrawlFeatureValues;
+                    handleRetry(operation, selectedFeature?.label || '');
                   }}
                   onCopy={copyToClipboard}
                   formatTime={formatTime}
