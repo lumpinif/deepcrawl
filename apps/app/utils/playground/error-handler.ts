@@ -6,15 +6,15 @@ import {
 } from 'deepcrawl';
 import { toast } from 'sonner';
 import type {
-  ApiOperation,
+  DeepcrawlOperations,
   PlaygroundResponse,
 } from '@/components/playground/playground-client';
 
 export interface ErrorHandlerOptions {
-  operation: ApiOperation;
+  operation: DeepcrawlOperations;
   label: string;
   executionTime: number;
-  onRetry: (operation: ApiOperation, label: string) => void;
+  onRetry: (operation: DeepcrawlOperations, label: string) => void;
 }
 
 export const handlePlaygroundError = (
@@ -73,9 +73,9 @@ const handleDeepcrawlError = (
 const handleReadError = (
   error: DeepcrawlReadError,
   executionTime: number,
-  operation: ApiOperation,
+  operation: DeepcrawlOperations,
   label: string,
-  onRetry: (operation: ApiOperation, label: string) => void,
+  onRetry: (operation: DeepcrawlOperations, label: string) => void,
 ): PlaygroundResponse => {
   const response: PlaygroundResponse = {
     error: error.message,
@@ -101,9 +101,9 @@ const handleReadError = (
 const handleLinksError = (
   error: DeepcrawlLinksError,
   executionTime: number,
-  operation: ApiOperation,
+  operation: DeepcrawlOperations,
   label: string,
-  onRetry: (operation: ApiOperation, label: string) => void,
+  onRetry: (operation: DeepcrawlOperations, label: string) => void,
 ): PlaygroundResponse => {
   const response: PlaygroundResponse = {
     error: error.message,
@@ -130,9 +130,9 @@ const handleLinksError = (
 const handleRateLimitError = (
   error: DeepcrawlRateLimitError,
   executionTime: number,
-  operation: ApiOperation,
+  operation: DeepcrawlOperations,
   label: string,
-  onRetry: (operation: ApiOperation, label: string) => void,
+  onRetry: (operation: DeepcrawlOperations, label: string) => void,
 ): PlaygroundResponse => {
   const response: PlaygroundResponse = {
     error: error.message,
@@ -202,9 +202,9 @@ const handleValidationError = (
 const handleNetworkError = (
   error: DeepcrawlError,
   executionTime: number,
-  operation: ApiOperation,
+  operation: DeepcrawlOperations,
   label: string,
-  onRetry: (operation: ApiOperation, label: string) => void,
+  onRetry: (operation: DeepcrawlOperations, label: string) => void,
 ): PlaygroundResponse => {
   const response: PlaygroundResponse = {
     error: error.message,

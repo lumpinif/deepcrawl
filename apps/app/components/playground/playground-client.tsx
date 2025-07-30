@@ -29,7 +29,7 @@ import { SpinnerButton } from '@/components/spinner-button';
 import { useDeepCrawlClient } from '@/hooks/playground/use-deepcrawl-client';
 import { useExecutionTimer } from '@/hooks/playground/use-execution-timer';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
-import { ApiResponseRenderer } from './api-response-renderer';
+import { DCResponseRenderer } from './dc-response-renderer';
 
 // Internal response wrapper that extends SDK data with UI metadata
 interface PlaygroundResponseMetadata {
@@ -66,7 +66,7 @@ export type PlaygroundResponse = PlaygroundResponseMetadata & {
 const DeepcrawlFeatures = [
   {
     label: 'Get Markdown',
-    value: 'getMarkdown',
+    operation: 'getMarkdown',
     icon: GetMarkdownGridIcon,
     endpoint: '/read',
     method: 'GET',
@@ -74,7 +74,7 @@ const DeepcrawlFeatures = [
   },
   {
     label: 'Read URL',
-    value: 'readUrl',
+    operation: 'readUrl',
     icon: ReadUrlGridIcon,
     endpoint: '/read',
     method: 'POST',
@@ -82,7 +82,7 @@ const DeepcrawlFeatures = [
   },
   {
     label: 'Extract Links',
-    value: 'extractLinks',
+    operation: 'extractLinks',
     icon: ExtractLinksGridIcon,
     endpoint: '/links',
     method: 'POST',
@@ -90,8 +90,9 @@ const DeepcrawlFeatures = [
   },
 ] as const;
 
-type DeepcrawlFeatureValues = (typeof DeepcrawlFeatures)[number]['value'];
-const features: readonly DeepcrawlFeatureValues[] = [
+export type DeepcrawlOperations =
+  (typeof DeepcrawlFeatures)[number]['operation'];
+const operations: readonly DeepcrawlOperations[] = [
   'getMarkdown',
   'readUrl',
   'extractLinks',
@@ -103,9 +104,9 @@ const API_KEY =
 
 export function PlaygroundClient() {
   const [url, setUrl] = useState('https://hono.dev');
-  const [selectedDCFeature, setSelectedDCFeature] = useQueryState(
-    'feature',
-    parseAsStringLiteral(features).withDefault('getMarkdown'),
+  const [selectedOperation, setSelectedOperation] = useQueryState(
+    'operation',
+    parseAsStringLiteral(operations).withDefault('getMarkdown'),
   );
 
   // Initialize SDK client with custom hook
@@ -117,13 +118,6 @@ export function PlaygroundClient() {
         : 'https://api.deepcrawl.dev',
   });
 
-  // Initialize execution timer hook
-  const { startTimer, stopTimer, getElapsedTime, formatTime } =
-    useExecutionTimer();
-
-  const selectedFeature =
-    DeepcrawlFeatures.find((feature) => feature.value === selectedDCFeature) ||
-    DeepcrawlFeatures[0];
   const [isLoading, setIsLoading] = useState<Record<string, boolean>>({
     getMarkdown: false,
     readUrl: false,
@@ -134,6 +128,15 @@ export function PlaygroundClient() {
   >({});
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
 
+  // Initialize execution timer hook
+  const { startTimer, stopTimer, getElapsedTime, formatTime } =
+    useExecutionTimer();
+
+  const selectedOP =
+    DeepcrawlFeatures.find(
+      (feature) => feature.operation === selectedOperation,
+    ) || DeepcrawlFeatures[0];
+
   // Add ref for LinkIcon
   const linkIconRef = useRef<LinkIconHandle>(null);
 
@@ -143,7 +146,7 @@ export function PlaygroundClient() {
   // Use centralized error handler
   const handleError = (
     error: unknown,
-    operation: DeepcrawlFeatureValues,
+    operation: DeepcrawlOperations,
     label: string,
     executionTime: number,
   ): PlaygroundResponse => {
@@ -156,11 +159,11 @@ export function PlaygroundClient() {
   };
 
   const executeApiCall = async (
-    operation: DeepcrawlFeatureValues,
+    operation: DeepcrawlOperations,
     label: string,
   ) => {
     if (!sdkClient || !isReady) {
-      toast.error('SDK client not ready');
+      toast.error('Please wait for the SDK client to be ready');
       return;
     }
 
@@ -233,13 +236,8 @@ export function PlaygroundClient() {
     }
   };
 
-  const handleRetry = (operation: DeepcrawlFeatureValues, label: string) => {
+  const handleRetry = (operation: DeepcrawlOperations, label: string) => {
     executeApiCall(operation, label);
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
   };
 
   return (
@@ -249,15 +247,15 @@ export function PlaygroundClient() {
       </Label>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {DeepcrawlFeatures.map((feature) => (
+        {DeepcrawlFeatures.map((feat) => (
           <Card
-            key={feature.value}
-            onClick={() => setSelectedDCFeature(feature.value)}
-            onMouseEnter={() => setHoveredOption(feature.value)}
+            key={feat.operation}
+            onClick={() => setSelectedOperation(feat.operation)}
+            onMouseEnter={() => setHoveredOption(feat.operation)}
             onMouseLeave={() => setHoveredOption(null)}
             className={cn(
               'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-muted/50 hover:shadow-md',
-              selectedFeature?.value === feature.value && 'bg-muted/50',
+              selectedOP?.operation === feat.operation && 'bg-muted/50',
             )}
           >
             <div className="absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100">
@@ -265,26 +263,26 @@ export function PlaygroundClient() {
                 variant="outline"
                 className="text-muted-foreground text-xs"
               >
-                {feature.method} {feature.endpoint}
+                {feat.method} {feat.endpoint}
               </Badge>
             </div>
 
             <div className="flex items-center justify-center">
-              <feature.icon
+              <feat.icon
                 cellClassName="size-[3px]"
                 animate={
-                  hoveredOption === feature.value ||
-                  Boolean(isLoading[feature.value])
+                  hoveredOption === feat.operation ||
+                  Boolean(isLoading[feat.operation])
                 }
               />
             </div>
             <CardContent className="space-y-2 text-center">
               <div className="flex items-center justify-center">
                 <CardTitle className="flex items-center gap-2">
-                  {feature.label}
+                  {feat.label}
                 </CardTitle>
               </div>
-              <CardDescription>{feature.description}</CardDescription>
+              <CardDescription>{feat.description}</CardDescription>
             </CardContent>
           </Card>
         ))}
@@ -313,8 +311,8 @@ export function PlaygroundClient() {
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   executeApiCall(
-                    selectedFeature?.value as DeepcrawlFeatureValues,
-                    selectedFeature?.label || '',
+                    selectedOP?.operation as DeepcrawlOperations,
+                    selectedOP?.label || '',
                   );
                 }
               }}
@@ -328,39 +326,38 @@ export function PlaygroundClient() {
           className="w-32"
           onClick={() =>
             executeApiCall(
-              selectedFeature?.value as DeepcrawlFeatureValues,
-              selectedFeature?.label || '',
+              selectedOP?.operation as DeepcrawlOperations,
+              selectedOP?.label || '',
             )
           }
-          isLoading={isLoading[selectedFeature?.value || '']}
+          isLoading={isLoading[selectedOP?.operation || '']}
         >
-          {selectedFeature?.label}
+          {selectedOP?.label}
         </SpinnerButton>
       </div>
 
       {/* Results Section */}
-      {responses[selectedFeature?.value || ''] && (
+      {responses[selectedOP?.operation || ''] && (
         <>
           <Label htmlFor="url" className="text-muted-foreground">
             Results
           </Label>
           <div>
             {(() => {
-              const response = responses[selectedFeature?.value || ''];
+              const response = responses[selectedOP?.operation || ''];
               if (!response) return null;
 
               return (
-                <ApiResponseRenderer
+                <DCResponseRenderer
                   response={response}
-                  operation={selectedFeature?.value as DeepcrawlFeatureValues}
-                  operationLabel={selectedFeature?.label || ''}
-                  operationMethod={selectedFeature?.method || ''}
+                  operation={selectedOP?.operation as DeepcrawlOperations}
+                  operationLabel={selectedOP?.label || ''}
+                  operationMethod={selectedOP?.method || ''}
                   onRetry={() => {
                     const operation =
-                      selectedFeature?.value as DeepcrawlFeatureValues;
-                    handleRetry(operation, selectedFeature?.label || '');
+                      selectedOP?.operation as DeepcrawlOperations;
+                    handleRetry(operation, selectedOP?.label || '');
                   }}
-                  onCopy={copyToClipboard}
                   formatTime={formatTime}
                 />
               );

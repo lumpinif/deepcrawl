@@ -3,16 +3,20 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import { AlertTriangle, Copy, RefreshCw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { toast } from 'sonner';
 import { SpinnerButton } from '@/components/spinner-button';
-import type { ApiOperation, PlaygroundResponse } from './playground-client';
+import { copyToClipboard } from '@/utils/clipboard';
+import type {
+  DeepcrawlOperations,
+  PlaygroundResponse,
+} from './playground-client';
 
-interface ApiResponseRendererProps {
+interface DCResponseRendererProps {
   response: PlaygroundResponse;
-  operation: ApiOperation;
-  operationLabel: string;
+  operation: DeepcrawlOperations;
+  operationLabel?: string;
   operationMethod: string;
   onRetry: () => void;
-  onCopy: (text: string) => void;
   formatTime: (ms: number) => string;
 }
 
@@ -46,15 +50,18 @@ const formatResponseData = (data: unknown): string => {
   return JSON.stringify(data, null, 2);
 };
 
-export function ApiResponseRenderer({
+export function DCResponseRenderer({
   response,
   operation,
-  operationLabel,
   operationMethod,
   onRetry,
-  onCopy,
   formatTime,
-}: ApiResponseRendererProps) {
+}: DCResponseRendererProps) {
+  const handleCopy = async (text: string) => {
+    await copyToClipboard(text);
+    toast.success('Copied to clipboard');
+  };
+
   return (
     <div className="space-y-3">
       {/* Response Header */}
@@ -101,7 +108,7 @@ export function ApiResponseRenderer({
             variant="outline"
             size="sm"
             onClick={() =>
-              onCopy(
+              handleCopy(
                 response.error
                   ? response.error
                   : formatResponseData(response.data),
