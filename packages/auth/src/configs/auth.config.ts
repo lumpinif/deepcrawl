@@ -67,20 +67,6 @@ export const ALLOWED_ORIGINS = [
   'http://127.0.0.1:8080', // V0 worker alternative
 ];
 
-/**
- * Helper function to generate network origins for mobile testing
- * Usage: Add your computer's local IP address to enable mobile device testing
- */
-const generateNetworkOrigins = (
-  baseIP: string,
-  ports: number[] = [3000, 8787],
-) => {
-  return ports.flatMap((port) => [
-    `http://${baseIP}:${port}`,
-    `https://${baseIP}:${port}`, // For HTTPS testing
-  ]);
-};
-
 export const DEVELOPMENT_ORIGINS = [
   // Local development origins
   'http://localhost:3000', // Dashboard
