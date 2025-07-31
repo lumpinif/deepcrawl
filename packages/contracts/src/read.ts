@@ -29,8 +29,8 @@ export const readGETContract = readOC
   .output(
     z
       .instanceof(Blob)
-      .refine((blob) => blob.type === 'text/markdown', {
-        message: 'Blob must have text/markdown MIME type',
+      .refine((blob) => blob.type === 'text/markdown; charset=utf-8', {
+        message: 'Blob must have text/markdown; charset=utf-8 MIME type',
       })
       .meta({
         description: 'The page markdown content',
