@@ -1,4 +1,4 @@
-import type { Session } from '@deepcrawl/auth/types';
+import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
 import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { SidebarTrigger } from '@deepcrawl/ui/components/ui/sidebar';
@@ -15,7 +15,7 @@ export async function SiteHeader({
   navigationMode,
 }: {
   user: Session['user'];
-  deviceSessions: Session[];
+  deviceSessions: ListDeviceSessions;
   className?: string;
   navigationMode: NavigationMode;
 }) {

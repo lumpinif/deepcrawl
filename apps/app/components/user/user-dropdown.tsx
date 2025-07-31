@@ -1,6 +1,10 @@
 'use client';
 
-import type { Session } from '@deepcrawl/auth/types';
+import type {
+  LDSUser,
+  ListDeviceSessions,
+  Session,
+} from '@deepcrawl/auth/types';
 import { ThemeGroupToggle } from '@deepcrawl/ui/components/theme/toggle';
 import {
   Avatar,
@@ -31,7 +35,7 @@ import {
   useSetActiveSession,
 } from '@/hooks/auth.hooks';
 
-function UserAvatar({ user }: { user: Session['user'] }) {
+function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (
     <Avatar className="h-8 w-8 cursor-pointer rounded-full ring-0 ring-transparent">
       <AvatarImage src={user.image || ''} alt={user.name} />
@@ -48,7 +52,7 @@ export function UserDropdown({
   deviceSessions: deviceSessionsProps,
 }: {
   user: Session['user'];
-  deviceSessions: Session[];
+  deviceSessions: ListDeviceSessions;
 }) {
   const router = useRouter();
   const { data: currentSession } = useAuthSession();

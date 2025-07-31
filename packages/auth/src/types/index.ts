@@ -4,6 +4,18 @@ import type { auth } from '@deepcrawl/auth/lib/auth';
 export type Auth = typeof auth;
 export type Session = typeof auth.$Infer.Session;
 
+/**
+ * Use the specific return type of listDeviceSessions instead of the generic Session type
+ * auth.api.listDeviceSessions() returns sessions without admin-specific fields, causing the type mismatch
+ */
+export type ListDeviceSessions = Awaited<
+  ReturnType<typeof auth.api.listDeviceSessions>
+>;
+/**
+ * The user type for listDeviceSessions, without admin-specific fields
+ */
+export type LDSUser = ListDeviceSessions[number]['user'];
+
 // API Key type based on Better Auth schema
 export type ApiKey = {
   /**

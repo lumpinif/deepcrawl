@@ -40,9 +40,6 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
-  const session = JSON.parse(JSON.stringify(currentSession));
-  const deviceSessions = JSON.parse(JSON.stringify(listDeviceSessions));
-
   // Get navigation mode from cookies
   const cookieStore = await cookies();
   const navigationMode =
@@ -62,9 +59,9 @@ export default async function DashboardLayout({
         <AppSidebar />
         <SidebarInset className={defaultInsetClassname}>
           <SiteHeader
-            user={session.user}
-            deviceSessions={deviceSessions}
+            user={currentSession.user}
             navigationMode={navigationMode}
+            deviceSessions={listDeviceSessions}
           />
           <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
             {children}
@@ -79,9 +76,9 @@ export default async function DashboardLayout({
     <div className="min-h-svh w-full">
       <SiteHeader
         className="h-16"
-        user={session.user}
-        deviceSessions={deviceSessions}
+        user={currentSession.user}
         navigationMode={navigationMode}
+        deviceSessions={listDeviceSessions}
       />
       <AppNavTabs />
       {children}
