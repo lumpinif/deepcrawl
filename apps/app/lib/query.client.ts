@@ -32,7 +32,7 @@ export function makeQueryClient() {
     defaultOptions: {
       queries: {
         // Optimized stale time for better performance with cookie caching
-        staleTime: 5 * 60 * 1000, // 5 minutes (matches Better Auth cookie cache)
+        staleTime: 10 * 60 * 1000, // 10 minutes (matches Better Auth cookie cache)
         // Enable stale-while-revalidate pattern
         refetchOnWindowFocus: false,
         refetchOnMount: false,
