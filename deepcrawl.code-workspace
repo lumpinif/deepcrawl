@@ -26,6 +26,7 @@
       "apps/**": true,
       "packages/**": true
     },
+    "biome.enabled": true,
     "editor.codeActionsOnSave": {
       "source.organizeImports.biome": "explicit",
       "source.fixAll.biome": "explicit"
