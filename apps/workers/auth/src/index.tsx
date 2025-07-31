@@ -13,9 +13,7 @@ app.get('/', (c) => {
 
 app.route('/', validateAPIKeyRouter);
 
-export default class AuthWorker extends WorkerEntrypoint<
-  AppContext['Bindings']
-> {
+export default class extends WorkerEntrypoint<AppContext['Bindings']> {
   // Cache the auth instance to avoid recreating it on every RPC call
   private _authInstance: ReturnType<typeof createAuth> | null = null;
 
