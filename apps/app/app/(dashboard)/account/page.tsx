@@ -1,6 +1,6 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { PageHeader } from '@/components/page-elements';
+import { PageContainer, PageHeader } from '@/components/page-elements';
 import { getQueryClient } from '@/lib/query.client';
 import {
   deviceSessionsQueryOptions,
@@ -41,8 +41,8 @@ export default async function AccountPage() {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <PageHeader title="Account Settings" />
-      <div className="flex flex-col gap-6">
-        <div className="grid gap-6 lg:grid-cols-2">
+      <PageContainer>
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
           <Suspense fallback={<UserAvatarCardSkeleton />}>
             <UserAvatarCard />
           </Suspense>
@@ -66,7 +66,7 @@ export default async function AccountPage() {
         <Suspense fallback={<SessionsManagementCardSkeleton />}>
           <SessionsManagementCard />
         </Suspense>
-      </div>
+      </PageContainer>
     </HydrationBoundary>
   );
 }

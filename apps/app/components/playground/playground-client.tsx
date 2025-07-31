@@ -246,7 +246,7 @@ export function PlaygroundClient() {
         Main Features
       </Label>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-3">
         {DeepcrawlFeatures.map((feat) => (
           <Card
             key={feat.operation}

@@ -56,8 +56,6 @@ export default async function DashboardLayout({
     'max-md:max-h-svh',
   );
 
-  const mainContentContainerClassName = cn('container mx-auto p-4 px-6 pt-0');
-
   if (navigationMode === 'sidebar') {
     return (
       <>
@@ -69,14 +67,7 @@ export default async function DashboardLayout({
             navigationMode={navigationMode}
           />
           <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
-            <div
-              className={cn(
-                mainContentContainerClassName,
-                '2xl:group-has-data-[collapsible=icon]/sidebar-wrapper:px-[8rem]',
-              )}
-            >
-              {children}
-            </div>
+            {children}
           </ScrollArea>
         </SidebarInset>
       </>
@@ -93,9 +84,7 @@ export default async function DashboardLayout({
         navigationMode={navigationMode}
       />
       <AppNavTabs />
-      <main className={cn(mainContentContainerClassName, '2xl:px-[8rem]')}>
-        <div>{children}</div>
-      </main>
+      {children}
     </div>
   );
 }
