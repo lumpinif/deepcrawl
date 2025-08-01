@@ -1,7 +1,7 @@
 'use server';
 
 import { auth } from '@deepcrawl/auth/lib/auth';
-import type { Session } from '@deepcrawl/auth/types';
+import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
 import { getDrizzleDB, schema } from '@deepcrawl/db';
 import { desc, eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
@@ -37,7 +37,7 @@ export async function fetchAuthSession(): Promise<Session | null> {
     headers: requestHeaders,
   });
 
-  return JSON.parse(JSON.stringify(session));
+  return session;
 }
 
 /**
@@ -51,7 +51,7 @@ export async function fetchListSessions(): Promise<Session['session'][]> {
     const result = await auth.api.listSessions({
       headers: requestHeaders,
     });
-    return JSON.parse(JSON.stringify(result));
+    return result;
   } catch (error) {
     throw new Error(
       error instanceof Error
@@ -65,7 +65,7 @@ export async function fetchListSessions(): Promise<Session['session'][]> {
  * Fetch all device sessions for the current user
  * No server-side caching - React Query handles client caching
  */
-export async function fetchDeviceSessions(): Promise<Session[]> {
+export async function fetchDeviceSessions(): Promise<ListDeviceSessions> {
   const requestHeaders = await headers();
 
   try {
@@ -73,7 +73,7 @@ export async function fetchDeviceSessions(): Promise<Session[]> {
       headers: requestHeaders,
     });
 
-    return JSON.parse(JSON.stringify(result));
+    return result;
   } catch (error) {
     throw new Error(
       error instanceof Error
@@ -93,7 +93,7 @@ export async function fetchOrganization(): Promise<ActiveOrganization | null> {
   const result = await auth.api.getFullOrganization({
     headers: requestHeaders,
   });
-  return JSON.parse(JSON.stringify(result));
+  return result;
 }
 
 /**
@@ -343,8 +343,6 @@ export async function fetchApiKeys() {
       headers: requestHeaders,
     });
 
-    // Better Auth already returns properly typed results
-    // No need to JSON.parse/stringify which removes types
     return result;
   } catch (error) {
     console.error('Failed to fetch API keys:', error);
@@ -392,7 +390,7 @@ export async function createApiKey({
       },
     });
 
-    return JSON.parse(JSON.stringify(result));
+    return result;
   } catch (error) {
     console.error('Failed to create API key:', error);
     throw new Error(
@@ -432,7 +430,7 @@ export async function updateApiKey({
       },
     });
 
-    return JSON.parse(JSON.stringify(result));
+    return result;
   } catch (error) {
     console.error('Failed to update API key:', error);
     throw new Error(
@@ -490,7 +488,7 @@ export async function deleteApiKey(keyId: string) {
       },
     });
 
-    return JSON.parse(JSON.stringify(result));
+    return result;
   } catch (error) {
     console.error('Failed to delete API key:', error);
     throw new Error(
@@ -543,7 +541,7 @@ export async function deleteApiKey(keyId: string) {
 
 //     // If playground key exists, return it
 //     if (playgroundKey) {
-//       return JSON.parse(JSON.stringify(playgroundKey));
+//       return playgroundKey;
 //     }
 
 //     // Create a new PLAYGROUND_API_KEY with the same config as for new users
@@ -555,7 +553,7 @@ export async function deleteApiKey(keyId: string) {
 //       },
 //     });
 
-//     return JSON.parse(JSON.stringify(result));
+//     return result;
 //   } catch (error) {
 //     console.error('❌ Failed to ensure playground API key:', error);
 //     throw new Error(
