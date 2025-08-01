@@ -17,10 +17,10 @@ import {
   DialogTrigger,
 } from '@deepcrawl/ui/components/ui/dialog';
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   KeyIcon,
   Link,
-  Loader2,
   Mail,
   Monitor,
   Smartphone,
@@ -32,15 +32,17 @@ import { PasskeyCleanupGuide } from '@/components/passkey-cleanup-guide';
 import { SpinnerButton } from '@/components/spinner-button';
 import {
   useAddPasskey,
-  useAuthSession,
   useCanUnlinkProvider,
-  useLinkedAccounts,
   useLinkSocialProvider,
   useRemovePasskey,
   useUnlinkSocialProvider,
-  useUserPasskeys,
 } from '@/hooks/auth.hooks';
 import { getDeviceTypeDescription } from '@/lib/passkey-utils';
+import {
+  linkedAccountsQueryOptions,
+  sessionQueryOptions,
+  userPasskeysQueryOptions,
+} from '@/lib/query-options';
 
 // Helper function to safely format dates from server data
 const formatDate = (date: Date | string | null): string => {
@@ -67,11 +69,18 @@ interface ProviderInfo {
 }
 
 export function ProvidersManagementCard() {
-  const { data: session, isLoading } = useAuthSession();
-  const { data: linkedAccounts = [], isLoading: isLoadingAccounts } =
-    useLinkedAccounts();
-  const { data: passkeys = [], isLoading: isLoadingPasskeys } =
-    useUserPasskeys();
+  // const { data: session, isLoading } = useAuthSession();
+  // const { data: linkedAccounts = [], isLoading: isLoadingAccounts } =
+  //   useLinkedAccounts();
+  // const { data: passkeys = [], isLoading: isLoadingPasskeys } =
+  //   useUserPasskeys();
+
+  const { data: session } = useSuspenseQuery(sessionQueryOptions());
+  const { data: linkedAccounts = [] } = useSuspenseQuery(
+    linkedAccountsQueryOptions(),
+  );
+  const { data: passkeys = [] } = useSuspenseQuery(userPasskeysQueryOptions());
+
   const { mutate: addPasskey, isPending: isAddingPasskey } = useAddPasskey();
   const { mutate: removePasskey } = useRemovePasskey();
   const { mutate: linkProvider, isPending: isLinkingProvider } =
@@ -100,27 +109,27 @@ export function ProvidersManagementCard() {
     }
   }, [isLinkingProvider, isUnlinkingProvider]);
 
-  if (isLoading || isLoadingAccounts) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserCheck className="h-5 w-5" />
-            Sign-in Methods
-          </CardTitle>
-          <CardDescription>
-            Customize how you access your account. Link your Git profiles and
-            set up passkeys for seamless, secure authentication.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // if (isLoading || isLoadingAccounts) {
+  //   return (
+  //     <Card>
+  //       <CardHeader>
+  //         <CardTitle className="flex items-center gap-2">
+  //           <UserCheck className="h-5 w-5" />
+  //           Sign-in Methods
+  //         </CardTitle>
+  //         <CardDescription>
+  //           Customize how you access your account. Link your Git profiles and
+  //           set up passkeys for seamless, secure authentication.
+  //         </CardDescription>
+  //       </CardHeader>
+  //       <CardContent className="space-y-6">
+  //         <div className="flex items-center justify-center py-8">
+  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+  //         </div>
+  //       </CardContent>
+  //     </Card>
+  //   );
+  // }
 
   if (!user) {
     return (
@@ -335,63 +344,67 @@ export function ProvidersManagementCard() {
                               </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-3">
-                              {isLoadingPasskeys ? (
-                                <div className="flex items-center justify-center py-6">
-                                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                                  <span className="ml-2 text-muted-foreground text-sm">
-                                    Loading passkeys...
-                                  </span>
-                                </div>
-                              ) : passkeys.length > 0 ? (
-                                passkeys.map((passkey) => {
-                                  const IconComponent =
-                                    passkey.deviceType === 'cross-platform'
-                                      ? Monitor
-                                      : Smartphone;
-                                  return (
-                                    <div
-                                      key={passkey.id}
-                                      className="flex items-center gap-3 rounded-lg border p-3"
-                                    >
-                                      <IconComponent className="h-4 w-4 text-muted-foreground" />
-                                      <div className="flex-1">
-                                        <div className="font-medium text-sm">
-                                          {passkey.name || 'Unnamed Passkey'}
-                                        </div>
-                                        <div className="text-muted-foreground text-xs">
-                                          <div>
-                                            Added{' '}
-                                            {formatDate(passkey.createdAt)}
-                                            {passkey.backedUp && ' • Backed up'}
-                                          </div>
-                                          <div className="mt-1">
-                                            {getDeviceTypeDescription(
-                                              passkey.deviceType,
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() =>
-                                          handleRemovePasskey(passkey)
-                                        }
-                                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                              {
+                                // isLoadingPasskeys ? (
+                                //   <div className="flex items-center justify-center py-6">
+                                //     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                //     <span className="ml-2 text-muted-foreground text-sm">
+                                //       Loading passkeys...
+                                //     </span>
+                                //   </div>
+                                // ) :
+                                passkeys.length > 0 ? (
+                                  passkeys.map((passkey) => {
+                                    const IconComponent =
+                                      passkey.deviceType === 'cross-platform'
+                                        ? Monitor
+                                        : Smartphone;
+                                    return (
+                                      <div
+                                        key={passkey.id}
+                                        className="flex items-center gap-3 rounded-lg border p-3"
                                       >
-                                        <Trash2 className="h-4 w-4" />
-                                        <span className="sr-only">
-                                          Remove passkey
-                                        </span>
-                                      </Button>
-                                    </div>
-                                  );
-                                })
-                              ) : (
-                                <div className="py-6 text-center text-muted-foreground text-sm">
-                                  No passkeys registered yet
-                                </div>
-                              )}
+                                        <IconComponent className="h-4 w-4 text-muted-foreground" />
+                                        <div className="flex-1">
+                                          <div className="font-medium text-sm">
+                                            {passkey.name || 'Unnamed Passkey'}
+                                          </div>
+                                          <div className="text-muted-foreground text-xs">
+                                            <div>
+                                              Added{' '}
+                                              {formatDate(passkey.createdAt)}
+                                              {passkey.backedUp &&
+                                                ' • Backed up'}
+                                            </div>
+                                            <div className="mt-1">
+                                              {getDeviceTypeDescription(
+                                                passkey.deviceType,
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleRemovePasskey(passkey)
+                                          }
+                                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                          <span className="sr-only">
+                                            Remove passkey
+                                          </span>
+                                        </Button>
+                                      </div>
+                                    );
+                                  })
+                                ) : (
+                                  <div className="py-6 text-center text-muted-foreground text-sm">
+                                    No passkeys registered yet
+                                  </div>
+                                )
+                              }
                             </div>
                           </DialogContent>
                         </Dialog>

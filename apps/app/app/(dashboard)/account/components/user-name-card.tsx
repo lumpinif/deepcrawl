@@ -10,12 +10,14 @@ import {
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { Edit3, Loader2 } from 'lucide-react';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { Edit3 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { SpinnerButton } from '@/components/spinner-button';
-import { useAuthSession, useUpdateUserName } from '@/hooks/auth.hooks';
+import { useUpdateUserName } from '@/hooks/auth.hooks';
+import { sessionQueryOptions } from '@/lib/query-options';
 
 // Validation schema for display name
 const displayNameSchema = z
@@ -25,7 +27,8 @@ const displayNameSchema = z
   .trim();
 
 export function UserNameCard() {
-  const { data: session, isLoading } = useAuthSession();
+  // const { data: session, isLoading } = useAuthSession();
+  const { data: session } = useSuspenseQuery(sessionQueryOptions());
   const { mutate: updateUserName, isPending } = useUpdateUserName();
   const user = session?.user;
 
@@ -53,26 +56,26 @@ export function UserNameCard() {
     }
   }, [name]);
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Edit3 className="h-5 w-5" />
-            Display Name
-          </CardTitle>
-          <CardDescription>
-            Your display name is visible to other users
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Card>
+  //       <CardHeader>
+  //         <CardTitle className="flex items-center gap-2">
+  //           <Edit3 className="h-5 w-5" />
+  //           Display Name
+  //         </CardTitle>
+  //         <CardDescription>
+  //           Your display name is visible to other users
+  //         </CardDescription>
+  //       </CardHeader>
+  //       <CardContent className="space-y-4">
+  //         <div className="flex items-center justify-center py-8">
+  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+  //         </div>
+  //       </CardContent>
+  //     </Card>
+  //   );
+  // }
 
   if (!user) {
     return (

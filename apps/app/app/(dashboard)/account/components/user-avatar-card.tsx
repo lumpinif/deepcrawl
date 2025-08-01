@@ -20,31 +20,34 @@ import {
   IconShieldOff,
   IconUser,
 } from '@tabler/icons-react';
-import { CalendarDays, Loader2, Mail } from 'lucide-react';
-import { useAuthSession } from '@/hooks/auth.hooks';
+// import { useAuthSession } from '@/hooks/auth.hooks';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { CalendarDays, Mail } from 'lucide-react';
+import { sessionQueryOptions } from '@/lib/query-options';
 
 export function UserAvatarCard() {
-  const { data: session, isLoading } = useAuthSession();
+  // const { data: session, isLoading } = useAuthSession();
+  const { data: session } = useSuspenseQuery(sessionQueryOptions());
   const user = session?.user;
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <IconUser className="h-5 w-5" />
-            User Profile
-          </CardTitle>
-          <CardDescription>Your account information and status</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Card>
+  //       <CardHeader>
+  //         <CardTitle className="flex items-center gap-2">
+  //           <IconUser className="h-5 w-5" />
+  //           User Profile
+  //         </CardTitle>
+  //         <CardDescription>Your account information and status</CardDescription>
+  //       </CardHeader>
+  //       <CardContent className="space-y-4">
+  //         <div className="flex items-center justify-center py-8">
+  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+  //         </div>
+  //       </CardContent>
+  //     </Card>
+  //   );
+  // }
 
   if (!user) {
     return (

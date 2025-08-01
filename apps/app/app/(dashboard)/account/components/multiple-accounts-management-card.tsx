@@ -1,7 +1,11 @@
 'use client';
 
 import { MAX_SESSIONS } from '@deepcrawl/auth/configs/auth.config';
-import type { Session } from '@deepcrawl/auth/types';
+import type {
+  LDSUser,
+  ListDeviceSession,
+  Session,
+} from '@deepcrawl/auth/types';
 import {
   Avatar,
   AvatarFallback,
@@ -22,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@deepcrawl/ui/components/ui/dialog';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   Loader2,
   Monitor,
@@ -36,13 +41,15 @@ import { useEffect, useState } from 'react';
 import { UAParser } from 'ua-parser-js';
 import { SpinnerButton } from '@/components/spinner-button';
 import {
-  useAuthSession,
-  useDeviceSessions,
   useRevokeDeviceSession,
   useSetActiveSession,
 } from '@/hooks/auth.hooks';
+import {
+  deviceSessionsQueryOptions,
+  sessionQueryOptions,
+} from '@/lib/query-options';
 
-function UserAvatar({ user }: { user: Session['user'] }) {
+function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (
     <Avatar className="h-8 w-8 rounded-full">
       <AvatarImage src={user.image || ''} alt={user.name} />
@@ -55,8 +62,13 @@ function UserAvatar({ user }: { user: Session['user'] }) {
 }
 
 export function MultipleAccountsManagementCard() {
-  const { data: currentSession } = useAuthSession();
-  const { data: deviceSessions, isLoading } = useDeviceSessions();
+  // const { data: currentSession } = useAuthSession();
+  // const { data: deviceSessions, isLoading } = useDeviceSessions();
+
+  const { data: currentSession } = useSuspenseQuery(sessionQueryOptions());
+  const { data: deviceSessions } = useSuspenseQuery(
+    deviceSessionsQueryOptions(),
+  );
   const { mutate: setActiveSession, isPending: isSwitching } =
     useSetActiveSession();
   const { mutate: revokeDeviceSession, isPending: isRemoving } =
@@ -69,7 +81,9 @@ export function MultipleAccountsManagementCard() {
     string | null
   >(null);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-  const [sessionToRemove, setSessionToRemove] = useState<Session | null>(null);
+  const [sessionToRemove, setSessionToRemove] = useState<
+    Session | ListDeviceSession | null
+  >(null);
 
   // Cleanup: Reset local state if mutations are no longer pending
   useEffect(() => {
@@ -81,27 +95,27 @@ export function MultipleAccountsManagementCard() {
     }
   }, [isSwitching, isRemoving, switchingSessionToken, removingSessionToken]);
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Multiple Accounts
-          </CardTitle>
-          <CardDescription>
-            Manage multiple accounts and switch between them seamlessly. Maximum{' '}
-            {MAX_SESSIONS} accounts allowed.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Card>
+  //       <CardHeader>
+  //         <CardTitle className="flex items-center gap-2">
+  //           <Users className="h-5 w-5" />
+  //           Multiple Accounts
+  //         </CardTitle>
+  //         <CardDescription>
+  //           Manage multiple accounts and switch between them seamlessly. Maximum{' '}
+  //           {MAX_SESSIONS} accounts allowed.
+  //         </CardDescription>
+  //       </CardHeader>
+  //       <CardContent className="space-y-6">
+  //         <div className="flex items-center justify-center py-8">
+  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+  //         </div>
+  //       </CardContent>
+  //     </Card>
+  //   );
+  // }
 
   // Early return if no current session
   if (!currentSession?.session) {
@@ -125,7 +139,7 @@ export function MultipleAccountsManagementCard() {
     );
   }
 
-  const handleSwitchAccount = (session: Session) => {
+  const handleSwitchAccount = (session: Session | ListDeviceSession) => {
     const isCurrentSession = session.session.id === currentSession.session.id;
 
     if (isCurrentSession) {
@@ -140,7 +154,7 @@ export function MultipleAccountsManagementCard() {
     });
   };
 
-  const handleRemoveAccount = (session: Session) => {
+  const handleRemoveAccount = (session: Session | ListDeviceSession) => {
     setSessionToRemove(session);
     setIsRemoveDialogOpen(true);
   };

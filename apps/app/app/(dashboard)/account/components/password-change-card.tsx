@@ -11,18 +11,20 @@ import {
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { Eye, EyeOff, Key, Loader2 } from 'lucide-react';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { Eye, EyeOff, Key } from 'lucide-react';
 import { useState } from 'react';
 import { SpinnerButton } from '@/components/spinner-button';
 import {
-  useAuthSession,
   useChangePassword,
   useHasPassword,
   useSetPassword,
 } from '@/hooks/auth.hooks';
+import { sessionQueryOptions } from '@/lib/query-options';
 
 export function PasswordChangeCard() {
-  const { data: session, isLoading } = useAuthSession();
+  // const { data: session, isLoading } = useAuthSession();
+  const { data: session } = useSuspenseQuery(sessionQueryOptions());
   const hasPassword = useHasPassword();
   const { mutate: changePassword, isPending: isChangingPending } =
     useChangePassword(() => {
@@ -49,26 +51,26 @@ export function PasswordChangeCard() {
 
   const isPending = isChangingPending || isSettingPending;
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Key className="h-5 w-5" />
-            Password Security
-          </CardTitle>
-          <CardDescription>
-            Manage your password and security settings
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Card>
+  //       <CardHeader>
+  //         <CardTitle className="flex items-center gap-2">
+  //           <Key className="h-5 w-5" />
+  //           Password Security
+  //         </CardTitle>
+  //         <CardDescription>
+  //           Manage your password and security settings
+  //         </CardDescription>
+  //       </CardHeader>
+  //       <CardContent className="space-y-6">
+  //         <div className="flex items-center justify-center py-8">
+  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+  //         </div>
+  //       </CardContent>
+  //     </Card>
+  //   );
+  // }
 
   if (!user) {
     return (

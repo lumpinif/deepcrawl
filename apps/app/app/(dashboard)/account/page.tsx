@@ -6,7 +6,6 @@ import {
   deviceSessionsQueryOptions,
   linkedAccountsQueryOptions,
   listSessionsQueryOptions,
-  organizationQueryOptions,
   sessionQueryOptions,
   userPasskeysQueryOptions,
 } from '@/lib/query-options';
@@ -32,11 +31,11 @@ export default async function AccountPage() {
 
   // Prefetch all user-related data including OAuth accounts
   void queryClient.prefetchQuery(sessionQueryOptions());
-  void queryClient.prefetchQuery(listSessionsQueryOptions());
-  void queryClient.prefetchQuery(deviceSessionsQueryOptions());
-  void queryClient.prefetchQuery(organizationQueryOptions());
-  void queryClient.prefetchQuery(userPasskeysQueryOptions());
   void queryClient.prefetchQuery(linkedAccountsQueryOptions());
+  void queryClient.prefetchQuery(userPasskeysQueryOptions());
+  void queryClient.prefetchQuery(deviceSessionsQueryOptions());
+  void queryClient.prefetchQuery(listSessionsQueryOptions());
+  // void queryClient.prefetchQuery(organizationQueryOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
