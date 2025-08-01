@@ -1,5 +1,6 @@
 'use client';
 
+import type { LinksOptions, ReadOptions } from '@deepcrawl/types';
 import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
 import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
@@ -29,6 +30,7 @@ import { SpinnerButton } from '@/components/spinner-button';
 import { useDeepCrawlClient } from '@/hooks/playground/use-deepcrawl-client';
 import { useExecutionTimer } from '@/hooks/playground/use-execution-timer';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
+import { OptionsPanel } from './options-panel';
 import { PGResponseArea } from './pg-response-area';
 
 // Internal response wrapper that extends SDK data with UI metadata
@@ -128,6 +130,10 @@ export function PlaygroundClient() {
   >({});
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
 
+  // Options state management - separate state for each operation
+  const [readOptions, setReadOptions] = useState<ReadOptions>({ url: '' });
+  const [linksOptions, setLinksOptions] = useState<LinksOptions>({ url: '' });
+
   // Initialize execution timer hook
   const { startTimer, stopTimer, getElapsedTime, formatTime } =
     useExecutionTimer();
@@ -189,13 +195,20 @@ export function PlaygroundClient() {
           break;
         }
         case 'readUrl': {
-          const readData = await sdkClient.readUrl(url, {});
+          // Use the configured read options, excluding the url field
+          const { url: _, ...optionsWithoutUrl } = { ...readOptions, url };
+          const readData = await sdkClient.readUrl(url, optionsWithoutUrl);
           result = readData;
           targetUrl = (readData as ReadUrlOutput)?.targetUrl || url;
           break;
         }
         case 'extractLinks': {
-          const linksData = await sdkClient.extractLinks(url, {});
+          // Use the configured links options, excluding the url field
+          const { url: _, ...optionsWithoutUrl } = { ...linksOptions, url };
+          const linksData = await sdkClient.extractLinks(
+            url,
+            optionsWithoutUrl,
+          );
           result = linksData;
           targetUrl = (linksData as ExtractLinksOutput)?.targetUrl || url;
           break;
@@ -334,6 +347,28 @@ export function PlaygroundClient() {
         >
           {selectedOP?.label}
         </SpinnerButton>
+      </div>
+
+      {/* Options Panel */}
+      <div className="space-y-2">
+        <Label className="text-muted-foreground">Options</Label>
+        <OptionsPanel
+          selectedOperation={selectedOperation}
+          options={
+            selectedOperation === 'readUrl'
+              ? { ...readOptions, url }
+              : selectedOperation === 'extractLinks'
+                ? { ...linksOptions, url }
+                : { url }
+          }
+          onOptionsChange={(newOptions) => {
+            if (selectedOperation === 'readUrl') {
+              setReadOptions(newOptions as ReadOptions);
+            } else if (selectedOperation === 'extractLinks') {
+              setLinksOptions(newOptions as LinksOptions);
+            }
+          }}
+        />
       </div>
 
       {/* Results Section */}
