@@ -35,7 +35,7 @@ export const ContentOptionsSchema = z
      * Options for link extraction.
      * Controls how links are extracted and categorized.
      */
-    linksOptions: LinkExtractionOptionsSchema.optional(),
+    linkExtractionOptions: LinkExtractionOptionsSchema.optional(),
 
     /**
      * Options for HTML cleaning.
@@ -71,7 +71,7 @@ export const ContentOptionsSchema = z
           twitterDescription: true,
           twitterImage: true,
         },
-        linksOptions: {
+        linkExtractionOptions: {
           includeExternal: true,
           includeMedia: true,
           excludePatterns: ['/admin/', '/private/'],
@@ -172,7 +172,7 @@ export const TreeOptionsSchema = z
  * @property sitemapXML - Whether to fetch and parse sitemap.xml
  * @property linksFromTarget - Whether to extract links from the target page
  * @property metadataOptions - Options for metadata extraction
- * @property linksOptions - Options for link extraction
+ * @property linkExtractionOptions - Options for link extraction
  * @property cleanedHtmlOptions - Options for HTML cleaning
  * @property subdomainAsRootUrl - Whether to exclude subdomain as root URL
  *
