@@ -24,7 +24,7 @@ export async function SiteHeader({
       className={cn(
         'z-50 flex h-16 shrink-0 items-center gap-2 border-b bg-background transition-[width,height] ease-in-out max-sm:h-16 sm:group-has-data-[collapsible=icon]/sidebar-wrapper:h-12',
         navigationMode === 'header' &&
-          '!h-12 border-none bg-background-subtle px-3 pt-2 pb-0',
+          '!h-14 border-none bg-background-subtle px-3 pt-2 pb-0',
         className,
       )}
     >
