@@ -19,12 +19,9 @@ export default async function DashboardPage() {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <PageHeader title="Dashboard" />
       <PageContainer>
-        <PageTitle title="Overview" />
+        <PageTitle titleSize="2xl" title="Overview" />
         <ChartAreaInteractive />
-        <PageTitle
-          title="Playground"
-          description="Test the deepcrawl API endpoints with our SDK. Enter a URL and try different operations."
-        />
+        <PageTitle titleSize="2xl" title="Playground" />
         <PlaygroundClient />
       </PageContainer>
     </HydrationBoundary>
