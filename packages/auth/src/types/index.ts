@@ -11,10 +11,21 @@ export type Session = typeof auth.$Infer.Session;
 export type ListDeviceSessions = Awaited<
   ReturnType<typeof auth.api.listDeviceSessions>
 >;
+
+/**
+ * The session type for listDeviceSessions, without admin-specific fields
+ */
+export type ListDeviceSession = ListDeviceSessions[number];
+
 /**
  * The user type for listDeviceSessions, without admin-specific fields
  */
 export type LDSUser = ListDeviceSessions[number]['user'];
+
+/**
+ * The session type for listDeviceSessions, without admin-specific fields
+ */
+export type LDSSession = ListDeviceSessions[number]['session'];
 
 // API Key type based on Better Auth schema
 export type ApiKey = {
