@@ -94,7 +94,7 @@ export async function processLinksRequest(
   const withTree = isTree !== false; // True by default, false only if explicitly set to false
   const linkExtractionOptions: LinkExtractionOptions = {
     ...DEFAULT_LINK_OPTIONS,
-    ...rest.linksOptions,
+    ...rest.linkExtractionOptions,
   };
 
   // Root
