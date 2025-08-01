@@ -6,6 +6,7 @@ import type {
   ReadOptions,
 } from '@deepcrawl/types';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
+import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -94,27 +95,31 @@ export function OptionsPanel({
     });
   };
 
+  const resetToDefaults = () => {
+    if (selectedOperation === 'readUrl') {
+      onOptionsChange({ url: options.url });
+    } else if (selectedOperation === 'extractLinks') {
+      onOptionsChange({ url: options.url });
+    }
+  };
+
   if (selectedOperation === 'getMarkdown') {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            Options for Get Markdown
-            <Badge variant="outline" className="text-xs">
-              GET /read
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            Get Markdown returns only the markdown content. No additional
-            options available.
-          </CardDescription>
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              Options for Get Markdown
+              <Badge variant="outline" className="text-xs">
+                GET /read
+              </Badge>
+            </CardTitle>
+            <CardDescription>
+              Get Markdown returns only the markdown content. No additional
+              options required.
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">
-            This operation extracts clean markdown content from the URL with
-            default settings.
-          </p>
-        </CardContent>
       </Card>
     );
   }
@@ -124,15 +129,27 @@ export function OptionsPanel({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            Options for Read URL
-            <Badge variant="outline" className="text-xs">
-              POST /read
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            Configure what data to extract from the target URL
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                Options for Read URL
+                <Badge variant="outline" className="text-xs">
+                  POST /read
+                </Badge>
+              </CardTitle>
+              <CardDescription>
+                Configure what data to extract from the target URL
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetToDefaults}
+              className="text-xs"
+            >
+              Reset to default
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Basic Options */}
@@ -260,15 +277,27 @@ export function OptionsPanel({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            Options for Extract Links
-            <Badge variant="outline" className="text-xs">
-              POST /links
-            </Badge>
-          </CardTitle>
-          <CardDescription>
-            Configure link extraction and tree generation options
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                Options for Extract Links
+                <Badge variant="outline" className="text-xs">
+                  POST /links
+                </Badge>
+              </CardTitle>
+              <CardDescription>
+                Configure link extraction and tree generation options
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetToDefaults}
+              className="text-xs"
+            >
+              Reset to default
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Basic Options */}
