@@ -1,3 +1,4 @@
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { ChartAreaInteractive } from '@/components/home/chart-area-interactive';
 import {
   PageContainer,
@@ -5,11 +6,18 @@ import {
   PageTitle,
 } from '@/components/page-elements';
 import { PlaygroundClient } from '@/components/playground/playground-client';
+import { getQueryClient } from '@/lib/query.client';
+import { sessionQueryOptions } from '@/lib/query-options';
 
 export default async function DashboardPage() {
+  const queryClient = getQueryClient();
+
+  // Prefetch session data
+  void queryClient.prefetchQuery(sessionQueryOptions());
+
   return (
-    <>
-      <PageHeader title="Deepcrawl Dashboard" />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PageHeader title="Dashboard" />
       <PageContainer>
         <PageTitle title="Overview" />
         <ChartAreaInteractive />
@@ -19,6 +27,6 @@ export default async function DashboardPage() {
         />
         <PlaygroundClient />
       </PageContainer>
-    </>
+    </HydrationBoundary>
   );
 }
