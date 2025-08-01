@@ -3,6 +3,12 @@
 import type { LinksOptions, ReadOptions } from '@deepcrawl/types';
 import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
 import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@deepcrawl/ui/components/ui/accordion';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import {
   Card,
@@ -256,7 +262,7 @@ export function PlaygroundClient() {
   return (
     <div className="min-h-[calc(100svh-theme(spacing.56)))] space-y-6 pb-10">
       <Label htmlFor="url" className="text-muted-foreground">
-        Main Features
+        Choose a feature
       </Label>
 
       <div className="grid gap-3 lg:grid-cols-3">
@@ -301,11 +307,39 @@ export function PlaygroundClient() {
         ))}
       </div>
 
+      {/* Options Panel */}
+      <Accordion type="single" collapsible>
+        <AccordionItem value="options">
+          <AccordionTrigger className="text-muted-foreground">
+            Options for {selectedOP?.label}
+          </AccordionTrigger>
+          <AccordionContent>
+            <OptionsPanel
+              selectedOperation={selectedOperation}
+              options={
+                selectedOperation === 'readUrl'
+                  ? { ...readOptions, url }
+                  : selectedOperation === 'extractLinks'
+                    ? { ...linksOptions, url }
+                    : { url }
+              }
+              onOptionsChange={(newOptions) => {
+                if (selectedOperation === 'readUrl') {
+                  setReadOptions(newOptions as ReadOptions);
+                } else if (selectedOperation === 'extractLinks') {
+                  setLinksOptions(newOptions as LinksOptions);
+                }
+              }}
+            />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
       <Label htmlFor="url" className="text-muted-foreground">
-        Target URL
+        Enter target URL
       </Label>
-      <div className="flex w-full items-center justify-between gap-4">
-        <div className="flex-1 space-y-2">
+      <div className="flex w-full items-center justify-between gap-4 rounded-xl border bg-card p-4 shadow-sm">
+        <div className="w-full flex-1 space-y-2">
           <div
             className="relative"
             onMouseEnter={() => linkIconRef.current?.startAnimation()}
@@ -319,6 +353,7 @@ export function PlaygroundClient() {
             <Input
               id="url"
               value={url}
+              placeholder="https://hono.dev"
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -329,14 +364,14 @@ export function PlaygroundClient() {
                   );
                 }
               }}
-              className="pl-10 font-mono"
-              placeholder="https://hono.dev"
+              className="!bg-transparent border-none pl-10 font-mono shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent"
             />
           </div>
         </div>
         {/* Execute button */}
         <SpinnerButton
           className="w-32"
+          disabled={!url}
           onClick={() =>
             executeApiCall(
               selectedOP?.operation as DeepcrawlOperations,
@@ -347,28 +382,6 @@ export function PlaygroundClient() {
         >
           {selectedOP?.label}
         </SpinnerButton>
-      </div>
-
-      {/* Options Panel */}
-      <div className="space-y-2">
-        <Label className="text-muted-foreground">Options</Label>
-        <OptionsPanel
-          selectedOperation={selectedOperation}
-          options={
-            selectedOperation === 'readUrl'
-              ? { ...readOptions, url }
-              : selectedOperation === 'extractLinks'
-                ? { ...linksOptions, url }
-                : { url }
-          }
-          onOptionsChange={(newOptions) => {
-            if (selectedOperation === 'readUrl') {
-              setReadOptions(newOptions as ReadOptions);
-            } else if (selectedOperation === 'extractLinks') {
-              setLinksOptions(newOptions as LinksOptions);
-            }
-          }}
-        />
       </div>
 
       {/* Results Section */}
