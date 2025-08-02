@@ -26,20 +26,16 @@ export function PageTitle({
   title,
   className,
   description,
-  titleSize = '3xl',
+  titleSize,
 }: {
   title: string;
   description?: string;
   titleSize?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const defaultTitleSize = '3xl';
+  const titleSizeCN = titleSize ? `text-${titleSize}` : 'text-3xl';
   return (
     <div className={cn('my-2 w-full', className)}>
-      <h1
-        className={cn('font-semibold', `text-${titleSize || defaultTitleSize}`)}
-      >
-        {title}
-      </h1>
+      <h1 className={cn('font-semibold', titleSizeCN)}>{title}</h1>
       {description && <p className="text-muted-foreground">{description}</p>}
     </div>
   );
