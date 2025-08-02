@@ -37,6 +37,7 @@ import {
   sessionQueryOptions,
   userPasskeysQueryOptions,
 } from '@/lib/query-options';
+import { authViewRoutes } from '@/routes/auth';
 import { getSearchParam } from '@/utils';
 import { copyToClipboard } from '@/utils/clipboard';
 
@@ -200,8 +201,8 @@ export const useRevokeDeviceSession = () => {
         );
 
         // Check if we're already on the logout page to prevent double navigation
-        if (window.location.pathname !== '/logout') {
-          router.push('/logout');
+        if (window.location.pathname !== `/${authViewRoutes.logout}`) {
+          router.push(`/${authViewRoutes.logout}`);
         }
         return;
       }
@@ -449,8 +450,8 @@ export const useRevokeSession = () => {
         );
 
         // Check if we're already on the logout page to prevent double navigation
-        if (window.location.pathname !== '/logout') {
-          router.push('/logout');
+        if (window.location.pathname !== `/${authViewRoutes.logout}`) {
+          router.push(`/${authViewRoutes.logout}`);
         }
         return;
       }

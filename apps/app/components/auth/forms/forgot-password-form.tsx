@@ -77,7 +77,7 @@ export function ForgotPasswordForm({
       toast.success('Password reset email sent');
 
       // Redirect to clean login page after sending reset email
-      router.push(`${authViewRoutes.login}`);
+      router.push(`/${authViewRoutes.login}`);
     } catch (error) {
       toast.error('Error sending password reset email');
     }

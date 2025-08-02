@@ -19,6 +19,7 @@ import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { getAppRoute } from '@/lib/navigation-config';
 import { userQueryKeys } from '@/lib/query-keys';
+import { authViewRoutes } from '@/routes/auth';
 
 export interface UnifiedVerificationFormProps {
   className?: string;
@@ -149,7 +150,7 @@ export function UnifiedVerificationForm({
 
         // Redirect after success
         setTimeout(() => {
-          router.push('/');
+          router.push(getAppRoute(BASE_APP_PATH));
         }, 4000);
       }
     } catch (error) {
@@ -178,7 +179,7 @@ export function UnifiedVerificationForm({
 
         // Redirect to dashboard
         setTimeout(() => {
-          router.push('/');
+          router.push(getAppRoute(BASE_APP_PATH));
         }, 2000);
       }
     } catch (error) {
@@ -281,7 +282,7 @@ export function UnifiedVerificationForm({
           break;
 
         case 'magic-link':
-          router.push('/magic-link');
+          router.push(`/${authViewRoutes.magicLink}`);
           toast.info('Redirecting to request a new magic link...');
           break;
 
@@ -347,7 +348,10 @@ export function UnifiedVerificationForm({
               </Button>
             )}
             {!showResend && (
-              <Button onClick={() => router.push('/login')} className="w-full">
+              <Button
+                onClick={() => router.push(`/${authViewRoutes.login}`)}
+                className="w-full"
+              >
                 Back to Login
               </Button>
             )}
@@ -373,7 +377,10 @@ export function UnifiedVerificationForm({
               </Button>
             )}
             {!showResend && (
-              <Button onClick={() => router.push('/login')} className="w-full">
+              <Button
+                onClick={() => router.push(`/${authViewRoutes.login}`)}
+                className="w-full"
+              >
                 Back to Login
               </Button>
             )}
@@ -390,7 +397,10 @@ export function UnifiedVerificationForm({
               </h3>
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
-            <Button onClick={() => router.push('/login')} className="w-full">
+            <Button
+              onClick={() => router.push(`/${authViewRoutes.login}`)}
+              className="w-full"
+            >
               Sign In
             </Button>
           </>
@@ -406,7 +416,10 @@ export function UnifiedVerificationForm({
               </h3>
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
-            <Button onClick={() => router.push('/')} className="w-full">
+            <Button
+              onClick={() => router.push(getAppRoute(BASE_APP_PATH))}
+              className="w-full"
+            >
               Continue to Dashboard
             </Button>
           </>
@@ -450,7 +463,10 @@ export function UnifiedVerificationForm({
               </h3>
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
-            <Button onClick={() => router.push('/login')} className="w-full">
+            <Button
+              onClick={() => router.push(`/${authViewRoutes.login}`)}
+              className="w-full"
+            >
               Back to Login
             </Button>
           </>
@@ -493,7 +509,7 @@ export function UnifiedVerificationForm({
           </div>
           <div className="space-y-4">
             <Button
-              onClick={() => router.push(BASE_APP_PATH)}
+              onClick={() => router.push(getAppRoute(BASE_APP_PATH))}
               className="w-full"
             >
               Go to Dashboard

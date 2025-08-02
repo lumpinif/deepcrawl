@@ -23,6 +23,7 @@ import {
   listSessionsQueryOptions,
   sessionQueryOptions,
 } from '@/lib/query-options';
+import { authViewRoutes } from '@/routes/auth';
 
 export function SessionsManagementCard() {
   // const { data: currentSession } = useAuthSession();
@@ -78,8 +79,8 @@ export function SessionsManagementCard() {
       setSigningOutCurrentSession(true);
 
       // Check if we're already on the logout page to prevent double navigation
-      if (window.location.pathname !== '/logout') {
-        router.push('/logout');
+      if (window.location.pathname !== `/${authViewRoutes.logout}`) {
+        router.push(`/${authViewRoutes.logout}`);
       }
       return;
     }
