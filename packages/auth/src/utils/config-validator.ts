@@ -26,10 +26,7 @@ const URL_PATTERNS = {
     development: ['http://localhost:8787', 'http://127.0.0.1:8787'],
   },
   nextjs: {
-    production: [
-      'https://app.deepcrawl.dev',
-      'https://app.deepcrawl.dev/api/auth',
-    ],
+    production: ['https://deepcrawl.dev', 'https://deepcrawl.dev/api/auth'],
     development: [
       'http://localhost:3000',
       'http://localhost:3000/api/auth',

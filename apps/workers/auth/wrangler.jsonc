@@ -44,7 +44,7 @@
   "env": {
     "production": {
       "vars": {
-        "NEXT_PUBLIC_APP_URL": "https://app.deepcrawl.dev",
+        "NEXT_PUBLIC_APP_URL": "https://deepcrawl.dev",
         "AUTH_WORKER_NODE_ENV": "production",
         "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
       },

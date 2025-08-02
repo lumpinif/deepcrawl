@@ -44,7 +44,7 @@ interface Env {
   IS_WORKERD?: boolean;
 }
 
-const PROD_APP_URL = 'https://app.deepcrawl.dev';
+const PROD_APP_URL = 'https://deepcrawl.dev';
 const PROD_AUTH_WORKER_URL = 'https://auth.deepcrawl.dev';
 
 export const ALLOWED_ORIGINS = [

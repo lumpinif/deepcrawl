@@ -29,7 +29,7 @@ const getAuthBaseURL = () => {
     // Next.js integrated auth mode
     baseAuthURL = isDevelopment
       ? 'http://localhost:3000'
-      : process.env.NEXT_PUBLIC_APP_URL || 'https://app.deepcrawl.dev';
+      : process.env.NEXT_PUBLIC_APP_URL || 'https://deepcrawl.dev';
   }
 
   // Fallback if no auth URL is configured

@@ -138,5 +138,5 @@ const footer = {
 MagicLink.PreviewProps = {
   username: 'John Doe',
   magicLinkUrl:
-    'https://auth.deepcrawl.dev/api/auth/magic-link/verify?token=abc123def456&callbackURL=https%3A%2F%2Fapp.deepcrawl.dev%2Fdashboard',
+    'https://auth.deepcrawl.dev/api/auth/magic-link/verify?token=abc123def456&callbackURL=https%3A%2F%2Fdeepcrawl.dev%2Fapp',
 } as MagicLinkProps;
