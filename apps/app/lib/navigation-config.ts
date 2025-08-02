@@ -7,10 +7,14 @@ import {
 } from '@tabler/icons-react';
 import { BASE_APP_PATH } from '@/config';
 
-export const getAppRoute = (path: string) => {
+export const getAppRoute = (path?: string) => {
   const root = BASE_APP_PATH.startsWith('/')
     ? BASE_APP_PATH
     : `/${BASE_APP_PATH}`;
+
+  if (!path) {
+    return root;
+  }
 
   if (path === root) {
     return root;

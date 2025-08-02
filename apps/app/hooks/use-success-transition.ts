@@ -2,50 +2,18 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { useAuthSession } from '@/hooks/auth.hooks';
+import { BASE_APP_PATH } from '@/config';
+import { useAuthRedirect, useAuthSession } from '@/hooks/auth.hooks';
+import { getAppRoute } from '@/lib/navigation-config';
 import { userQueryKeys } from '@/lib/query-keys';
 import { getSearchParam } from '@/utils';
 
 export function useOnSuccessTransition({
-  redirectTo: redirectToProp = '/',
+  redirectTo,
 }: {
   redirectTo?: string;
 }) {
-  const getRedirectTo = useCallback(() => {
-    // Priority order for determining redirect destination:
-    // 1. Explicit prop passed to the hook
-    // 2. URL parameter from current page (for client-server separated architecture)
-    // 3. Default to home page
-
-    if (redirectToProp && redirectToProp !== '/') {
-      return redirectToProp;
-    }
-
-    // In client-server separated architecture, we need to be careful about URL parameters
-    // The redirectTo parameter should be a path relative to the frontend domain
-    const redirectParam = getSearchParam('redirectTo');
-    if (redirectParam) {
-      // Ensure the redirect path is safe and relative to frontend
-      try {
-        // If it's a full URL, extract just the pathname and search
-        if (redirectParam.startsWith('http')) {
-          const url = new URL(redirectParam);
-          return url.pathname + url.search;
-        }
-        // If it's already a path, use it as-is
-        return redirectParam.startsWith('/')
-          ? redirectParam
-          : `/${redirectParam}`;
-      } catch {
-        // If URL parsing fails, treat as a simple path
-        return redirectParam.startsWith('/')
-          ? redirectParam
-          : `/${redirectParam}`;
-      }
-    }
-
-    return '/';
-  }, [redirectToProp]);
+  const { getRedirectTo } = useAuthRedirect(redirectTo);
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -83,7 +51,7 @@ export function useOnSuccessTransition({
         cleanPath = cleanPath.replace(/[?&]state=[^&]*/g, '');
         // Clean up any trailing ? or & characters
         cleanPath = cleanPath.replace(/[?&]$/, '');
-        router.push(cleanPath || '/');
+        router.push(cleanPath || getAppRoute(BASE_APP_PATH));
       }
     });
   }, [success, isPending, router, getRedirectTo]);

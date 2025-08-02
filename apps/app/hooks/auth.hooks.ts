@@ -904,10 +904,41 @@ export const useDeleteApiKey = () => {
  * Custom hook for handling auth redirect URLs
  */
 export function useAuthRedirect(redirectTo?: string) {
-  const getRedirectTo = useCallback(
-    () => redirectTo || getSearchParam('redirectTo') || '', // Default to home page
-    [redirectTo],
-  );
+  const getRedirectTo = useCallback(() => {
+    // Priority order for determining redirect destination:
+    // 1. Explicit prop passed to the hook
+    // 2. URL parameter from current page (for client-server separated architecture)
+    // 3. Default to app index page
+
+    if (redirectTo && redirectTo !== getAppRoute(BASE_APP_PATH)) {
+      return redirectTo;
+    }
+
+    // In client-server separated architecture, we need to be careful about URL parameters
+    // The redirectTo parameter should be a path relative to the frontend domain
+    const redirectParam = getSearchParam('redirectTo');
+    if (redirectParam) {
+      // Ensure the redirect path is safe and relative to frontend
+      try {
+        // If it's a full URL, extract just the pathname and search
+        if (redirectParam.startsWith('http')) {
+          const url = new URL(redirectParam);
+          return url.pathname + url.search;
+        }
+        // If it's already a path, use it as-is
+        return redirectParam.startsWith('/')
+          ? redirectParam
+          : `/${redirectParam}`;
+      } catch {
+        // If URL parsing fails, treat as a simple path
+        return redirectParam.startsWith('/')
+          ? redirectParam
+          : `/${redirectParam}`;
+      }
+    }
+
+    return getAppRoute(BASE_APP_PATH);
+  }, [redirectTo]);
 
   const getFrontendCallbackURL = useCallback(
     (redirectToParam?: string) => {
@@ -952,10 +983,7 @@ export function useAuthRedirect(redirectTo?: string) {
         const normalizedPath = redirectPath?.startsWith('/')
           ? redirectPath
           : `/${redirectPath || ''}`;
-        return `${frontendOrigin}${getAppRoute(BASE_APP_PATH)}${normalizedPath}`.replace(
-          /\/$/,
-          '',
-        ); // Remove trailing slash
+        return `${frontendOrigin}${normalizedPath}`.replace(/\/$/, ''); // Remove trailing slash
       }
     },
     [getRedirectTo],
