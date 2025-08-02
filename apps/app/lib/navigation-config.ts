@@ -5,6 +5,21 @@ import {
   IconKey,
   IconUser,
 } from '@tabler/icons-react';
+import { BASE_APP_PATH } from '@/config';
+
+export const getAppRoute = (path: string) => {
+  const root = BASE_APP_PATH.startsWith('/')
+    ? BASE_APP_PATH
+    : `/${BASE_APP_PATH}`;
+
+  if (path === root) {
+    return root;
+  }
+
+  const destination = path.startsWith('/') ? path : `/${path}`;
+
+  return `${root}${destination}`.replace(/\/$/, '');
+};
 
 export interface NavigationItem {
   label?: string;
@@ -17,25 +32,25 @@ export interface NavigationItem {
 export const NAVGATION_ITEMS: NavigationItem[] = [
   {
     label: 'Dashboard',
-    title: 'Home',
-    url: '/',
+    title: 'Overview',
+    url: getAppRoute(BASE_APP_PATH),
     icon: IconDashboard,
   },
   {
     label: 'User',
     title: 'Account',
-    url: '/account',
+    url: getAppRoute('/account'),
     icon: IconUser,
   },
   {
     title: 'API Keys',
-    url: '/api-keys',
+    url: getAppRoute('/api-keys'),
     icon: IconKey,
   },
   {
     label: 'Resources',
     title: 'Documentation',
-    url: '/',
+    url: '/docs',
     icon: IconBook,
     isExternal: true,
   },

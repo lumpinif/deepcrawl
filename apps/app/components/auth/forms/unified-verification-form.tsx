@@ -13,9 +13,11 @@ import {
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { BASE_APP_PATH } from '@/config';
 import { useAuthSession } from '@/hooks/auth.hooks';
 import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
+import { getAppRoute } from '@/lib/navigation-config';
 import { userQueryKeys } from '@/lib/query-keys';
 
 export interface UnifiedVerificationFormProps {
@@ -490,13 +492,16 @@ export function UnifiedVerificationForm({
             </p>
           </div>
           <div className="space-y-4">
-            <Button onClick={() => router.push('/')} className="w-full">
+            <Button
+              onClick={() => router.push(BASE_APP_PATH)}
+              className="w-full"
+            >
               Go to Dashboard
             </Button>
             {verificationType !== 'accept-invitation' && (
               <Button
                 variant="outline"
-                onClick={() => router.push('/account')}
+                onClick={() => router.push(getAppRoute('/account'))}
                 className="w-full"
               >
                 Go to Account Settings

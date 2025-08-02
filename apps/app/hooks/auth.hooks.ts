@@ -19,11 +19,13 @@ import {
   updateApiKey,
   updateMostRecentPasskeyName,
 } from '@/app/actions/auth';
+import { BASE_APP_PATH } from '@/config';
 import { authClient } from '@/lib/auth.client';
 import {
   getAuthErrorMessage,
   isWebAuthnCancellationError,
 } from '@/lib/auth-errors';
+import { getAppRoute } from '@/lib/navigation-config';
 import { generatePasskeyName } from '@/lib/passkey-utils';
 import { userQueryKeys } from '@/lib/query-keys';
 import {
@@ -37,10 +39,6 @@ import {
 } from '@/lib/query-options';
 import { getSearchParam } from '@/utils';
 import { copyToClipboard } from '@/utils/clipboard';
-
-// Type definitions for session data
-type SessionData = Session['session'];
-type SessionsList = SessionData[];
 
 // Type definition for passkey data (from fetchUserPasskeys)
 // Note: createdAt comes as string from server action due to JSON serialization
@@ -954,7 +952,10 @@ export function useAuthRedirect(redirectTo?: string) {
         const normalizedPath = redirectPath?.startsWith('/')
           ? redirectPath
           : `/${redirectPath || ''}`;
-        return `${frontendOrigin}${normalizedPath}`.replace(/\/$/, ''); // Remove trailing slash
+        return `${frontendOrigin}${getAppRoute(BASE_APP_PATH)}${normalizedPath}`.replace(
+          /\/$/,
+          '',
+        ); // Remove trailing slash
       }
     },
     [getRedirectTo],

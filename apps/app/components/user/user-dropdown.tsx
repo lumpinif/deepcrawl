@@ -34,6 +34,7 @@ import {
   useDeviceSessions,
   useSetActiveSession,
 } from '@/hooks/auth.hooks';
+import { getAppRoute } from '@/lib/navigation-config';
 
 function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (
@@ -75,7 +76,7 @@ export function UserDropdown({
   const hasMultipleSessions = otherSessions.length > 0;
 
   const handleHoverToPrefetchAccount = useCallback(() => {
-    router.prefetch('/account');
+    router.prefetch(getAppRoute('/account'));
   }, [router]);
 
   return (
@@ -177,7 +178,7 @@ export function UserDropdown({
             onMouseEnter={handleHoverToPrefetchAccount}
             onPointerEnter={handleHoverToPrefetchAccount}
           >
-            <Link href={'/account'}>Account Settings</Link>
+            <Link href={getAppRoute('/account')}>Account Settings</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
