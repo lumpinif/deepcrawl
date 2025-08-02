@@ -1,6 +1,7 @@
 import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
-import { authViewRoutes } from './routes/auth';
+import { getAppRoute } from './lib/navigation-config';
+// import { authViewRoutes } from './routes/auth';
 
 export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request, {
@@ -9,11 +10,9 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Define public auth routes that signed-in users shouldn't access
-  // Use authViewRoutes from better-auth-ui, but exclude 'settings' since it requires auth
-  const publicAuthRoutes = Object.values(authViewRoutes).map(
-    (path) => `/${path}`,
-  );
+  // const publicAuthRoutes = Object.values(authViewRoutes).map(
+  //   (path) => `/${path}`,
+  // );
 
   // Handle logout route - requires session
   if (pathname === '/logout') {
@@ -26,11 +25,17 @@ export async function middleware(request: NextRequest) {
   // If no session cookie
   if (!sessionCookie) {
     // Allow access to public auth routes (login, register, etc.)
-    if (publicAuthRoutes.includes(pathname)) {
-      return NextResponse.next();
+    // if (publicAuthRoutes.includes(pathname)) {
+    //   return NextResponse.next();
+    // }
+
+    // // Redirect to login for all other routes
+    // return NextResponse.redirect(new URL('/login', request.url));
+
+    // Redirect to login for all app routes
+    if (pathname.startsWith(getAppRoute())) {
+      return NextResponse.redirect(new URL('/login', request.url));
     }
-    // Redirect to login for all other routes
-    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // Has session - allow access to all routes
