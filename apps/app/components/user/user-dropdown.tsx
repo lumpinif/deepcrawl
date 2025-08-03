@@ -5,12 +5,14 @@ import type {
   ListDeviceSessions,
   Session,
 } from '@deepcrawl/auth/types';
+import { GitHubIcon } from '@deepcrawl/ui/components/icons/provider-icons';
 import { ThemeGroupToggle } from '@deepcrawl/ui/components/theme/toggle';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@deepcrawl/ui/components/ui/avatar';
+import { buttonVariants } from '@deepcrawl/ui/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,20 +27,24 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@deepcrawl/ui/components/ui/popover';
+import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
+import { IconBook } from '@tabler/icons-react';
 import { ChevronsDownUpIcon, ChevronsUpDownIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
+import type { NavigationMode } from '@/components/providers';
 import {
   useAuthSession,
   useDeviceSessions,
   useSetActiveSession,
 } from '@/hooks/auth.hooks';
 import { getAppRoute } from '@/lib/navigation-config';
+import { LayoutViewToggle } from '../layout-toggle';
 
 function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (
-    <Avatar className="h-8 w-8 cursor-pointer rounded-full ring-0 ring-transparent">
+    <Avatar className="size-6 cursor-pointer rounded-full ring-0 ring-transparent">
       <AvatarImage src={user.image || ''} alt={user.name} />
       <AvatarFallback className="rounded-full">
         {user.name?.charAt(0).toUpperCase() ||
@@ -50,12 +56,19 @@ function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
 
 export function UserDropdown({
   user: userProp,
+  redirectLogout,
+  navigationMode,
   deviceSessions: deviceSessionsProps,
+  enableLayoutViewToggle = true,
 }: {
   user: Session['user'];
+  redirectLogout?: string;
   deviceSessions: ListDeviceSessions;
+  navigationMode?: NavigationMode;
+  enableLayoutViewToggle?: boolean;
 }) {
   const router = useRouter();
+  const isMac = useIsMac();
   const { data: currentSession } = useAuthSession();
   const { data: deviceSessionsQuery } = useDeviceSessions();
   const { mutate: setActiveSession } = useSetActiveSession();
@@ -87,12 +100,9 @@ export function UserDropdown({
       <DropdownMenuContent
         align="end"
         side="bottom"
-        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-xl dark:text-muted-foreground"
+        sideOffset={12}
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-xs rounded-xl bg-background-subtle dark:text-muted-foreground"
       >
-        <DropdownMenuLabel className="text-xs">
-          Current Account
-        </DropdownMenuLabel>
-
         <DropdownMenuGroup>
           <Popover
             onOpenChange={setSelectOpen}
@@ -109,8 +119,10 @@ export function UserDropdown({
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <UserAvatar user={user} />
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="truncate text-xs">{user.email}</span>
+                    <span className="truncate font-semibold">{user.name}</span>
+                    <span className="truncate font-medium text-xs">
+                      {user.email}
+                    </span>
                   </div>
                 </div>
                 {hasMultipleSessions ? (
@@ -155,20 +167,16 @@ export function UserDropdown({
           </Popover>
         </DropdownMenuGroup>
 
-        {/* 
-        <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild className="cursor-pointer">
+          <DropdownMenuItem asChild>
             <Link
-              href="/login"
+              href={getAppRoute('/app')}
               className="flex w-full items-center justify-between"
             >
-              Add Account
+              Dashboard
             </Link>
           </DropdownMenuItem>
-        </DropdownMenuGroup> */}
-
-        <DropdownMenuSeparator />
+        </DropdownMenuGroup>
 
         <DropdownMenuGroup>
           <DropdownMenuItem
@@ -190,19 +198,69 @@ export function UserDropdown({
             className="hover:bg-background dark:hover:bg-transparent dark:hover:text-muted-foreground"
           >
             <div className="flex w-full justify-between">
+              <span>Command Menu</span>
+              <div className="flex items-center gap-1">
+                <kbd className="pointer-events-none flex h-5 select-none items-center justify-center gap-1 rounded border bg-background px-1 font-medium font-sans text-[0.7rem] text-muted-foreground [&_svg:not([class*='size-'])]:size-3">
+                  {isMac ? '⌘' : 'Ctrl'}
+                </kbd>
+                <kbd className="pointer-events-none flex aspect-square h-5 select-none items-center justify-center gap-1 rounded border bg-background px-1 font-medium font-sans text-[0.7rem] text-muted-foreground [&_svg:not([class*='size-'])]:size-3">
+                  K
+                </kbd>
+              </div>
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            asChild
+            className="hover:bg-background dark:hover:bg-transparent dark:hover:text-muted-foreground"
+          >
+            <div className="flex w-full justify-between">
               <span>Theme</span>
               <ThemeGroupToggle />
             </div>
           </DropdownMenuItem>
+
+          {navigationMode && enableLayoutViewToggle && (
+            <DropdownMenuItem
+              asChild
+              className="hover:!bg-transparent dark:hover:bg-transparent dark:hover:text-muted-foreground"
+            >
+              <div className="flex w-full flex-col items-start">
+                <span>Customize dashboard layout</span>
+                <LayoutViewToggle currentMode={navigationMode} />
+              </div>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
-        <Link href="/logout">
-          <DropdownMenuItem>
-            <LogOut />
-            Log out
+        <Link href="/docs">
+          <DropdownMenuItem className="flex w-full items-center justify-between">
+            Docs
+            <IconBook />
           </DropdownMenuItem>
+        </Link>
+
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/lumpinif/deepcrawl"
+        >
+          <DropdownMenuItem className="flex w-full items-center justify-between">
+            Github
+            <GitHubIcon />
+          </DropdownMenuItem>
+        </a>
+
+        <DropdownMenuSeparator />
+
+        <Link
+          className={buttonVariants({ className: 'my-2 w-full' })}
+          href={`/logout${redirectLogout ? `?redirect=${redirectLogout}` : ''}`}
+        >
+          Log out
+          <LogOut />
         </Link>
       </DropdownMenuContent>
     </DropdownMenu>
