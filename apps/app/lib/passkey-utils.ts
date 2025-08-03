@@ -24,10 +24,11 @@ export function generatePasskeyName(): string {
  */
 export function getDeviceTypeDescription(
   deviceType: Passkey['deviceType'],
+  passkeyName?: Passkey['name'],
 ): string {
   switch (deviceType) {
     case 'singleDevice':
-      return 'This Device Only';
+      return `Only On ${passkeyName || 'where it was created on'}`;
     case 'multiDevice':
       return 'Synced Across Devices';
     default:
