@@ -9,6 +9,7 @@ import { UAParser } from 'ua-parser-js';
  * Generate a meaningful passkey name based on user agent and device info
  */
 export function generatePasskeyName(): string {
+  const env = process.env.NODE_ENV || 'development';
   const parser = new UAParser();
   const os = parser.getOS();
   const browser = parser.getBrowser();
@@ -16,7 +17,7 @@ export function generatePasskeyName(): string {
   const osName = os.name || 'Unknown OS';
   const browserName = browser.name || 'Unknown Browser';
 
-  return `${browserName} - ${osName}`;
+  return `${browserName} - ${osName}${env === 'development' ? ' (Local)' : ''}`;
 }
 
 /**
