@@ -1,13 +1,13 @@
 import { queryOptions } from '@tanstack/react-query';
 import {
-  fetchApiKeys,
-  fetchAuthSession,
-  fetchDeviceSessions,
-  fetchLinkedAccounts,
-  fetchListSessions,
-  fetchOrganization,
-  fetchUserPasskeys,
-} from '@/app/actions/auth';
+  authGetFullOrganization,
+  authGetSession,
+  authListApiKeys,
+  authListDeviceSessions,
+  authListPasskeys,
+  authListSessions,
+  authListUserAccounts,
+} from '@/query/auth-query.server';
 import { userQueryKeys } from './query-keys';
 
 /**
@@ -17,7 +17,7 @@ import { userQueryKeys } from './query-keys';
 export const sessionQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.session,
-    queryFn: fetchAuthSession,
+    queryFn: authGetSession,
     staleTime: 5 * 60 * 1000, // 5 minutes (matches cookie cache)
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -29,7 +29,7 @@ export const sessionQueryOptions = () =>
 export const listSessionsQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.listSessions,
-    queryFn: fetchListSessions,
+    queryFn: authListSessions,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -41,7 +41,7 @@ export const listSessionsQueryOptions = () =>
 export const deviceSessionsQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.deviceSessions,
-    queryFn: fetchDeviceSessions,
+    queryFn: authListDeviceSessions,
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -53,7 +53,7 @@ export const deviceSessionsQueryOptions = () =>
 export const organizationQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.organization,
-    queryFn: fetchOrganization,
+    queryFn: authGetFullOrganization,
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 20 * 60 * 1000, // 20 minutes
   });
@@ -65,7 +65,7 @@ export const organizationQueryOptions = () =>
 export const userPasskeysQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.passkeys,
-    queryFn: fetchUserPasskeys,
+    queryFn: authListPasskeys,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -77,7 +77,7 @@ export const userPasskeysQueryOptions = () =>
 export const linkedAccountsQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.linkedAccounts,
-    queryFn: fetchLinkedAccounts,
+    queryFn: authListUserAccounts,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -89,7 +89,7 @@ export const linkedAccountsQueryOptions = () =>
 export const apiKeysQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.apiKeys,
-    queryFn: fetchApiKeys,
+    queryFn: authListApiKeys,
     staleTime: 2 * 60 * 1000, // 2 minutes (API keys change less frequently)
     gcTime: 5 * 60 * 1000, // 5 minutes
   });

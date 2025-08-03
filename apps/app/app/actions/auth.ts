@@ -2,7 +2,7 @@
 
 import { auth } from '@deepcrawl/auth/lib/auth';
 import { headers } from 'next/headers';
-import { fetchAuthSession } from '@/query/auth';
+import { authGetSession } from '@/query/auth-query.server';
 
 /**
  * Remove a passkey from the user's account using Better Auth official API
@@ -62,7 +62,7 @@ export async function createApiKey({
 }) {
   try {
     // Get current session to extract userId
-    const session = await fetchAuthSession();
+    const session = await authGetSession();
 
     if (!session?.user?.id) {
       throw new Error('Unauthorized: No valid session found');
