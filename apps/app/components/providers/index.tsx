@@ -1,8 +1,8 @@
 import { TailwindIndicator } from '@deepcrawl/ui/components/theme/tailwind-indicator';
 import { SidebarProvider } from '@deepcrawl/ui/components/ui/sidebar';
 import { TooltipProvider } from '@deepcrawl/ui/components/ui/tooltip';
+import { RootProvider } from 'fumadocs-ui/provider';
 import { cookies } from 'next/headers';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { QueryProviders } from './query.provider';
@@ -20,12 +20,14 @@ export async function Providers({ children }: { children: ReactNode }) {
   }
 
   return (
-    <NextThemesProvider
-      enableSystem
-      attribute="class"
-      enableColorScheme
-      defaultTheme="system"
-      disableTransitionOnChange
+    <RootProvider
+      theme={{
+        enableSystem: true,
+        attribute: 'class',
+        enableColorScheme: true,
+        defaultTheme: 'system',
+        disableTransitionOnChange: true,
+      }}
     >
       <TooltipProvider delayDuration={0}>
         <SidebarProvider
@@ -38,6 +40,6 @@ export async function Providers({ children }: { children: ReactNode }) {
         </SidebarProvider>
       </TooltipProvider>
       <TailwindIndicator />
-    </NextThemesProvider>
+    </RootProvider>
   );
 }
