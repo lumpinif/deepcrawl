@@ -103,39 +103,16 @@ export async function fetchOrganization(): Promise<ActiveOrganization | null> {
  */
 
 /**
- * Fetch user's passkeys from the database
+ * Fetch user's passkeys using Better Auth official API
  * No server-side caching - React Query handles client caching
  */
 export async function fetchUserPasskeys() {
   const requestHeaders = await headers();
 
   try {
-    // Always get fresh session - no caching complexity
-    const session = await auth.api.getSession({
+    const passkeys = await auth.api.listPasskeys({
       headers: requestHeaders,
     });
-
-    if (!session?.user?.id) {
-      return [];
-    }
-
-    // Direct database query - no caching layer
-    const db = getDrizzleDB({
-      DATABASE_URL: process.env.DATABASE_URL,
-    });
-
-    const passkeys = await db
-      .select({
-        id: schema.passkey.id,
-        name: schema.passkey.name,
-        deviceType: schema.passkey.deviceType,
-        createdAt: schema.passkey.createdAt,
-        backedUp: schema.passkey.backedUp,
-        transports: schema.passkey.transports,
-      })
-      .from(schema.passkey)
-      .where(eq(schema.passkey.userId, session.user.id))
-      .orderBy(desc(schema.passkey.createdAt));
 
     return passkeys;
   } catch (error) {
@@ -145,53 +122,21 @@ export async function fetchUserPasskeys() {
 }
 
 /**
- * Remove a passkey from the user's account
+ * Remove a passkey from the user's account using Better Auth official API
  * No server-side caching - React Query handles client caching
  */
 export async function removeUserPasskey(passkeyId: string) {
   const requestHeaders = await headers();
 
   try {
-    // Always get fresh session - no caching complexity
-    const session = await auth.api.getSession({
+    const result = await auth.api.deletePasskey({
       headers: requestHeaders,
+      body: {
+        id: passkeyId,
+      },
     });
 
-    if (!session?.user?.id) {
-      throw new Error('Unauthorized: No valid session found');
-    }
-
-    // Direct database query - no caching layer
-    const db = getDrizzleDB({
-      DATABASE_URL: process.env.DATABASE_URL,
-    });
-
-    // First, verify the passkey belongs to the current user
-    const existingPasskey = await db
-      .select({ id: schema.passkey.id, userId: schema.passkey.userId })
-      .from(schema.passkey)
-      .where(eq(schema.passkey.id, passkeyId))
-      .limit(1);
-
-    if (existingPasskey.length === 0) {
-      throw new Error('Passkey not found');
-    }
-
-    if (existingPasskey[0]?.userId !== session.user.id) {
-      throw new Error('Unauthorized: Passkey does not belong to current user');
-    }
-
-    // Remove the passkey from the database
-    const result = await db
-      .delete(schema.passkey)
-      .where(eq(schema.passkey.id, passkeyId))
-      .returning({ id: schema.passkey.id });
-
-    if (result.length === 0 || !result[0]) {
-      throw new Error('Failed to remove passkey');
-    }
-
-    return { success: true, id: result[0].id };
+    return { success: true, id: passkeyId };
   } catch (error) {
     console.error('Failed to remove passkey:', error);
     throw error instanceof Error ? error : new Error('Unknown error occurred');
@@ -199,39 +144,22 @@ export async function removeUserPasskey(passkeyId: string) {
 }
 
 /**
- * Update a passkey name in the database
+ * Update a passkey name using Better Auth official API
  * This is called after Better Auth creates the passkey to set a meaningful name
  */
 export async function updatePasskeyName(passkeyId: string, name: string) {
   const requestHeaders = await headers();
 
   try {
-    // Always get fresh session - no caching complexity
-    const session = await auth.api.getSession({
+    const result = await auth.api.updatePasskey({
       headers: requestHeaders,
+      body: {
+        id: passkeyId,
+        name,
+      },
     });
 
-    if (!session?.user?.id) {
-      throw new Error('Unauthorized: No valid session found');
-    }
-
-    // Direct database query - no caching layer
-    const db = getDrizzleDB({
-      DATABASE_URL: process.env.DATABASE_URL,
-    });
-
-    // Verify the passkey belongs to the current user and update the name
-    const result = await db
-      .update(schema.passkey)
-      .set({ name })
-      .where(eq(schema.passkey.id, passkeyId))
-      .returning({ id: schema.passkey.id, name: schema.passkey.name });
-
-    if (result.length === 0 || !result[0]) {
-      throw new Error('Failed to update passkey name');
-    }
-
-    return { success: true, id: result[0].id, name: result[0].name };
+    return { success: true, id: passkeyId, name };
   } catch (error) {
     console.error('Failed to update passkey name:', error);
     throw error instanceof Error ? error : new Error('Unknown error occurred');
@@ -239,51 +167,44 @@ export async function updatePasskeyName(passkeyId: string, name: string) {
 }
 
 /**
- * Update the name of the most recently created passkey
+ * Update the name of the most recently created passkey using Better Auth official API
  * No server-side caching - React Query handles client caching
  */
 export async function updateMostRecentPasskeyName(name: string) {
   const requestHeaders = await headers();
 
   try {
-    // Always get fresh session - no caching complexity
-    const session = await auth.api.getSession({
+    // Get all passkeys for the user
+    const passkeys = await auth.api.listPasskeys({
       headers: requestHeaders,
     });
 
-    if (!session?.user?.id) {
-      throw new Error('Unauthorized: No valid session found');
-    }
-
-    // Direct database query - no caching layer
-    const db = getDrizzleDB({
-      DATABASE_URL: process.env.DATABASE_URL,
-    });
-
-    // Get the most recent passkey for this user
-    const mostRecentPasskey = await db
-      .select({ id: schema.passkey.id })
-      .from(schema.passkey)
-      .where(eq(schema.passkey.userId, session.user.id))
-      .orderBy(desc(schema.passkey.createdAt))
-      .limit(1);
-
-    if (mostRecentPasskey.length === 0 || !mostRecentPasskey[0]) {
+    if (passkeys.length === 0) {
       throw new Error('No passkeys found for user');
     }
 
-    // Update the passkey name
-    const result = await db
-      .update(schema.passkey)
-      .set({ name })
-      .where(eq(schema.passkey.id, mostRecentPasskey[0].id))
-      .returning({ id: schema.passkey.id, name: schema.passkey.name });
+    // Sort by createdAt to find the most recent
+    const sortedPasskeys = passkeys.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
-    if (result.length === 0 || !result[0]) {
-      throw new Error('Failed to update passkey name');
+    const mostRecentPasskey = sortedPasskeys[0];
+
+    if (!mostRecentPasskey) {
+      throw new Error('No passkeys found for user');
     }
 
-    return { success: true, passkey: result[0] };
+    // Update the passkey name using the official API
+    const result = await auth.api.updatePasskey({
+      headers: requestHeaders,
+      body: {
+        id: mostRecentPasskey.id,
+        name,
+      },
+    });
+
+    return { success: true, passkey: { id: mostRecentPasskey.id, name } };
   } catch (error) {
     console.error('Failed to update most recent passkey name:', error);
     throw error instanceof Error ? error : new Error('Unknown error occurred');

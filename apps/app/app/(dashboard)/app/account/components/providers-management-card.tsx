@@ -18,6 +18,7 @@ import {
 } from '@deepcrawl/ui/components/ui/dialog';
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import type { Passkey } from 'better-auth/plugins/passkey';
 import {
   KeyIcon,
   Link,
@@ -88,10 +89,7 @@ export function ProvidersManagementCard() {
   const { mutate: unlinkProvider, isPending: isUnlinkingProvider } =
     useUnlinkSocialProvider();
   const [isPasskeysDialogOpen, setIsPasskeysDialogOpen] = useState(false);
-  const [passkeyToRemove, setPasskeyToRemove] = useState<{
-    id: string;
-    name: string | null;
-  } | null>(null);
+  const [passkeyToRemove, setPasskeyToRemove] = useState<Passkey | null>(null);
   const [processingProvider, setProcessingProvider] = useState<string | null>(
     null,
   );
@@ -231,10 +229,7 @@ export function ProvidersManagementCard() {
     addPasskey({});
   };
 
-  const handleRemovePasskey = (passkey: {
-    id: string;
-    name: string | null;
-  }) => {
+  const handleRemovePasskey = (passkey: Passkey) => {
     setPasskeyToRemove(passkey);
   };
 
@@ -356,9 +351,9 @@ export function ProvidersManagementCard() {
                                 passkeys.length > 0 ? (
                                   passkeys.map((passkey) => {
                                     const IconComponent =
-                                      passkey.deviceType === 'cross-platform'
-                                        ? Monitor
-                                        : Smartphone;
+                                      passkey.deviceType === 'multiDevice'
+                                        ? Smartphone
+                                        : Monitor;
                                     return (
                                       <div
                                         key={passkey.id}
