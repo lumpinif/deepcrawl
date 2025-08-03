@@ -29,7 +29,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
+        className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col antialiased`}
       >
         <Providers>{children}</Providers>
       </body>
