@@ -24,7 +24,7 @@ import { SessionsManagementCard } from './components/sessions-management-card';
 import { UserAvatarCard } from './components/user-avatar-card';
 import { UserNameCard } from './components/user-name-card';
 
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
 
 export default async function AccountPage() {
   const queryClient = getQueryClient();
