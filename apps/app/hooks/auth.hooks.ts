@@ -221,7 +221,6 @@ export const useRevokeDeviceSession = () => {
  * Hook to check if a user can safely unlink a specific provider without getting locked out
  */
 export const useCanUnlinkProvider = (providerId: string) => {
-  const { data: session } = useAuthSession();
   const { data: linkedAccounts = [] } = useLinkedAccounts();
   const { data: passkeys = [] } = useUserPasskeys();
 
