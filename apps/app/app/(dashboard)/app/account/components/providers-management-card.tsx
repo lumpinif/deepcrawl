@@ -226,7 +226,7 @@ export function ProvidersManagementCard() {
   };
 
   const handleAddPasskey = () => {
-    addPasskey({});
+    addPasskey();
   };
 
   const handleRemovePasskey = (passkey: Passkey) => {

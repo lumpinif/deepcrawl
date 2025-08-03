@@ -18,7 +18,6 @@ import {
   removeUserPasskey,
   setPassword,
   updateApiKey,
-  updateMostRecentPasskeyName,
 } from '@/app/actions/auth';
 import { BASE_APP_PATH } from '@/config';
 import { authClient } from '@/lib/auth.client';
@@ -591,29 +590,18 @@ export const useAddPasskey = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      authenticatorAttachment,
-    }: {
-      authenticatorAttachment?: 'platform' | 'cross-platform';
-    } = {}) => {
+    mutationFn: async () => {
+      // Generate a meaningful name based on the device and browser
+      const passkeyName = generatePasskeyName();
+
       // First, create the passkey with Better Auth
       const result = await authClient.passkey.addPasskey({
-        authenticatorAttachment,
+        name: passkeyName,
+        authenticatorAttachment: 'platform',
       });
 
       if (result?.error) {
         throw new Error(getAuthErrorMessage(result.error));
-      }
-
-      // Generate a meaningful name based on the device and browser
-      const passkeyName = generatePasskeyName(authenticatorAttachment);
-
-      // Update the most recent passkey name (the one we just created)
-      try {
-        await updateMostRecentPasskeyName(passkeyName);
-      } catch (error) {
-        // Log error but don't fail the entire operation
-        console.warn('Failed to update passkey name:', error);
       }
 
       return result;
@@ -629,6 +617,7 @@ export const useAddPasskey = () => {
       await queryClient.refetchQueries({ queryKey: userQueryKeys.passkeys });
     },
     onError: (error) => {
+      console.error('❌ [useAddPasskey] ~ error:', error);
       // Only show error toast for actual errors, not cancellations
       if (!isWebAuthnCancellationError(error)) {
         toast.error('Failed to add passkey. Please try again.');

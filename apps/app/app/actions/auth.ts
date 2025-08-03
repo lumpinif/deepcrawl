@@ -127,7 +127,7 @@ export async function removeUserPasskey(passkeyId: string) {
   const requestHeaders = await headers();
 
   try {
-    const result = await auth.api.deletePasskey({
+    await auth.api.deletePasskey({
       headers: requestHeaders,
       body: {
         id: passkeyId,
@@ -137,74 +137,6 @@ export async function removeUserPasskey(passkeyId: string) {
     return { success: true, id: passkeyId };
   } catch (error) {
     console.error('Failed to remove passkey:', error);
-    throw error instanceof Error ? error : new Error('Unknown error occurred');
-  }
-}
-
-/**
- * Update a passkey name using Better Auth official API
- * This is called after Better Auth creates the passkey to set a meaningful name
- */
-export async function updatePasskeyName(passkeyId: string, name: string) {
-  const requestHeaders = await headers();
-
-  try {
-    const result = await auth.api.updatePasskey({
-      headers: requestHeaders,
-      body: {
-        id: passkeyId,
-        name,
-      },
-    });
-
-    return { success: true, id: passkeyId, name };
-  } catch (error) {
-    console.error('Failed to update passkey name:', error);
-    throw error instanceof Error ? error : new Error('Unknown error occurred');
-  }
-}
-
-/**
- * Update the name of the most recently created passkey using Better Auth official API
- * No server-side caching - React Query handles client caching
- */
-export async function updateMostRecentPasskeyName(name: string) {
-  const requestHeaders = await headers();
-
-  try {
-    // Get all passkeys for the user
-    const passkeys = await auth.api.listPasskeys({
-      headers: requestHeaders,
-    });
-
-    if (passkeys.length === 0) {
-      throw new Error('No passkeys found for user');
-    }
-
-    // Sort by createdAt to find the most recent
-    const sortedPasskeys = passkeys.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-
-    const mostRecentPasskey = sortedPasskeys[0];
-
-    if (!mostRecentPasskey) {
-      throw new Error('No passkeys found for user');
-    }
-
-    // Update the passkey name using the official API
-    const result = await auth.api.updatePasskey({
-      headers: requestHeaders,
-      body: {
-        id: mostRecentPasskey.id,
-        name,
-      },
-    });
-
-    return { success: true, passkey: { id: mostRecentPasskey.id, name } };
-  } catch (error) {
-    console.error('Failed to update most recent passkey name:', error);
     throw error instanceof Error ? error : new Error('Unknown error occurred');
   }
 }
