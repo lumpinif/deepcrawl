@@ -1,123 +1,8 @@
 'use server';
 
 import { auth } from '@deepcrawl/auth/lib/auth';
-import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
 import { headers } from 'next/headers';
-import type { ActiveOrganization } from '@/lib/auth.client-types';
-
-/**
- * SIMPLIFIED CACHING STRATEGY
- * ===========================
- *
- * Philosophy: Keep it simple, let React Query handle client-side caching
- *
- * Layers:
- * 1. Browser Cache (automatic)
- * 2. React Query (client-side, configurable)
- * 3. Better Auth internal cache (automatic)
- *
- * Benefits:
- * - No cache invalidation complexity
- * - No stale session issues
- * - Easy to debug and reason about
- * - Still fast due to React Query
- * - Fresh data on every server call
- */
-
-/**
- * Fetch the current authenticated session
- * No server-side caching - React Query handles client caching
- */
-export async function fetchAuthSession(): Promise<Session | null> {
-  const requestHeaders = await headers();
-
-  const session = await auth.api.getSession({
-    headers: requestHeaders,
-  });
-
-  return session;
-}
-
-/**
- * Fetch all active sessions for the current user
- * No server-side caching - React Query handles client caching
- */
-export async function fetchListSessions(): Promise<Session['session'][]> {
-  const requestHeaders = await headers();
-
-  try {
-    const result = await auth.api.listSessions({
-      headers: requestHeaders,
-    });
-    return result;
-  } catch (error) {
-    throw new Error(
-      error instanceof Error
-        ? error.message
-        : 'Failed to fetch active sessions',
-    );
-  }
-}
-
-/**
- * Fetch all device sessions for the current user
- * No server-side caching - React Query handles client caching
- */
-export async function fetchDeviceSessions(): Promise<ListDeviceSessions> {
-  const requestHeaders = await headers();
-
-  try {
-    const result = await auth.api.listDeviceSessions({
-      headers: requestHeaders,
-    });
-
-    return result;
-  } catch (error) {
-    throw new Error(
-      error instanceof Error
-        ? error.message
-        : 'Failed to fetch device sessions',
-    );
-  }
-}
-
-/**
- * Fetch the full organization details
- * No server-side caching - React Query handles client caching
- */
-export async function fetchOrganization(): Promise<ActiveOrganization | null> {
-  const requestHeaders = await headers();
-
-  const result = await auth.api.getFullOrganization({
-    headers: requestHeaders,
-  });
-  return result;
-}
-
-/**
- * Cache invalidation functions are no longer needed
- * React Query handles client-side cache invalidation automatically
- * Server actions always return fresh data
- */
-
-/**
- * Fetch user's passkeys using Better Auth official API
- * No server-side caching - React Query handles client caching
- */
-export async function fetchUserPasskeys() {
-  const requestHeaders = await headers();
-
-  try {
-    const passkeys = await auth.api.listPasskeys({
-      headers: requestHeaders,
-    });
-
-    return passkeys;
-  } catch (error) {
-    console.error('Failed to fetch passkeys:', error);
-    return [];
-  }
-}
+import { fetchAuthSession } from '@/query/auth';
 
 /**
  * Remove a passkey from the user's account using Better Auth official API
@@ -157,27 +42,6 @@ export async function fetchLinkedAccounts() {
   } catch (error) {
     console.error('Failed to fetch linked accounts:', error);
     return [];
-  }
-}
-
-/**
- * Fetch user's API keys
- * No server-side caching - React Query handles client caching
- */
-export async function fetchApiKeys() {
-  const requestHeaders = await headers();
-
-  try {
-    const result = await auth.api.listApiKeys({
-      headers: requestHeaders,
-    });
-
-    return result;
-  } catch (error) {
-    console.error('Failed to fetch API keys:', error);
-    throw new Error(
-      error instanceof Error ? error.message : 'Failed to fetch API keys',
-    );
   }
 }
 
