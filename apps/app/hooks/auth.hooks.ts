@@ -7,6 +7,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
+import type { Passkey } from 'better-auth/plugins/passkey';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
@@ -40,17 +41,6 @@ import {
 import { authViewRoutes } from '@/routes/auth';
 import { getSearchParam } from '@/utils';
 import { copyToClipboard } from '@/utils/clipboard';
-
-// Type definition for passkey data (from fetchUserPasskeys)
-// Note: createdAt comes as string from server action due to JSON serialization
-type PasskeyData = {
-  id: string;
-  name: string | null;
-  deviceType: string;
-  createdAt: Date | string | null;
-  backedUp: boolean;
-  transports: string | null;
-};
 
 // Validation schemas
 const displayNameSchema = z
@@ -669,7 +659,7 @@ export const useRemovePasskey = () => {
       // Optimistically remove the passkey from the cache
       queryClient.setQueryData(
         userQueryKeys.passkeys,
-        (old: PasskeyData[] | undefined) => {
+        (old: Passkey[] | undefined) => {
           if (!old) return old;
           return old.filter((passkey) => passkey.id !== passkeyId);
         },
