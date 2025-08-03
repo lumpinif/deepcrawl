@@ -2,8 +2,6 @@
 
 import { auth } from '@deepcrawl/auth/lib/auth';
 import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
-import { getDrizzleDB, schema } from '@deepcrawl/db';
-import { desc, eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import type { ActiveOrganization } from '@/lib/auth.client-types';
 
@@ -219,33 +217,11 @@ export async function fetchLinkedAccounts() {
   const requestHeaders = await headers();
 
   try {
-    // Always get fresh session - no caching complexity
-    const session = await auth.api.getSession({
+    const accounts = await auth.api.listUserAccounts({
       headers: requestHeaders,
     });
 
-    if (!session?.user?.id) {
-      return [];
-    }
-
-    // Direct database query - no caching layer
-    const db = getDrizzleDB({
-      DATABASE_URL: process.env.DATABASE_URL,
-    });
-
-    const linkedAccounts = await db
-      .select({
-        id: schema.account.id,
-        providerId: schema.account.providerId,
-        accountId: schema.account.accountId,
-        createdAt: schema.account.createdAt,
-        updatedAt: schema.account.updatedAt,
-      })
-      .from(schema.account)
-      .where(eq(schema.account.userId, session.user.id))
-      .orderBy(desc(schema.account.createdAt));
-
-    return linkedAccounts;
+    return accounts;
   } catch (error) {
     console.error('Failed to fetch linked accounts:', error);
     return [];
@@ -288,13 +264,9 @@ export async function createApiKey({
   prefix?: string;
   metadata?: Record<string, unknown>;
 }) {
-  const requestHeaders = await headers();
-
   try {
     // Get current session to extract userId
-    const session = await auth.api.getSession({
-      headers: requestHeaders,
-    });
+    const session = await fetchAuthSession();
 
     if (!session?.user?.id) {
       throw new Error('Unauthorized: No valid session found');

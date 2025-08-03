@@ -150,10 +150,10 @@ export function ProvidersManagementCard() {
 
   // Check if providers are connected based on linked accounts
   const isGoogleConnected = linkedAccounts.some(
-    (account) => account.providerId === 'google',
+    (account) => account.provider === 'google',
   );
   const isGithubConnected = linkedAccounts.some(
-    (account) => account.providerId === 'github',
+    (account) => account.provider === 'github',
   );
 
   // Magic Link detection: If user has verified email but no OAuth accounts or passkeys,
