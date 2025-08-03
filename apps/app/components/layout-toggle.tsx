@@ -28,7 +28,7 @@ export function LayoutToggle({ currentMode }: LayoutToggleProps) {
 
   const tooltipContent =
     currentMode === 'sidebar'
-      ? 'Switch to Vercel Mode'
+      ? 'Switch to header tabs navigation'
       : 'Switch to sidebar navigation';
 
   return (
@@ -50,5 +50,51 @@ export function LayoutToggle({ currentMode }: LayoutToggleProps) {
       </TooltipTrigger>
       <TooltipContent>{tooltipContent}</TooltipContent>
     </Tooltip>
+  );
+}
+
+export function LayoutViewToggle({ currentMode }: LayoutToggleProps) {
+  const router = useRouter();
+
+  const toggleMode = (mode: NavigationMode) => {
+    if (mode === currentMode) return;
+
+    const newMode = mode;
+    // Set cookie with 7 days expiry
+    document.cookie = `navigation:mode=${newMode}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+    // Refresh the page to apply the new layout
+    router.refresh();
+  };
+
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    mode: NavigationMode,
+  ) => {
+    e.preventDefault();
+    toggleMode(mode);
+  };
+
+  const buttonCN =
+    'flex w-full flex-col items-center gap-2 border hover:bg-accent p-3 rounded-md bg-accent/20';
+
+  return (
+    <div className="flex w-full justify-between gap-x-2 py-2">
+      <button
+        type="button"
+        className={buttonCN}
+        onClick={(e) => handleClick(e, 'header')}
+      >
+        <LayoutPanelTopIcon svgClassName="size-7 text-muted-foreground/70 stroke-[1.2px]" />
+        <span className="text-xs">Tabs</span>
+      </button>
+      <button
+        type="button"
+        className={buttonCN}
+        onClick={(e) => handleClick(e, 'sidebar')}
+      >
+        <LayoutPanelLeftIcon svgClassName="size-7 text-muted-foreground/70 stroke-[1.2px]" />
+        <span className="text-xs">Sidebar</span>
+      </button>
+    </div>
   );
 }
