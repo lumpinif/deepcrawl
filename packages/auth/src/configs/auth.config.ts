@@ -52,6 +52,7 @@ export const ALLOWED_ORIGINS = [
   PROD_APP_URL,
   PROD_AUTH_WORKER_URL,
   'https://deepcrawl.dev',
+  'https://www.deepcrawl.dev',
   'https://api.deepcrawl.dev',
   'https://*.deepcrawl.dev',
   // Add explicit wildcard support for all deepcrawl.dev subdomains
@@ -257,9 +258,8 @@ export function createAuthConfig(env: Env) {
         expiresIn: 300, // 5 minutes
       }),
       passkey({
-        rpName: 'DeepCrawl Auth',
-        origin: appURL,
-        rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
+        rpName: 'DeepCrawl Passkey',
+        rpID: isDevelopment ? 'localhost:deepcrawl' : 'deepcrawl.dev',
       }),
       organization({
         async sendInvitationEmail(data) {
