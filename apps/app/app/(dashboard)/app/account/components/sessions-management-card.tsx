@@ -156,7 +156,7 @@ export function SessionsManagementCard() {
                       <div className="flex items-center gap-x-2">
                         {new UAParser(session.userAgent || '').getDevice()
                           .type === 'mobile' ? (
-                          <Smartphone />
+                          <Smartphone size={16} />
                         ) : (
                           <Monitor size={16} />
                         )}
