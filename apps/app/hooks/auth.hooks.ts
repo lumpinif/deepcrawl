@@ -617,10 +617,12 @@ export const useAddPasskey = () => {
       await queryClient.refetchQueries({ queryKey: userQueryKeys.passkeys });
     },
     onError: (error) => {
-      console.error('❌ [useAddPasskey] ~ error:', error);
+      console.error('❌ [useAddPasskey] ~ error:', error.message);
       // Only show error toast for actual errors, not cancellations
       if (!isWebAuthnCancellationError(error)) {
-        toast.error('Failed to add passkey. Please try again.');
+        toast.error(
+          'Failed to add passkey. Please try again or report an issue.',
+        );
       }
       // Silently handle cancellations - user intentionally cancelled
     },
