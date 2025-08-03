@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit",
     "css-format": "pnpm biome check . --write --unsafe",
     "postinstall": "fumadocs-mdx",
-    "check": "pnpm lint:fix && pnpm typecheck && biome check --write --unsafe"
+    "check": "pnpm install && pnpm lint:fix && pnpm typecheck && biome check --write --unsafe"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.18",
