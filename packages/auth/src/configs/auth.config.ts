@@ -259,7 +259,6 @@ export function createAuthConfig(env: Env) {
       }),
       passkey({
         rpName: 'DeepCrawl Passkey',
-        rpID: isDevelopment ? 'localhost:deepcrawl' : 'deepcrawl.dev',
       }),
       organization({
         async sendInvitationEmail(data) {
