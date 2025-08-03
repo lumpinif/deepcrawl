@@ -18,7 +18,7 @@ import { useAuthSession } from '@/hooks/auth.hooks';
 import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { getAppRoute } from '@/lib/navigation-config';
-import { userQueryKeys } from '@/lib/query-keys';
+import { userQueryKeys } from '@/query/query-keys';
 import { authViewRoutes } from '@/routes/auth';
 
 export interface UnifiedVerificationFormProps {

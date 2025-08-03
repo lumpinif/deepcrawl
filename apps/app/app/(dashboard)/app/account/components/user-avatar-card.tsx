@@ -23,7 +23,7 @@ import {
 // import { useAuthSession } from '@/hooks/auth.hooks';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { CalendarDays, Mail } from 'lucide-react';
-import { sessionQueryOptions } from '@/lib/query-options';
+import { sessionQueryOptions } from '@/query/query-options';
 
 export function UserAvatarCard() {
   // const { data: session, isLoading } = useAuthSession();

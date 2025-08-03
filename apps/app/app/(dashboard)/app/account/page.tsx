@@ -1,14 +1,14 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { PageContainer, PageHeader } from '@/components/page-elements';
-import { getQueryClient } from '@/lib/query.client';
+import { getQueryClient } from '@/query/query.client';
 import {
   deviceSessionsQueryOptions,
   linkedAccountsQueryOptions,
   listSessionsQueryOptions,
   sessionQueryOptions,
   userPasskeysQueryOptions,
-} from '@/lib/query-options';
+} from '@/query/query-options';
 import {
   MultipleAccountsManagementCardSkeleton,
   PasswordChangeCardSkeleton,

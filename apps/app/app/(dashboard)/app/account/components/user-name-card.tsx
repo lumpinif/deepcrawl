@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { SpinnerButton } from '@/components/spinner-button';
 import { useUpdateUserName } from '@/hooks/auth.hooks';
-import { sessionQueryOptions } from '@/lib/query-options';
+import { sessionQueryOptions } from '@/query/query-options';
 
 // Validation schema for display name
 const displayNameSchema = z

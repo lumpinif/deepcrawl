@@ -4,7 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
-import { getQueryClient } from '@/lib/query.client';
+import { getQueryClient } from '@/query/query.client';
 
 export function QueryProviders({ children }: { children: ReactNode }) {
   // NOTE: Avoid useState when initializing the query client if you don't

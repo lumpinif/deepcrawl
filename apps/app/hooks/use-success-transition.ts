@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { BASE_APP_PATH } from '@/config';
 import { useAuthRedirect, useAuthSession } from '@/hooks/auth.hooks';
 import { getAppRoute } from '@/lib/navigation-config';
-import { userQueryKeys } from '@/lib/query-keys';
+import { userQueryKeys } from '@/query/query-keys';
 import { getSearchParam } from '@/utils';
 
 export function useOnSuccessTransition({

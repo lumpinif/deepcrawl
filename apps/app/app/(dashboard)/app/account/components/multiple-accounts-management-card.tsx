@@ -47,7 +47,7 @@ import {
 import {
   deviceSessionsQueryOptions,
   sessionQueryOptions,
-} from '@/lib/query-options';
+} from '@/query/query-options';
 
 function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (

@@ -27,7 +27,7 @@ import {
 } from '@/lib/auth-errors';
 import { getAppRoute } from '@/lib/navigation-config';
 import { generatePasskeyName } from '@/lib/passkey-utils';
-import { userQueryKeys } from '@/lib/query-keys';
+import { userQueryKeys } from '@/query/query-keys';
 import {
   apiKeysQueryOptions,
   deviceSessionsQueryOptions,
@@ -36,7 +36,7 @@ import {
   organizationQueryOptions,
   sessionQueryOptions,
   userPasskeysQueryOptions,
-} from '@/lib/query-options';
+} from '@/query/query-options';
 import { authViewRoutes } from '@/routes/auth';
 import { getSearchParam } from '@/utils';
 import { copyToClipboard } from '@/utils/clipboard';

@@ -5,8 +5,8 @@ import {
   ApiKeysPageSkeleton,
 } from '@/components/api-keys/api-keys-page-client';
 
-import { getQueryClient } from '@/lib/query.client';
-import { apiKeysQueryOptions } from '@/lib/query-options';
+import { getQueryClient } from '@/query/query.client';
+import { apiKeysQueryOptions } from '@/query/query-options';
 
 export const dynamic = 'force-dynamic';
 

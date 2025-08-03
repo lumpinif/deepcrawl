@@ -1,13 +1,16 @@
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import type { ReactNode } from 'react';
-import { fetchAuthSession, fetchDeviceSessions } from '@/app/actions/auth';
 import { SiteHeader } from '@/components/site-header';
 import { docsOptions } from '@/lib/layout.config';
+import {
+  authGetSession,
+  authListDeviceSessions,
+} from '@/query/auth-query.server';
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const [currentSession, listDeviceSessions] = await Promise.all([
-    fetchAuthSession(),
-    fetchDeviceSessions(),
+    authGetSession(),
+    authListDeviceSessions(),
   ]);
 
   const user = currentSession?.user;

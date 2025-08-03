@@ -20,7 +20,7 @@ import {
   useHasPassword,
   useSetPassword,
 } from '@/hooks/auth.hooks';
-import { sessionQueryOptions } from '@/lib/query-options';
+import { sessionQueryOptions } from '@/query/query-options';
 
 export function PasswordChangeCard() {
   // const { data: session, isLoading } = useAuthSession();

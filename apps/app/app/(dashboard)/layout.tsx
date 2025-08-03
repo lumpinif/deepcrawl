@@ -8,7 +8,10 @@ import AppNavTabs from '@/components/app-nav-tabs';
 import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
-import { fetchAuthSession, fetchDeviceSessions } from '../actions/auth';
+import {
+  authGetSession,
+  authListDeviceSessions,
+} from '@/query/auth-query.server';
 
 export default async function DashboardLayout({
   children,
@@ -18,8 +21,8 @@ export default async function DashboardLayout({
   // TODO: CONSIDER MIGRATING TO REACT QUERY ADVANCED SSR PATTERN
   // Get session first to check authentication
   const [currentSession, listDeviceSessions] = await Promise.all([
-    fetchAuthSession(),
-    fetchDeviceSessions(),
+    authGetSession(),
+    authListDeviceSessions(),
     // auth.api.getFullOrganization({
     // 	headers: requestHeaders,
     // }),

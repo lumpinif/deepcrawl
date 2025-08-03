@@ -22,7 +22,7 @@ import {
 import {
   listSessionsQueryOptions,
   sessionQueryOptions,
-} from '@/lib/query-options';
+} from '@/query/query-options';
 import { authViewRoutes } from '@/routes/auth';
 
 export function SessionsManagementCard() {

@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { authClient } from '@/lib/auth.client';
-import { userQueryKeys } from '@/lib/query-keys';
+import { userQueryKeys } from '@/query/query-keys';
 import { authViewRoutes } from '@/routes/auth';
 import { useOnSuccessTransition } from '../../hooks/use-success-transition';
 

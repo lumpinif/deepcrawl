@@ -43,7 +43,7 @@ import {
   linkedAccountsQueryOptions,
   sessionQueryOptions,
   userPasskeysQueryOptions,
-} from '@/lib/query-options';
+} from '@/query/query-options';
 
 // Helper function to safely format dates from server data
 const formatDate = (date: Date | string | null): string => {
