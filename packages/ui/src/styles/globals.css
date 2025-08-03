@@ -1,7 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import 'fumadocs-ui/css/shadcn.css';
+@import 'fumadocs-ui/css/preset.css';
 
-@plugin "@tailwindcss/typography";
 @plugin 'tailwind-scrollbar';
 
 @source "../**/*.{ts,tsx}";
@@ -134,21 +135,37 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground min-h-[100dvh];
   }
 
   html {
     @apply scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-muted-foreground/50 scrollbar-hover:scrollbar-thumb-muted-foreground scrollbar-track-transparent;
     /* scrollbar-gutter: stable; */
   }
+    
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-muted-foreground;
+  }
+
+  article h1,
+  article h2,
+  article h3 {
+    @apply tracking-tight font-semibold!;
+  }
+  article h1 + p {
+    @apply -mt-2!;
+  }
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+   /* Fix Fumadocs theme toggle icons */
+  [data-theme-toggle] svg {
+    @apply fill-none;
   }
-  body {
-    @apply bg-background text-foreground;
+
+  #nd-sidebar > div[data-fd-if-empty] {
+    @apply border-t-0!;
   }
 }
 

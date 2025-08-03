@@ -73,9 +73,9 @@ export function ThemeGroupToggle({
           size="icon"
           className={cn(
             buttonClassName,
-            'h-5 w-5 rounded-full shadow-sm',
+            'h-5 w-5 rounded-full',
             mounted && theme === value
-              ? 'bg-muted text-primary'
+              ? 'bg-muted text-primary shadow-sm'
               : 'hover:bg-muted/50',
           )}
           variant={mounted && theme === value ? 'outline' : 'ghost'}
