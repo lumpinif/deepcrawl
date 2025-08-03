@@ -9,6 +9,24 @@ import { userQueryKeys } from '@/query/query-keys';
 import { authViewRoutes } from '@/routes/auth';
 import { useOnSuccessTransition } from '../../hooks/use-success-transition';
 
+function cleanupMultiSessionCookies() {
+  if (typeof document === 'undefined') return; // Server-side guard
+
+  // Get all cookies
+  const cookies = document.cookie.split(';');
+
+  // Find and delete multi-session cookies
+  for (const cookie of cookies) {
+    const [name] = cookie.trim().split('=');
+    if (name?.includes('_multi-')) {
+      // Delete the cookie by setting it to expire
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname}`;
+      // Also try with leading dot for subdomain cookies
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=.${window.location.hostname}`;
+    }
+  }
+}
+
 export function Logout() {
   const signingOut = useRef(false);
   const queryClient = useQueryClient();
@@ -23,16 +41,19 @@ export function Logout() {
     if (signingOut.current) return;
     signingOut.current = true;
 
-    authClient.signOut().finally(() => {
-      // Only clear the current session, keep multi-session data cached
-      queryClient.removeQueries({ queryKey: userQueryKeys.session });
+    authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          queryClient.removeQueries({ queryKey: userQueryKeys.session });
+          queryClient.removeQueries({ queryKey: userQueryKeys.listSessions });
+          queryClient.removeQueries({ queryKey: userQueryKeys.deviceSessions });
 
-      // Keep these cached so user can see other sessions if they log back in:
-      // - listSessions (other active sessions)
-      // - deviceSessions (device-specific sessions)
-      // - organization (org data)
+          // This may not be needed if using the multi-session plugin
+          cleanupMultiSessionCookies();
 
-      onSuccess();
+          onSuccess();
+        },
+      },
     });
   }, [onSuccess, queryClient]);
 
