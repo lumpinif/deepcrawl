@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import 'fumadocs-ui/css/shadcn.css';
-@import 'fumadocs-ui/css/preset.css';
+@import "fumadocs-ui/css/shadcn.css";
+@import "fumadocs-ui/css/preset.css";
 
 @plugin 'tailwind-scrollbar';
 
@@ -142,7 +142,7 @@
     @apply scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-muted-foreground/50 scrollbar-hover:scrollbar-thumb-muted-foreground scrollbar-track-transparent;
     /* scrollbar-gutter: stable; */
   }
-    
+
   input::placeholder,
   textarea::placeholder {
     @apply text-muted-foreground;
@@ -159,7 +159,7 @@
 }
 
 @layer base {
-   /* Fix Fumadocs theme toggle icons */
+  /* Fix Fumadocs theme toggle icons */
   [data-theme-toggle] svg {
     @apply fill-none;
   }
