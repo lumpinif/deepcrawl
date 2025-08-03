@@ -6,7 +6,7 @@ import {
 } from '@/components/api-keys/api-keys-page-client';
 
 import { getQueryClient } from '@/query/query.client';
-import { apiKeysQueryOptions } from '@/query/query-options';
+import { apiKeysQueryOptions } from '@/query/query-options.server';
 
 export const dynamic = 'force-dynamic';
 

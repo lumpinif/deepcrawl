@@ -20,16 +20,20 @@ import {
   useRevokeSession,
 } from '@/hooks/auth.hooks';
 import {
-  listSessionsQueryOptions,
-  sessionQueryOptions,
-} from '@/query/query-options';
+  listSessionsQueryOptionsClient,
+  sessionQueryOptionsClient,
+} from '@/query/query-options.client';
 import { authViewRoutes } from '@/routes/auth';
 
 export function SessionsManagementCard() {
   // const { data: currentSession } = useAuthSession();
   // const { data: listSessions, isLoading } = useListSessions();
-  const { data: currentSession } = useSuspenseQuery(sessionQueryOptions());
-  const { data: listSessions } = useSuspenseQuery(listSessionsQueryOptions());
+  const { data: currentSession } = useSuspenseQuery(
+    sessionQueryOptionsClient(),
+  );
+  const { data: listSessions } = useSuspenseQuery(
+    listSessionsQueryOptionsClient(),
+  );
 
   const { mutate: revokeSession, isPending } = useRevokeSession();
   const { mutate: revokeAllOtherSessions, isPending: isRevokingOtherSessions } =

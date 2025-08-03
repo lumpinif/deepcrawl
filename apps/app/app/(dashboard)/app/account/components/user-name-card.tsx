@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { SpinnerButton } from '@/components/spinner-button';
 import { useUpdateUserName } from '@/hooks/auth.hooks';
-import { sessionQueryOptions } from '@/query/query-options';
+import { sessionQueryOptionsClient } from '@/query/query-options.client';
 
 // Validation schema for display name
 const displayNameSchema = z
@@ -28,7 +28,7 @@ const displayNameSchema = z
 
 export function UserNameCard() {
   // const { data: session, isLoading } = useAuthSession();
-  const { data: session } = useSuspenseQuery(sessionQueryOptions());
+  const { data: session } = useSuspenseQuery(sessionQueryOptionsClient());
   const { mutate: updateUserName, isPending } = useUpdateUserName();
   const user = session?.user;
 

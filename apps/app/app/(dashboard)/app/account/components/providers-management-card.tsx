@@ -40,10 +40,10 @@ import {
 } from '@/hooks/auth.hooks';
 import { getDeviceTypeDescription } from '@/lib/passkey-utils';
 import {
-  linkedAccountsQueryOptions,
-  sessionQueryOptions,
-  userPasskeysQueryOptions,
-} from '@/query/query-options';
+  linkedAccountsQueryOptionsClient,
+  sessionQueryOptionsClient,
+  userPasskeysQueryOptionsClient,
+} from '@/query/query-options.client';
 
 // Helper function to safely format dates from server data
 const formatDate = (date: Date | string | null): string => {
@@ -76,11 +76,13 @@ export function ProvidersManagementCard() {
   // const { data: passkeys = [], isLoading: isLoadingPasskeys } =
   //   useUserPasskeys();
 
-  const { data: session } = useSuspenseQuery(sessionQueryOptions());
+  const { data: session } = useSuspenseQuery(sessionQueryOptionsClient());
   const { data: linkedAccounts = [] } = useSuspenseQuery(
-    linkedAccountsQueryOptions(),
+    linkedAccountsQueryOptionsClient(),
   );
-  const { data: passkeys = [] } = useSuspenseQuery(userPasskeysQueryOptions());
+  const { data: passkeys = [] } = useSuspenseQuery(
+    userPasskeysQueryOptionsClient(),
+  );
 
   const { mutate: addPasskey, isPending: isAddingPasskey } = useAddPasskey();
   const { mutate: removePasskey } = useRemovePasskey();
@@ -149,12 +151,12 @@ export function ProvidersManagementCard() {
   }
 
   // Check if providers are connected based on linked accounts
-  const isGoogleConnected = linkedAccounts.some(
-    (account) => account.provider === 'google',
-  );
-  const isGithubConnected = linkedAccounts.some(
-    (account) => account.provider === 'github',
-  );
+  const isGoogleConnected =
+    Array.isArray(linkedAccounts) &&
+    linkedAccounts?.some((account) => account.provider === 'google');
+  const isGithubConnected =
+    Array.isArray(linkedAccounts) &&
+    linkedAccounts?.some((account) => account.provider === 'github');
 
   // Magic Link detection: If user has verified email but no OAuth accounts or passkeys,
   // they likely used magic link or email verification
@@ -186,8 +188,8 @@ export function ProvidersManagementCard() {
       name: 'Passkeys',
       type: 'passkeys',
       icon: KeyIcon,
-      connected: passkeys.length > 0,
-      accountInfo: `${passkeys.length} passkeys registered`,
+      connected: Array.isArray(passkeys) && passkeys.length > 0,
+      accountInfo: `${passkeys?.length || 0} passkeys registered`,
     },
     {
       id: 'google',
@@ -348,6 +350,7 @@ export function ProvidersManagementCard() {
                                 //     </span>
                                 //   </div>
                                 // ) :
+                                Array.isArray(passkeys) &&
                                 passkeys.length > 0 ? (
                                   passkeys.map((passkey) => {
                                     const IconComponent =
@@ -467,7 +470,7 @@ export function ProvidersManagementCard() {
           <DialogHeader>
             <DialogTitle>Remove passkey?</DialogTitle>
             <DialogDescription>
-              {passkeys.length === 1 ? (
+              {Array.isArray(passkeys) && passkeys?.length === 1 ? (
                 <>
                   You are about to remove your last passkey. You will only be
                   able to sign in with a password or email verification.

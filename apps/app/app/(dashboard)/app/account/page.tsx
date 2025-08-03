@@ -8,7 +8,7 @@ import {
   listSessionsQueryOptions,
   sessionQueryOptions,
   userPasskeysQueryOptions,
-} from '@/query/query-options';
+} from '@/query/query-options.server';
 import {
   MultipleAccountsManagementCardSkeleton,
   PasswordChangeCardSkeleton,

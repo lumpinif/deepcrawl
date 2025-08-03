@@ -29,14 +29,13 @@ import { getAppRoute } from '@/lib/navigation-config';
 import { generatePasskeyName } from '@/lib/passkey-utils';
 import { userQueryKeys } from '@/query/query-keys';
 import {
-  apiKeysQueryOptions,
-  deviceSessionsQueryOptions,
-  linkedAccountsQueryOptions,
-  listSessionsQueryOptions,
-  organizationQueryOptions,
-  sessionQueryOptions,
-  userPasskeysQueryOptions,
-} from '@/query/query-options';
+  apiKeysQueryOptionsClient,
+  deviceSessionsQueryOptionsClient,
+  linkedAccountsQueryOptionsClient,
+  organizationQueryOptionsClient,
+  sessionQueryOptionsClient,
+  userPasskeysQueryOptionsClient,
+} from '@/query/query-options.client';
 import { authViewRoutes } from '@/routes/auth';
 import { getSearchParam } from '@/utils';
 import { copyToClipboard } from '@/utils/clipboard';
@@ -49,20 +48,13 @@ const displayNameSchema = z
   .trim();
 
 // Hooks with query options
-export const useAuthSession = () => useQuery(sessionQueryOptions());
-
-/**
- * Hook for getting active sessions with proper error handling and full type inference
- */
-export const useListSessions = () => {
-  return useQuery(listSessionsQueryOptions());
-};
+export const useAuthSession = () => useQuery(sessionQueryOptionsClient());
 
 /**
  * Hook for getting device sessions with proper error handling and full type inference
  */
 export const useDeviceSessions = () => {
-  const result = useQuery(deviceSessionsQueryOptions());
+  const result = useQuery(deviceSessionsQueryOptionsClient());
 
   return result;
 };
@@ -71,21 +63,21 @@ export const useDeviceSessions = () => {
  * Hook for getting organization data with proper error handling and full type inference
  */
 export const useOrganization = () => {
-  return useQuery(organizationQueryOptions());
+  return useQuery(organizationQueryOptionsClient());
 };
 
 /**
  * Hook for fetching user's passkeys with proper error handling and caching
  */
 export const useUserPasskeys = () => {
-  return useQuery(userPasskeysQueryOptions());
+  return useQuery(userPasskeysQueryOptionsClient());
 };
 
 /**
  * Hook for fetching user's linked OAuth accounts with proper error handling and caching
  */
 export const useLinkedAccounts = () => {
-  return useQuery(linkedAccountsQueryOptions());
+  return useQuery(linkedAccountsQueryOptionsClient());
 };
 
 /**
@@ -96,9 +88,9 @@ export const useHasPassword = () => {
   const { data: linkedAccounts = [] } = useLinkedAccounts();
 
   // Check if user has credential provider (email/password) account
-  const hasCredentialAccount = linkedAccounts.some(
-    (account) => account.provider === 'credential',
-  );
+  const hasCredentialAccount =
+    Array.isArray(linkedAccounts) &&
+    linkedAccounts.some((account) => account.provider === 'credential');
 
   return hasCredentialAccount;
 };
@@ -215,15 +207,19 @@ export const useCanUnlinkProvider = (providerId: string) => {
 
   // Check available authentication methods
   // Check if user has credential provider (email/password) account
-  const hasCredentialAccount = linkedAccounts.some(
-    (account) => account.provider === 'credential',
-  );
+  const hasCredentialAccount =
+    Array.isArray(linkedAccounts) &&
+    linkedAccounts.some((account) => account.provider === 'credential');
   const hasPassword = hasCredentialAccount;
-  const hasPasskeys = passkeys.length > 0;
-  const otherOAuthAccounts = linkedAccounts.filter(
-    (account) => account.provider !== providerId,
-  );
-  const hasOtherOAuth = otherOAuthAccounts.length > 0;
+
+  const otherOAuthAccounts =
+    Array.isArray(linkedAccounts) &&
+    linkedAccounts.filter((account) => account.provider !== providerId);
+
+  const hasOtherOAuth =
+    Array.isArray(otherOAuthAccounts) && otherOAuthAccounts.length > 0;
+
+  const hasPasskeys = Array.isArray(passkeys) && passkeys.length > 0;
 
   // User can unlink if they have at least one other authentication method
   const canUnlink = hasPassword || hasPasskeys || hasOtherOAuth;
@@ -240,7 +236,9 @@ export const useCanUnlinkProvider = (providerId: string) => {
     hasPasskeys,
     hasOtherOAuth,
     totalAuthMethods:
-      (hasPassword ? 1 : 0) + passkeys.length + linkedAccounts.length,
+      (hasPassword ? 1 : 0) +
+      (passkeys?.length || 0) +
+      (linkedAccounts?.length || 0),
     suggestedActions: reasons,
     warningMessage: canUnlink
       ? null
@@ -689,16 +687,10 @@ export const useRemovePasskey = () => {
 };
 
 /**
- * Hook for fetching user's API keys
+ * Suspense-friendly
  */
-export const useApiKeys = () => {
-  return useQuery(apiKeysQueryOptions());
-};
-
-/**
- * Suspense-friendly version (throws on cache-miss)
- */
-export const useSuspenseApiKeys = () => useSuspenseQuery(apiKeysQueryOptions());
+export const useSuspenseApiKeys = () =>
+  useSuspenseQuery(apiKeysQueryOptionsClient());
 
 /**
  * Hook for creating a new API key

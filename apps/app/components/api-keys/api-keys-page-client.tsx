@@ -106,7 +106,7 @@ export function ApiKeysPageClient() {
         <ApiKeysPageDescription />
 
         <div className="block sm:hidden">
-          <ApiKeysTable apiKeys={apiKeys} />
+          <ApiKeysTable apiKeys={apiKeys || []} />
         </div>
 
         <Card className="hidden bg-background sm:block">
@@ -116,7 +116,7 @@ export function ApiKeysPageClient() {
                 <Skeleton className="h-12 w-full" />
               </div>
             ) : (
-              <ApiKeysTable apiKeys={apiKeys} />
+              <ApiKeysTable apiKeys={apiKeys || []} />
             )}
           </CardContent>
         </Card>

@@ -20,11 +20,11 @@ import {
   useHasPassword,
   useSetPassword,
 } from '@/hooks/auth.hooks';
-import { sessionQueryOptions } from '@/query/query-options';
+import { sessionQueryOptionsClient } from '@/query/query-options.client';
 
 export function PasswordChangeCard() {
   // const { data: session, isLoading } = useAuthSession();
-  const { data: session } = useSuspenseQuery(sessionQueryOptions());
+  const { data: session } = useSuspenseQuery(sessionQueryOptionsClient());
   const hasPassword = useHasPassword();
   const { mutate: changePassword, isPending: isChangingPending } =
     useChangePassword(() => {

@@ -1,4 +1,4 @@
-'server-only';
+'use server';
 
 import { auth } from '@deepcrawl/auth/lib/auth';
 import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';

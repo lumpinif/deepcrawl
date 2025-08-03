@@ -7,7 +7,7 @@ import {
 } from '@/components/page-elements';
 import { PlaygroundClient } from '@/components/playground/playground-client';
 import { getQueryClient } from '@/query/query.client';
-import { sessionQueryOptions } from '@/query/query-options';
+import { sessionQueryOptions } from '@/query/query-options.server';
 
 export default async function DashboardPage() {
   const queryClient = getQueryClient();

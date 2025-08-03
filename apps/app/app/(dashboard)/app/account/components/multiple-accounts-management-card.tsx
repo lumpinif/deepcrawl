@@ -45,9 +45,9 @@ import {
   useSetActiveSession,
 } from '@/hooks/auth.hooks';
 import {
-  deviceSessionsQueryOptions,
-  sessionQueryOptions,
-} from '@/query/query-options';
+  deviceSessionsQueryOptionsClient,
+  sessionQueryOptionsClient,
+} from '@/query/query-options.client';
 
 function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (
@@ -65,9 +65,11 @@ export function MultipleAccountsManagementCard() {
   // const { data: currentSession } = useAuthSession();
   // const { data: deviceSessions, isLoading } = useDeviceSessions();
 
-  const { data: currentSession } = useSuspenseQuery(sessionQueryOptions());
+  const { data: currentSession } = useSuspenseQuery(
+    sessionQueryOptionsClient(),
+  );
   const { data: deviceSessions } = useSuspenseQuery(
-    deviceSessionsQueryOptions(),
+    deviceSessionsQueryOptionsClient(),
   );
   const { mutate: setActiveSession, isPending: isSwitching } =
     useSetActiveSession();
