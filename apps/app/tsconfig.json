@@ -1,9 +1,9 @@
 {
   "extends": "@deepcrawl/typescript-config/nextjs.json",
   "compilerOptions": {
-    "strict": true,
     "baseUrl": ".",
     "paths": {
+      "@/.source": ["./.source/index.ts"],
       "@/*": ["./*"],
       "@deepcrawl/ui/*": ["../../packages/ui/src/*"],
       "@deepcrawl/auth/*": ["../../packages/auth/src/*"],
@@ -11,18 +11,13 @@
       "deepcrawl": ["../../packages/sdks/js-ts/src/index.ts"],
       "@deepcrawl/contracts/*": ["../../packages/contracts/src/*"]
     },
+
     "plugins": [
       {
         "name": "next"
       }
     ]
   },
-  "include": [
-    "next-env.d.ts",
-    "next.config.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": ["node_modules", ".next"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

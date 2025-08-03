@@ -16,6 +16,7 @@
     "ui": "pnpm dlx shadcn@canary",
     "typecheck": "tsc --noEmit",
     "css-format": "pnpm biome check . --write --unsafe",
+    "postinstall": "fumadocs-mdx",
     "check": "pnpm lint:fix && pnpm typecheck && biome check --write --unsafe"
   },
   "dependencies": {
@@ -50,6 +51,7 @@
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-query-next-experimental": "^5.83.0",
     "@tanstack/react-table": "^8.21.3",
+    "@types/mdx": "^2.0.13",
     "@wojtekmaj/react-recaptcha-v3": "^0.1.4",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
@@ -58,6 +60,9 @@
     "deepcrawl": "workspace:*",
     "drizzle-orm": "^0.44.2",
     "framer-motion": "^12.23.3",
+    "fumadocs-core": "^15.6.7",
+    "fumadocs-mdx": "^11.7.3",
+    "fumadocs-ui": "^15.6.7",
     "geist": "^1.4.2",
     "lucide-react": "^0.475.0",
     "motion": "^12.23.3",
