@@ -374,6 +374,7 @@ export function ProvidersManagementCard() {
                                             <div className="mt-1">
                                               {getDeviceTypeDescription(
                                                 passkey.deviceType,
+                                                passkey.name,
                                               )}
                                             </div>
                                           </div>
