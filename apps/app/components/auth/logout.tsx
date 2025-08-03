@@ -2,8 +2,8 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-
 import { authClient } from '@/lib/auth.client';
 import { userQueryKeys } from '@/lib/query-keys';
 import { authViewRoutes } from '@/routes/auth';
@@ -12,9 +12,11 @@ import { useOnSuccessTransition } from '../../hooks/use-success-transition';
 export function Logout() {
   const signingOut = useRef(false);
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect');
 
   const { onSuccess, isPending } = useOnSuccessTransition({
-    redirectTo: `/${authViewRoutes.login}`,
+    redirectTo: redirectTo ? `/${redirectTo}` : `/${authViewRoutes.login}`,
   });
 
   useEffect(() => {
