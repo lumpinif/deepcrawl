@@ -17,7 +17,7 @@ export function generatePasskeyName(): string {
   const osName = os.name || 'Unknown OS';
   const browserName = browser.name || 'Unknown Browser';
 
-  return `${browserName} - ${osName}${env === 'development' ? ' (Local)' : ''}`;
+  return `${browserName} - ${osName}${env === 'development' ? ' (dev)' : ''}`;
 }
 
 /**
