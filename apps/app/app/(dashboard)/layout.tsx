@@ -59,6 +59,7 @@ export default async function DashboardLayout({
         <AppSidebar />
         <SidebarInset className={defaultInsetClassname}>
           <SiteHeader
+            enableThemeToggle={false}
             user={currentSession.user}
             navigationMode={navigationMode}
             deviceSessions={listDeviceSessions}
@@ -76,6 +77,7 @@ export default async function DashboardLayout({
     <div className="min-h-svh w-full">
       <SiteHeader
         className="h-16"
+        enableThemeToggle={false}
         user={currentSession.user}
         navigationMode={navigationMode}
         deviceSessions={listDeviceSessions}
