@@ -1,8 +1,9 @@
 import type { Icon } from '@tabler/icons-react';
 import {
-  IconBook,
   IconDashboard,
   IconKey,
+  IconLocation,
+  IconLogs,
   IconUser,
 } from '@tabler/icons-react';
 import { BASE_APP_PATH } from '@/config';
@@ -41,6 +42,16 @@ export const NAVGATION_ITEMS: NavigationItem[] = [
     icon: IconDashboard,
   },
   {
+    title: 'Playground',
+    url: getAppRoute('/playground'),
+    icon: IconLocation,
+  },
+  {
+    title: 'Logs',
+    url: getAppRoute('/logs'),
+    icon: IconLogs,
+  },
+  {
     label: 'User',
     title: 'Account',
     url: getAppRoute('/account'),
@@ -50,12 +61,5 @@ export const NAVGATION_ITEMS: NavigationItem[] = [
     title: 'API Keys',
     url: getAppRoute('/api-keys'),
     icon: IconKey,
-  },
-  {
-    label: 'Resources',
-    title: 'Documentation',
-    url: '/docs',
-    icon: IconBook,
-    isExternal: true,
   },
 ];
