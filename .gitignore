@@ -52,6 +52,9 @@ coverage
 out/
 build
 dist
+.contentlayer
+.eslintcache
+.source
 
 # logs
 logs/
