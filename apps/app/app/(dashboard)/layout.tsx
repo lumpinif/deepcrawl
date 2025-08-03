@@ -1,32 +1,25 @@
-import { auth } from '@deepcrawl/auth/lib/auth';
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import { SidebarInset } from '@deepcrawl/ui/components/ui/sidebar';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import AppNavTabs from '@/components/app-nav-tabs';
 import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
+import { fetchAuthSession, fetchDeviceSessions } from '../actions/auth';
 
 export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  // Create a new Headers object from Next.js headers to avoid modification issues
-  const requestHeaders = new Headers(await headers());
-
   // TODO: CONSIDER MIGRATING TO REACT QUERY ADVANCED SSR PATTERN
   // Get session first to check authentication
   const [currentSession, listDeviceSessions] = await Promise.all([
-    auth.api.getSession({
-      headers: requestHeaders,
-    }),
-    auth.api.listDeviceSessions({
-      headers: requestHeaders,
-    }),
+    fetchAuthSession(),
+    fetchDeviceSessions(),
     // auth.api.getFullOrganization({
     // 	headers: requestHeaders,
     // }),

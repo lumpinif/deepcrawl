@@ -1,19 +1,13 @@
-import { auth } from '@deepcrawl/auth/lib/auth';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
+import { fetchAuthSession, fetchDeviceSessions } from '@/app/actions/auth';
 import { SiteHeader } from '@/components/site-header';
 import { docsOptions } from '@/lib/layout.config';
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const requestHeaders = new Headers(await headers());
   const [currentSession, listDeviceSessions] = await Promise.all([
-    auth.api.getSession({
-      headers: requestHeaders,
-    }),
-    auth.api.listDeviceSessions({
-      headers: requestHeaders,
-    }),
+    fetchAuthSession(),
+    fetchDeviceSessions(),
   ]);
 
   const user = currentSession?.user;

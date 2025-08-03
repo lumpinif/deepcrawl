@@ -1,21 +1,14 @@
-import { auth } from '@deepcrawl/auth/lib/auth';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
-import { headers } from 'next/headers';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { fetchAuthSession, fetchDeviceSessions } from '@/app/actions/auth';
 import { UserDropdown } from '@/components/user/user-dropdown';
 import { baseOptions } from '@/lib/layout.config';
-
 export default async function Layout({ children }: { children: ReactNode }) {
-  const requestHeaders = new Headers(await headers());
   const [currentSession, listDeviceSessions] = await Promise.all([
-    auth.api.getSession({
-      headers: requestHeaders,
-    }),
-    auth.api.listDeviceSessions({
-      headers: requestHeaders,
-    }),
+    fetchAuthSession(),
+    fetchDeviceSessions(),
   ]);
 
   const user = currentSession?.user;
