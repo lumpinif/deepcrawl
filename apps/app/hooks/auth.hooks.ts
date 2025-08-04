@@ -117,9 +117,9 @@ export const useSetActiveSession = () => {
 
       return result;
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       // Invalidate all user-related queries
-      await queryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         predicate: (query) => query.queryKey[0] === 'user',
       });
 
@@ -178,12 +178,11 @@ export const useRevokeDeviceSession = () => {
         return;
       }
 
-      toast.success('Account removed successfully');
-    },
-    onSettled: () => {
-      // Always refetch to ensure consistency
+      // Only invalidate session-related queries when revoking device sessions
       queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
-      // queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
+
+      toast.success('Account removed successfully');
     },
   });
 };
@@ -300,12 +299,10 @@ export const useUpdateUserName = () => {
         toast.error(err.message || 'Failed to update display name');
       }
     },
-    onSuccess: async () => {
-      toast.success('Display name updated successfully');
-    },
-    onSettled: () => {
-      // Always refetch to ensure consistency
+    onSuccess: () => {
+      // Invalidate session to refresh updated user data
       queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
+      toast.success('Display name updated successfully');
     },
   });
 };
@@ -594,15 +591,11 @@ export const useAddPasskey = () => {
 
       return result;
     },
-    onSuccess: async () => {
+    onSuccess: () => {
+      // Invalidate passkeys list
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
+
       toast.success('Passkey added successfully');
-
-      // Invalidate client-side caches - server actions always return fresh data
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
-      await queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
-
-      // Force refetch to ensure immediate update
-      await queryClient.refetchQueries({ queryKey: userQueryKeys.passkeys });
     },
     onError: (error) => {
       console.error('❌ [useAddPasskey] ~ error:', error.message);
@@ -659,19 +652,15 @@ export const useRemovePasskey = () => {
         error instanceof Error ? error.message : 'Failed to remove passkey';
       toast.error(errorMessage);
     },
-    onSuccess: async () => {
+    onSuccess: () => {
+      // Invalidate passkeys list
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
+
       toast.success('Passkey removed successfully', {
         description:
           "To prevent confusion, also remove it from your machine's password manager.",
         duration: 8000, // Show longer for important info
       });
-
-      // Invalidate related caches to ensure consistency
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
-    },
-    onSettled: () => {
-      // Always refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
     },
   });
 };
@@ -795,11 +784,9 @@ export const useUpdateApiKey = () => {
       );
     },
     onSuccess: () => {
-      toast.success('API key updated successfully');
-    },
-    onSettled: () => {
-      // Always refetch to ensure consistency
+      // Invalidate API keys to refresh the updated key
       queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
+      toast.success('API key updated successfully');
     },
   });
 };
