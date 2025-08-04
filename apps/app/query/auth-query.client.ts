@@ -14,6 +14,7 @@ export async function getSession(): Promise<AuthClientSession | null> {
       '❌ [Auth Query Client] Failed to get session:',
       error.message,
     );
+    throw new Error(error.message);
   }
 
   return session;
@@ -31,6 +32,7 @@ export async function listSessions() {
       '❌ [Auth Query Client] Failed to fetch active sessions:',
       error.message,
     );
+    throw new Error(error.message);
   }
 
   return sessions;
@@ -49,6 +51,7 @@ export async function listDeviceSessions() {
       '❌ [Auth Query Client] Failed to fetch device sessions:',
       error.message,
     );
+    throw new Error(error.message);
   }
 
   return sessions || [];
@@ -67,6 +70,7 @@ export async function getFullOrganization() {
       '❌ [Auth Query Client] Failed to fetch organization:',
       error.message,
     );
+    throw new Error(error.message);
   }
 
   return organization;
@@ -84,6 +88,7 @@ export async function listUserPasskeys() {
       '❌ [Auth Query Client] Failed to fetch passkeys:',
       error.message,
     );
+    throw new Error(error.message);
   }
 
   return passkeys;
@@ -101,6 +106,7 @@ export async function listAccounts() {
       '❌ [Auth Query Client] Failed to fetch linked accounts:',
       error.message,
     );
+    throw new Error(error.message);
   }
 
   return accounts;
@@ -118,6 +124,7 @@ export async function listApiKeys() {
       '❌ [Auth Query Client] Failed to fetch API keys:',
       error.message,
     );
+    throw new Error(error.message);
   }
 
   return apiKeys;
