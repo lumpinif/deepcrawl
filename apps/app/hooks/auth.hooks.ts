@@ -118,20 +118,10 @@ export const useSetActiveSession = () => {
       return result;
     },
     onSuccess: async () => {
-      // Invalidate and refetch all session-related queries immediately
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: userQueryKeys.session }),
-        queryClient.invalidateQueries({
-          queryKey: userQueryKeys.deviceSessions,
-        }),
-        queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions }),
-      ]);
-
-      // Force immediate refetch to ensure data is fresh
-      await Promise.all([
-        queryClient.refetchQueries({ queryKey: userQueryKeys.session }),
-        queryClient.refetchQueries({ queryKey: userQueryKeys.deviceSessions }),
-      ]);
+      // Invalidate all user-related queries
+      await queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === 'user',
+      });
 
       // Refresh the page to ensure all components reflect the new active session
       router.refresh();
