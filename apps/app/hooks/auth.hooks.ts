@@ -192,8 +192,8 @@ export const useRevokeDeviceSession = () => {
     },
     onSettled: () => {
       // Always refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
       queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
+      // queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
     },
   });
 };
@@ -447,7 +447,7 @@ export const useRevokeSession = () => {
     onSettled: () => {
       // Always refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
+      // queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
     },
   });
 };
@@ -501,7 +501,7 @@ export const useRevokeAllOtherSessions = () => {
     onSettled: () => {
       // Always refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
+      // queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
     },
   });
 };
