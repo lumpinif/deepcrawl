@@ -4,12 +4,16 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 
+export const baseQueryOptions = {
+  staleTime: 10 * 60 * 1000, // 10 minutes (matches cookie cache from auth config)
+  gcTime: 15 * 60 * 1000, // 15 minutes
+} as const;
+
 export function makeQueryClient() {
   const client = new QueryClient({
     defaultOptions: {
       queries: {
-        // Optimized stale time for better performance with cookie caching
-        staleTime: 10 * 60 * 1000, // 10 minutes (matches Better Auth cookie cache)
+        ...baseQueryOptions,
         // Enable stale-while-revalidate pattern
         refetchOnWindowFocus: false,
         refetchOnMount: false,
@@ -21,8 +25,6 @@ export function makeQueryClient() {
           // Don't retry more than 3 times
           return failureCount < 3;
         },
-        // Cache data longer on success
-        gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
       },
       dehydrate: {
         // include pending queries in dehydration

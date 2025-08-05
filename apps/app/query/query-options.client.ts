@@ -9,8 +9,8 @@ import {
   listSessions,
   listUserPasskeys,
 } from '@/query/auth-query.client';
+import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
-import { baseQueryOptions } from './query-options.server';
 
 /** @client
  * Query options for the current authenticated session

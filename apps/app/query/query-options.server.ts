@@ -9,12 +9,8 @@ import {
   authListSessions,
   authListUserAccounts,
 } from '@/query/auth-query.server';
+import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
-
-export const baseQueryOptions = {
-  staleTime: 10 * 60 * 1000, // 10 minutes (matches cookie cache from auth config)
-  gcTime: 15 * 60 * 1000, // 15 minutes
-};
 
 /** @server
  * Query options for the current authenticated session
