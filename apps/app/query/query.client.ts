@@ -6,26 +6,6 @@ import {
 
 export function makeQueryClient() {
   const client = new QueryClient({
-    // queryCache: new QueryCache({
-    //   onError: (error, query) => {
-    //     console.error(`❌ Query Error: ${error.message}`, query);
-    //     if (error.message) {
-    //       toast.error(error.message, {
-    //         action: {
-    //           label: 'retry',
-    //           onClick: () => {
-    //             const queryKey = query.queryKey as QueryKey;
-    //             if (queryKey) {
-    //               client.invalidateQueries({ queryKey });
-    //             } else {
-    //               client.invalidateQueries();
-    //             }
-    //           },
-    //         },
-    //       });
-    //     }
-    //   },
-    // }),
     defaultOptions: {
       queries: {
         // Optimized stale time for better performance with cookie caching
