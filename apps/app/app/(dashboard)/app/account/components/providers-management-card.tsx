@@ -22,13 +22,14 @@ import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import type { Passkey } from 'better-auth/plugins/passkey';
 import {
   KeyIcon,
-  Link,
+  Link as LinkIcon,
   Mail,
   Monitor,
   Smartphone,
   Trash2,
   UserCheck,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { PasskeyCleanupGuide } from '@/components/passkey-cleanup-guide';
 import { SpinnerButton } from '@/components/spinner-button';
@@ -39,6 +40,7 @@ import {
   useRemovePasskey,
   useUnlinkSocialProvider,
 } from '@/hooks/auth.hooks';
+import { getAppRoute } from '@/lib/navigation-config';
 import { getDeviceTypeDescription } from '@/lib/passkey-utils';
 import {
   listUserAccountsQueryOptionsClient,
@@ -94,7 +96,7 @@ export function ProvidersManagementCard(props: {
   const [processingProvider, setProcessingProvider] = useState<string | null>(
     null,
   );
-
+  const router = useRouter();
   const user = currentSession?.user;
 
   // Get safety check for each provider
@@ -157,6 +159,9 @@ export function ProvidersManagementCard(props: {
   const isGithubConnected =
     Array.isArray(linkedAccounts) &&
     linkedAccounts?.some((account) => account.provider === 'github');
+  const hasPassword =
+    Array.isArray(linkedAccounts) &&
+    linkedAccounts?.some((account) => account.provider === 'credential');
 
   // Magic Link detection: If user has verified email but no OAuth accounts or passkeys,
   // they likely used magic link or email verification
@@ -172,14 +177,14 @@ export function ProvidersManagementCard(props: {
       name: 'Email & Password',
       type: 'email',
       icon: Mail,
-      connected: !!user.email,
+      connected: hasPassword,
       accountInfo: user.email || '',
     },
     {
       id: 'magic-link',
       name: 'Magic Link',
       type: 'magic-link',
-      icon: Link,
+      icon: LinkIcon,
       connected: hasMagicLinkCapability,
       accountInfo: magicLinkAccountInfo,
     },
@@ -303,6 +308,18 @@ export function ProvidersManagementCard(props: {
               <div className="flex items-center gap-2 max-sm:w-full max-sm:flex-col">
                 {provider.connected ? (
                   <>
+                    {provider.id === 'email' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="max-sm:w-full"
+                        onClick={() => {
+                          router.push(getAppRoute('/account#password-card'));
+                        }}
+                      >
+                        Change Password
+                      </Button>
+                    )}
                     {provider.id === 'magic-link' && (
                       <Button
                         size="sm"
@@ -432,6 +449,17 @@ export function ProvidersManagementCard(props: {
                       </SpinnerButton>
                     )}
                   </>
+                ) : provider.id === 'email' ? (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className=" max-sm:w-full"
+                    onClick={() => {
+                      router.push(getAppRoute('/account#password-card'));
+                    }}
+                  >
+                    Set Password
+                  </Button>
                 ) : provider.id === 'passkeys' ? (
                   <SpinnerButton
                     size="sm"

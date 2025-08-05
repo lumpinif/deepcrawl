@@ -14,7 +14,8 @@ import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { Eye, EyeOff, Key } from 'lucide-react';
-import { useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { SpinnerButton } from '@/components/spinner-button';
 import {
   useChangePassword,
@@ -45,6 +46,7 @@ export function PasswordChangeCard(props: { currentSession?: Session | null }) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isHighlighted, setIsHighlighted] = useState(false);
 
   const [passwords, setPasswords] = useState({
     current: '',
@@ -54,26 +56,26 @@ export function PasswordChangeCard(props: { currentSession?: Session | null }) {
 
   const isPending = isChangingPending || isSettingPending;
 
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Auto-cleanup hash after highlighting effect
+  useEffect(() => {
+    if (window.location.hash === '#password-card') {
+      setIsHighlighted(true);
+      const timeoutId = setTimeout(() => {
+        const url = new URL(window.location.href);
+        url.hash = '';
+        window.history.replaceState({}, '', url.pathname + url.search);
+        setIsHighlighted(false);
+      }, 2000);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [pathname, searchParams]);
+
   if (isPendingSession) {
-    return (
-      // <Card>
-      //   <CardHeader>
-      //     <CardTitle className="flex items-center gap-2">
-      //       <Key className="h-5 w-5" />
-      //       Password Security
-      //     </CardTitle>
-      //     <CardDescription>
-      //       Manage your password and security settings
-      //     </CardDescription>
-      //   </CardHeader>
-      //   <CardContent className="space-y-6">
-      //     <div className="flex items-center justify-center py-8">
-      //       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      //     </div>
-      //   </CardContent>
-      // </Card>
-      <PasswordChangeCardSkeleton />
-    );
+    return <PasswordChangeCardSkeleton />;
   }
 
   if (!user) {
@@ -137,7 +139,14 @@ export function PasswordChangeCard(props: { currentSession?: Session | null }) {
   };
 
   return (
-    <Card>
+    <Card
+      id="password-card"
+      className={cn(
+        'transition-all duration-300',
+        'target:shadow-lg target:ring-2 target:ring-primary',
+        isHighlighted && 'animate-pulse shadow-lg ring-2 ring-primary',
+      )}
+    >
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Key className="h-5 w-5" />

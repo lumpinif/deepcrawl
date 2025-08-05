@@ -134,6 +134,10 @@
     @apply border-border outline-ring/30;
   }
 
+  html, body {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground min-h-[100dvh];
   }
