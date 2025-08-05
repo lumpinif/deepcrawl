@@ -5,7 +5,6 @@ import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { authClient } from '@/lib/auth.client';
-import { userQueryKeys } from '@/query/query-keys';
 import { authViewRoutes } from '@/routes/auth';
 import { useOnSuccessTransition } from '../../hooks/use-success-transition';
 
@@ -44,9 +43,8 @@ export function Logout() {
     authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          queryClient.removeQueries({ queryKey: userQueryKeys.session });
-          queryClient.removeQueries({ queryKey: userQueryKeys.listSessions });
-          queryClient.removeQueries({ queryKey: userQueryKeys.deviceSessions });
+          // Remove all queries
+          queryClient.removeQueries();
 
           // This may not be needed if using the multi-session plugin
           cleanupMultiSessionCookies();
