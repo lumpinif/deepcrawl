@@ -3,9 +3,11 @@ import type {
   MetadataOptions,
   PageMetadata,
 } from '@deepcrawl/types/services/metadata';
-import type {
-  ScrapedData,
-  ScrapeOptions,
+import {
+  CommonScrapingHeaders,
+  type FetchOptions,
+  type ScrapedData,
+  type ScrapeOptions,
 } from '@deepcrawl/types/services/scrape';
 import type {
   ReadabilityResult,
@@ -71,11 +73,28 @@ export class ScrapeService {
     url: string,
     options: {
       isIframeAllowed?: boolean;
-    } & RequestInit<RequestInitCfProperties> = { isIframeAllowed: true },
+    } & FetchOptions = { isIframeAllowed: true },
   ): Promise<string | FetchPageResult> {
     const { isIframeAllowed = true, signal, ...rest } = options;
     // Add timeout configuration for production reliability
     const timeoutMs = DEFAULT_FETCH_TIMEOUT;
+
+    /**
+     * SIGNAL HANDLING MEMO:
+     *
+     * We use AbortController pattern here instead of passing external signal directly because:
+     * 1. LAYERED CANCELLATION: Handles BOTH timeout AND external cancellation
+     * 2. GUARANTEED CLEANUP: Always clears timeout in finally block
+     * 3. CLEAR ERROR MESSAGES: Distinguishes timeout vs user cancellation
+     * 4. CLOUDFLARE OPTIMIZED: Works with CF Workers execution context
+     *
+     * Signal propagation reality:
+     * - External signals (c.signal) come from: browser disconnection, worker limits, manual abort
+     * - SDK clients CANNOT pass custom AbortSignals over HTTP (impossible to serialize)
+     * - Our timeout protection works regardless of client behavior
+     *
+     * This pattern ensures robust cancellation for all real-world scenarios.
+     */
     const abortController = new AbortController();
 
     // If an external signal is provided, abort when it aborts
@@ -95,16 +114,12 @@ export class ScrapeService {
         ...rest,
         signal: abortController.signal,
         headers: {
+          ...CommonScrapingHeaders.browserLike,
           ...rest.headers,
-          'User-Agent': 'Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)',
-          Accept:
-            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-          DNT: '1',
-          'Upgrade-Insecure-Requests': '1',
         },
-      } satisfies RequestInit<RequestInitCfProperties>);
+      });
 
+      // Clear timeout on successful fetch
       clearTimeout(timeoutId);
 
       // Check if the response is successful
@@ -158,6 +173,8 @@ export class ScrapeService {
       }
 
       throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -490,7 +507,6 @@ export class ScrapeService {
     ...options
   }: ScrapeOptions & {
     url: string;
-    fetchOptions?: RequestInit<RequestInitCfProperties>;
   }): Promise<ScrapedData> {
     const {
       robots,

@@ -166,6 +166,210 @@ export const ScrapedDataSchema = z
 export type ScrapedData = z.infer<typeof ScrapedDataSchema>;
 
 /**
+ * Simple schema for safe HTTP headers.
+ * Just explicitly define what's allowed - no complex validation.
+ */
+export const SafeHeadersSchema = z
+  .object({
+    /**
+     * The user agent string to send with the request.
+     */
+    'User-Agent': z.string().optional(),
+    /**
+     * The media types that are acceptable for the response.
+     */
+    Accept: z.string().optional(),
+    /**
+     * Preferred languages for the response.
+     */
+    'Accept-Language': z.string().optional(),
+    /**
+     * List of acceptable encodings for the response.
+     */
+    'Accept-Encoding': z.string().optional(),
+    /**
+     * The address of the previous web page from which a link to the currently requested page was followed.
+     */
+    Referer: z.string().optional(),
+    /**
+     * Cookies to send with the request.
+     */
+    Cookie: z.string().optional(),
+    /**
+     * Do Not Track preference.
+     */
+    DNT: z.string().optional(),
+    /**
+     * Requests a secure connection upgrade.
+     */
+    'Upgrade-Insecure-Requests': z.string().optional(),
+    /**
+     * Directives for caching mechanisms in both requests and responses.
+     */
+    'Cache-Control': z.string().optional(),
+    /**
+     * Implementation-specific header that may have various effects on caching.
+     */
+    Pragma: z.string().optional(),
+    /**
+     * Makes the request conditional: only send the response if the resource has been modified since the given date.
+     */
+    'If-Modified-Since': z.string().optional(),
+    /**
+     * Makes the request conditional: only send the response if the resource's ETag does not match any listed.
+     */
+    'If-None-Match': z.string().optional(),
+    /**
+     * Indicates the priority for the request.
+     */
+    Priority: z.string().optional(),
+    /**
+     * Contains client hints about device and user agent capabilities.
+     */
+    'Sec-CH-UA': z.string().optional(),
+    /**
+     * Indicates whether the user agent is a mobile device.
+     */
+    'Sec-CH-UA-Mobile': z.string().optional(),
+    /**
+     * Indicates the platform/operating system.
+     */
+    'Sec-CH-UA-Platform': z.string().optional(),
+    /**
+     * Indicates the request is from a browser in a secure context.
+     */
+    'Sec-Fetch-Site': z.string().optional(),
+    /**
+     * Indicates the request's mode.
+     */
+    'Sec-Fetch-Mode': z.string().optional(),
+    /**
+     * Indicates the request's destination.
+     */
+    'Sec-Fetch-Dest': z.string().optional(),
+    /**
+     * Indicates whether the request is a user-initiated request.
+     */
+    'Sec-Fetch-User': z.string().optional(),
+  })
+  .partial()
+  .meta({
+    title: 'SafeHeaders',
+    description: 'Safe HTTP headers for scraping requests',
+    examples: [
+      {
+        'User-Agent': 'MyBot/1.0',
+        Accept: 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+    ],
+  });
+
+/**
+ * Type for safe HTTP headers in scraping requests.
+ */
+export type SafeHeaders = z.infer<typeof SafeHeadersSchema>;
+
+/**
+ * Predefined safe headers for common scraping scenarios.
+ */
+export const CommonScrapingHeaders = {
+  /** Standard browser-like headers - mimics Chrome exactly */
+  browserLike: {
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+    Accept:
+      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept-Encoding': 'gzip, deflate, br',
+    DNT: '1',
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-CH-UA':
+      '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+    'Sec-CH-UA-Mobile': '?0',
+    'Sec-CH-UA-Platform': '"Windows"',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    Priority: 'u=0, i',
+  },
+
+  /** Minimal bot headers */
+  botFriendly: {
+    'User-Agent': 'DeepCrawl-Bot/1.0 (+https://deepcrawl.dev)',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+  },
+
+  /** Mobile browser headers */
+  mobile: {
+    'User-Agent':
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+  },
+} as const;
+
+/**
+ * Safe schema for fetch request options specifically designed for web scraping.
+ * Only includes options that are secure and relevant for scraping operations.
+ */
+export const FetchOptionsSchema = z
+  .object({
+    /** HTTP request method - restricted to safe methods for scraping */
+    method: z
+      .enum(['GET', 'HEAD'])
+      .optional()
+      .meta({
+        description:
+          'HTTP request method (only GET and HEAD allowed for scraping)',
+        examples: ['GET', 'HEAD'],
+      }),
+
+    /** Safe request headers for scraping */
+    headers: SafeHeadersSchema.optional().meta({
+      description: 'HTTP headers for the request (filtered for security)',
+    }),
+
+    /** The redirect mode to use: follow, error, or manual. The default for a new Request object is follow. Note, however, that the incoming Request property of a FetchEvent will have redirect mode manual. */
+    redirect: z
+      .enum(['follow', 'error', 'manual'])
+      .optional()
+      .meta({
+        description: 'How to handle redirects',
+        examples: ['follow', 'error', 'manual'],
+      }),
+
+    /** AbortSignal for request cancellation */
+    signal: z.instanceof(AbortSignal).nullable().optional().meta({
+      description: 'Signal for aborting the request (useful for timeouts)',
+    }),
+  })
+  .meta({
+    title: 'FetchOptions',
+    description: 'Safe fetch options for web scraping operations',
+    examples: [
+      {
+        method: 'GET',
+        headers: CommonScrapingHeaders.browserLike,
+        redirect: 'follow',
+      },
+      {
+        method: 'HEAD',
+        headers: CommonScrapingHeaders.botFriendly,
+        redirect: 'manual',
+      },
+    ],
+  });
+
+/**
+ * Type for safe fetch request options specifically designed for web scraping.
+ * Only includes options that are secure and relevant for scraping operations.
+ */
+export type FetchOptions = z.infer<typeof FetchOptionsSchema>;
+
+/**
  * Options for scraping operation.
  * Controls how the scraping operation is performed.
  */
@@ -253,6 +457,20 @@ export const ScrapeOptionsSchema = z
           readerOptions: {
             debug: true,
           },
+        },
+      ],
+    }),
+
+    /**
+     * Options for the fetch request.
+     */
+    fetchOptions: FetchOptionsSchema.optional().meta({
+      description: 'Options for the fetch request.',
+      examples: [
+        {
+          method: 'GET',
+          headers: CommonScrapingHeaders.botFriendly,
+          redirect: 'follow',
         },
       ],
     }),

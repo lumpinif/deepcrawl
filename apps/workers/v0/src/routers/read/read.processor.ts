@@ -234,7 +234,7 @@ export async function processReadRequest(
       cleaningProcessor:
         params.cleaningProcessor ??
         (!isGithubUrl ? 'html-rewriter' : 'cheerio-reader'),
-      fetchOptions: { signal: c.signal },
+      fetchOptions: { signal: c.signal, ...params.fetchOptions },
     });
 
     // Convert article content to markdown if available

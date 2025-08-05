@@ -180,7 +180,7 @@ export async function processLinksRequest(
           cleanedHtml: isCleanedHtml,
           robots: url === rootUrl && params.robots,
           sitemapXML: url === rootUrl && params.sitemapXML,
-          fetchOptions: { signal: c.signal },
+          fetchOptions: { signal: c.signal, ...params.fetchOptions },
         });
 
         // Add to visited URLs sets with current timestamp
