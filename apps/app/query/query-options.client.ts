@@ -74,7 +74,7 @@ export const userPasskeysQueryOptionsClient = () =>
  * Query options for user's linked OAuth accounts
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const linkedAccountsQueryOptionsClient = () =>
+export const listUserAccountsQueryOptionsClient = () =>
   queryOptions({
     queryKey: userQueryKeys.listUserAccounts,
     queryFn: listAccounts,

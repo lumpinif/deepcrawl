@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from '@deepcrawl/ui/components/ui/dialog';
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import type { Passkey } from 'better-auth/plugins/passkey';
 import {
   KeyIcon,
@@ -40,7 +40,7 @@ import {
 } from '@/hooks/auth.hooks';
 import { getDeviceTypeDescription } from '@/lib/passkey-utils';
 import {
-  linkedAccountsQueryOptionsClient,
+  listUserAccountsQueryOptionsClient,
   sessionQueryOptionsClient,
   userPasskeysQueryOptionsClient,
 } from '@/query/query-options.client';
@@ -75,10 +75,9 @@ export function ProvidersManagementCard() {
     sessionQueryOptionsClient(),
   );
   const { data: linkedAccounts = [], isPending: isPendingLinkedAccounts } =
-    useQuery(linkedAccountsQueryOptionsClient());
-  const { data: passkeys = [], isPending: isPendingPasskeys } = useQuery(
-    userPasskeysQueryOptionsClient(),
-  );
+    useSuspenseQuery(listUserAccountsQueryOptionsClient());
+  const { data: passkeys = [], isPending: isPendingPasskeys } =
+    useSuspenseQuery(userPasskeysQueryOptionsClient());
 
   const { mutate: addPasskey, isPending: isAddingPasskey } = useAddPasskey();
   const { mutate: removePasskey } = useRemovePasskey();

@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { Loader2, Monitor, Smartphone, Wifi } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -30,9 +30,8 @@ export function SessionsManagementCard() {
   const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
     sessionQueryOptionsClient(),
   );
-  const { data: listSessions, isPending: isPendingListSessions } = useQuery(
-    listSessionsQueryOptionsClient(),
-  );
+  const { data: listSessions, isPending: isPendingListSessions } =
+    useSuspenseQuery(listSessionsQueryOptionsClient());
 
   const { mutate: revokeSession, isPending } = useRevokeSession();
   const { mutate: revokeAllOtherSessions, isPending: isRevokingOtherSessions } =

@@ -31,7 +31,7 @@ import { userQueryKeys } from '@/query/query-keys';
 import {
   apiKeysQueryOptionsClient,
   deviceSessionsQueryOptionsClient,
-  linkedAccountsQueryOptionsClient,
+  listUserAccountsQueryOptionsClient,
   organizationQueryOptionsClient,
   sessionQueryOptionsClient,
   userPasskeysQueryOptionsClient,
@@ -76,8 +76,8 @@ export const useUserPasskeys = () => {
 /**
  * Hook for fetching user's linked OAuth accounts with proper error handling and caching
  */
-export const useLinkedAccounts = () => {
-  return useQuery(linkedAccountsQueryOptionsClient());
+export const useListUserAccounts = () => {
+  return useQuery(listUserAccountsQueryOptionsClient());
 };
 
 /**
@@ -85,7 +85,7 @@ export const useLinkedAccounts = () => {
  * Returns true if user has a credential account (email/password)
  */
 export const useHasPassword = () => {
-  const { data: linkedAccounts = [] } = useLinkedAccounts();
+  const { data: linkedAccounts = [] } = useListUserAccounts();
 
   // Check if user has credential provider (email/password) account
   const hasCredentialAccount =
@@ -191,7 +191,7 @@ export const useRevokeDeviceSession = () => {
  * Hook to check if a user can safely unlink a specific provider without getting locked out
  */
 export const useCanUnlinkProvider = (providerId: string) => {
-  const { data: linkedAccounts = [] } = useLinkedAccounts();
+  const { data: linkedAccounts = [] } = useListUserAccounts();
   const { data: passkeys = [] } = useUserPasskeys();
 
   // Check available authentication methods

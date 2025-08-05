@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@deepcrawl/ui/components/ui/dialog';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import {
   Loader2,
   Monitor,
@@ -66,9 +66,8 @@ export function MultipleAccountsManagementCard() {
   const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
     sessionQueryOptionsClient(),
   );
-  const { data: deviceSessions, isPending: isPendingDeviceSessions } = useQuery(
-    deviceSessionsQueryOptionsClient(),
-  );
+  const { data: deviceSessions, isPending: isPendingDeviceSessions } =
+    useSuspenseQuery(deviceSessionsQueryOptionsClient());
 
   const { mutate: setActiveSession, isPending: isSwitching } =
     useSetActiveSession();
