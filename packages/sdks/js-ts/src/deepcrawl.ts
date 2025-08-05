@@ -277,6 +277,11 @@ export class DeepcrawlApp {
           ...extractedHeaders,
         };
       },
+      /**
+       * @note
+       * SDK clients CANNOT pass custom AbortSignals over HTTP (impossible to serialize)
+       * Our timeout protection works regardless of client behavior
+       */
       fetch: async (request, init) =>
         fetchImpl(request, {
           ...init,
