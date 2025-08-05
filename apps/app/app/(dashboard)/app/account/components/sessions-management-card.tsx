@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Loader2, Monitor, Smartphone, Wifi } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -24,14 +24,13 @@ import {
   sessionQueryOptionsClient,
 } from '@/query/query-options.client';
 import { authViewRoutes } from '@/routes/auth';
+import { SessionsManagementCardSkeleton } from './account-skeletons';
 
 export function SessionsManagementCard() {
-  // const { data: currentSession } = useAuthSession();
-  // const { data: listSessions, isLoading } = useListSessions();
-  const { data: currentSession } = useSuspenseQuery(
+  const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
     sessionQueryOptionsClient(),
   );
-  const { data: listSessions } = useSuspenseQuery(
+  const { data: listSessions, isPending: isPendingListSessions } = useQuery(
     listSessionsQueryOptionsClient(),
   );
 
@@ -51,6 +50,10 @@ export function SessionsManagementCard() {
       setRevokingSessionId(null);
     }
   }, [isPending, revokingSessionId]);
+
+  if (isPendingCurrentSession || isPendingListSessions) {
+    return <SessionsManagementCardSkeleton />;
+  }
 
   // Early return if no current session
   if (!currentSession?.session) {

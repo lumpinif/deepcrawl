@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from '@deepcrawl/ui/components/ui/dialog';
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import type { Passkey } from 'better-auth/plugins/passkey';
 import {
   KeyIcon,
@@ -44,6 +44,7 @@ import {
   sessionQueryOptionsClient,
   userPasskeysQueryOptionsClient,
 } from '@/query/query-options.client';
+import { ProvidersManagementCardSkeleton } from './account-skeletons';
 
 // Helper function to safely format dates from server data
 const formatDate = (date: Date | string | null): string => {
@@ -70,17 +71,12 @@ interface ProviderInfo {
 }
 
 export function ProvidersManagementCard() {
-  // const { data: session, isLoading } = useAuthSession();
-  // const { data: linkedAccounts = [], isLoading: isLoadingAccounts } =
-  //   useLinkedAccounts();
-  // const { data: passkeys = [], isLoading: isLoadingPasskeys } =
-  //   useUserPasskeys();
-
-  const { data: session } = useSuspenseQuery(sessionQueryOptionsClient());
-  const { data: linkedAccounts = [] } = useSuspenseQuery(
-    linkedAccountsQueryOptionsClient(),
+  const { data: session, isPending: isPendingSession } = useQuery(
+    sessionQueryOptionsClient(),
   );
-  const { data: passkeys = [] } = useSuspenseQuery(
+  const { data: linkedAccounts = [], isPending: isPendingLinkedAccounts } =
+    useQuery(linkedAccountsQueryOptionsClient());
+  const { data: passkeys = [], isPending: isPendingPasskeys } = useQuery(
     userPasskeysQueryOptionsClient(),
   );
 
@@ -90,6 +86,7 @@ export function ProvidersManagementCard() {
     useLinkSocialProvider();
   const { mutate: unlinkProvider, isPending: isUnlinkingProvider } =
     useUnlinkSocialProvider();
+
   const [isPasskeysDialogOpen, setIsPasskeysDialogOpen] = useState(false);
   const [passkeyToRemove, setPasskeyToRemove] = useState<Passkey | null>(null);
   const [processingProvider, setProcessingProvider] = useState<string | null>(
@@ -109,27 +106,28 @@ export function ProvidersManagementCard() {
     }
   }, [isLinkingProvider, isUnlinkingProvider]);
 
-  // if (isLoading || isLoadingAccounts) {
-  //   return (
-  //     <Card>
-  //       <CardHeader>
-  //         <CardTitle className="flex items-center gap-2">
-  //           <UserCheck className="h-5 w-5" />
-  //           Sign-in Methods
-  //         </CardTitle>
-  //         <CardDescription>
-  //           Customize how you access your account. Link your Git profiles and
-  //           set up passkeys for seamless, secure authentication.
-  //         </CardDescription>
-  //       </CardHeader>
-  //       <CardContent className="space-y-6">
-  //         <div className="flex items-center justify-center py-8">
-  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-  //         </div>
-  //       </CardContent>
-  //     </Card>
-  //   );
-  // }
+  if (isPendingSession || isPendingLinkedAccounts || isPendingPasskeys) {
+    return (
+      // <Card>
+      //   <CardHeader>
+      //     <CardTitle className="flex items-center gap-2">
+      //       <UserCheck className="h-5 w-5" />
+      //       Sign-in Methods
+      //     </CardTitle>
+      //     <CardDescription>
+      //       Customize how you access your account. Link your Git profiles and
+      //       set up passkeys for seamless, secure authentication.
+      //     </CardDescription>
+      //   </CardHeader>
+      //   <CardContent className="space-y-6">
+      //     <div className="flex items-center justify-center py-8">
+      //       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      //     </div>
+      //   </CardContent>
+      // </Card>
+      <ProvidersManagementCardSkeleton />
+    );
+  }
 
   if (!user) {
     return (

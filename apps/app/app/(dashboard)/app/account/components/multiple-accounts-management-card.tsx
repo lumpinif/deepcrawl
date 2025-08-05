@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@deepcrawl/ui/components/ui/dialog';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   Loader2,
   Monitor,
@@ -48,6 +48,7 @@ import {
   deviceSessionsQueryOptionsClient,
   sessionQueryOptionsClient,
 } from '@/query/query-options.client';
+import { MultipleAccountsManagementCardSkeleton } from './account-skeletons';
 
 function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (
@@ -62,15 +63,13 @@ function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
 }
 
 export function MultipleAccountsManagementCard() {
-  // const { data: currentSession } = useAuthSession();
-  // const { data: deviceSessions, isLoading } = useDeviceSessions();
-
-  const { data: currentSession } = useSuspenseQuery(
+  const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
     sessionQueryOptionsClient(),
   );
-  const { data: deviceSessions } = useSuspenseQuery(
+  const { data: deviceSessions, isPending: isPendingDeviceSessions } = useQuery(
     deviceSessionsQueryOptionsClient(),
   );
+
   const { mutate: setActiveSession, isPending: isSwitching } =
     useSetActiveSession();
   const { mutate: revokeDeviceSession, isPending: isRemoving } =
@@ -97,27 +96,28 @@ export function MultipleAccountsManagementCard() {
     }
   }, [isSwitching, isRemoving, switchingSessionToken, removingSessionToken]);
 
-  // if (isLoading) {
-  //   return (
-  //     <Card>
-  //       <CardHeader>
-  //         <CardTitle className="flex items-center gap-2">
-  //           <Users className="h-5 w-5" />
-  //           Multiple Accounts
-  //         </CardTitle>
-  //         <CardDescription>
-  //           Manage multiple accounts and switch between them seamlessly. Maximum{' '}
-  //           {MAX_SESSIONS} accounts allowed.
-  //         </CardDescription>
-  //       </CardHeader>
-  //       <CardContent className="space-y-6">
-  //         <div className="flex items-center justify-center py-8">
-  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-  //         </div>
-  //       </CardContent>
-  //     </Card>
-  //   );
-  // }
+  if (isPendingCurrentSession || isPendingDeviceSessions) {
+    //   return (
+    //     <Card>
+    //       <CardHeader>
+    //         <CardTitle className="flex items-center gap-2">
+    //           <Users className="h-5 w-5" />
+    //           Multiple Accounts
+    //         </CardTitle>
+    //         <CardDescription>
+    //           Manage multiple accounts and switch between them seamlessly. Maximum{' '}
+    //           {MAX_SESSIONS} accounts allowed.
+    //         </CardDescription>
+    //       </CardHeader>
+    //       <CardContent className="space-y-6">
+    //         <div className="flex items-center justify-center py-8">
+    //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+    //         </div>
+    //       </CardContent>
+    // </Card>
+    // );
+    return <MultipleAccountsManagementCardSkeleton />;
+  }
 
   // Early return if no current session
   if (!currentSession?.session) {

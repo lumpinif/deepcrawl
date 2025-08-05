@@ -20,34 +20,35 @@ import {
   IconShieldOff,
   IconUser,
 } from '@tabler/icons-react';
-// import { useAuthSession } from '@/hooks/auth.hooks';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { CalendarDays, Mail } from 'lucide-react';
 import { sessionQueryOptionsClient } from '@/query/query-options.client';
+import { UserAvatarCardSkeleton } from './account-skeletons';
 
 export function UserAvatarCard() {
-  // const { data: session, isLoading } = useAuthSession();
-  const { data: session } = useSuspenseQuery(sessionQueryOptionsClient());
-  const user = session?.user;
+  const { data: session, isPending } = useQuery(sessionQueryOptionsClient());
 
-  // if (isLoading) {
-  //   return (
-  //     <Card>
-  //       <CardHeader>
-  //         <CardTitle className="flex items-center gap-2">
-  //           <IconUser className="h-5 w-5" />
-  //           User Profile
-  //         </CardTitle>
-  //         <CardDescription>Your account information and status</CardDescription>
-  //       </CardHeader>
-  //       <CardContent className="space-y-4">
-  //         <div className="flex items-center justify-center py-8">
-  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-  //         </div>
-  //       </CardContent>
-  //     </Card>
-  //   );
-  // }
+  if (isPending) {
+    return (
+      // <Card>
+      //   <CardHeader>
+      //     <CardTitle className="flex items-center gap-2">
+      //       <IconUser className="h-5 w-5" />
+      //       User Profile
+      //     </CardTitle>
+      //     <CardDescription>Your account information and status</CardDescription>
+      //   </CardHeader>
+      //   <CardContent className="space-y-4">
+      //     <div className="flex items-center justify-center py-8">
+      //       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      //     </div>
+      //   </CardContent>
+      // </Card>
+      <UserAvatarCardSkeleton />
+    );
+  }
+
+  const user = session?.user;
 
   if (!user) {
     return (

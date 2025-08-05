@@ -10,7 +10,7 @@ import {
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Edit3 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -18,6 +18,7 @@ import { z } from 'zod';
 import { SpinnerButton } from '@/components/spinner-button';
 import { useUpdateUserName } from '@/hooks/auth.hooks';
 import { sessionQueryOptionsClient } from '@/query/query-options.client';
+import { UserNameCardSkeleton } from './account-skeletons';
 
 // Validation schema for display name
 const displayNameSchema = z
@@ -27,10 +28,12 @@ const displayNameSchema = z
   .trim();
 
 export function UserNameCard() {
-  // const { data: session, isLoading } = useAuthSession();
-  const { data: session } = useSuspenseQuery(sessionQueryOptionsClient());
-  const { mutate: updateUserName, isPending } = useUpdateUserName();
+  const { data: session, isPending: queryPending } = useQuery(
+    sessionQueryOptionsClient(),
+  );
   const user = session?.user;
+
+  const { mutate: updateUserName, isPending } = useUpdateUserName();
 
   const [name, setName] = useState(user?.name || '');
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -56,26 +59,27 @@ export function UserNameCard() {
     }
   }, [name]);
 
-  // if (isLoading) {
-  //   return (
-  //     <Card>
-  //       <CardHeader>
-  //         <CardTitle className="flex items-center gap-2">
-  //           <Edit3 className="h-5 w-5" />
-  //           Display Name
-  //         </CardTitle>
-  //         <CardDescription>
-  //           Your display name is visible to other users
-  //         </CardDescription>
-  //       </CardHeader>
-  //       <CardContent className="space-y-4">
-  //         <div className="flex items-center justify-center py-8">
-  //           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-  //         </div>
-  //       </CardContent>
-  //     </Card>
-  //   );
-  // }
+  if (queryPending) {
+    return (
+      // <Card>
+      //   <CardHeader>
+      //     <CardTitle className="flex items-center gap-2">
+      //       <Edit3 className="h-5 w-5" />
+      //       Display Name
+      //     </CardTitle>
+      //     <CardDescription>
+      //       Your display name is visible to other users
+      //     </CardDescription>
+      //   </CardHeader>
+      //   <CardContent className="space-y-4">
+      //     <div className="flex items-center justify-center py-8">
+      //       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      //     </div>
+      //   </CardContent>
+      // </Card>
+      <UserNameCardSkeleton />
+    );
+  }
 
   if (!user) {
     return (
