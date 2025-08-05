@@ -1,5 +1,5 @@
 import {
-  HTMLCleaningOptionsSchema,
+  HTMLRewriterOptionsSchema,
   LinkExtractionOptionsSchema,
   MetadataOptionsSchema,
 } from '@deepcrawl/types/index';
@@ -44,9 +44,9 @@ export const DEFAULT_METADATA_OPTIONS = MetadataOptionsSchema.parse({});
 
 export const DEFAULT_LINK_OPTIONS = LinkExtractionOptionsSchema.parse({});
 
-// export const DEFAULT_HTMLCLEANING_OPTIONS: HTMLCleaningOptions = {
+// export const DEFAULT_HTMLCLEANING_OPTIONS: HTMLRewriterOptionsSchema = {
 //   extractMainContent: true,
 //   removeBase64Images: true,
 // };
 
-export const DEFAULT_HTMLCLEANING_OPTIONS = HTMLCleaningOptionsSchema.parse({});
+export const DEFAULT_HTMLCLEANING_OPTIONS = HTMLRewriterOptionsSchema.parse({});
