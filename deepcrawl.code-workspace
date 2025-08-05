@@ -26,7 +26,7 @@
       "apps/**": true,
       "packages/**": true
     },
-    "biome.enabled": true,
+    "biome.enabled": false, // enabled in .vscode/settings.json, disable to prevent conflicts
     "editor.codeActionsOnSave": {
       "source.organizeImports.biome": "explicit",
       "source.fixAll.biome": "explicit"
