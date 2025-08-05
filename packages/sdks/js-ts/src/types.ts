@@ -4,11 +4,6 @@ import type { Agent } from 'https';
 
 export interface DeepcrawlFetchOptions extends RequestInit {
   agent?: Agent;
-  cf?: {
-    cacheTtl: number;
-    timeout: number;
-    cacheEverything: boolean;
-  };
 }
 
 export interface DeepcrawlConfig {

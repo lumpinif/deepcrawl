@@ -188,16 +188,6 @@ const HTTP_AGENT_OPTIONS = {
   keepAliveMsecs: 30000,
 } satisfies AgentOptions;
 
-const CF_AGENT_OPTIONS = {
-  cacheTtl: 60, // 60 seconds
-  timeout: 60000, // 60 seconds
-  cacheEverything: false, // false means cache only for 200 responses
-} satisfies {
-  cacheTtl: number;
-  timeout: number;
-  cacheEverything: boolean;
-};
-
 export class DeepcrawlApp {
   public client: ContractRouterClient<typeof contract, DeepCrawlClientContext>;
   private safeClient: ReturnType<
@@ -295,12 +285,6 @@ export class DeepcrawlApp {
           // @ts-ignore - Node.js specific option
           agent:
             this.config.fetchOptions?.agent || (await this.getHttpsAgent()),
-          cf:
-            this.nodeEnv === 'cf-worker'
-              ? this.config.fetchOptions?.cf || {
-                  ...CF_AGENT_OPTIONS,
-                }
-              : undefined,
         }),
       plugins: [
         new ClientRetryPlugin({
