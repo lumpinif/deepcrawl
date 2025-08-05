@@ -1,6 +1,6 @@
 import type {
-  HTMLCleaningOptions,
   HTMLCleaningResult,
+  HTMLRewriterOptions,
 } from '@deepcrawl/types/services/html-cleaning';
 
 import { DEFAULT_HTMLCLEANING_OPTIONS } from '@/config/default-options';
@@ -29,7 +29,7 @@ export async function HTMLCleaning({
 }: {
   rawHtml: string;
   baseUrl: string;
-  options?: HTMLCleaningOptions;
+  options?: HTMLRewriterOptions;
 }): Promise<HTMLCleaningResult> {
   // Initialize metrics
   // const metrics: HTMLCleaningMetrics = {

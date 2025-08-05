@@ -1,4 +1,15 @@
-import { PageMetadataSchema } from '@deepcrawl/types/services/metadata/types';
+import {
+  smartboolFalse,
+  smartboolTrue,
+} from '@deepcrawl/types/common/smart-schemas';
+import {
+  HTMLRewriterOptionsSchema,
+  ReaderCleaningOptionsSchema,
+} from '@deepcrawl/types/services/html-cleaning/types';
+import {
+  MetadataOptionsSchema,
+  PageMetadataSchema,
+} from '@deepcrawl/types/services/metadata/types';
 import { z } from 'zod/v4';
 
 export const MetaFilesSchema = z
@@ -153,3 +164,131 @@ export const ScrapedDataSchema = z
  * ```
  */
 export type ScrapedData = z.infer<typeof ScrapedDataSchema>;
+
+/**
+ * Options for scraping operation.
+ * Controls how the scraping operation is performed.
+ */
+export const ScrapeOptionsSchema = z
+  .object({
+    /**
+     * Whether to extract metadata from the page.
+     * Default: true
+     */
+    metadata: smartboolTrue().meta({
+      description: 'Whether to extract metadata from the page.',
+      examples: [true],
+    }),
+
+    /**
+     * Whether to return cleaned HTML.
+     * Default: false
+     */
+    cleanedHtml: smartboolFalse().meta({
+      description: 'Whether to return cleaned HTML.',
+      examples: [false],
+    }),
+
+    /**
+     * Whether to fetch and parse robots.txt.
+     * Default: false
+     */
+    robots: smartboolFalse().meta({
+      description: 'Whether to fetch and parse robots.txt.',
+      examples: [false],
+    }),
+
+    /**
+     * Whether to fetch and parse sitemap.xml.
+     * Default: false
+     */
+    sitemapXML: smartboolFalse().meta({
+      description:
+        '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
+      examples: [false],
+    }),
+
+    /**
+     * Options for metadata extraction.
+     * Controls how metadata like title, description, etc. are extracted.
+     */
+    metadataOptions: MetadataOptionsSchema.optional(),
+
+    /**
+     * The cleaning processor to use.
+     * @note cheerio-reader is the default in `scrape.service.ts` and recommended cleaning processor, but html-rewriter is used for github.com urls.
+     * Default: 'cheerio-reader'
+     */
+    cleaningProcessor: z
+      .enum(['cheerio-reader', 'html-rewriter'])
+      .optional()
+      .meta({
+        description: 'The cleaning processor to use.',
+        examples: ['cheerio-reader', 'html-rewriter'],
+      }),
+
+    /**
+     * @note only applied when cleaning processor is 'html-rewriter'
+     * Options for HTML cleaning with html-rewriter.
+     * Controls how HTML is sanitized and cleaned.
+     */
+    htmlRewriterOptions: HTMLRewriterOptionsSchema.optional().meta({
+      description: 'Options for HTML cleaning with html-rewriter.',
+      examples: [
+        {
+          removeScripts: true,
+        },
+      ],
+    }),
+
+    /**
+     * @note only applied when cleaning processor is 'cheerio-reader'
+     * Options for HTML cleaning with cheerio-reader.
+     * Controls how HTML is sanitized and cleaned.
+     */
+    readerCleaningOptions: ReaderCleaningOptionsSchema.optional().meta({
+      description: 'Options for HTML cleaning with cheerio-reader.',
+      examples: [
+        {
+          readerOptions: {
+            debug: true,
+          },
+        },
+      ],
+    }),
+  })
+  .meta({
+    title: 'ScrapeOptions',
+    description: 'Configuration options for scraping operation',
+    examples: [
+      {
+        metadata: true,
+        cleanedHtml: false,
+        robots: false,
+        sitemapXML: false,
+        metadataOptions: {
+          title: true,
+        },
+        cleaningProcessor: 'cheerio-reader',
+        readerCleaningOptions: {
+          readerOptions: {
+            debug: true,
+          },
+        },
+        cheerioOptions: {
+          baseURI: 'https://example.com',
+          quirksMode: false,
+          scriptingEnabled: true,
+          sourceCodeLocationInfo: false,
+          treeAdapter: 'treeAdapters.default',
+          xml: false,
+        },
+      },
+    ],
+  });
+
+/**
+ * Options for scraping operation.
+ * Controls how the scraping operation is performed.
+ */
+export type ScrapeOptions = z.infer<typeof ScrapeOptionsSchema>;

@@ -13,7 +13,7 @@
  *
  * // Or for service-specific types:
  * import { ScrapedData } from '@deepcrawl/types/services/scrape';
- * import { HTMLCleaningOptions } from '@deepcrawl/types/services/html-cleaning';
+ * import { HTMLRewriterOptions } from '@deepcrawl/types/services/html-cleaning';
  * import { LinkExtractionOptions } from '@deepcrawl/types/services/link';
  * import { PageMetadata } from '@deepcrawl/types/services/metadata';
  */

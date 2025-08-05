@@ -2,10 +2,337 @@ import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
 
 /**
- * Schema for HTML cleaning configuration options.
+ * @note only applied when cleaning processor is 'cheerio-reader'
+ * Options for HTML cleaning with cheerio-reader.
+ * Controls how HTML is sanitized and cleaned.
+ */
+export const ReaderOptionsSchema = z
+  .object({
+    /**
+     * Whether to enable logging.
+     * Default: false
+     */
+    debug: z
+      .boolean()
+      .optional()
+      .meta({
+        description: 'Whether to enable logging.',
+        examples: [false],
+      }),
+
+    /**
+     * The maximum number of elements to parse.
+     * Default: 0 (no limit)
+     */
+    maxElemsToParse: z
+      .number()
+      .optional()
+      .meta({
+        description:
+          'The maximum number of elements to parse. 0 means no limit.',
+        examples: [0, 1000],
+      }),
+
+    /**
+     * The number of top candidates to consider when analysing how tight the competition is among candidates.
+     * Default: 5
+     */
+    nbTopCandidates: z
+      .number()
+      .optional()
+      .meta({
+        description:
+          'The number of top candidates to consider when analysing competition among candidates.',
+        examples: [5, 10],
+      }),
+
+    /**
+     * The number of characters an article must have in order to return a result.
+     * Default: 500
+     */
+    charThreshold: z
+      .number()
+      .optional()
+      .meta({
+        description:
+          'The minimum number of characters an article must have to return a result.',
+        examples: [500, 300, 1000],
+      }),
+
+    /**
+     * Whether to preserve all classes on HTML elements.
+     * Default: false
+     */
+    keepClasses: z
+      .boolean()
+      .optional()
+      .meta({
+        description:
+          'Whether to preserve all classes on HTML elements. When false, only classesToPreserve are kept.',
+        examples: [false, true],
+      }),
+
+    /**
+     * A set of classes to preserve on HTML elements when keepClasses is false.
+     */
+    classesToPreserve: z
+      .array(z.string())
+      .optional()
+      .meta({
+        description:
+          'Classes to preserve on HTML elements when keepClasses is false.',
+        examples: [
+          ['article', 'content'],
+          ['post-body', 'main-content'],
+        ],
+      }),
+
+    /**
+     * When extracting page metadata, cheer-reader gives precedence to Schema.org fields specified in JSON-LD format.
+     * Default: false
+     */
+    disableJSONLD: z
+      .boolean()
+      .optional()
+      .meta({
+        description:
+          'Whether to skip JSON-LD parsing when extracting page metadata.',
+        examples: [false, true],
+      }),
+
+    /**
+     * A regular expression that matches video URLs that should be allowed in article content.
+     * If undefined, the default regex is applied.
+     */
+    allowedVideoRegex: z.instanceof(RegExp).optional().meta({
+      description:
+        'Regular expression for video URLs allowed in article content.',
+    }),
+
+    /**
+     * A number added to the base link density threshold during shadiness checks.
+     * Default: 0
+     */
+    linkDensityModifier: z
+      .number()
+      .optional()
+      .meta({
+        description:
+          'Number added to base link density threshold during shadiness checks.',
+        examples: [0, -0.1, 0.2],
+      }),
+
+    /**
+     * Whether to perform full content extraction.
+     * Default: true
+     */
+    extraction: z
+      .boolean()
+      .optional()
+      .meta({
+        description:
+          'Whether to perform full extraction. When false, content/textContent/length/excerpt will be null.',
+        examples: [true, false],
+      }),
+
+    /**
+     * Base URI for resolving relative URLs.
+     */
+    baseURI: z
+      .string()
+      .optional()
+      .meta({
+        description: 'Base URI for resolving relative URLs.',
+        examples: ['https://example.com', 'https://blog.example.com/posts/'],
+      }),
+  })
+  .meta({
+    title: 'ReaderOptions',
+    description:
+      'Configuration options for the Readability library. All options are optional.',
+    examples: [
+      {
+        debug: false,
+        maxElemsToParse: 0,
+        nbTopCandidates: 5,
+        charThreshold: 500,
+        keepClasses: false,
+        extraction: true,
+      },
+      {
+        charThreshold: 300,
+        keepClasses: true,
+        extraction: false,
+        baseURI: 'https://example.com',
+      },
+    ],
+  });
+
+/**
+ * Options for HTML cleaning with cheerio-reader.
+ * Controls how HTML is sanitized and cleaned.
+ */
+export type ReaderOptions = z.infer<typeof ReaderOptionsSchema>;
+
+/**
+ * Options accepted by Cheerio.
+ *
+ * Please note that parser-specific options are _only recognized_ if the
+ * relevant parser is used.
+ */
+export const CheerioOptionsSchema = z
+  .object({
+    /**
+     * The base URI for the document. Used to resolve href and src props.
+     */
+    baseURI: z
+      .union([z.string(), z.instanceof(URL)])
+      .optional()
+      .meta({
+        description:
+          'The base URI for the document. Used to resolve href and src props.',
+        examples: ['https://example.com'],
+      }),
+
+    /**
+     * Callback for parse errors.
+     * Default: null
+     */
+    onParseError: z
+      .union([z.null(), z.any()])
+      .optional()
+      .meta({
+        description: 'Callback for parse errors.',
+        examples: [null],
+      }),
+
+    /**
+     * Extension point for pseudo-classes.
+     * Maps from names to either strings or functions.
+     */
+    pseudos: z
+      .record(z.string(), z.union([z.string(), z.any()]))
+      .optional()
+      .meta({
+        description:
+          'Extension point for pseudo-classes. Maps from names to either strings or functions.',
+        examples: [{ foo: 'div.foo' }],
+      }),
+
+    /**
+     * Is the document in quirks mode?
+     * Default: false
+     */
+    quirksMode: z
+      .boolean()
+      .optional()
+      .meta({
+        description:
+          'Is the document in quirks mode? This will lead to .className and #id being case-insensitive.',
+        examples: [false],
+      }),
+
+    /**
+     * The scripting flag. If set to true, noscript element content will be parsed as text.
+     * Default: true
+     */
+    scriptingEnabled: z
+      .boolean()
+      .optional()
+      .meta({
+        description:
+          'The scripting flag. If set to true, noscript element content will be parsed as text.',
+        examples: [true],
+      }),
+
+    /**
+     * Enables source code location information.
+     * Default: false
+     */
+    sourceCodeLocationInfo: z
+      .boolean()
+      .optional()
+      .meta({
+        description:
+          'Enables source code location information. When enabled, each node will have a sourceCodeLocation property.',
+        examples: [false],
+      }),
+
+    /**
+     * Specifies the resulting tree format.
+     * Default: treeAdapters.default
+     */
+    treeAdapter: z.any().optional().meta({
+      description: 'Specifies the resulting tree format.',
+    }),
+
+    /**
+     * Recommended way of configuring htmlparser2 when wanting to parse XML.
+     * Default: false
+     */
+    xml: z
+      .union([z.boolean(), z.record(z.string(), z.any())])
+      .optional()
+      .meta({
+        description:
+          'Recommended way of configuring htmlparser2 when wanting to parse XML.',
+        examples: [false, true],
+      }),
+  })
+  .meta({
+    title: 'CheerioOptions',
+    description:
+      'Configuration options for Cheerio. Parser-specific options are only recognized if the relevant parser is used.',
+    examples: [
+      {
+        baseURI: 'https://example.com',
+        quirksMode: false,
+        scriptingEnabled: true,
+      },
+      {
+        xml: true,
+        sourceCodeLocationInfo: true,
+        pseudos: { foo: 'div.foo' },
+      },
+    ],
+  });
+
+/**
+ * Options for HTML cleaning with cheerio-reader.
+ * Controls how HTML is sanitized and cleaned.
+ */
+export type CheerioOptions = z.infer<typeof CheerioOptionsSchema>;
+
+/**
+ * Options for HTML cleaning with cheerio-reader.
+ * Controls how HTML is sanitized and cleaned.
+ */
+export const ReaderCleaningOptionsSchema = z.object({
+  /**
+   * Options for HTML cleaning with cheerio-reader.
+   * Controls how HTML is sanitized and cleaned.
+   */
+  cheerioOptions: CheerioOptionsSchema.optional(),
+
+  /**
+   * Options for HTML cleaning with cheerio-reader.
+   * Controls how HTML is sanitized and cleaned.
+   */
+  readerOptions: ReaderOptionsSchema.optional(),
+});
+
+/**
+ * Options for HTML cleaning with cheerio-reader.
+ * Controls how HTML is sanitized and cleaned.
+ */
+export type ReaderCleaningOptions = z.infer<typeof ReaderCleaningOptionsSchema>;
+
+/**
+ * @note used only for 'html-rewriter' cleaning processor
+ * Schema for HTML rewriter cleaning configuration options.
  * Defines the validation rules for HTML sanitization parameters.
  */
-export const HTMLCleaningOptionsSchema = z
+export const HTMLRewriterOptionsSchema = z
   .object({
     allowedHTMLTags: z
       .array(z.string())
@@ -55,8 +382,8 @@ export const HTMLCleaningOptionsSchema = z
   })
   .strict()
   .meta({
-    title: 'HTMLCleaningOptions',
-    description: 'Schema for HTML cleaning configuration options',
+    title: 'HTMLRewriterOptions',
+    description: 'Schema for HTML rewriter cleaning configuration options',
     examples: [
       {
         allowedHTMLTags: [
@@ -91,7 +418,7 @@ export const HTMLCleaningOptionsSchema = z
  *
  * @example
  * ```typescript
- * const cleaningOptions: HTMLCleaningOptions = {
+ * const cleaningOptions: HTMLRewriterOptions = {
  *   allowedHTMLTags: ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'strong', 'em'],
  *   disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
  *   extractMainContent: true,
@@ -100,7 +427,7 @@ export const HTMLCleaningOptionsSchema = z
  * };
  * ```
  */
-export type HTMLCleaningOptions = z.infer<typeof HTMLCleaningOptionsSchema>;
+export type HTMLRewriterOptions = z.infer<typeof HTMLRewriterOptionsSchema>;
 
 /**
  * Schema for defining patterns to match DOM elements.

@@ -3,7 +3,7 @@ import {
   smartboolFalse,
   smartboolTrue,
 } from '@deepcrawl/types/common/smart-schemas';
-import { HTMLCleaningOptionsSchema } from '@deepcrawl/types/services/html-cleaning/types';
+import { HTMLRewriterOptionsSchema } from '@deepcrawl/types/services/html-cleaning/types';
 import {
   ExtractedLinksSchema,
   LinkExtractionOptionsSchema,
@@ -21,7 +21,7 @@ import { z } from 'zod/v4';
  *
  * @property metadataOptions - Options for metadata extraction
  * @property linksOptions - Options for link extraction
- * @property cleanedHtmlOptions - Options for HTML cleaning
+ * @property htmlRewriterOptions - Options for HTML cleaning
  */
 export const ContentOptionsSchema = z
   .object({
@@ -41,7 +41,7 @@ export const ContentOptionsSchema = z
      * Options for HTML cleaning.
      * Controls how HTML is sanitized and cleaned.
      */
-    cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
+    htmlRewriterOptions: HTMLRewriterOptionsSchema.optional(),
   })
   .meta({
     title: 'ContentOptions',
@@ -77,7 +77,7 @@ export const ContentOptionsSchema = z
           excludePatterns: ['/admin/', '/private/'],
           removeQueryParams: true,
         },
-        cleanedHtmlOptions: {
+        htmlRewriterOptions: {
           allowedHTMLTags: [
             'p',
             'h1',
@@ -173,7 +173,7 @@ export const TreeOptionsSchema = z
  * @property linksFromTarget - Whether to extract links from the target page
  * @property metadataOptions - Options for metadata extraction
  * @property linkExtractionOptions - Options for link extraction
- * @property cleanedHtmlOptions - Options for HTML cleaning
+ * @property htmlRewriterOptions - Options for HTML cleaning
  * @property subdomainAsRootUrl - Whether to exclude subdomain as root URL
  *
  * @example
