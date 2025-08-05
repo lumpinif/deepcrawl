@@ -1,12 +1,12 @@
+import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
 import { authClient } from '@/lib/auth.client';
-
-export type AuthClientSession = typeof authClient.$Infer.Session;
+import type { ActiveOrganization } from '@/lib/auth.client-types';
 
 /**
  * Auth Client API Call:
  * the current authenticated session
  */
-export async function getSession(): Promise<AuthClientSession | null> {
+export async function getSession(): Promise<Session | null> {
   const { data: session, error } = await authClient.getSession();
 
   if (error) {
@@ -24,7 +24,7 @@ export async function getSession(): Promise<AuthClientSession | null> {
  * Auth Client API Call:
  * all active sessions for the current user
  */
-export async function listSessions() {
+export async function listSessions(): Promise<Session['session'][]> {
   const { data: sessions, error } = await authClient.listSessions();
 
   if (error) {
@@ -42,7 +42,7 @@ export async function listSessions() {
  * Auth Client API Call:
  * all device sessions for the current user
  */
-export async function listDeviceSessions() {
+export async function listDeviceSessions(): Promise<ListDeviceSessions> {
   const { data: sessions, error } =
     await authClient.multiSession.listDeviceSessions();
 
@@ -54,14 +54,14 @@ export async function listDeviceSessions() {
     throw new Error(error.message);
   }
 
-  return sessions || [];
+  return sessions;
 }
 
 /**
  * Auth Client API Call:
  * the full organization details
  */
-export async function getFullOrganization() {
+export async function getFullOrganization(): Promise<ActiveOrganization | null> {
   const { data: organization, error } =
     await authClient.organization.getFullOrganization();
 
