@@ -4,7 +4,10 @@ import type {
   PageMetadata,
 } from '@deepcrawl/types/services/metadata';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
-import type { Options, ReadabilityResult } from '@paoramen/cheer-reader';
+import type {
+  ReadabilityResult,
+  Options as TReaderOptions,
+} from '@paoramen/cheer-reader';
 import { Readability } from '@paoramen/cheer-reader';
 import type { CheerioOptions } from 'cheerio';
 import * as cheerio from 'cheerio';
@@ -252,7 +255,7 @@ export class ScrapeService {
     rawHtml: string;
     url: string;
     options?: {
-      readerOptions?: Partial<Options>;
+      readerOptions?: Partial<TReaderOptions>;
       cheerioOptions?: Partial<CheerioOptions>;
     };
   }): ReadabilityResult {
@@ -483,7 +486,7 @@ export class ScrapeService {
   }: LinksOptions & {
     cleaningProcessor?: 'reader' | 'html-rewriter';
     readerCleaningOptions?: {
-      readerOptions?: Partial<Options>;
+      readerOptions?: Partial<TReaderOptions>;
       cheerioOptions?: Partial<CheerioOptions>;
     };
     signal?: AbortSignal;
