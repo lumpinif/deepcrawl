@@ -1,5 +1,6 @@
 'use client';
 
+import type { Session } from '@deepcrawl/auth/types';
 import {
   Avatar,
   AvatarFallback,
@@ -25,8 +26,10 @@ import { CalendarDays, Mail } from 'lucide-react';
 import { sessionQueryOptionsClient } from '@/query/query-options.client';
 import { UserAvatarCardSkeleton } from './account-skeletons';
 
-export function UserAvatarCard() {
-  const { data: session, isPending } = useQuery(sessionQueryOptionsClient());
+export function UserAvatarCard(props: { currentSession?: Session | null }) {
+  const { data: currentSession, isPending } = useQuery(
+    sessionQueryOptionsClient({ init: props.currentSession }),
+  );
 
   if (isPending) {
     return (
@@ -48,7 +51,7 @@ export function UserAvatarCard() {
     );
   }
 
-  const user = session?.user;
+  const user = currentSession?.user;
 
   if (!user) {
     return (

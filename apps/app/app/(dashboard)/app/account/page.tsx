@@ -1,5 +1,4 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { redirect } from 'next/navigation';
 import { PageContainer, PageHeader } from '@/components/page-elements';
 import { authGetSession } from '@/query/auth-query.server';
 import { getQueryClient } from '@/query/query.client';
@@ -23,10 +22,7 @@ export default async function AccountPage() {
     // auth.api.getFullOrganization({
     // 	headers: requestHeaders,
     // }),
-  ]).catch(() => {
-    // Auth failed - redirect to login
-    throw redirect('/login');
-  });
+  ]);
 
   const queryClient = getQueryClient();
 
@@ -40,13 +36,13 @@ export default async function AccountPage() {
       <PageHeader title="Account Settings" />
       <PageContainer>
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-          <UserAvatarCard />
-          <UserNameCard />
+          <UserAvatarCard currentSession={currentSession} />
+          <UserNameCard currentSession={currentSession} />
         </div>
-        <ProvidersManagementCard />
-        <MultipleAccountsManagementCard />
-        <PasswordChangeCard />
-        <SessionsManagementCard />
+        <ProvidersManagementCard currentSession={currentSession} />
+        <MultipleAccountsManagementCard currentSession={currentSession} />
+        <PasswordChangeCard currentSession={currentSession} />
+        <SessionsManagementCard currentSession={currentSession} />
       </PageContainer>
     </HydrationBoundary>
   );

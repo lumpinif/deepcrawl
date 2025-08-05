@@ -1,3 +1,4 @@
+import type { Session } from '@deepcrawl/auth/types';
 import { queryOptions } from '@tanstack/react-query';
 import {
   getFullOrganization,
@@ -8,7 +9,6 @@ import {
   listSessions,
   listUserPasskeys,
 } from '@/query/auth-query.client';
-
 import { userQueryKeys } from './query-keys';
 import { baseQueryOptions } from './query-options.server';
 
@@ -16,10 +16,15 @@ import { baseQueryOptions } from './query-options.server';
  * Query options for the current authenticated session
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const sessionQueryOptionsClient = () =>
+export const sessionQueryOptionsClient = ({
+  init = undefined,
+}: {
+  init?: Session | null;
+} = {}) =>
   queryOptions({
     queryKey: userQueryKeys.session,
     queryFn: getSession,
+    initialData: init,
     ...baseQueryOptions,
   });
 

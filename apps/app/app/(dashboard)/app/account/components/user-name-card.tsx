@@ -1,5 +1,6 @@
 'use client';
 
+import type { Session } from '@deepcrawl/auth/types';
 import {
   Card,
   CardContent,
@@ -27,11 +28,11 @@ const displayNameSchema = z
   .max(32, 'Display name must be 32 characters or less')
   .trim();
 
-export function UserNameCard() {
-  const { data: session, isPending: queryPending } = useQuery(
-    sessionQueryOptionsClient(),
+export function UserNameCard(props: { currentSession?: Session | null }) {
+  const { data: currentSession, isPending: queryPending } = useQuery(
+    sessionQueryOptionsClient({ init: props.currentSession }),
   );
-  const user = session?.user;
+  const user = currentSession?.user;
 
   const { mutate: updateUserName, isPending } = useUpdateUserName();
 

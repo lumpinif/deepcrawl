@@ -1,5 +1,6 @@
 'use client';
 
+import type { Session } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -23,9 +24,9 @@ import {
 import { sessionQueryOptionsClient } from '@/query/query-options.client';
 import { PasswordChangeCardSkeleton } from './account-skeletons';
 
-export function PasswordChangeCard() {
-  const { data: session, isPending: isPendingSession } = useQuery(
-    sessionQueryOptionsClient(),
+export function PasswordChangeCard(props: { currentSession?: Session | null }) {
+  const { data: currentSession, isPending: isPendingSession } = useQuery(
+    sessionQueryOptionsClient({ init: props.currentSession }),
   );
   const hasPassword = useHasPassword();
   const { mutate: changePassword, isPending: isChangingPending } =
@@ -37,7 +38,7 @@ export function PasswordChangeCard() {
       setIsSettingPassword(false);
     },
   );
-  const user = session?.user;
+  const user = currentSession?.user;
 
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isSettingPassword, setIsSettingPassword] = useState(false);

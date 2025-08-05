@@ -1,5 +1,6 @@
 'use client';
 
+import type { Session } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -70,9 +71,11 @@ interface ProviderInfo {
   accountInfo?: string;
 }
 
-export function ProvidersManagementCard() {
-  const { data: session, isPending: isPendingSession } = useQuery(
-    sessionQueryOptionsClient(),
+export function ProvidersManagementCard(props: {
+  currentSession?: Session | null;
+}) {
+  const { data: currentSession, isPending: isPendingSession } = useQuery(
+    sessionQueryOptionsClient({ init: props.currentSession }),
   );
   const { data: linkedAccounts = [], isPending: isPendingLinkedAccounts } =
     useSuspenseQuery(listUserAccountsQueryOptionsClient());
@@ -92,7 +95,7 @@ export function ProvidersManagementCard() {
     null,
   );
 
-  const user = session?.user;
+  const user = currentSession?.user;
 
   // Get safety check for each provider
   const googleUnlinkSafety = useCanUnlinkProvider('google');

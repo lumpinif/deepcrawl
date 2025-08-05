@@ -62,9 +62,11 @@ function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   );
 }
 
-export function MultipleAccountsManagementCard() {
+export function MultipleAccountsManagementCard(props: {
+  currentSession?: Session | null;
+}) {
   const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
-    sessionQueryOptionsClient(),
+    sessionQueryOptionsClient({ init: props.currentSession }),
   );
   const { data: deviceSessions, isPending: isPendingDeviceSessions } =
     useSuspenseQuery(deviceSessionsQueryOptionsClient());
