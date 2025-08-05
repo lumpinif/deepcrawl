@@ -288,7 +288,8 @@ export const ScrapeOptionsSchema = z
   });
 
 /**
+ * @note types from `ScrapeOptions` are partial for convenience.
  * Options for scraping operation.
  * Controls how the scraping operation is performed.
  */
-export type ScrapeOptions = z.infer<typeof ScrapeOptionsSchema>;
+export type ScrapeOptions = Partial<z.infer<typeof ScrapeOptionsSchema>>;

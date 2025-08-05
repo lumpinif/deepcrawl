@@ -1,9 +1,12 @@
-import type { LinksOptions, MetaFiles } from '@deepcrawl/types';
+import type { MetaFiles } from '@deepcrawl/types';
 import type {
   MetadataOptions,
   PageMetadata,
 } from '@deepcrawl/types/services/metadata';
-import type { ScrapedData } from '@deepcrawl/types/services/scrape';
+import type {
+  ScrapedData,
+  ScrapeOptions,
+} from '@deepcrawl/types/services/scrape';
 import type {
   ReadabilityResult,
   Options as TReaderOptions,
@@ -483,28 +486,24 @@ export class ScrapeService {
   async scrape({
     url,
     ...options
-  }: LinksOptions & {
-    cleaningProcessor?: 'reader' | 'html-rewriter';
-    readerCleaningOptions?: {
-      readerOptions?: Partial<TReaderOptions>;
-      cheerioOptions?: Partial<CheerioOptions>;
-    };
+  }: ScrapeOptions & {
+    url: string;
     signal?: AbortSignal;
   }): Promise<ScrapedData> {
     const {
       robots,
       sitemapXML,
-      cleanedHtml: isCleanedHtml,
-      cleanedHtmlOptions: rewriterOptions,
-      metadata: metadataOption,
+      htmlRewriterOptions,
+      metadata: enableMetadata,
       metadataOptions,
       cleaningProcessor = 'html-rewriter',
       readerCleaningOptions,
       signal,
+      cleanedHtml,
     } = options;
 
     // Default isMetadata to true unless explicitly set to false
-    const isMetadata = metadataOption !== false;
+    const isMetadata = enableMetadata !== false;
 
     try {
       const fetchResult = await this.fetchPage(url, {
@@ -570,14 +569,13 @@ export class ScrapeService {
           isIframeAllowed,
         });
       }
-
-      if (isCleanedHtml) {
+      if (cleanedHtml) {
         if (cleaningProcessor === 'html-rewriter') {
           promises.push(
             HTMLCleaning({
               rawHtml: html,
               baseUrl: url,
-              options: rewriterOptions,
+              options: htmlRewriterOptions,
             })
               .then(({ cleanedHtml }) => {
                 dataResults.cleanedHtml = cleanedHtml;
@@ -587,7 +585,7 @@ export class ScrapeService {
                 // Continue even if HTML cleaning fails
               }),
           );
-        } else if (cleaningProcessor === 'reader') {
+        } else if (cleaningProcessor === 'cheerio-reader') {
           const readerCleaningResult = this.readerCleaning({
             rawHtml: html,
             url,

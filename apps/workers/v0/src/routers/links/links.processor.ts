@@ -174,13 +174,12 @@ export async function processLinksRequest(
         // Mark as visited and record the exact timestamp
 
         const result = await scrapeService.scrape({
+          ...params,
           url,
-          ...rest,
-          // always get metadata for kv store
-          metadata: true,
+          metadata: true, // always get metadata for kv store
           cleanedHtml: isCleanedHtml,
-          robots: url === rootUrl && rest.robots,
-          sitemapXML: url === rootUrl && rest.sitemapXML,
+          robots: url === rootUrl && params.robots,
+          sitemapXML: url === rootUrl && params.sitemapXML,
           signal: c.signal,
         });
 

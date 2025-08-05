@@ -3,12 +3,20 @@ import {
   smartboolFalse,
   smartboolTrue,
 } from '@deepcrawl/types/common/smart-schemas';
-import { MetadataOptionsSchema } from '@deepcrawl/types/services/metadata';
-import { ScrapedDataSchema } from '@deepcrawl/types/services/scrape';
+
+import {
+  ScrapedDataSchema,
+  ScrapeOptionsSchema,
+} from '@deepcrawl/types/services/scrape';
 import { z } from 'zod/v4';
 
 /* NOTE: IN ZOD V4: The input type of all z.coerce schemas is now unknown. THIS MIGHT BREAKES CURRENT TYPES */
 
+/**
+ * Extends `ScrapeOptionsSchema`.
+ * Options for read operation.
+ * Controls how the read operation is performed.
+ */
 export const ReadOptionsSchema = z
   .object({
     /**
@@ -21,39 +29,12 @@ export const ReadOptionsSchema = z
     }),
 
     /**
-     * Whether to extract metadata from the page.
-     * Default: true
-     */
-    metadata: smartboolTrue().meta({
-      description: 'Whether to extract metadata from the page.',
-      examples: [true],
-    }),
-
-    /**
      * Whether to extract markdown from the page.
      * Default: true
      */
     markdown: smartboolTrue().meta({
       description: 'Whether to extract markdown from the page.',
       examples: [true],
-    }),
-
-    /**
-     * Whether to return cleaned HTML.
-     * Default: false
-     */
-    cleanedHtml: smartboolFalse().meta({
-      description: 'Whether to return cleaned HTML.',
-      examples: [false],
-    }),
-
-    /**
-     * Whether to fetch and parse robots.txt.
-     * Default: false
-     */
-    robots: smartboolFalse().meta({
-      description: 'Whether to fetch and parse robots.txt.',
-      examples: [false],
     }),
 
     /**
@@ -64,21 +45,8 @@ export const ReadOptionsSchema = z
       description: 'Whether to return raw HTML.',
       examples: [false],
     }),
-
-    /**
-     * Options for metadata extraction.
-     * Controls how metadata like title, description, etc. are extracted.
-     */
-    metadataOptions: MetadataOptionsSchema.optional().meta({
-      description: 'Options for metadata extraction.',
-    }),
-
-    /** DEPRECATED: AS WE ARE NOT USING HTMLREWRITE FOR CLEANING THE HTML FOR NOW, MAY BE REUSED THIS IN THE FUTURE
-     * Options for HTML cleaning.
-     * Controls how HTML is sanitized and cleaned.
-     */
-    // cleanedHtmlOptions: HTMLCleaningOptionsSchema.optional(),
   })
+  .extend(ScrapeOptionsSchema.shape)
   .meta({
     title: 'ReadOptions',
     description: 'Configuration options for read operation',
@@ -240,6 +208,8 @@ type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {
 } & Partial<Omit<T, 'url'>>;
 
 /**
+ * @note `ReadOptions` extends `ScrapeOptions`
+ * The types from `ReadOptions` are overridden to be partial except for `url` for convenience.
  * Type representing options for read operations.
  * Derived from the readOptionsSchema.
  */

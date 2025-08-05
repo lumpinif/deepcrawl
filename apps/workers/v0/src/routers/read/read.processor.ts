@@ -155,9 +155,6 @@ export async function processReadRequest(
     url,
     markdown: isMarkdown,
     cleanedHtml: isCleanedHtml,
-    metadata: isMetadata,
-    robots: isRobots,
-    metadataOptions,
     rawHtml: isRawHtml,
   } = params;
 
@@ -231,12 +228,12 @@ export async function processReadRequest(
       cleanedHtml,
       description,
     }: ScrapedData = await scrapeService.scrape({
+      ...params,
       url: targetUrl,
-      cleanedHtml: true,
-      cleaningProcessor: !isGithubUrl ? 'html-rewriter' : 'reader',
-      metadata: isMetadata,
-      metadataOptions,
-      robots: isRobots,
+      cleanedHtml: true, // required for scraping, but returned as undefined if disabled in the result
+      cleaningProcessor:
+        params.cleaningProcessor ??
+        (!isGithubUrl ? 'html-rewriter' : 'cheerio-reader'),
       signal: c.signal,
     });
 

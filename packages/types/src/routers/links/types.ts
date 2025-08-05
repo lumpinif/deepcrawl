@@ -1,102 +1,16 @@
 import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
-import {
-  smartboolFalse,
-  smartboolTrue,
-} from '@deepcrawl/types/common/smart-schemas';
-import { HTMLRewriterOptionsSchema } from '@deepcrawl/types/services/html-cleaning/types';
+import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
+
 import {
   ExtractedLinksSchema,
   LinkExtractionOptionsSchema,
 } from '@deepcrawl/types/services/link/types';
+import { PageMetadataSchema } from '@deepcrawl/types/services/metadata/types';
 import {
-  MetadataOptionsSchema,
-  PageMetadataSchema,
-} from '@deepcrawl/types/services/metadata/types';
-import { ScrapedDataSchema } from '@deepcrawl/types/services/scrape/types';
+  ScrapedDataSchema,
+  ScrapeOptionsSchema,
+} from '@deepcrawl/types/services/scrape/types';
 import { z } from 'zod/v4';
-
-/**
- * Schema for content extraction options.
- * Defines options for extracting different types of content from a webpage.
- *
- * @property metadataOptions - Options for metadata extraction
- * @property linksOptions - Options for link extraction
- * @property htmlRewriterOptions - Options for HTML cleaning
- */
-export const ContentOptionsSchema = z
-  .object({
-    /**
-     * Options for metadata extraction.
-     * Controls how metadata like title, description, etc. are extracted.
-     */
-    metadataOptions: MetadataOptionsSchema.optional(),
-
-    /**
-     * Options for link extraction.
-     * Controls how links are extracted and categorized.
-     */
-    linkExtractionOptions: LinkExtractionOptionsSchema.optional(),
-
-    /**
-     * Options for HTML cleaning.
-     * Controls how HTML is sanitized and cleaned.
-     */
-    htmlRewriterOptions: HTMLRewriterOptionsSchema.optional(),
-  })
-  .meta({
-    title: 'ContentOptions',
-    description: 'Schema for content extraction options',
-    examples: [
-      {
-        metadataOptions: {
-          title: true,
-          description: true,
-          language: true,
-          canonical: true,
-          robots: true,
-          author: true,
-          keywords: true,
-          lastModified: true,
-          favicon: true,
-          ogTitle: true,
-          ogDescription: true,
-          ogImage: true,
-          ogUrl: true,
-          ogType: true,
-          ogSiteName: true,
-          twitterCard: true,
-          twitterSite: true,
-          twitterCreator: true,
-          twitterTitle: true,
-          twitterDescription: true,
-          twitterImage: true,
-        },
-        linkExtractionOptions: {
-          includeExternal: true,
-          includeMedia: true,
-          excludePatterns: ['/admin/', '/private/'],
-          removeQueryParams: true,
-        },
-        htmlRewriterOptions: {
-          allowedHTMLTags: [
-            'p',
-            'h1',
-            'h2',
-            'h3',
-            'ul',
-            'ol',
-            'li',
-            'a',
-            'strong',
-            'em',
-          ],
-          disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
-          extractMainContent: true,
-          removeBase64Images: true,
-        },
-      },
-    ],
-  });
 
 /**
  * Schema for links order enum.
@@ -207,44 +121,13 @@ export const LinksOptionsSchema = z
     }),
 
     /**
-     * Whether to extract metadata from the page.
-     * Default: true
+     * Options for link extraction.
+     * Controls how links are extracted and categorized.
      */
-    metadata: smartboolTrue().meta({
-      description: 'Whether to extract metadata from the page.',
-      examples: [true],
-    }),
-
-    /**
-     * Whether to return cleaned HTML.
-     * Default: false
-     */
-    cleanedHtml: smartboolFalse().meta({
-      description: 'Whether to return cleaned HTML.',
-      examples: [false],
-    }),
-
-    /**
-     * Whether to fetch and parse robots.txt.
-     * Default: false
-     */
-    robots: smartboolFalse().meta({
-      description: 'Whether to fetch and parse robots.txt.',
-      examples: [false],
-    }),
-
-    /**
-     * Whether to fetch and parse sitemap.xml.
-     * Default: false
-     */
-    sitemapXML: smartboolFalse().meta({
-      description:
-        '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
-      examples: [false],
-    }),
+    linkExtractionOptions: LinkExtractionOptionsSchema.optional(),
   })
   .extend(TreeOptionsSchema.shape)
-  .extend(ContentOptionsSchema.shape)
+  .extend(ScrapeOptionsSchema.shape)
   .meta({
     title: 'LinksOptions',
     description: 'Configuration options for links extraction operation',
