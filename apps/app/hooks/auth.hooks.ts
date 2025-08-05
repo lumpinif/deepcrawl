@@ -118,10 +118,8 @@ export const useSetActiveSession = () => {
       return result;
     },
     onSuccess: () => {
-      // Invalidate all user-related queries
-      queryClient.invalidateQueries({
-        predicate: (query) => query.queryKey[0] === 'user',
-      });
+      // Invalidate all queries
+      queryClient.invalidateQueries();
 
       // Refresh the page to ensure all components reflect the new active session
       router.refresh();
@@ -179,7 +177,6 @@ export const useRevokeDeviceSession = () => {
       }
 
       // Only invalidate session-related queries when revoking device sessions
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
       queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
 
       toast.success('Account removed successfully');
@@ -336,12 +333,6 @@ export const useChangePassword = (onSuccessCallback?: () => void) => {
     onSuccess: () => {
       toast.success('Password updated successfully.');
 
-      // Invalidate session queries if other sessions were revoked
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
-      queryClient.invalidateQueries({
-        queryKey: userQueryKeys.deviceSessions,
-      });
-
       // Call the custom callback if provided
       onSuccessCallback?.();
     },
@@ -405,8 +396,6 @@ export const useRevokeSession = () => {
 
       return result;
     },
-    // Removed optimistic updates for security-critical session termination
-    // Users should see loading states to confirm the operation is in progress
     onError: (err) => {
       toast.error(err.message || 'Failed to revoke session');
     },
@@ -432,9 +421,7 @@ export const useRevokeSession = () => {
       toast.success('Session terminated successfully');
     },
     onSettled: () => {
-      // Always refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
-      // queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
     },
   });
 };
@@ -486,9 +473,7 @@ export const useRevokeAllOtherSessions = () => {
       toast.success('All other sessions terminated successfully');
     },
     onSettled: () => {
-      // Always refetch to ensure consistency
       queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
-      // queryClient.invalidateQueries({ queryKey: userQueryKeys.deviceSessions });
     },
   });
 };
@@ -497,6 +482,7 @@ export const useRevokeAllOtherSessions = () => {
  * Hook for linking a social provider to current account
  */
 export const useLinkSocialProvider = () => {
+  const queryClient = useQueryClient();
   const { getFrontendCallbackURL } = useAuthRedirect('account');
 
   return useMutation({
@@ -523,6 +509,11 @@ export const useLinkSocialProvider = () => {
       }
 
       return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: userQueryKeys.listUserAccounts,
+      });
     },
     // Remove onSuccess - OAuth redirects mean we won't be here when linking completes
     // The success state will be handled after the user returns from OAuth provider
@@ -561,8 +552,6 @@ export const useUnlinkSocialProvider = () => {
     onSuccess: () => {
       toast.success('Social provider unlinked successfully');
 
-      // Invalidate both session and linked accounts to refresh data
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
       queryClient.invalidateQueries({
         queryKey: userQueryKeys.listUserAccounts,
       });
