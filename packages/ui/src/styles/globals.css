@@ -134,7 +134,8 @@
     @apply border-border outline-ring/30;
   }
 
-  html, body {
+  html,
+  body {
     scroll-behavior: smooth;
   }
 
