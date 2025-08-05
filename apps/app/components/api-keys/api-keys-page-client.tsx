@@ -67,7 +67,7 @@ export function ApiKeysPageSkeleton() {
 }
 
 export function ApiKeysPageClient() {
-  const { data: apiKeys, isLoading, error } = useSuspenseApiKeys();
+  const { data: apiKeys, error } = useSuspenseApiKeys();
 
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
@@ -111,13 +111,7 @@ export function ApiKeysPageClient() {
 
         <Card className="hidden bg-background sm:block">
           <CardContent className="overflow-x-auto">
-            {isLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : (
-              <ApiKeysTable apiKeys={apiKeys || []} />
-            )}
+            <ApiKeysTable apiKeys={apiKeys || []} />
           </CardContent>
         </Card>
 

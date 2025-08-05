@@ -8,8 +8,6 @@ import {
 import { getQueryClient } from '@/query/query.client';
 import { apiKeysQueryOptions } from '@/query/query-options.server';
 
-export const dynamic = 'force-dynamic';
-
 export default async function ApiKeysPage() {
   const queryClient = getQueryClient();
 
