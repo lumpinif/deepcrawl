@@ -30,7 +30,7 @@ export function SessionsManagementCard(props: {
   currentSession?: Session | null;
 }) {
   const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
-    sessionQueryOptionsClient(),
+    sessionQueryOptionsClient({ init: props.currentSession }),
   );
   const { data: listSessions, isPending: isPendingListSessions } =
     useSuspenseQuery(listSessionsQueryOptionsClient());
