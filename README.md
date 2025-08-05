@@ -1,30 +1,54 @@
-# shadcn/ui monorepo template
+# DeepCrawl
 
-This template is for creating a monorepo with shadcn/ui.
+A web scraping and reading service built with Cloudflare Workers and Next.js.
 
-## Usage
-
-```bash
-pnpm dlx shadcn@latest init
-```
-
-## Adding components
-
-To add components to your app, run the following command at the root of your `web` app:
+## Quick Start
 
 ```bash
-pnpm dlx shadcn@latest add button -c apps/web
+# Install dependencies
+pnpm install
+
+# Start all services in development
+pnpm dev
+
+# Start only dashboard + auth services
+pnpm dev:dashboard
 ```
 
-This will place the ui components in the `packages/ui/src/components` directory.
+## What's Inside
 
-## Tailwind
+- **Dashboard**: Next.js app at `apps/app/` for managing the service
+- **API Worker**: Cloudflare Worker at `apps/workers/v0/` for web scraping
+- **Auth Worker**: Cloudflare Worker at `apps/workers/auth/` for authentication
+- **SDK**: TypeScript client library at `packages/sdks/js-ts/`
 
-Your `tailwind.config.ts` and `globals.css` are already set up to use the components from the `ui` package.
+## Development
 
-## Using components
+```bash
+# Start dashboard only
+cd apps/app && pnpm dev
 
-To use the components in your app, import them from the `ui` package.
+# Start API worker only  
+cd apps/workers/v0 && pnpm dev
+
+# Start auth worker only
+cd apps/workers/auth && pnpm dev
+
+# Build everything
+pnpm build
+
+# Run all checks (lint, format, typecheck)
+pnpm check
+```
+
+## Adding UI Components
+
+```bash
+# Add shadcn/ui components to the dashboard
+cd apps/app && pnpm ui add button
+```
+
+Components are shared from `@deepcrawl/ui` package:
 
 ```tsx
 import { Button } from "@deepcrawl/ui/components/ui/button";

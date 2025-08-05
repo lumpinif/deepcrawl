@@ -1,21 +1,27 @@
-```txt
-npm install
-npm run dev
+# DeepCrawl Auth Worker
+
+Cloudflare Worker that handles authentication for the DeepCrawl service.
+
+## Development
+
+```bash
+# Install dependencies and start development server
+pnpm install
+pnpm dev
 ```
 
-```txt
-npm run deploy
+## Deployment
+
+```bash
+# Deploy to Cloudflare Workers
+pnpm deploy
 ```
 
-[For generating/synchronizing types based on your Worker configuration run](https://developers.cloudflare.com/workers/wrangler/commands/#types):
+## Features
 
-```txt
-npm run cf-typegen
-```
-
-Pass the `CloudflareBindings` as generics when instantiation `Hono`:
-
-```ts
-// src/index.ts
-const app = new Hono<{ Bindings: CloudflareBindings }>()
-```
+- Better Auth integration
+- OAuth providers (GitHub, Google)
+- Passkeys support
+- Magic links
+- Session management
+- Cookie and API key authentication
