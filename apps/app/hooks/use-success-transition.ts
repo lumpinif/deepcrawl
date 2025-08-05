@@ -65,7 +65,9 @@ export function useOnSuccessTransition({
       toast.success('Social provider linked successfully');
 
       // Invalidate linked accounts to refresh the UI
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.linkedAccounts });
+      queryClient.invalidateQueries({
+        queryKey: userQueryKeys.listUserAccounts,
+      });
     }
 
     setSuccess(true);

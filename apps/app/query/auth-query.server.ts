@@ -1,7 +1,13 @@
 'use server';
 
 import { auth } from '@deepcrawl/auth/lib/auth';
-import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
+import type {
+  ListApiKeys,
+  ListDeviceSessions,
+  ListUserAccounts,
+  Session,
+} from '@deepcrawl/auth/types';
+import type { Passkey } from 'better-auth/plugins/passkey';
 import { headers } from 'next/headers';
 import type { ActiveOrganization } from '@/lib/auth.client-types';
 
@@ -68,18 +74,23 @@ export async function authListDeviceSessions(): Promise<ListDeviceSessions> {
  */
 export async function authGetFullOrganization(): Promise<ActiveOrganization | null> {
   const requestHeaders = await headers();
-
-  const result = await auth.api.getFullOrganization({
-    headers: requestHeaders,
-  });
-  return result;
+  try {
+    const result = await auth.api.getFullOrganization({
+      headers: requestHeaders,
+    });
+    return result;
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to fetch organization',
+    );
+  }
 }
 
 /**
  * Auth Server API Call:
  * user's passkeys using Better Auth official API
  */
-export async function authListPasskeys() {
+export async function authListPasskeys(): Promise<Passkey[]> {
   const requestHeaders = await headers();
 
   try {
@@ -90,7 +101,9 @@ export async function authListPasskeys() {
     return passkeys;
   } catch (error) {
     console.error('Failed to fetch passkeys:', error);
-    return [];
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to fetch passkeys',
+    );
   }
 }
 
@@ -98,7 +111,7 @@ export async function authListPasskeys() {
  * Auth Server API Call:
  * user's linked OAuth accounts
  */
-export async function authListUserAccounts() {
+export async function authListUserAccounts(): Promise<ListUserAccounts> {
   const requestHeaders = await headers();
 
   try {
@@ -109,7 +122,11 @@ export async function authListUserAccounts() {
     return accounts;
   } catch (error) {
     console.error('Failed to fetch linked accounts:', error);
-    return [];
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Failed to fetch linked accounts',
+    );
   }
 }
 
@@ -117,7 +134,7 @@ export async function authListUserAccounts() {
  * Auth Server API Call:
  * user's API keys
  */
-export async function authListApiKeys() {
+export async function authListApiKeys(): Promise<ListApiKeys> {
   const requestHeaders = await headers();
 
   try {

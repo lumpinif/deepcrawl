@@ -1,6 +1,6 @@
 'use client';
 
-import type { ApiKeyResponse } from '@deepcrawl/auth/types';
+import type { ApiKey } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Dialog,
@@ -20,7 +20,7 @@ import { useUpdateApiKey } from '@/hooks/auth.hooks';
 interface EditApiKeyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  apiKey: ApiKeyResponse;
+  apiKey: ApiKey;
   onClose: () => void;
 }
 

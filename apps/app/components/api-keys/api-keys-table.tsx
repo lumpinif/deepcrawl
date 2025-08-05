@@ -1,6 +1,6 @@
 'use client';
 
-import type { ApiKeyResponse } from '@deepcrawl/auth/types';
+import type { ListApiKeys } from '@deepcrawl/auth/types';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -35,7 +35,7 @@ import { useDeleteApiKey, useUpdateApiKey } from '@/hooks/auth.hooks';
 import { EditApiKeyDialog } from './edit-api-key-dialog';
 
 interface ApiKeysTableProps {
-  apiKeys: ApiKeyResponse[];
+  apiKeys: ListApiKeys;
 }
 
 export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {

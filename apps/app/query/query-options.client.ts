@@ -76,7 +76,7 @@ export const userPasskeysQueryOptionsClient = () =>
  */
 export const linkedAccountsQueryOptionsClient = () =>
   queryOptions({
-    queryKey: userQueryKeys.linkedAccounts,
+    queryKey: userQueryKeys.listUserAccounts,
     queryFn: listAccounts,
     ...baseQueryOptions,
   });

@@ -1,6 +1,6 @@
 'use client';
 
-import type { ApiKey, Session } from '@deepcrawl/auth/types';
+import type { ListApiKeys, Session } from '@deepcrawl/auth/types';
 import {
   useMutation,
   useQuery,
@@ -367,7 +367,7 @@ export const useSetPassword = (onSuccessCallback?: () => void) => {
 
       // Invalidate linked accounts to update hasPassword state
       queryClient.invalidateQueries({
-        queryKey: userQueryKeys.linkedAccounts,
+        queryKey: userQueryKeys.listUserAccounts,
       });
 
       // Call the custom callback if provided
@@ -563,7 +563,9 @@ export const useUnlinkSocialProvider = () => {
 
       // Invalidate both session and linked accounts to refresh data
       queryClient.invalidateQueries({ queryKey: userQueryKeys.session });
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.linkedAccounts });
+      queryClient.invalidateQueries({
+        queryKey: userQueryKeys.listUserAccounts,
+      });
     },
   });
 };
@@ -743,12 +745,12 @@ export const useUpdateApiKey = () => {
       await queryClient.cancelQueries({ queryKey: userQueryKeys.apiKeys });
 
       // Snapshot previous value
-      const previousApiKeys = queryClient.getQueryData<ApiKey[]>(
+      const previousApiKeys = queryClient.getQueryData<ListApiKeys>(
         userQueryKeys.apiKeys,
       );
 
       // Optimistically update the API key
-      queryClient.setQueryData<ApiKey[]>(userQueryKeys.apiKeys, (old) => {
+      queryClient.setQueryData<ListApiKeys>(userQueryKeys.apiKeys, (old) => {
         if (!old) return old;
         return old.map((apiKey) =>
           apiKey.id === keyId
@@ -802,7 +804,7 @@ export const useDeleteApiKey = () => {
     mutationFn: async (keyId: string) => {
       // DISABLED: WE ARE NOT CREATING USING PLAYGROUND API KEYS FOR USERS FOR NOW
       // Get current API keys to check if this is a protected playground key
-      // const currentApiKeys = queryClient.getQueryData<ApiKey[]>(
+      // const currentApiKeys = queryClient.getQueryData<ListApiKeys>(
       //   userQueryKeys.apiKeys,
       // );
 

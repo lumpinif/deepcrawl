@@ -64,7 +64,7 @@ export const organizationQueryOptions = () =>
  * Query options for user passkeys
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const userPasskeysQueryOptions = () =>
+export const authPasskeysQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.passkeys,
     queryFn: authListPasskeys,
@@ -75,9 +75,9 @@ export const userPasskeysQueryOptions = () =>
  * Query options for user's linked OAuth accounts
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const linkedAccountsQueryOptions = () =>
+export const authListUserAccountsQueryOptions = () =>
   queryOptions({
-    queryKey: userQueryKeys.linkedAccounts,
+    queryKey: userQueryKeys.listUserAccounts,
     queryFn: authListUserAccounts,
     ...baseQueryOptions,
   });

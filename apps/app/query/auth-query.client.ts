@@ -1,4 +1,10 @@
-import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
+import type {
+  ListApiKeys,
+  ListDeviceSessions,
+  ListUserAccounts,
+  Session,
+} from '@deepcrawl/auth/types';
+import type { Passkey } from 'better-auth/plugins/passkey';
 import { authClient } from '@/lib/auth.client';
 import type { ActiveOrganization } from '@/lib/auth.client-types';
 
@@ -80,7 +86,7 @@ export async function getFullOrganization(): Promise<ActiveOrganization | null> 
  * Auth Client API Call:
  * user's passkeys using Better Auth official API
  */
-export async function listUserPasskeys() {
+export async function listUserPasskeys(): Promise<Passkey[]> {
   const { data: passkeys, error } = await authClient.passkey.listUserPasskeys();
 
   if (error) {
@@ -98,7 +104,7 @@ export async function listUserPasskeys() {
  * Auth Client API Call:
  * user's linked OAuth accounts
  */
-export async function listAccounts() {
+export async function listAccounts(): Promise<ListUserAccounts> {
   const { data: accounts, error } = await authClient.listAccounts();
 
   if (error) {
@@ -116,7 +122,7 @@ export async function listAccounts() {
  * Auth Client API Call:
  * user's API keys
  */
-export async function listApiKeys() {
+export async function listApiKeys(): Promise<ListApiKeys> {
   const { data: apiKeys, error } = await authClient.apiKey.list();
 
   if (error) {
