@@ -1,6 +1,7 @@
 import type {
   ListApiKeys,
   ListDeviceSessions,
+  ListSessions,
   ListUserAccounts,
   Session,
 } from '@deepcrawl/auth/types';
@@ -30,7 +31,7 @@ export async function getSession(): Promise<Session | null> {
  * Auth Client API Call:
  * all active sessions for the current user
  */
-export async function listSessions(): Promise<Session['session'][]> {
+export async function listSessions(): Promise<ListSessions> {
   const { data: sessions, error } = await authClient.listSessions();
 
   if (error) {

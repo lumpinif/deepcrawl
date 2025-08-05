@@ -5,6 +5,11 @@ export type Auth = typeof auth;
 export type Session = typeof auth.$Infer.Session;
 
 /**
+ * The type for listSessions
+ */
+export type ListSessions = Awaited<ReturnType<typeof auth.api.listSessions>>;
+
+/**
  * The type for listUserAccounts
  */
 export type ListUserAccounts = Awaited<

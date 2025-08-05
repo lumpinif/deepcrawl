@@ -4,6 +4,7 @@ import { auth } from '@deepcrawl/auth/lib/auth';
 import type {
   ListApiKeys,
   ListDeviceSessions,
+  ListSessions,
   ListUserAccounts,
   Session,
 } from '@deepcrawl/auth/types';
@@ -29,7 +30,7 @@ export async function authGetSession(): Promise<Session | null> {
  * Auth Server API Call:
  * all active sessions for the current user
  */
-export async function authListSessions(): Promise<Session['session'][]> {
+export async function authListSessions(): Promise<ListSessions> {
   const requestHeaders = await headers();
 
   try {
