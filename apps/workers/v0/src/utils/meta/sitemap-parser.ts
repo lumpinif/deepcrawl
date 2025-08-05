@@ -1,7 +1,7 @@
 export class SitemapParser {
   async parse(
     sitemapUrl: string,
-    options?: { signal?: AbortSignal },
+    options?: { signal?: AbortSignal | null },
   ): Promise<{ urls: string[]; content: string | null }> {
     try {
       const response = await fetch(sitemapUrl, { signal: options?.signal });

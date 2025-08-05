@@ -1,7 +1,7 @@
 export class RobotsParser {
   async parse(
     baseUrl: string,
-    options?: { signal?: AbortSignal },
+    options?: { signal?: AbortSignal | null },
   ): Promise<{
     sitemaps: string[];
     rules: { userAgent: string; allow: string[]; disallow: string[] }[];

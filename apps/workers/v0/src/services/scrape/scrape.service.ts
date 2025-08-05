@@ -71,17 +71,17 @@ export class ScrapeService {
     url: string,
     options: {
       isIframeAllowed?: boolean;
-      signal?: AbortSignal;
-    } = { isIframeAllowed: true },
+    } & RequestInit<RequestInitCfProperties> = { isIframeAllowed: true },
   ): Promise<string | FetchPageResult> {
+    const { isIframeAllowed = true, signal, ...rest } = options;
     // Add timeout configuration for production reliability
     const timeoutMs = DEFAULT_FETCH_TIMEOUT;
     const abortController = new AbortController();
 
     // If an external signal is provided, abort when it aborts
-    if (options.signal) {
-      options.signal.addEventListener('abort', () => {
-        abortController.abort(options.signal?.reason || 'Request cancelled');
+    if (signal) {
+      signal.addEventListener('abort', () => {
+        abortController.abort(signal?.reason || 'Request cancelled');
       });
     }
 
@@ -92,8 +92,10 @@ export class ScrapeService {
 
     try {
       const response = await fetch(url, {
+        ...rest,
         signal: abortController.signal,
         headers: {
+          ...rest.headers,
           'User-Agent': 'Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)',
           Accept:
             'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -101,7 +103,7 @@ export class ScrapeService {
           DNT: '1',
           'Upgrade-Insecure-Requests': '1',
         },
-      });
+      } satisfies RequestInit<RequestInitCfProperties>);
 
       clearTimeout(timeoutId);
 
@@ -161,7 +163,7 @@ export class ScrapeService {
 
   private async fetchMetaFiles(
     baseUrl: string,
-    options: MetaFilesOptions & { signal?: AbortSignal } = {},
+    options: MetaFilesOptions & { signal?: AbortSignal | null } = {},
   ): Promise<MetaFiles> {
     const result: MetaFiles = {};
     const robotsParser = new RobotsParser();
@@ -488,7 +490,7 @@ export class ScrapeService {
     ...options
   }: ScrapeOptions & {
     url: string;
-    signal?: AbortSignal;
+    fetchOptions?: RequestInit<RequestInitCfProperties>;
   }): Promise<ScrapedData> {
     const {
       robots,
@@ -498,8 +500,8 @@ export class ScrapeService {
       metadataOptions,
       cleaningProcessor = 'html-rewriter',
       readerCleaningOptions,
-      signal,
       cleanedHtml,
+      fetchOptions,
     } = options;
 
     // Default isMetadata to true unless explicitly set to false
@@ -507,8 +509,8 @@ export class ScrapeService {
 
     try {
       const fetchResult = await this.fetchPage(url, {
+        ...fetchOptions,
         isIframeAllowed: metadataOptions?.isIframeAllowed ?? true,
-        signal,
       });
 
       const html =
@@ -531,7 +533,11 @@ export class ScrapeService {
 
       if (robots || sitemapXML) {
         promises.push(
-          this.fetchMetaFiles(url, { robots, sitemapXML, signal })
+          this.fetchMetaFiles(url, {
+            robots,
+            sitemapXML,
+            signal: fetchOptions?.signal,
+          })
             .then((metaFiles) => {
               dataResults.metaFiles = metaFiles;
             })

@@ -39,7 +39,7 @@ export interface AppContext extends HonoContext<AppBindings> {}
 export interface ORPCContext extends ResponseHeadersPluginContext {
   env: AppBindings['Bindings'];
   var: AppVariables;
-  signal: AbortSignal;
+  signal?: AbortSignal | null;
   executionCtx: ExecutionContext;
 }
 
