@@ -29,6 +29,12 @@ pnpm dev
 # Start only dashboard and auth services
 pnpm dev:dashboard
 
+# Start dashboard with workers (dashboard + auth + deepcrawl)
+cd apps/app && pnpm dev:workers
+
+# Start dashboard with auth worker only
+cd apps/app && pnpm dev:auth-worker
+
 # Start deepcrawl worker in development mode
 cd apps/workers/v0 && pnpm dev
 
@@ -309,16 +315,26 @@ pnpm clean:node  # Custom script to clean node_modules
 pnpm ui add button  # Example: add button component
 ```
 
+## Code Style Guidelines
+
+Based on .cursor/rules/deepcrawl-project.mdc:
+- **TypeScript**: Use interfaces over types, avoid enums (use maps instead)
+- **Programming Style**: Functional and declarative patterns, avoid classes
+- **React**: Prefer Server Components over client components, minimal 'use client', wrap client components in Suspense
+- **Variable Naming**: Use descriptive names with auxiliary verbs (isLoading, hasError)
+- **UI Framework**: shadcn/ui with Tailwind CSS, mobile-first responsive design
+- **Authentication**: Better Auth with unlinkAccount method (requires allowUnlinkingAll config for single accounts)
+
 ## Important Notes
 
 - **Node.js**: Requires Node.js >= 20
-- **Package Manager**: Uses pnpm@10.13.1 with workspaces
+- **Package Manager**: Uses pnpm@10.14.0 with workspaces (NEVER use npm - this project uses pnpm)
 - **Deployment**: Cloudflare Workers for backend services
 - **Database**: Neon PostgreSQL with Drizzle ORM
 - **Authentication**: Better Auth with multiple providers (GitHub, Google, passkeys, magic links)
 - **UI Components**: shadcn/ui with Tailwind CSS
 - **Build System**: Turbo for monorepo orchestration, tsup for SDK builds
-- **Code Quality**: Biome for formatting/linting (80 char line width, 2-space indentation)
+- **Code Quality**: Biome for formatting/linting (80 char line width, 2-space indentation), ESLint for additional rules
 - **Development Utilities**:
   - Custom logging utilities for development environment (`logDebug`)
   - Markdown linting with markdownlint-cli2
