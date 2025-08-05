@@ -117,6 +117,9 @@ export class ScrapeService {
           ...CommonScrapingHeaders.browserLike,
           ...rest.headers,
         },
+        // always bypass the cache in Cloudflare
+        // cache: 'no-store', // keep in mind that using cache: 'no-cache' will also send a Cache-Control: no-cache header to the origin server, which may affect the response
+        cf: { cacheTtl: 0 }, // more explicit way to bypass the cache in Cloudflare
       });
 
       // Clear timeout on successful fetch
