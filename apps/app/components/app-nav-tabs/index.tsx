@@ -122,14 +122,14 @@ export default function AppNavTabs() {
           key={`${item.url}-${index}`} // More stable key
           href={item.url}
           ref={setTabRef(index)}
-          className={`h-[30px] cursor-pointer border-none bg-transparent px-3 py-2 transition-colors duration-300 ${
+          className={`h-8 cursor-pointer border-none bg-transparent transition-colors duration-300 ${
             index === activeIndex ? 'text-primary' : 'text-muted-foreground'
           }`}
           onMouseEnter={() => handleMouseEnter(index, item.url)}
           onMouseLeave={handleMouseLeave}
           onFocus={() => handlePrefetch(item.url)}
         >
-          <div className="flex h-full items-center justify-center whitespace-nowrap text-sm leading-5">
+          <div className="flex h-full items-center justify-center whitespace-nowrap px-3 pb-1 text-sm tracking-wide">
             {item.title}
           </div>
         </Link>
@@ -144,11 +144,11 @@ export default function AppNavTabs() {
   );
 
   return (
-    <div className="scrollbar-none sticky top-0 z-10 overflow-x-auto border-b bg-background-subtle px-4">
-      <div className="relative flex w-full flex-nowrap items-center justify-start bg-background-subtle py-2 shadow-none">
+    <div className="scrollbar-none sticky top-0 z-10 h-11 overflow-x-auto border-b bg-background-subtle px-4">
+      <div className="relative flex h-full w-full flex-nowrap items-center justify-start bg-background-subtle shadow-none">
         {/* Hover Highlight */}
         <div
-          className="absolute hidden h-[30px] items-center rounded-[6px] bg-accent transition-all duration-150 ease-out md:flex"
+          className="absolute hidden h-8 items-center rounded bg-accent transition-all duration-150 ease-out md:flex"
           style={computedHoverStyle}
         />
 
@@ -159,9 +159,7 @@ export default function AppNavTabs() {
         />
 
         {/* Tabs */}
-        <div className="relative flex items-center space-x-1">
-          {renderedTabs}
-        </div>
+        <div className="relative flex items-center">{renderedTabs}</div>
       </div>
     </div>
   );
