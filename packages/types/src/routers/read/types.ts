@@ -1,8 +1,10 @@
-import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
 import {
-  smartboolFalse,
-  smartboolTrue,
-} from '@deepcrawl/types/common/smart-schemas';
+  DEFAULT_CACHE_OPTIONS,
+  DEFAULT_READ_OPTIONS,
+  DEFAULT_SCRAPE_OPTIONS,
+} from '@deepcrawl/types/common';
+import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
+import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
 import { CacheOptionsSchema } from '@deepcrawl/types/services/cache/types';
 
 import {
@@ -12,6 +14,9 @@ import {
 import { z } from 'zod/v4';
 
 /* NOTE: IN ZOD V4: The input type of all z.coerce schemas is now unknown. THIS MIGHT BREAKES CURRENT TYPES */
+
+const { markdown, rawHtml } = DEFAULT_READ_OPTIONS;
+const { enabled: defaultCacheEnabled } = DEFAULT_CACHE_OPTIONS;
 
 /**
  * Extends `ScrapeOptionsSchema`.
@@ -33,18 +38,18 @@ export const ReadOptionsSchema = z
      * Whether to extract markdown from the page.
      * Default: true
      */
-    markdown: smartboolTrue().meta({
+    markdown: smartboolOptionalWithDefault(markdown).meta({
       description: 'Whether to extract markdown from the page.',
-      examples: [true],
+      examples: [markdown, !markdown],
     }),
 
     /**
      * Whether to return raw HTML.
      * Default: false
      */
-    rawHtml: smartboolFalse().meta({
+    rawHtml: smartboolOptionalWithDefault(rawHtml).meta({
       description: 'Whether to return raw HTML.',
-      examples: [false],
+      examples: [rawHtml, !rawHtml],
     }),
 
     /**
@@ -55,9 +60,7 @@ export const ReadOptionsSchema = z
     cacheOptions: CacheOptionsSchema.meta({
       description:
         'Cache configuration for read operation based on KV put options except for `metadata`',
-      examples: [
-        { expiration: 1717708800, expirationTtl: 86400 }, // expirationTtl: 86400 = 1 day
-      ],
+      examples: [DEFAULT_CACHE_OPTIONS],
     }),
   })
   .extend(ScrapeOptionsSchema.shape)
@@ -67,18 +70,8 @@ export const ReadOptionsSchema = z
     examples: [
       {
         url: 'https://example.com',
-        metadata: true,
-        markdown: true,
-        cleanedHtml: false,
-        robots: false,
-        rawHtml: false,
-        metadataOptions: {
-          title: true,
-          description: true,
-          language: true,
-          canonical: true,
-          robots: true,
-        },
+        ...DEFAULT_READ_OPTIONS,
+        ...DEFAULT_SCRAPE_OPTIONS,
       },
     ],
   });
@@ -89,12 +82,12 @@ export const ReadResponseBaseSchema = z.object({
   }),
   cached: z
     .boolean()
+    .default(defaultCacheEnabled)
     .optional()
-    .default(false)
     .meta({
       description:
         'The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application.',
-      examples: [false],
+      examples: [defaultCacheEnabled],
     }),
   targetUrl: z.string().meta({
     description: 'The URL that was requested to be processed',
@@ -180,7 +173,7 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
     examples: [
       {
         success: true,
-        cached: false,
+        cached: defaultCacheEnabled,
         targetUrl: 'https://example.com/article',
         title: 'Example Article',
         description: 'This is an example article description',

@@ -1,76 +1,137 @@
-import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
+import { DEFAULT_METADATA_OPTIONS } from '@deepcrawl/types/common/constants';
+import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
 
-/**
+const {
+  title,
+  description,
+  language,
+  canonical,
+  robots,
+  author,
+  keywords,
+  favicon,
+  openGraph,
+  twitter,
+} = DEFAULT_METADATA_OPTIONS;
+
+/** For `PageMetadata`
  * Schema for configuring metadata extraction options.
  * Controls which metadata fields should be extracted from a webpage.
- */
+ * */
 export const MetadataOptionsSchema = z
   .object({
-    title: smartboolTrue().meta({
+    title: smartboolOptionalWithDefault(title).meta({
       description: 'Extract page title from title tag or meta title',
-      examples: [true],
+      default: title,
+      examples: [title, !title],
     }),
-    description: smartboolTrue().meta({
+    description: smartboolOptionalWithDefault(description).meta({
       description: 'Extract meta description content',
-      examples: [true],
+      default: description,
+      examples: [description, !description],
     }),
-    language: smartboolTrue().meta({
+    language: smartboolOptionalWithDefault(language).meta({
       description: 'Extract page language from html lang attribute',
-      examples: [true],
+      default: language,
+      examples: [language, !language],
     }),
-    canonical: smartboolTrue().meta({
+    canonical: smartboolOptionalWithDefault(canonical).meta({
       description: 'Extract canonical URL from link rel="canonical"',
-      examples: [true],
+      default: canonical,
+      examples: [canonical, !canonical],
     }),
-    robots: smartboolTrue().meta({
+    robots: smartboolOptionalWithDefault(robots).meta({
       description: 'Extract robots directives from meta robots',
-      examples: [false],
+      default: robots,
+      examples: [robots, !robots],
     }),
-    author: smartboolTrue().meta({
+    author: smartboolOptionalWithDefault(author).meta({
       description: 'Extract author information from meta author',
-      examples: [true],
+      default: author,
+      examples: [author, !author],
     }),
-    keywords: smartboolTrue().meta({
+    keywords: smartboolOptionalWithDefault(keywords).meta({
       description: 'Extract meta keywords and convert to array',
-      examples: [true],
+      default: keywords,
+      examples: [keywords, !keywords],
     }),
-    favicon: smartboolTrue().meta({
+    favicon: smartboolOptionalWithDefault(favicon).meta({
       description: 'Extract favicon URL from link rel="icon" or similar',
-      examples: [true],
+      default: favicon,
+      examples: [favicon, !favicon],
     }),
-    openGraph: smartboolTrue().meta({
+    openGraph: smartboolOptionalWithDefault(openGraph).meta({
       description: 'Extract Open Graph metadata (og:* properties)',
-      examples: [true],
+      default: openGraph,
+      examples: [openGraph, !openGraph],
     }),
-    twitter: smartboolTrue().meta({
+    twitter: smartboolOptionalWithDefault(twitter).meta({
       description: 'Extract Twitter Card metadata (twitter:* properties)',
-      examples: [false],
+      default: twitter,
+      examples: [twitter, !twitter],
     }),
-    isIframeAllowed: smartboolTrue().meta({
+
+    // TODO: SHOULD WE ALLOW USER TO DEFINE THIS?
+    isIframeAllowed: smartboolOptionalWithDefault(true).meta({
       description: 'Check if iframe embedding is allowed',
-      examples: [true],
+      examples: [true, false],
     }),
   })
+  .default(DEFAULT_METADATA_OPTIONS)
+  .optional()
   .meta({
     title: 'MetadataOptions',
     description: 'Schema for configuring metadata extraction options',
     examples: [
       {
-        title: true,
-        description: true,
-        language: true,
-        canonical: true,
-        robots: false,
-        author: true,
-        keywords: true,
-        favicon: true,
-        openGraph: true,
-        twitter: false,
-        isIframeAllowed: true,
+        title,
+        description,
+        language,
+        canonical,
+        robots,
+        author,
+        keywords,
+        favicon,
+        openGraph,
+        twitter,
       },
     ],
   });
+
+/**
+ * Options for controlling which metadata fields should be extracted.
+ * Each property is a boolean flag that enables or disables extraction of specific metadata.
+ * All fields default to true if not specified.
+ *
+ * @property title - Extract page title from title tag or meta title
+ * @property description - Extract meta description content
+ * @property language - Extract page language from html lang attribute
+ * @property canonical - Extract canonical URL from link rel="canonical"
+ * @property robots - Extract robots directives from meta robots
+ * @property author - Extract author information from meta author
+ * @property keywords - Extract meta keywords and convert to array
+ * @property favicon - Extract favicon URL from link rel="icon" or similar
+ * @property openGraph - Extract Open Graph metadata (og:* properties)
+ * @property twitter - Extract Twitter Card metadata (twitter:* properties)
+ *
+ * @example
+ * ```typescript
+ * const options: MetadataOptions = {
+ *   title: true,
+ *   description: true,
+ *   language: true,
+ *   canonical: true,
+ *   robots: false,
+ *   author: true,
+ *   keywords: true,
+ *   favicon: true,
+ *   openGraph: true,
+ *   twitter: false
+ * };
+ * ```
+ */
+export type MetadataOptions = z.infer<typeof MetadataOptionsSchema>;
 
 /**
  * Schema for page metadata extracted from a webpage.
@@ -278,40 +339,6 @@ export const PageMetadataSchema = z
       },
     ],
   });
-
-/**
- * Options for controlling which metadata fields should be extracted.
- * Each property is a boolean flag that enables or disables extraction of specific metadata.
- * All fields default to true if not specified.
- *
- * @property title - Extract page title from title tag or meta title
- * @property description - Extract meta description content
- * @property language - Extract page language from html lang attribute
- * @property canonical - Extract canonical URL from link rel="canonical"
- * @property robots - Extract robots directives from meta robots
- * @property author - Extract author information from meta author
- * @property keywords - Extract meta keywords and convert to array
- * @property favicon - Extract favicon URL from link rel="icon" or similar
- * @property openGraph - Extract Open Graph metadata (og:* properties)
- * @property twitter - Extract Twitter Card metadata (twitter:* properties)
- *
- * @example
- * ```typescript
- * const options: MetadataOptions = {
- *   title: true,
- *   description: true,
- *   language: true,
- *   canonical: true,
- *   robots: false,
- *   author: true,
- *   keywords: true,
- *   favicon: true,
- *   openGraph: true,
- *   twitter: false
- * };
- * ```
- */
-export type MetadataOptions = z.infer<typeof MetadataOptionsSchema>;
 
 /**
  * Represents all metadata that can be extracted from a webpage.

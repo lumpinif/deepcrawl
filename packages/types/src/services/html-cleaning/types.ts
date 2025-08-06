@@ -1,3 +1,7 @@
+import {
+  DEFAULT_HTML_REWRITER_OPTIONS,
+  DEFAULT_READER_CLEANING_OPTIONS,
+} from '@deepcrawl/types/common';
 import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
 
@@ -303,29 +307,45 @@ export const CheerioOptionsSchema = z
  */
 export type CheerioOptions = z.infer<typeof CheerioOptionsSchema>;
 
+const {
+  cheerioOptions: defaultCheerioOptions,
+  readerOptions: defaultReaderOptions,
+} = DEFAULT_READER_CLEANING_OPTIONS;
 /**
  * Options for HTML cleaning with cheerio-reader.
  * Controls how HTML is sanitized and cleaned.
  */
-export const ReaderCleaningOptionsSchema = z.object({
-  /**
-   * Options for HTML cleaning with cheerio-reader.
-   * Controls how HTML is sanitized and cleaned.
-   */
-  cheerioOptions: CheerioOptionsSchema.optional(),
+export const ReaderCleaningOptionsSchema = z
+  .object({
+    /**
+     * Options for HTML cleaning with cheerio-reader.
+     * Controls how HTML is sanitized and cleaned.
+     */
+    cheerioOptions: CheerioOptionsSchema.default(
+      defaultCheerioOptions,
+    ).optional(),
 
-  /**
-   * Options for HTML cleaning with cheerio-reader.
-   * Controls how HTML is sanitized and cleaned.
-   */
-  readerOptions: ReaderOptionsSchema.optional(),
-});
+    /**
+     * Options for HTML cleaning with cheerio-reader.
+     * Controls how HTML is sanitized and cleaned.
+     */
+    readerOptions: ReaderOptionsSchema.default(defaultReaderOptions).optional(),
+  })
+  .default(DEFAULT_READER_CLEANING_OPTIONS)
+  .optional()
+  .meta({
+    description: 'Options for HTML cleaning with cheerio-reader.',
+    examples: [DEFAULT_READER_CLEANING_OPTIONS],
+  });
 
 /**
  * Options for HTML cleaning with cheerio-reader.
  * Controls how HTML is sanitized and cleaned.
  */
 export type ReaderCleaningOptions = z.infer<typeof ReaderCleaningOptionsSchema>;
+
+const { extractMainContent, removeBase64Images } =
+  DEFAULT_HTML_REWRITER_OPTIONS;
 
 /**
  * @note used only for 'html-rewriter' cleaning processor
@@ -334,11 +354,15 @@ export type ReaderCleaningOptions = z.infer<typeof ReaderCleaningOptionsSchema>;
  */
 export const HTMLRewriterOptionsSchema = z
   .object({
+    /**
+     * @note If allowedHTMLTags is specified, remove everything not in the list
+     * */
     allowedHTMLTags: z
       .array(z.string())
       .optional()
       .meta({
-        description: 'HTML tags to preserve in the output (whitelist)',
+        description:
+          'If allowedHTMLTags is specified, remove everything not in the list',
         examples: [
           'p',
           'h1',
@@ -352,35 +376,37 @@ export const HTMLRewriterOptionsSchema = z
           'em',
         ],
       }),
+    /**
+     * @note If disallowedHTMLTags is specified, remove matching tags
+     * */
     disallowedHTMLTags: z
       .array(z.string())
       .optional()
       .meta({
-        description: 'HTML tags to remove from the output (blacklist)',
+        description: 'If disallowedHTMLTags is specified, remove matching tags',
         examples: ['script', 'style', 'iframe', 'form', 'button'],
       }),
+    /**
+     * @note Whether to extract only the main content area, removing navigation, footers, etc.
+     * */
     extractMainContent: smartboolTrue().meta({
       description:
-        'Whether to extract only the main content area, removing navigation, footers, etc.',
-      examples: [true],
+        'Whether to extract only the main content area, removing navigation, footers, etc. Default: true',
+      default: extractMainContent,
+      examples: [extractMainContent],
     }),
-    /* Deprecated property, will be removed in future. add baseUrl to HTMLCleaning as a required parameter instead*/
-    documentBaseUrl: z
-      .string()
-      .optional()
-      .meta({
-        description:
-          'Base URL for resolving relative URLs (deprecated, use baseUrl parameter instead)',
-        examples: ['https://example.com'],
-        deprecated: true,
-      }),
+    /**
+     * @note Whether to remove base64 encoded images to reduce payload size
+     * */
     removeBase64Images: smartboolTrue().meta({
       description:
-        'Whether to remove base64 encoded images to reduce payload size',
-      examples: [true],
+        'Whether to remove base64 encoded images to reduce payload size. Default: true',
+      default: removeBase64Images,
+      examples: [removeBase64Images],
     }),
   })
-  .strict()
+  .default(DEFAULT_HTML_REWRITER_OPTIONS)
+  .optional()
   .meta({
     title: 'HTMLRewriterOptions',
     description: 'Schema for HTML rewriter cleaning configuration options',
@@ -400,7 +426,6 @@ export const HTMLRewriterOptionsSchema = z
         ],
         disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
         extractMainContent: true,
-        documentBaseUrl: 'https://example.com',
         removeBase64Images: true,
       },
     ],
@@ -462,33 +487,6 @@ export const ElementPatternSchema = z
       },
     ],
   });
-
-/**
- * Defines a pattern for matching DOM elements based on their properties.
- * Used for targeted element selection during HTML sanitization.
- *
- * @property tag - Element tag name or regex pattern to match (e.g., 'div', /^h[1-6]$/)
- * @property attributes - List of attribute patterns to match by name and optional value
- * @property classNames - List of class names or regex patterns to match in the class attribute
- * @property ids - List of ID patterns to match in the id attribute
- *
- * @example
- * ```typescript
- * const mainContentPattern: ElementPattern = {
- *   tag: 'div',
- *   attributes: [{ name: 'data-role', value: 'content' }],
- *   classNames: ['main-content', /^content-/],
- *   ids: ['main', 'article-body']
- * };
- *
- * const navigationPattern: ElementPattern = {
- *   tag: /^nav$/i,
- *   classNames: [/nav/, /menu/, /header/],
- *   ids: ['navigation', 'main-menu']
- * };
- * ```
- */
-export type ElementPattern = z.infer<typeof ElementPatternSchema>;
 
 /**
  * Schema for HTML cleaning performance metrics.

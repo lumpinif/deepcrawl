@@ -1,7 +1,9 @@
 import {
-  smartboolFalse,
-  smartboolTrue,
-} from '@deepcrawl/types/common/smart-schemas';
+  COMMON_HEADERS,
+  DEFAULT_FETCH_OPTIONS,
+  DEFAULT_SCRAPE_OPTIONS,
+} from '@deepcrawl/types/common/constants';
+import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
 import {
   HTMLRewriterOptionsSchema,
   ReaderCleaningOptionsSchema,
@@ -271,47 +273,6 @@ export const SafeHeadersSchema = z
 export type SafeHeaders = z.infer<typeof SafeHeadersSchema>;
 
 /**
- * Predefined safe headers for common scraping scenarios.
- */
-export const CommonScrapingHeaders = {
-  /** Standard browser-like headers - mimics Chrome exactly */
-  browserLike: {
-    'User-Agent':
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-    Accept:
-      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Accept-Encoding': 'gzip, deflate, br',
-    DNT: '1',
-    'Upgrade-Insecure-Requests': '1',
-    'Sec-CH-UA':
-      '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-    'Sec-CH-UA-Mobile': '?0',
-    'Sec-CH-UA-Platform': '"Windows"',
-    'Sec-Fetch-Site': 'none',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-User': '?1',
-    'Sec-Fetch-Dest': 'document',
-    Priority: 'u=0, i',
-  },
-
-  /** Minimal bot headers */
-  botFriendly: {
-    'User-Agent': 'DeepCrawl-Bot/1.0 (+https://deepcrawl.dev)',
-    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
-  },
-
-  /** Mobile browser headers */
-  mobile: {
-    'User-Agent':
-      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.9',
-  },
-} as const;
-
-/**
  * Safe schema for fetch request options specifically designed for web scraping.
  * Only includes options that are secure and relevant for scraping operations.
  */
@@ -346,18 +307,20 @@ export const FetchOptionsSchema = z
       description: 'Signal for aborting the request (useful for timeouts)',
     }),
   })
+  .default(DEFAULT_FETCH_OPTIONS)
+  .optional()
   .meta({
     title: 'FetchOptions',
     description: 'Safe fetch options for web scraping operations',
     examples: [
       {
         method: 'GET',
-        headers: CommonScrapingHeaders.browserLike,
+        headers: COMMON_HEADERS.browserLike,
         redirect: 'follow',
       },
       {
         method: 'HEAD',
-        headers: CommonScrapingHeaders.botFriendly,
+        headers: COMMON_HEADERS.botFriendly,
         redirect: 'manual',
       },
     ],
@@ -369,6 +332,7 @@ export const FetchOptionsSchema = z
  */
 export type FetchOptions = z.infer<typeof FetchOptionsSchema>;
 
+const { metadata, cleanedHtml, robots, sitemapXML } = DEFAULT_SCRAPE_OPTIONS;
 /**
  * Options for scraping operation.
  * Controls how the scraping operation is performed.
@@ -379,44 +343,51 @@ export const ScrapeOptionsSchema = z
      * Whether to extract metadata from the page.
      * Default: true
      */
-    metadata: smartboolTrue().meta({
+    metadata: smartboolOptionalWithDefault(metadata).meta({
       description: 'Whether to extract metadata from the page.',
-      examples: [true],
+      examples: [metadata, !metadata],
     }),
 
     /**
      * Whether to return cleaned HTML.
      * Default: false
      */
-    cleanedHtml: smartboolFalse().meta({
+    cleanedHtml: smartboolOptionalWithDefault(cleanedHtml).meta({
       description: 'Whether to return cleaned HTML.',
-      examples: [false],
+      examples: [cleanedHtml, !cleanedHtml],
     }),
 
     /**
      * Whether to fetch and parse robots.txt.
      * Default: false
      */
-    robots: smartboolFalse().meta({
+    robots: smartboolOptionalWithDefault(robots).meta({
       description: 'Whether to fetch and parse robots.txt.',
-      examples: [false],
+      examples: [robots, !robots],
     }),
 
     /**
      * Whether to fetch and parse sitemap.xml.
      * Default: false
      */
-    sitemapXML: smartboolFalse().meta({
+    sitemapXML: smartboolOptionalWithDefault(sitemapXML).meta({
       description:
         '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
-      examples: [false],
+      examples: [sitemapXML, !sitemapXML],
     }),
 
     /**
      * Options for metadata extraction.
      * Controls how metadata like title, description, etc. are extracted.
      */
-    metadataOptions: MetadataOptionsSchema.optional(),
+    metadataOptions: MetadataOptionsSchema.meta({
+      description: 'Options for metadata extraction.',
+      examples: [
+        {
+          title: true,
+        },
+      ],
+    }),
 
     /**
      * The cleaning processor to use.
@@ -436,7 +407,7 @@ export const ScrapeOptionsSchema = z
      * Options for HTML cleaning with html-rewriter.
      * Controls how HTML is sanitized and cleaned.
      */
-    htmlRewriterOptions: HTMLRewriterOptionsSchema.optional().meta({
+    htmlRewriterOptions: HTMLRewriterOptionsSchema.meta({
       description: 'Options for HTML cleaning with html-rewriter.',
       examples: [
         {
@@ -450,7 +421,7 @@ export const ScrapeOptionsSchema = z
      * Options for HTML cleaning with cheerio-reader.
      * Controls how HTML is sanitized and cleaned.
      */
-    readerCleaningOptions: ReaderCleaningOptionsSchema.optional().meta({
+    readerCleaningOptions: ReaderCleaningOptionsSchema.meta({
       description: 'Options for HTML cleaning with cheerio-reader.',
       examples: [
         {
@@ -464,12 +435,12 @@ export const ScrapeOptionsSchema = z
     /**
      * Options for the fetch request.
      */
-    fetchOptions: FetchOptionsSchema.optional().meta({
+    fetchOptions: FetchOptionsSchema.meta({
       description: 'Options for the fetch request.',
       examples: [
         {
           method: 'GET',
-          headers: CommonScrapingHeaders.botFriendly,
+          headers: COMMON_HEADERS.botFriendly,
           redirect: 'follow',
         },
       ],

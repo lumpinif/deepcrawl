@@ -1,5 +1,8 @@
+import { DEFAULT_CACHE_OPTIONS } from '@deepcrawl/types/common';
 import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
+
+const { enabled } = DEFAULT_CACHE_OPTIONS;
 
 /**
  * Cache configuration for read operation based on KV put options except for `metadata`.
@@ -10,8 +13,8 @@ export const CacheOptionsSchema = z
   .object({
     enabled: smartboolTrue().meta({
       description: 'Whether to enable cache. Default is true.',
-      default: true,
-      examples: [true],
+      default: enabled,
+      examples: [enabled, !enabled],
     }),
     expiration: z
       .number()
@@ -31,7 +34,7 @@ export const CacheOptionsSchema = z
         examples: [60],
       }),
   })
-  .default({ enabled: true }) // initialize zobject with default value
+  .default(DEFAULT_CACHE_OPTIONS) // initialize zobject with default value
   .optional();
 
 /**

@@ -1,0 +1,137 @@
+export const MAX_KIN_LIMIT = 30;
+export const MAX_VISITED_URLS_LIMIT = 1000;
+
+/**
+ * @note DON'T USE THIS IN TYPES OR OPTIONS
+ * @description These are global configurations for the service.
+ */
+export const _ENABLE_READ_CACHE = true as const;
+export const _ENABLE_LINKS_CACHE = true as const;
+
+export const DEFAULT_FETCH_TIMEOUT = 15000; // 15 seconds
+
+export const PLATFORM_URLS = [
+  // GitHub
+  'https://github.com',
+  'https://www.github.com',
+  // Gist
+  'https://gist.github.com',
+  'https://www.gist.github.com',
+  // GitLab
+  'https://gitlab.com',
+  'https://www.gitlab.com',
+  // Bitbucket
+  'https://bitbucket.org',
+  'https://www.bitbucket.org',
+  // Azure DevOps
+  'https://dev.azure.com',
+  'https://www.dev.azure.com',
+  // Gitea
+  'https://gitea.com',
+  'https://www.gitea.com',
+  // SourceForge
+  'https://sourceforge.net',
+  'https://www.sourceforge.net',
+  // Google Code Archive (legacy)
+  'https://code.google.com',
+  // Notion (workspace/page)
+  'https://www.notion.so',
+  'https://notion.so',
+  // Confluence Cloud
+  'https://atlassian.net',
+  // Add more as needed
+] as const;
+
+/**
+ * Predefined safe headers for common scraping scenarios.
+ */
+export const COMMON_HEADERS = {
+  /** Standard browser-like headers - mimics Chrome exactly */
+  browserLike: {
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+    Accept:
+      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept-Encoding': 'gzip, deflate, br',
+    DNT: '1',
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-CH-UA':
+      '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+    'Sec-CH-UA-Mobile': '?0',
+    'Sec-CH-UA-Platform': '"Windows"',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    Priority: 'u=0, i',
+  },
+
+  /** Minimal bot headers */
+  botFriendly: {
+    'User-Agent': 'DeepCrawl-Bot/1.0 (+https://deepcrawl.dev)',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+  },
+
+  /** Mobile browser headers */
+  mobile: {
+    'User-Agent':
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+  },
+} as const;
+
+export const DEFAULT_METADATA_OPTIONS = {
+  title: true,
+  description: true,
+  language: true,
+  canonical: true,
+  robots: true,
+  author: true,
+  keywords: true,
+  favicon: true,
+  openGraph: true,
+  twitter: true,
+} as const;
+
+export const DEFAULT_HTML_REWRITER_OPTIONS = {
+  extractMainContent: true,
+  removeBase64Images: true,
+} as const;
+
+export const DEFAULT_CHEERIO_OPTIONS = {} as const;
+
+export const DEFAULT_READER_OPTIONS = {} as const;
+
+export const DEFAULT_READER_CLEANING_OPTIONS = {
+  cheerioOptions: DEFAULT_CHEERIO_OPTIONS,
+  readerOptions: DEFAULT_READER_OPTIONS,
+} as const;
+
+export const DEFAULT_FETCH_OPTIONS = {} as const;
+
+export const DEFAULT_SCRAPE_OPTIONS = {
+  metadata: true,
+  cleanedHtml: false,
+  robots: false,
+  sitemapXML: false,
+  metadataOptions: DEFAULT_METADATA_OPTIONS,
+  cleaningProcessor: 'cheerio-reader',
+  htmlRewriterOptions: DEFAULT_HTML_REWRITER_OPTIONS,
+  readerCleaningOptions: DEFAULT_READER_CLEANING_OPTIONS,
+  fetchOptions: DEFAULT_FETCH_OPTIONS,
+} as const;
+
+export const DEFAULT_CACHE_OPTIONS = {
+  enabled: true,
+  expirationTtl: 86400 * 1, // 1 day in seconds
+} as const;
+
+export const DEFAULT_READ_OPTIONS = {
+  markdown: true,
+  rawHtml: false,
+  cacheOptions: DEFAULT_CACHE_OPTIONS,
+  ...DEFAULT_SCRAPE_OPTIONS,
+} as const;
