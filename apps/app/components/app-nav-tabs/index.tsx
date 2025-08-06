@@ -129,7 +129,7 @@ export default function AppNavTabs() {
           onMouseLeave={handleMouseLeave}
           onFocus={() => handlePrefetch(item.url)}
         >
-          <div className="flex h-full items-center justify-center whitespace-nowrap px-3 pb-1 text-sm tracking-wide">
+          <div className="flex h-full items-center justify-center whitespace-nowrap px-3 pb-1 text-sm">
             {item.title}
           </div>
         </Link>
