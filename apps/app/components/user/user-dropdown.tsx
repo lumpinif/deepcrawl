@@ -108,7 +108,7 @@ export function UserDropdown({
         align="end"
         side="bottom"
         sideOffset={12}
-        className="w-(--radix-dropdown-menu-trigger-width) min-w-xs rounded-xl bg-background-subtle dark:text-muted-foreground"
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-xs rounded-xl bg-background-subtle px-1.5 dark:text-muted-foreground"
       >
         <DropdownMenuGroup>
           <Popover
@@ -145,7 +145,7 @@ export function UserDropdown({
               side="left"
               align="start"
               sideOffset={12}
-              className="flex w-(--radix-dropdown-menu-trigger-width) min-w-56 flex-col gap-2 rounded-lg p-2"
+              className="flex w-(--radix-dropdown-menu-trigger-width) min-w-xs flex-col gap-2 rounded-lg bg-background-subtle p-2"
             >
               <DropdownMenuLabel className="px-2 text-muted-foreground text-xs">
                 Switch Account
