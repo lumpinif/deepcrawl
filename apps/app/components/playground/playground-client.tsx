@@ -113,7 +113,7 @@ const API_KEY =
   process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY || 'demo-key-for-playground';
 
 export function PlaygroundClient() {
-  const [url, setUrl] = useState('https://hono.dev');
+  const [requestUrl, setRequestUrl] = useState('https://hono.dev');
   const [selectedOperation, setSelectedOperation] = useQueryState(
     'operation',
     parseAsStringLiteral(operations).withDefault('getMarkdown'),
@@ -187,7 +187,7 @@ export function PlaygroundClient() {
     }
 
     // Prevent duplicate requests
-    const requestKey = `${operation}-${url}`;
+    const requestKey = `${operation}-${requestUrl}`;
     if (activeRequestsRef.current.has(requestKey)) {
       toast.info('Request already in progress');
       return;
@@ -200,30 +200,46 @@ export function PlaygroundClient() {
 
     try {
       let result: unknown;
-      let targetUrl = url;
+      let targetUrl = requestUrl;
 
       switch (operation) {
         case 'getMarkdown': {
-          result = await sdkClient.getMarkdown(url, markdownOptions);
+          // Use the configured markdown options, excluding the url field
+          const { url: _, ...optionsWithoutUrl } = {
+            ...markdownOptions,
+            url: requestUrl,
+          };
+          result = await sdkClient.getMarkdown(requestUrl, optionsWithoutUrl);
+          targetUrl = requestUrl;
           break;
         }
         case 'readUrl': {
           // Use the configured read options, excluding the url field
-          const { url: _, ...optionsWithoutUrl } = { ...readOptions, url };
-          const readData = await sdkClient.readUrl(url, optionsWithoutUrl);
+          const { url: _, ...optionsWithoutUrl } = {
+            ...readOptions,
+            url: requestUrl,
+          };
+          const readData = await sdkClient.readUrl(
+            requestUrl,
+            optionsWithoutUrl,
+          );
           result = readData;
-          targetUrl = (readData as ReadUrlResponse)?.targetUrl || url;
+          targetUrl = (readData as ReadUrlResponse)?.targetUrl || requestUrl;
           break;
         }
         case 'extractLinks': {
           // Use the configured links options, excluding the url field
-          const { url: _, ...optionsWithoutUrl } = { ...linksOptions, url };
+          const { url: _, ...optionsWithoutUrl } = {
+            ...linksOptions,
+            url: requestUrl,
+          };
           const linksData = await sdkClient.extractLinks(
-            url,
+            requestUrl,
             optionsWithoutUrl,
           );
           result = linksData;
-          targetUrl = (linksData as ExtractLinksResponse)?.targetUrl || url;
+          targetUrl =
+            (linksData as ExtractLinksResponse)?.targetUrl || requestUrl;
           break;
         }
       }
@@ -325,12 +341,12 @@ export function PlaygroundClient() {
               selectedOperation={selectedOperation}
               options={
                 selectedOperation === 'readUrl'
-                  ? { ...readOptions, url }
+                  ? { ...readOptions, url: requestUrl }
                   : selectedOperation === 'extractLinks'
-                    ? { ...linksOptions, url }
+                    ? { ...linksOptions, url: requestUrl }
                     : selectedOperation === 'getMarkdown'
-                      ? { ...markdownOptions, url }
-                      : { url }
+                      ? { ...markdownOptions, url: requestUrl }
+                      : { url: requestUrl }
               }
               onOptionsChange={(newOptions) => {
                 if (selectedOperation === 'readUrl') {
@@ -363,9 +379,9 @@ export function PlaygroundClient() {
             />
             <Input
               id="url"
-              value={url}
+              value={requestUrl}
               placeholder="https://hono.dev"
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => setRequestUrl(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -382,7 +398,7 @@ export function PlaygroundClient() {
         {/* Execute button */}
         <SpinnerButton
           className="w-32"
-          disabled={!url}
+          disabled={!requestUrl}
           onClick={() =>
             executeApiCall(
               selectedOP?.operation as DeepcrawlOperations,
