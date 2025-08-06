@@ -66,20 +66,15 @@ export async function HTMLCleaning({
   }
 
   // Step 4: Handle URL normalization if base URL is provided
-  if (options?.documentBaseUrl || baseUrl) {
+  if (baseUrl) {
     // Normalize image URLs
-    rewriter.on(
-      'img[src]',
-      new ImageSrcNormalizeHandler(options?.documentBaseUrl || baseUrl),
-    );
+    rewriter.on('img[src]', new ImageSrcNormalizeHandler(baseUrl));
 
     // Handle anchor tags with fragment links (#)
     rewriter.on('a[href^="#"]', new AnchorFragmentHandler());
 
     // Normalize all types of links
-    const linkHandler = new LinkNormalizeHandler(
-      options?.documentBaseUrl || baseUrl,
-    );
+    const linkHandler = new LinkNormalizeHandler(baseUrl);
     rewriter.on('a[href]', linkHandler);
     rewriter.on('link[href]', linkHandler);
     rewriter.on('area[href]', linkHandler);
