@@ -18,7 +18,6 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  // TODO: CONSIDER MIGRATING TO REACT QUERY ADVANCED SSR PATTERN
   // Get session first to check authentication
   const [currentSession, listDeviceSessions] = await Promise.all([
     authGetSession(),
@@ -55,8 +54,8 @@ export default async function DashboardLayout({
         <AppSidebar />
         <SidebarInset className={defaultInsetClassname}>
           <SiteHeader
+            session={currentSession}
             enableThemeToggle={false}
-            user={currentSession.user}
             navigationMode={navigationMode}
             deviceSessions={listDeviceSessions}
           />
@@ -73,8 +72,8 @@ export default async function DashboardLayout({
     <div className="min-h-svh w-full">
       <SiteHeader
         className="h-16"
+        session={currentSession}
         enableThemeToggle={false}
-        user={currentSession.user}
         navigationMode={navigationMode}
         deviceSessions={listDeviceSessions}
       />

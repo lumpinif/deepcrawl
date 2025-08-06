@@ -1,4 +1,4 @@
-import type { Session } from '@deepcrawl/auth/types';
+import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
 import { queryOptions } from '@tanstack/react-query';
 import {
   getFullOrganization,
@@ -44,10 +44,15 @@ export const listSessionsQueryOptionsClient = () =>
  * Query options for device sessions
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const deviceSessionsQueryOptionsClient = () =>
+export const deviceSessionsQueryOptionsClient = ({
+  init,
+}: {
+  init?: ListDeviceSessions;
+} = {}) =>
   queryOptions({
     queryKey: userQueryKeys.deviceSessions,
     queryFn: listDeviceSessions,
+    initialData: init,
     ...baseQueryOptions,
   });
 

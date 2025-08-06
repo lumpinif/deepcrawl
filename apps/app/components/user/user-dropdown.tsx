@@ -29,6 +29,7 @@ import {
 } from '@deepcrawl/ui/components/ui/popover';
 import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
 import { IconBook } from '@tabler/icons-react';
+import { useQuery } from '@tanstack/react-query';
 import { ChevronsDownUpIcon, ChevronsUpDownIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -40,6 +41,10 @@ import {
   useSetActiveSession,
 } from '@/hooks/auth.hooks';
 import { getAppRoute } from '@/lib/navigation-config';
+import {
+  deviceSessionsQueryOptionsClient,
+  sessionQueryOptionsClient,
+} from '@/query/query-options.client';
 import { LayoutViewToggle } from '../layout-toggle';
 
 function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
@@ -55,13 +60,13 @@ function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
 }
 
 export function UserDropdown({
-  user: userProp,
+  session,
   redirectLogout,
   navigationMode,
   deviceSessions: deviceSessionsProps,
   enableLayoutViewToggle = true,
 }: {
-  user: Session['user'];
+  session: Session;
   redirectLogout?: string;
   deviceSessions: ListDeviceSessions;
   navigationMode?: NavigationMode;
@@ -69,8 +74,14 @@ export function UserDropdown({
 }) {
   const router = useRouter();
   const isMac = useIsMac();
-  const { data: currentSession } = useAuthSession();
-  const { data: deviceSessionsQuery } = useDeviceSessions();
+
+  const { data: currentSession } = useQuery(
+    sessionQueryOptionsClient({ init: session }),
+  );
+  const { data: deviceSessionsQuery } = useQuery(
+    deviceSessionsQueryOptionsClient({ init: deviceSessionsProps }),
+  );
+
   const { mutate: setActiveSession } = useSetActiveSession();
   const [selectOpen, setSelectOpen] = useState(false);
 
@@ -78,7 +89,7 @@ export function UserDropdown({
   const deviceSessions = deviceSessionsQuery ?? deviceSessionsProps;
 
   // Determine current user: prioritize React Query session, fallback to server props
-  const user = currentSession?.user ?? userProp;
+  const user = currentSession?.user ?? session.user;
 
   // Filter to show only other accounts (not current user) - following Better Auth demo pattern
   const otherSessions = deviceSessions

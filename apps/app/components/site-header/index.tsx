@@ -16,7 +16,7 @@ import { LayoutToggle } from '../layout-toggle';
 import { UserDropdown } from '../user/user-dropdown';
 
 export async function SiteHeader({
-  user,
+  session,
   className,
   deviceSessions,
   navigationMode,
@@ -26,7 +26,7 @@ export async function SiteHeader({
   enableLayoutToggle = false,
   enableLayoutViewToggle = true,
 }: {
-  user?: Session['user'];
+  session: Session;
   deviceSessions: ListDeviceSessions;
   className?: string;
   navigationMode: NavigationMode;
@@ -115,9 +115,9 @@ export async function SiteHeader({
               className="mr-1 data-[orientation=vertical]:h-4"
             />
           )}
-          {user ? (
+          {session ? (
             <UserDropdown
-              user={user}
+              session={session}
               deviceSessions={deviceSessions}
               navigationMode={navigationMode}
               enableLayoutViewToggle={enableLayoutViewToggle}
