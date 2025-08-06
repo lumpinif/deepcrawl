@@ -26,9 +26,6 @@ All commands should be run from the repository root unless otherwise specified.
 # Start all services in development mode
 pnpm dev
 
-# Start only dashboard and auth services
-pnpm dev:dashboard
-
 # Start dashboard with workers (dashboard + auth + deepcrawl)
 cd apps/app && pnpm dev:workers
 
