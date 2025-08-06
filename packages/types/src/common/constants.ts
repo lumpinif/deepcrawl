@@ -83,6 +83,34 @@ export const COMMON_HEADERS = {
   },
 } as const;
 
+export const MEDIA_EXTENSIONS = {
+  images: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico'],
+  videos: ['.mp4', '.webm', '.ogg', '.mov', '.avi'],
+  documents: ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'],
+} as const;
+
+// Framework-specific patterns to filter out
+export const FRAMEWORK_PATTERNS = [
+  // Next.js
+  '/_next/',
+  // React
+  '/static/js/',
+  '/static/css/',
+  '/static/media/',
+  // Vue
+  '/_nuxt/',
+  // Angular
+  '/assets/js/',
+  '/assets/css/',
+  // WordPress
+  '/wp-content/',
+  '/wp-includes/',
+  '/wp-admin/',
+  // Others
+  '/_sites/',
+  '/cdn-cgi/',
+];
+
 export const DEFAULT_METADATA_OPTIONS = {
   title: true,
   description: true,

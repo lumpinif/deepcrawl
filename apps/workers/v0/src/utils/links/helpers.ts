@@ -1,4 +1,8 @@
-import type { ExtractedLinks, LinkExtractionOptions } from '@deepcrawl/types';
+import {
+  type ExtractedLinks,
+  type LinkExtractionOptions,
+  PLATFORM_URLS,
+} from '@deepcrawl/types';
 import type {
   SkippedLinks,
   SkippedUrl,
@@ -6,7 +10,7 @@ import type {
   VisitedUrl,
 } from '@deepcrawl/types/routers/links';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
-import { PLATFORM_URLS } from '@/config/constants';
+
 import type { LinkService } from '@/services/link/link.service';
 
 export function getTreeNameForUrl(url: string): string {

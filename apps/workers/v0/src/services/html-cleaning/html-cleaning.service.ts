@@ -1,15 +1,13 @@
+import { DEFAULT_HTML_REWRITER_OPTIONS } from '@deepcrawl/types/common';
 import type {
   HTMLCleaningResult,
   HTMLRewriterOptions,
 } from '@deepcrawl/types/services/html-cleaning';
-
-import { DEFAULT_HTMLCLEANING_OPTIONS } from '@/config/default-options';
 import {
   AnchorFragmentHandler,
   ImageSrcNormalizeHandler,
   LinkNormalizeHandler,
 } from '@/services/html-cleaning/handlers/link-normalize';
-
 import { Base64ImageHandler } from './handlers/base64-image';
 import { MainContentHandler } from './handlers/main-content';
 import { TagFilterHandler } from './handlers/tag-filter';
@@ -22,10 +20,10 @@ import { TagFilterHandler } from './handlers/tag-filter';
  * 3. Base64 image removal
  * 4. URL normalization
  */
-export async function HTMLCleaning({
+export async function HTMLRewriterCleaning({
   rawHtml,
   baseUrl,
-  options = DEFAULT_HTMLCLEANING_OPTIONS,
+  options = DEFAULT_HTML_REWRITER_OPTIONS,
 }: {
   rawHtml: string;
   baseUrl: string;
@@ -94,6 +92,6 @@ export async function HTMLCleaning({
 
   return {
     cleanedHtml,
-    // metrics,
+    // metrics, // TODO: CURRENTLY NOT USED, CONSIDER ADD A FLAG TO ENABLE/DISABLE METRICS BY USER
   };
 }

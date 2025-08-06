@@ -24,7 +24,7 @@ import * as cheerio from 'cheerio';
 import { logError, logWarn } from '@/utils/loggers';
 import { RobotsParser } from '@/utils/meta/robots-parser';
 import { SitemapParser } from '@/utils/meta/sitemap-parser';
-import { HTMLCleaning } from '../html-cleaning/html-cleaning.service';
+import { HTMLRewriterCleaning } from '../html-cleaning/html-cleaning.service';
 
 interface MetaFilesOptions {
   robots?: boolean;
@@ -592,7 +592,7 @@ export class ScrapeService {
       if (cleanedHtml) {
         if (cleaningProcessor === 'html-rewriter') {
           promises.push(
-            HTMLCleaning({
+            HTMLRewriterCleaning({
               rawHtml: html,
               baseUrl: url,
               options: htmlRewriterOptions,

@@ -1,11 +1,14 @@
+import {
+  DEFAULT_LINK_EXTRACTION_OPTIONS,
+  FRAMEWORK_PATTERNS,
+  MAX_VISITED_URLS_LIMIT,
+  MEDIA_EXTENSIONS,
+} from '@deepcrawl/types/common/constants';
 import type { SkippedUrl, VisitedUrl } from '@deepcrawl/types/routers/links';
 import type {
   ExtractedLinks,
   LinkExtractionOptions,
 } from '@deepcrawl/types/services/link';
-
-import { MAX_VISITED_URLS_LIMIT } from '@/config/constants';
-import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
 import {
   ImageSrcNormalizeHandler,
   LinkNormalizeHandler,
@@ -22,34 +25,6 @@ export interface _linksSets {
     documents: Set<string>;
   };
 }
-
-const MEDIA_EXTENSIONS = {
-  images: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico'],
-  videos: ['.mp4', '.webm', '.ogg', '.mov', '.avi'],
-  documents: ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'],
-} as const;
-
-// Framework-specific patterns to filter out
-const FRAMEWORK_PATTERNS = [
-  // Next.js
-  '/_next/',
-  // React
-  '/static/js/',
-  '/static/css/',
-  '/static/media/',
-  // Vue
-  '/_nuxt/',
-  // Angular
-  '/assets/js/',
-  '/assets/css/',
-  // WordPress
-  '/wp-content/',
-  '/wp-includes/',
-  '/wp-admin/',
-  // Others
-  '/_sites/',
-  '/cdn-cgi/',
-];
 
 export class LinkService {
   /**
@@ -72,7 +47,7 @@ export class LinkService {
     options?: LinkExtractionOptions;
     skippedUrls?: Map<SkippedUrl['url'], SkippedUrl['reason']>;
   }): Promise<ExtractedLinks> {
-    const mergedOptions = { ...DEFAULT_LINK_OPTIONS, ...options };
+    const mergedOptions = { ...DEFAULT_LINK_EXTRACTION_OPTIONS, ...options };
     const links = new Set<string>();
 
     if (!html) {
@@ -326,7 +301,7 @@ export class LinkService {
       // Always remove fragments
       urlObj.hash = '';
       // Optionally remove query parameters
-      if (removeQueryParams === undefined || removeQueryParams === true) {
+      if (removeQueryParams) {
         urlObj.search = '';
       }
       // Remove trailing slash

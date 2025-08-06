@@ -1,5 +1,10 @@
 import { performance } from 'node:perf_hooks';
-
+import {
+  _ENABLE_LINKS_CACHE,
+  DEFAULT_CACHE_OPTIONS,
+  MAX_KIN_LIMIT,
+  PLATFORM_URLS,
+} from '@deepcrawl/types/common';
 import type {
   LinksErrorResponse,
   LinksOptions,
@@ -9,19 +14,8 @@ import type {
   Tree,
   VisitedUrl,
 } from '@deepcrawl/types/routers/links';
-import type {
-  ExtractedLinks,
-  LinkExtractionOptions,
-} from '@deepcrawl/types/services/link';
+import type { ExtractedLinks } from '@deepcrawl/types/services/link';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
-
-import {
-  DEFAULT_KV_CACHE_EXPIRATION_TTL,
-  ENABLE_LINKS_CACHE,
-  MAX_KIN_LIMIT,
-  PLATFORM_URLS,
-} from '@/config/constants';
-import { DEFAULT_LINK_OPTIONS } from '@/config/default-options';
 import type { ORPCContext } from '@/lib/context';
 import type { _linksSets } from '@/services/link/link.service';
 import { formatDuration } from '@/utils/formater';
@@ -83,8 +77,14 @@ export async function processLinksRequest(
     folderFirst,
     linksOrder,
     cacheOptions,
-    ...rest
+    linkExtractionOptions,
   } = params;
+
+  logDebug(
+    `🪂 [LINKS Endpoint] Processing links request for ${url}`,
+    `params: ${JSON.stringify(params, null, 2)}`,
+  );
+
   const timestamp = new Date().toISOString();
   const startRequestTime = performance.now();
 
@@ -94,10 +94,6 @@ export async function processLinksRequest(
 
   // config
   const withTree = isTree !== false; // True by default, false only if explicitly set to false
-  const linkExtractionOptions: LinkExtractionOptions = {
-    ...DEFAULT_LINK_OPTIONS,
-    ...rest.linkExtractionOptions,
-  };
 
   // Root
   let rootUrl: string;
@@ -379,7 +375,7 @@ export async function processLinksRequest(
     // --- Core Processing Flow Starts ---
 
     // Check cache first
-    if (ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
+    if (_ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
       try {
         const { value, metadata } =
           await c.env.DEEPCRAWL_V0_LINKS_STORE.getWithMetadata<{
@@ -397,7 +393,8 @@ export async function processLinksRequest(
           const cacheTimestamp = metadata?.timestamp
             ? new Date(metadata.timestamp).getTime()
             : 0;
-          const oneDayAgo = Date.now() - DEFAULT_KV_CACHE_EXPIRATION_TTL * 1000; // 1 day in milliseconds
+          const oneDayAgo =
+            Date.now() - DEFAULT_CACHE_OPTIONS.expirationTtl * 1000; // 1 day in milliseconds
 
           if (cacheTimestamp > oneDayAgo) {
             const parsedValue = JSON.parse(value) as Tree;
@@ -561,7 +558,7 @@ export async function processLinksRequest(
     }
 
     // --- Store the final/updated tree back to KV ---
-    if (finalTree && ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
+    if (finalTree && _ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
       try {
         const treeToStore = finalTree;
 
@@ -578,7 +575,8 @@ export async function processLinksRequest(
             },
             expiration: cacheOptions?.expiration ?? undefined,
             expirationTtl:
-              cacheOptions?.expirationTtl ?? DEFAULT_KV_CACHE_EXPIRATION_TTL,
+              cacheOptions?.expirationTtl ??
+              DEFAULT_CACHE_OPTIONS.expirationTtl,
           },
         );
 

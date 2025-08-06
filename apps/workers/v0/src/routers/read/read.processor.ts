@@ -1,16 +1,15 @@
-import type {
-  ReadOptions,
-  ReadPostResponse,
-  ReadResponse,
-  ReadStringResponse,
-  ReadSuccessResponse,
-  ScrapedData,
+import {
+  _ENABLE_READ_CACHE,
+  DEFAULT_CACHE_OPTIONS,
+  type ReadOptions,
+  type ReadPostResponse,
+  type ReadResponse,
+  type ReadStringResponse,
+  type ReadSuccessResponse,
+  type ScrapedData,
 } from '@deepcrawl/types/index';
 import type { NodeHtmlMarkdown } from 'node-html-markdown';
-import {
-  DEFAULT_KV_CACHE_EXPIRATION_TTL,
-  ENABLE_READ_CACHE,
-} from '@/config/constants';
+
 import type { ORPCContext } from '@/lib/context';
 import { formatDuration } from '@/utils/formater';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
@@ -161,11 +160,10 @@ export async function processReadRequest(
     cacheOptions,
   } = params;
 
-  console.log(
-    '🚀 ~ processReadRequest ~ params',
-    JSON.stringify(params, null, 2),
-    'isGETRequest',
-    isGETRequest,
+  logDebug(
+    `🪂 [READ Endpoint] Processing read request for ${url}`,
+    `isGETRequest: ${isGETRequest}`,
+    `params: ${JSON.stringify(params, null, 2)}`,
   );
 
   let readResponse: ReadResponse | undefined;
@@ -185,7 +183,7 @@ export async function processReadRequest(
     const cacheKey = await getReadCacheKey(params, isGETRequest);
 
     // Check cache first
-    if (ENABLE_READ_CACHE && cacheOptions?.enabled) {
+    if (_ENABLE_READ_CACHE && cacheOptions?.enabled) {
       try {
         const { value: cachedResult, metadata } =
           await c.env.DEEPCRAWL_V0_READ_STORE.getWithMetadata<{
@@ -199,7 +197,8 @@ export async function processReadRequest(
           const cacheTimestamp = metadata?.timestamp
             ? new Date(metadata.timestamp).getTime()
             : 0;
-          const oneDayAgo = Date.now() - DEFAULT_KV_CACHE_EXPIRATION_TTL * 1000; // 1 day in milliseconds
+          const oneDayAgo =
+            Date.now() - DEFAULT_CACHE_OPTIONS.expirationTtl * 1000; // 1 day in milliseconds
 
           if (cacheTimestamp > oneDayAgo) {
             logDebug(
@@ -303,7 +302,7 @@ export async function processReadRequest(
       throw new Error('Failed to process read request');
     }
 
-    if (ENABLE_READ_CACHE && cacheOptions?.enabled) {
+    if (_ENABLE_READ_CACHE && cacheOptions?.enabled) {
       // Cache the response
       try {
         const valueToCache = isGETRequest
@@ -322,7 +321,8 @@ export async function processReadRequest(
           {
             expiration: cacheOptions?.expiration ?? undefined,
             expirationTtl:
-              cacheOptions?.expirationTtl ?? DEFAULT_KV_CACHE_EXPIRATION_TTL,
+              cacheOptions?.expirationTtl ??
+              DEFAULT_CACHE_OPTIONS.expirationTtl,
             metadata: {
               timestamp: new Date().toISOString(),
               title: readResponse?.title || undefined,
