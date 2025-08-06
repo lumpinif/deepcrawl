@@ -22,7 +22,10 @@ import {
   VisitedUrlSchema,
 } from '@deepcrawl/types';
 import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from '@orpc/json-schema';
-import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
+import type {
+  ConditionalSchemaConverter,
+  OpenAPIGeneratorGenerateOptions,
+} from '@orpc/openapi';
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
 import { onError } from '@orpc/server';
@@ -33,7 +36,9 @@ import { CORS_OPTIONS } from '@/middlewares/cors.hono';
 import { router } from '@/routers';
 import packageJSON from '../../../package.json' with { type: 'json' };
 
-export const SchemaConverters = [new ZodToJsonSchemaConverter()];
+export const SchemaConverters: ConditionalSchemaConverter[] = [
+  new ZodToJsonSchemaConverter(),
+] satisfies ConditionalSchemaConverter[];
 
 export const OpenAPISpecGenerateOptions = {
   info: {
@@ -154,7 +159,9 @@ export const openAPIHandler = new OpenAPIHandler(router, {
       allowHeaders: CORS_OPTIONS.allowHeaders,
       exposeHeaders: CORS_OPTIONS.exposeHeaders,
     }),
-    new SmartCoercionPlugin({ schemaConverters: SchemaConverters }),
+    new SmartCoercionPlugin({
+      schemaConverters: SchemaConverters,
+    }),
     new OpenAPIReferencePlugin({
       schemaConverters: SchemaConverters,
       specGenerateOptions: OpenAPISpecGenerateOptions,
