@@ -1,6 +1,10 @@
 export const MAX_KIN_LIMIT = 30;
 export const MAX_VISITED_URLS_LIMIT = 1000;
-export const KV_CACHE_EXPIRATION_TTL = 86400 * 1; // 1 day
+export const DEFAULT_KV_CACHE_EXPIRATION_TTL = 86400 * 1; // 1 day
+
+// CACHE GLOBAL CONFIGURATIONS
+export const ENABLE_READ_CACHE = true as const;
+export const ENABLE_LINKS_CACHE = true as const;
 
 export const DEFAULT_FETCH_TIMEOUT = 15000; // 15 seconds
 

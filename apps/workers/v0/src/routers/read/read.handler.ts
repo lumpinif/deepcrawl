@@ -6,13 +6,14 @@ import { processReadRequest } from './read.processor';
 export const readGETHandler = authed
   .use(rateLimitMiddleware({ operation: 'getMarkdown' }))
   .read.getMarkdown.handler(async ({ input, context: c, errors }) => {
-    const { url } = input;
+    const { url, ...rest } = input;
 
     try {
       const result = await processReadRequest(
         c,
         {
           url,
+          ...rest, // cacheOptions
         },
         /* isStringResponse */
         true,

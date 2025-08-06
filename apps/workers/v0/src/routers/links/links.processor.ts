@@ -16,7 +16,8 @@ import type {
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 
 import {
-  KV_CACHE_EXPIRATION_TTL,
+  DEFAULT_KV_CACHE_EXPIRATION_TTL,
+  ENABLE_LINKS_CACHE,
   MAX_KIN_LIMIT,
   PLATFORM_URLS,
 } from '@/config/constants';
@@ -26,7 +27,7 @@ import type { _linksSets } from '@/services/link/link.service';
 import { formatDuration } from '@/utils/formater';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
-import { logError, logWarn } from '@/utils/loggers';
+import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
 
@@ -81,6 +82,7 @@ export async function processLinksRequest(
     subdomainAsRootUrl,
     folderFirst,
     linksOrder,
+    cacheOptions,
     ...rest
   } = params;
   const timestamp = new Date().toISOString();
@@ -377,41 +379,47 @@ export async function processLinksRequest(
     // --- Core Processing Flow Starts ---
 
     // Check cache first
-    try {
-      const { value, metadata } =
-        await c.env.DEEPCRAWL_V0_LINKS_STORE.getWithMetadata<{
-          title?: string;
-          description?: string;
-          timestamp?: string;
-        }>(!isPlatformUrl ? rootUrl : (ancestors?.[1] ?? rootUrl));
+    if (ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
+      try {
+        const { value, metadata } =
+          await c.env.DEEPCRAWL_V0_LINKS_STORE.getWithMetadata<{
+            title?: string;
+            description?: string;
+            timestamp?: string;
+          }>(!isPlatformUrl ? rootUrl : (ancestors?.[1] ?? rootUrl));
 
-      if (value) {
-        // Check if cache is fresh (e.g., within the last day - matches expirationTtl)
-        const cacheTimestamp = metadata?.timestamp
-          ? new Date(metadata.timestamp).getTime()
-          : 0;
-        const oneDayAgo = Date.now() - KV_CACHE_EXPIRATION_TTL * 1000; // 1 day in milliseconds
+        if (value) {
+          logDebug(
+            `💽 [LINKS Endpoint] Found cached links tree in KV for ${rootUrl}`,
+          );
 
-        if (cacheTimestamp > oneDayAgo) {
-          const parsedValue = JSON.parse(value) as Tree;
-          existingTree = parsedValue ?? undefined;
-          // Extract visited URLs from the tree structure if available
-          if (existingTree) {
-            lastVisitedUrlsInCache =
-              helpers.extractVisitedUrlsFromTree(existingTree);
+          // Check if cache is fresh (e.g., within the last day - matches expirationTtl)
+          const cacheTimestamp = metadata?.timestamp
+            ? new Date(metadata.timestamp).getTime()
+            : 0;
+          const oneDayAgo = Date.now() - DEFAULT_KV_CACHE_EXPIRATION_TTL * 1000; // 1 day in milliseconds
+
+          if (cacheTimestamp > oneDayAgo) {
+            const parsedValue = JSON.parse(value) as Tree;
+            existingTree = parsedValue ?? undefined;
+            // Extract visited URLs from the tree structure if available
+            if (existingTree) {
+              lastVisitedUrlsInCache =
+                helpers.extractVisitedUrlsFromTree(existingTree);
+            }
+            linksCacheIsFresh = true;
+          } else {
+            // Optional: Could trigger a delete operation here if desired
+            // await c.env.DEEPCRAWL_V0_LINKS_STORE.delete(rootUrl);
           }
-          linksCacheIsFresh = true;
-        } else {
-          // Optional: Could trigger a delete operation here if desired
-          // await c.env.DEEPCRAWL_V0_LINKS_STORE.delete(rootUrl);
         }
+      } catch (error) {
+        logError(
+          `Error reading from DEEPCRAWL_V0_LINKS_STORE for ${rootUrl}:`,
+          error,
+        );
+        // Proceed without cache if read fails
       }
-    } catch (error) {
-      logError(
-        `Error reading from DEEPCRAWL_V0_LINKS_STORE for ${rootUrl}:`,
-        error,
-      );
-      // Proceed without cache if read fails
     }
 
     // Define a type for all possible promise results
@@ -553,7 +561,7 @@ export async function processLinksRequest(
     }
 
     // --- Store the final/updated tree back to KV ---
-    if (finalTree) {
+    if (finalTree && ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
       try {
         const treeToStore = finalTree;
 
@@ -568,8 +576,14 @@ export async function processLinksRequest(
               description: targetScrapeResult?.description,
               timestamp: new Date().toISOString(),
             },
-            expirationTtl: KV_CACHE_EXPIRATION_TTL, // e.g., 1 day (in seconds)
+            expiration: cacheOptions?.expiration ?? undefined,
+            expirationTtl:
+              cacheOptions?.expirationTtl ?? DEFAULT_KV_CACHE_EXPIRATION_TTL,
           },
+        );
+
+        logDebug(
+          `💽 [LINKS Endpoint] Updated links tree in KV cache for ${rootUrl}`,
         );
       } catch (error) {
         logWarn(
