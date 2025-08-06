@@ -13,15 +13,13 @@ export default async function Layout({ children }: { children: ReactNode }) {
     authListDeviceSessions(),
   ]);
 
-  const user = currentSession?.user;
-
   return (
     <DocsLayout {...docsOptions}>
       <SiteHeader
-        user={user}
         enableTitle={false}
         navigationMode="header"
         enableDocsLink={false}
+        session={currentSession}
         enableLayoutViewToggle={false}
         deviceSessions={listDeviceSessions}
         className="sticky top-0 z-50 w-full bg-background max-sm:hidden"

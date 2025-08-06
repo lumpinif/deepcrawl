@@ -38,8 +38,8 @@ export default async function Layout({ children }: { children: ReactNode }) {
           children: user ? (
             <div className="ml-2 flex items-center">
               <UserDropdown
-                user={user}
                 redirectLogout="/"
+                session={currentSession}
                 enableLayoutViewToggle={false}
                 deviceSessions={listDeviceSessions}
               />

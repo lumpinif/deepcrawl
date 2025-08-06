@@ -26,7 +26,7 @@ export async function SiteHeader({
   enableLayoutToggle = false,
   enableLayoutViewToggle = true,
 }: {
-  session: Session;
+  session?: Session | null;
   deviceSessions: ListDeviceSessions;
   className?: string;
   navigationMode: NavigationMode;

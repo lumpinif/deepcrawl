@@ -35,11 +35,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import type { NavigationMode } from '@/components/providers';
-import {
-  useAuthSession,
-  useDeviceSessions,
-  useSetActiveSession,
-} from '@/hooks/auth.hooks';
+import { useSetActiveSession } from '@/hooks/auth.hooks';
 import { getAppRoute } from '@/lib/navigation-config';
 import {
   deviceSessionsQueryOptionsClient,
