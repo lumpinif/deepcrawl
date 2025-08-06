@@ -4,7 +4,7 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
-import AppNavTabs from '@/components/app-nav-tabs';
+import { HeaderNavigationLayout } from '@/components/layout/header-navigation-layout';
 import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
@@ -69,25 +69,13 @@ export default async function DashboardLayout({
 
   // Header navigation mode
   return (
-    <main
-      className={cn(
-        'relative flex w-full flex-1 flex-col bg-background',
-        defaultInsetClassname,
-      )}
+    <HeaderNavigationLayout
+      session={currentSession}
+      deviceSessions={listDeviceSessions}
+      navigationMode={navigationMode}
+      defaultInsetClassname={defaultInsetClassname}
     >
-      <header className="flex h-fit w-full flex-col">
-        <SiteHeader
-          className="h-16"
-          session={currentSession}
-          enableThemeToggle={false}
-          navigationMode={navigationMode}
-          deviceSessions={listDeviceSessions}
-        />
-        <AppNavTabs />
-      </header>
-      <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
-        {children}
-      </ScrollArea>
-    </main>
+      {children}
+    </HeaderNavigationLayout>
   );
 }

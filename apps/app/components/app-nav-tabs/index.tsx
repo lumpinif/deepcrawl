@@ -145,7 +145,7 @@ export default function AppNavTabs() {
 
   return (
     <div className="scrollbar-none sticky top-0 z-10 h-11 overflow-x-auto border-b bg-background-subtle px-4">
-      <div className="relative flex h-full w-full flex-nowrap items-center justify-start bg-background-subtle shadow-none">
+      <div className="relative flex h-full w-full flex-nowrap items-center justify-start shadow-none">
         {/* Hover Highlight */}
         <div
           className="absolute hidden h-8 items-center rounded bg-accent transition-all duration-150 ease-out md:flex"

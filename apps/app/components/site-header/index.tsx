@@ -15,7 +15,7 @@ import type { NavigationMode } from '@/components/providers';
 import { LayoutToggle } from '../layout-toggle';
 import { UserDropdown } from '../user/user-dropdown';
 
-export async function SiteHeader({
+export function SiteHeader({
   session,
   className,
   deviceSessions,
