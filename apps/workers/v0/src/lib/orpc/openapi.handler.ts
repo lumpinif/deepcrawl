@@ -1,15 +1,21 @@
 import { env } from 'cloudflare:workers';
 import {
+  CacheOptionsSchema,
   ExtractedLinksSchema,
+  FetchOptionsSchema,
+  HTMLRewriterOptionsSchema,
   LinksErrorResponseSchema,
   LinksOptionsSchema,
   LinksSuccessResponseSchema,
   LinksTreeSchema,
+  MetadataOptionsSchema,
   PageMetadataSchema,
   ReadErrorResponseSchema,
+  ReaderCleaningOptionsSchema,
   ReadOptionsSchema,
   ReadSuccessResponseSchema,
   ScrapedDataSchema,
+  ScrapeOptionsSchema,
   SkippedLinksSchema,
   SkippedUrlSchema,
   VisitedUrlSchema,
@@ -78,6 +84,24 @@ export const OpenAPISpecGenerateOptions = {
     },
     LinksTree: {
       schema: LinksTreeSchema,
+    },
+    MetadataOptions: {
+      schema: MetadataOptionsSchema,
+    },
+    ReaderCleaningOptions: {
+      schema: ReaderCleaningOptionsSchema,
+    },
+    HTMLRewriterOptions: {
+      schema: HTMLRewriterOptionsSchema,
+    },
+    FetchOptions: {
+      schema: FetchOptionsSchema,
+    },
+    CacheOptions: {
+      schema: CacheOptionsSchema,
+    },
+    ScrapeOptions: {
+      schema: ScrapeOptionsSchema,
     },
     ScrapedData: {
       schema: ScrapedDataSchema,
