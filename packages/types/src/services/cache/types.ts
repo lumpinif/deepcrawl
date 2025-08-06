@@ -28,7 +28,7 @@ export const CacheOptionsSchema = z
       .meta({
         description:
           'The number that represents when to expire the key-value pair in seconds from now. The minimum value is 60',
-        examples: [86400],
+        examples: [60],
       }),
   })
   .default({ enabled: true }) // initialize zobject with default value
