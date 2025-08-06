@@ -15,7 +15,7 @@ import type { ORPCContext } from '@/lib/context';
 import { formatDuration } from '@/utils/formater';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
-import { logError } from '@/utils/loggers';
+import { logDebug, logError } from '@/utils/loggers';
 import {
   fixCodeBlockFormatting,
   processMultiLineLinks,
@@ -161,6 +161,13 @@ export async function processReadRequest(
     cacheOptions,
   } = params;
 
+  console.log(
+    '🚀 ~ processReadRequest ~ params',
+    JSON.stringify(params, null, 2),
+    'isGETRequest',
+    isGETRequest,
+  );
+
   let readResponse: ReadResponse | undefined;
   // Initialize cache flag
   let isReadCacheFresh = false;
@@ -195,6 +202,10 @@ export async function processReadRequest(
           const oneDayAgo = Date.now() - DEFAULT_KV_CACHE_EXPIRATION_TTL * 1000; // 1 day in milliseconds
 
           if (cacheTimestamp > oneDayAgo) {
+            logDebug(
+              `💽 [READ Endpoint] Found fresh cached read response in KV for ${targetUrl}`,
+            );
+
             isReadCacheFresh = true;
 
             if (isGETRequest) {
@@ -318,6 +329,10 @@ export async function processReadRequest(
               description: readResponse?.description || undefined,
             },
           },
+        );
+
+        logDebug(
+          `💽 [READ Endpoint] Updated read response in KV cache for ${targetUrl}`,
         );
       } catch (error) {
         logError('[ERROR] Read processor cache write error:', error);
