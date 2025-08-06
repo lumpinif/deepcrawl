@@ -69,16 +69,25 @@ export default async function DashboardLayout({
 
   // Header navigation mode
   return (
-    <div className="min-h-svh w-full">
-      <SiteHeader
-        className="h-16"
-        session={currentSession}
-        enableThemeToggle={false}
-        navigationMode={navigationMode}
-        deviceSessions={listDeviceSessions}
-      />
-      <AppNavTabs />
-      {children}
-    </div>
+    <main
+      className={cn(
+        'relative flex w-full flex-1 flex-col bg-background',
+        defaultInsetClassname,
+      )}
+    >
+      <header className="flex h-fit w-full flex-col">
+        <SiteHeader
+          className="h-16"
+          session={currentSession}
+          enableThemeToggle={false}
+          navigationMode={navigationMode}
+          deviceSessions={listDeviceSessions}
+        />
+        <AppNavTabs />
+      </header>
+      <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
+        {children}
+      </ScrollArea>
+    </main>
   );
 }
