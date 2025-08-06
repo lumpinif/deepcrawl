@@ -1,17 +1,14 @@
 import type { Agent, AgentOptions } from 'node:https';
 import type {
   contract,
-  ExtractLinksOutput,
-  GetMarkdownOutput,
-  LinksPOSTInput,
-  ReadUrlOutput,
+  ExtractLinksOptions,
+  ExtractLinksResponse,
+  GetMarkdownOptions,
+  GetMarkdownResponse,
+  ReadUrlOptions,
+  ReadUrlResponse,
 } from '@deepcrawl/contracts';
-import type {
-  LinksErrorResponse,
-  LinksOptions,
-  ReadErrorResponse,
-  ReadOptions,
-} from '@deepcrawl/types';
+import type { LinksErrorResponse, ReadErrorResponse } from '@deepcrawl/types';
 import {
   createORPCClient,
   createSafeClient,
@@ -354,8 +351,17 @@ export class DeepcrawlApp {
    * @param url - The URL to get the markdown for.
    * @returns The markdown.
    */
-  async getMarkdown(url: string): Promise<GetMarkdownOutput> {
-    const [error, data] = await this.safeClient.read.getMarkdown({ url });
+  async getMarkdown(
+    url: string,
+    options?: Pick<GetMarkdownOptions, 'cacheOptions'>,
+  ): Promise<GetMarkdownResponse> {
+    const getMarkdownOptions: GetMarkdownOptions = {
+      url,
+      ...options,
+    };
+
+    const [error, data] =
+      await this.safeClient.read.getMarkdown(getMarkdownOptions);
 
     if (error) {
       handleDeepcrawlError(error, 'read', 'Failed to fetch markdown');
@@ -365,7 +371,7 @@ export class DeepcrawlApp {
       return await data.text();
     }
 
-    return data as GetMarkdownOutput;
+    return data as GetMarkdownResponse;
   }
 
   /* Read POST */
@@ -376,9 +382,9 @@ export class DeepcrawlApp {
    */
   async readUrl(
     url: string,
-    options: Omit<ReadOptions, 'url'> = {},
-  ): Promise<ReadUrlOutput> {
-    const readOptions: ReadOptions = {
+    options: Omit<ReadUrlOptions, 'url'> = {},
+  ): Promise<ReadUrlResponse> {
+    const readOptions: ReadUrlOptions = {
       url,
       ...options,
     };
@@ -389,7 +395,7 @@ export class DeepcrawlApp {
       handleDeepcrawlError(error, 'read', 'Failed to read URL');
     }
 
-    return data as ReadUrlOutput;
+    return data as ReadUrlResponse;
   }
 
   /* Links POST */
@@ -400,9 +406,9 @@ export class DeepcrawlApp {
    */
   async extractLinks(
     url: string,
-    options: Omit<LinksOptions, 'url'> = {},
-  ): Promise<ExtractLinksOutput> {
-    const linksOptions: LinksPOSTInput = {
+    options: Omit<ExtractLinksOptions, 'url'> = {},
+  ): Promise<ExtractLinksResponse> {
+    const linksOptions: ExtractLinksOptions = {
       url,
       ...options,
     };
@@ -414,7 +420,7 @@ export class DeepcrawlApp {
       handleDeepcrawlError(error, 'links', 'Failed to extract links');
     }
 
-    return data as ExtractLinksOutput;
+    return data as ExtractLinksResponse;
   }
 }
 
