@@ -260,7 +260,7 @@ export function PlaygroundClient() {
   };
 
   return (
-    <div className="min-h-[calc(100svh-theme(spacing.56)))] space-y-6 pb-10">
+    <div className="min-h-[calc(100svh-theme(spacing.80))] space-y-6 pb-10">
       <Label htmlFor="url" className="text-muted-foreground">
         Choose a feature
       </Label>
