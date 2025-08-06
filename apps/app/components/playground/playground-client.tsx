@@ -20,9 +20,9 @@ import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type {
-  ExtractLinksOutput,
-  GetMarkdownOutput,
-  ReadUrlOutput,
+  ExtractLinksResponse,
+  GetMarkdownResponse,
+  ReadUrlResponse,
 } from 'deepcrawl';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useRef, useState } from 'react';
@@ -58,9 +58,9 @@ interface PlaygroundResponseMetadata {
 
 // Union of all possible success data types from SDK
 export type DCResponseData =
-  | GetMarkdownOutput
-  | ReadUrlOutput
-  | ExtractLinksOutput;
+  | GetMarkdownResponse
+  | ReadUrlResponse
+  | ExtractLinksResponse;
 
 // Playground response combines SDK data with UI metadata
 export type PlaygroundResponse = PlaygroundResponseMetadata & {
@@ -205,7 +205,7 @@ export function PlaygroundClient() {
           const { url: _, ...optionsWithoutUrl } = { ...readOptions, url };
           const readData = await sdkClient.readUrl(url, optionsWithoutUrl);
           result = readData;
-          targetUrl = (readData as ReadUrlOutput)?.targetUrl || url;
+          targetUrl = (readData as ReadUrlResponse)?.targetUrl || url;
           break;
         }
         case 'extractLinks': {
@@ -216,7 +216,7 @@ export function PlaygroundClient() {
             optionsWithoutUrl,
           );
           result = linksData;
-          targetUrl = (linksData as ExtractLinksOutput)?.targetUrl || url;
+          targetUrl = (linksData as ExtractLinksResponse)?.targetUrl || url;
           break;
         }
       }
