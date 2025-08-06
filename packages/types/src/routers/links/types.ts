@@ -1,5 +1,6 @@
 import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
 import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
+import { CacheOptionsSchema } from '@deepcrawl/types/services/cache/types';
 
 import {
   ExtractedLinksSchema,
@@ -125,6 +126,19 @@ export const LinksOptionsSchema = z
      * Controls how links are extracted and categorized.
      */
     linkExtractionOptions: LinkExtractionOptionsSchema.optional(),
+
+    /**
+     * Cache configuration for links operation based on KV put options except for `metadata`.
+     * An object containing the `expiration` (optional) and `expirationTtl` (optional) attributes
+     * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
+     */
+    cacheOptions: CacheOptionsSchema.optional().meta({
+      description:
+        'Cache configuration for links operation based on KV put options except for `metadata`',
+      examples: [
+        { expiration: 1717708800, expirationTtl: 86400 }, // expirationTtl: 86400 = 1 day
+      ],
+    }),
   })
   .extend(TreeOptionsSchema.shape)
   .extend(ScrapeOptionsSchema.shape)

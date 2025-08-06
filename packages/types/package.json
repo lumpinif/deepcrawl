@@ -32,6 +32,9 @@
     },
     "./services/metadata": {
       "types": "./src/services/metadata/index.ts"
+    },
+    "./services/cache": {
+      "types": "./src/services/cache/index.ts"
     }
   },
   "scripts": {

@@ -26,6 +26,8 @@ export * from './common/response-schemas';
 export * from './routers/links';
 export * from './routers/links/types';
 export * from './routers/read';
+export * from './services/cache';
+export * from './services/cache/types';
 export * from './services/html-cleaning';
 export * from './services/html-cleaning/types';
 export * from './services/link';
