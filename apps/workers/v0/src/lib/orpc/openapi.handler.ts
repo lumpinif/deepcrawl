@@ -4,6 +4,7 @@ import {
   ExtractedLinksSchema,
   FetchOptionsSchema,
   HTMLRewriterOptionsSchema,
+  LinkExtractionOptionsSchema,
   LinksErrorResponseSchema,
   LinksOptionsSchema,
   LinksSuccessResponseSchema,
@@ -84,6 +85,9 @@ export const OpenAPISpecGenerateOptions = {
     },
     LinksTree: {
       schema: LinksTreeSchema,
+    },
+    LinkExtractionOptions: {
+      schema: LinkExtractionOptionsSchema,
     },
     MetadataOptions: {
       schema: MetadataOptionsSchema,
