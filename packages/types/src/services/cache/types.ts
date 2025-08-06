@@ -1,3 +1,4 @@
+import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
 
 /**
@@ -7,6 +8,11 @@ import { z } from 'zod/v4';
  */
 export const CacheOptionsSchema = z
   .object({
+    enabled: smartboolTrue().meta({
+      description: 'Whether to enable cache. Default is true.',
+      default: true,
+      examples: [true],
+    }),
     expiration: z
       .number()
       .optional()
@@ -25,6 +31,10 @@ export const CacheOptionsSchema = z
         examples: [86400],
       }),
   })
+  .default({ enabled: true }) // initialize zobject with default value
   .optional();
 
+/**
+ * @default { enabled: true }
+ */
 export type CacheOptions = z.infer<typeof CacheOptionsSchema>;

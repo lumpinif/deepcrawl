@@ -29,12 +29,6 @@ export const smartbool = () =>
     })
     .or(z.boolean());
 
-/**
- * Type helper for smart boolean schema inference.
- * This ensures proper TypeScript typing.
- */
-export type SmartBool = z.infer<ReturnType<typeof smartbool>>;
-
 export const smartboolOptional = () => smartbool().optional();
 
 /**
@@ -51,8 +45,8 @@ export const smartboolOptional = () => smartbool().optional();
  * ```
  */
 export const smartboolOptionalWithDefault = (defaultValue: boolean) =>
-  smartboolOptional().default(defaultValue);
+  smartbool().default(defaultValue).optional();
 
-// Export commonly used variations
+// They are optional by default
 export const smartboolTrue = () => smartboolOptionalWithDefault(true);
 export const smartboolFalse = () => smartboolOptionalWithDefault(false);

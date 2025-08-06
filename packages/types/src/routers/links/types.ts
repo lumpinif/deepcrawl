@@ -737,15 +737,15 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
  * ```
  */
 
-type PartialExceptUrl<T extends z.infer<typeof LinksOptionsSchema>> = {
-  url: T['url'];
-} & Partial<Omit<T, 'url'>>;
+// type PartialExceptUrl<T extends z.infer<typeof LinksOptionsSchema>> = {
+//   url: T['url'];
+// } & Partial<Omit<T, 'url'>>;
 
 /**
  * Type representing options for link scraping operations.
  * Derived from the linksOptionsSchema.
  */
-export type LinksOptions = PartialExceptUrl<z.infer<typeof LinksOptionsSchema>>;
+export type LinksOptions = z.infer<typeof LinksOptionsSchema>;
 
 /**
  * Represents a URL that was skipped during scraping.

@@ -52,7 +52,7 @@ export const ReadOptionsSchema = z
      * An object containing the `expiration` (optional) and `expirationTtl` (optional) attributes
      * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
      */
-    cacheOptions: CacheOptionsSchema.optional().meta({
+    cacheOptions: CacheOptionsSchema.meta({
       description:
         'Cache configuration for read operation based on KV put options except for `metadata`',
       examples: [
@@ -217,9 +217,9 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
     ],
   });
 
-type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {
-  url: T['url'];
-} & Partial<Omit<T, 'url'>>;
+// type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {
+//   url: T['url'];
+// } & Partial<Omit<T, 'url'>>;
 
 /**
  * @note `ReadOptions` extends `ScrapeOptions`
@@ -227,7 +227,7 @@ type PartialExceptUrl<T extends z.infer<typeof ReadOptionsSchema>> = {
  * Type representing options for read operations.
  * Derived from the readOptionsSchema.
  */
-export type ReadOptions = PartialExceptUrl<z.infer<typeof ReadOptionsSchema>>;
+export type ReadOptions = z.infer<typeof ReadOptionsSchema>;
 
 /**
  * Base type for read responses.
