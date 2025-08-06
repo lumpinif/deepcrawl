@@ -1,6 +1,9 @@
 import {
   COMMON_HEADERS,
   DEFAULT_FETCH_OPTIONS,
+  DEFAULT_HTML_REWRITER_OPTIONS,
+  DEFAULT_METADATA_OPTIONS,
+  DEFAULT_READER_CLEANING_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
 } from '@deepcrawl/types/common/constants';
 import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
@@ -308,7 +311,6 @@ export const FetchOptionsSchema = z
     }),
   })
   .default(DEFAULT_FETCH_OPTIONS)
-  .optional()
   .meta({
     title: 'FetchOptions',
     description: 'Safe fetch options for web scraping operations',
@@ -332,7 +334,8 @@ export const FetchOptionsSchema = z
  */
 export type FetchOptions = z.infer<typeof FetchOptionsSchema>;
 
-const { metadata, cleanedHtml, robots, sitemapXML } = DEFAULT_SCRAPE_OPTIONS;
+const { metadata, cleanedHtml, robots, sitemapXML, cleaningProcessor } =
+  DEFAULT_SCRAPE_OPTIONS;
 /**
  * Options for scraping operation.
  * Controls how the scraping operation is performed.
@@ -345,6 +348,7 @@ export const ScrapeOptionsSchema = z
      */
     metadata: smartboolOptionalWithDefault(metadata).meta({
       description: 'Whether to extract metadata from the page.',
+      default: metadata,
       examples: [metadata, !metadata],
     }),
 
@@ -354,6 +358,7 @@ export const ScrapeOptionsSchema = z
      */
     cleanedHtml: smartboolOptionalWithDefault(cleanedHtml).meta({
       description: 'Whether to return cleaned HTML.',
+      default: cleanedHtml,
       examples: [cleanedHtml, !cleanedHtml],
     }),
 
@@ -363,6 +368,7 @@ export const ScrapeOptionsSchema = z
      */
     robots: smartboolOptionalWithDefault(robots).meta({
       description: 'Whether to fetch and parse robots.txt.',
+      default: robots,
       examples: [robots, !robots],
     }),
 
@@ -373,6 +379,7 @@ export const ScrapeOptionsSchema = z
     sitemapXML: smartboolOptionalWithDefault(sitemapXML).meta({
       description:
         '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
+      default: sitemapXML,
       examples: [sitemapXML, !sitemapXML],
     }),
 
@@ -380,13 +387,10 @@ export const ScrapeOptionsSchema = z
      * Options for metadata extraction.
      * Controls how metadata like title, description, etc. are extracted.
      */
-    metadataOptions: MetadataOptionsSchema.meta({
+    metadataOptions: MetadataOptionsSchema.optional().meta({
       description: 'Options for metadata extraction.',
-      examples: [
-        {
-          title: true,
-        },
-      ],
+      default: DEFAULT_METADATA_OPTIONS,
+      examples: [DEFAULT_METADATA_OPTIONS],
     }),
 
     /**
@@ -396,8 +400,10 @@ export const ScrapeOptionsSchema = z
      */
     cleaningProcessor: z
       .enum(['cheerio-reader', 'html-rewriter'])
+      .default(cleaningProcessor)
       .optional()
       .meta({
+        default: cleaningProcessor,
         description: 'The cleaning processor to use.',
         examples: ['cheerio-reader', 'html-rewriter'],
       }),
@@ -407,13 +413,10 @@ export const ScrapeOptionsSchema = z
      * Options for HTML cleaning with html-rewriter.
      * Controls how HTML is sanitized and cleaned.
      */
-    htmlRewriterOptions: HTMLRewriterOptionsSchema.meta({
+    htmlRewriterOptions: HTMLRewriterOptionsSchema.optional().meta({
       description: 'Options for HTML cleaning with html-rewriter.',
-      examples: [
-        {
-          removeScripts: true,
-        },
-      ],
+      default: DEFAULT_HTML_REWRITER_OPTIONS,
+      examples: [DEFAULT_HTML_REWRITER_OPTIONS],
     }),
 
     /**
@@ -421,13 +424,16 @@ export const ScrapeOptionsSchema = z
      * Options for HTML cleaning with cheerio-reader.
      * Controls how HTML is sanitized and cleaned.
      */
-    readerCleaningOptions: ReaderCleaningOptionsSchema.meta({
+    readerCleaningOptions: ReaderCleaningOptionsSchema.optional().meta({
       description: 'Options for HTML cleaning with cheerio-reader.',
+      default: DEFAULT_READER_CLEANING_OPTIONS,
       examples: [
         {
           readerOptions: {
             debug: true,
+            ...DEFAULT_READER_CLEANING_OPTIONS.readerOptions,
           },
+          ...DEFAULT_READER_CLEANING_OPTIONS.cheerioOptions,
         },
       ],
     }),
@@ -435,8 +441,9 @@ export const ScrapeOptionsSchema = z
     /**
      * Options for the fetch request.
      */
-    fetchOptions: FetchOptionsSchema.meta({
+    fetchOptions: FetchOptionsSchema.optional().meta({
       description: 'Options for the fetch request.',
+      default: DEFAULT_FETCH_OPTIONS,
       examples: [
         {
           method: 'GET',

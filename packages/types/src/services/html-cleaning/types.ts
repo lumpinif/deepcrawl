@@ -332,7 +332,6 @@ export const ReaderCleaningOptionsSchema = z
     readerOptions: ReaderOptionsSchema.default(defaultReaderOptions).optional(),
   })
   .default(DEFAULT_READER_CLEANING_OPTIONS)
-  .optional()
   .meta({
     description: 'Options for HTML cleaning with cheerio-reader.',
     examples: [DEFAULT_READER_CLEANING_OPTIONS],
@@ -406,7 +405,6 @@ export const HTMLRewriterOptionsSchema = z
     }),
   })
   .default(DEFAULT_HTML_REWRITER_OPTIONS)
-  .optional()
   .meta({
     title: 'HTMLRewriterOptions',
     description: 'Schema for HTML rewriter cleaning configuration options',

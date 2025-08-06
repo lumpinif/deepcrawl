@@ -79,7 +79,6 @@ export const MetadataOptionsSchema = z
     }),
   })
   .default(DEFAULT_METADATA_OPTIONS)
-  .optional()
   .meta({
     title: 'MetadataOptions',
     description: 'Schema for configuring metadata extraction options',
