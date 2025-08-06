@@ -71,17 +71,12 @@ export const MetadataOptionsSchema = z
       default: twitter,
       examples: [twitter, !twitter],
     }),
-
-    // TODO: SHOULD WE ALLOW USER TO DEFINE THIS?
-    isIframeAllowed: smartboolOptionalWithDefault(true).meta({
-      description: 'Check if iframe embedding is allowed',
-      examples: [true, false],
-    }),
   })
   .default(DEFAULT_METADATA_OPTIONS)
   .meta({
     title: 'MetadataOptions',
     description: 'Schema for configuring metadata extraction options',
+    default: DEFAULT_METADATA_OPTIONS,
     examples: [
       {
         title,

@@ -1,4 +1,10 @@
-import { COMMON_HEADERS, type MetaFiles } from '@deepcrawl/types';
+import {
+  COMMON_HEADERS,
+  DEFAULT_FETCH_OPTIONS,
+  DEFAULT_FETCH_TIMEOUT,
+  DEFAULT_METADATA_OPTIONS,
+  type MetaFiles,
+} from '@deepcrawl/types';
 import type {
   MetadataOptions,
   PageMetadata,
@@ -15,7 +21,6 @@ import type {
 import { Readability } from '@paoramen/cheer-reader';
 import type { CheerioOptions } from 'cheerio';
 import * as cheerio from 'cheerio';
-import { DEFAULT_FETCH_TIMEOUT } from '@/config/constants';
 import { logError, logWarn } from '@/utils/loggers';
 import { RobotsParser } from '@/utils/meta/robots-parser';
 import { SitemapParser } from '@/utils/meta/sitemap-parser';
@@ -28,7 +33,7 @@ interface MetaFilesOptions {
 
 interface FetchPageResult {
   html: string;
-  isIframeAllowed?: boolean;
+  isIframeAllowed: boolean;
 }
 
 export class ScrapeService {
@@ -70,11 +75,9 @@ export class ScrapeService {
 
   private async fetchPage(
     url: string,
-    options: {
-      isIframeAllowed?: boolean;
-    } & FetchOptions = { isIframeAllowed: true },
+    options: FetchOptions = DEFAULT_FETCH_OPTIONS,
   ): Promise<string | FetchPageResult> {
-    const { isIframeAllowed = true, signal, ...rest } = options;
+    const { signal, ...rest } = options;
     // Add timeout configuration for production reliability
     const timeoutMs = DEFAULT_FETCH_TIMEOUT;
 
@@ -144,10 +147,6 @@ export class ScrapeService {
       }
 
       const html = await response.text();
-
-      if (!options.isIframeAllowed) {
-        return html;
-      }
 
       // Extract relevant headers
       const xFrameOptions = response.headers.get('x-frame-options');
@@ -351,7 +350,7 @@ export class ScrapeService {
     cheerioClient,
     baseUrl,
     options,
-    isIframeAllowed: isIframeAllowedProp,
+    isIframeAllowed,
   }: {
     cheerioClient: cheerio.CheerioAPI;
     baseUrl: string;
@@ -360,20 +359,18 @@ export class ScrapeService {
   }): PageMetadata {
     const $ = cheerioClient;
 
-    // Default all options to true if not specified
     const {
-      title = true,
-      description = true,
-      language = true,
-      canonical = true,
-      robots = true,
-      author = true,
-      keywords = true,
-      favicon = true,
-      openGraph = true,
-      twitter = true,
-      isIframeAllowed = isIframeAllowedProp ?? false,
-    } = options || {};
+      title,
+      description,
+      language,
+      canonical,
+      robots,
+      author,
+      keywords,
+      favicon,
+      openGraph,
+      twitter,
+    } = options || DEFAULT_METADATA_OPTIONS;
 
     const metadata: PageMetadata = {};
 
@@ -528,7 +525,6 @@ export class ScrapeService {
     try {
       const fetchResult = await this.fetchPage(url, {
         ...fetchOptions,
-        isIframeAllowed: metadataOptions?.isIframeAllowed ?? true,
       });
 
       const html =
@@ -590,7 +586,7 @@ export class ScrapeService {
           cheerioClient: cheerio.load(html),
           baseUrl: url,
           options: metadataOptions,
-          isIframeAllowed,
+          isIframeAllowed, // forward isIframeAllowed to metadata
         });
       }
       if (cleanedHtml) {
