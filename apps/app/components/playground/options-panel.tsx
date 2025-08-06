@@ -1,10 +1,5 @@
 'use client';
 
-import type {
-  LinksOptions,
-  MetadataOptions,
-  ReadOptions,
-} from '@deepcrawl/types';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
@@ -20,6 +15,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@deepcrawl/ui/components/ui/collapsible';
+import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import {
   Select,
@@ -31,14 +27,22 @@ import {
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { Switch } from '@deepcrawl/ui/components/ui/switch';
 import { Textarea } from '@deepcrawl/ui/components/ui/textarea';
+import type {
+  ExtractLinksOptions,
+  GetMarkdownOptions,
+  MetadataOptions,
+  ReadUrlOptions,
+} from 'deepcrawl';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import type { DeepcrawlOperations } from './playground-client';
 
 interface OptionsPanelProps {
   selectedOperation: DeepcrawlOperations;
-  options: ReadOptions | LinksOptions;
-  onOptionsChange: (options: ReadOptions | LinksOptions) => void;
+  options: ReadUrlOptions | ExtractLinksOptions | GetMarkdownOptions;
+  onOptionsChange: (
+    options: ReadUrlOptions | ExtractLinksOptions | GetMarkdownOptions,
+  ) => void;
 }
 
 export function OptionsPanel({
@@ -69,9 +73,9 @@ export function OptionsPanel({
 
   // Helper type to get valid child keys for nested options
   type NestedOptionKeys<T> = T extends 'metadataOptions'
-    ? keyof NonNullable<ReadOptions['metadataOptions']>
+    ? keyof NonNullable<ReadUrlOptions['metadataOptions']>
     : T extends 'linkExtractionOptions'
-      ? keyof NonNullable<LinksOptions['linkExtractionOptions']>
+      ? keyof NonNullable<ExtractLinksOptions['linkExtractionOptions']>
       : never;
 
   const updateNestedOptionValue = <
@@ -100,32 +104,128 @@ export function OptionsPanel({
       onOptionsChange({ url: options.url });
     } else if (selectedOperation === 'extractLinks') {
       onOptionsChange({ url: options.url });
+    } else if (selectedOperation === 'getMarkdown') {
+      onOptionsChange({ url: options.url });
     }
   };
 
   if (selectedOperation === 'getMarkdown') {
+    const markdownOptions = options as GetMarkdownOptions;
     return (
       <Card>
         <CardHeader>
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              Options for Get Markdown
-              <Badge variant="outline" className="text-xs">
-                GET /read
-              </Badge>
-            </CardTitle>
-            <CardDescription>
-              Get Markdown returns only the markdown content. No additional
-              options required.
-            </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                Options for Get Markdown
+                <Badge variant="outline" className="text-xs">
+                  GET /read
+                </Badge>
+              </CardTitle>
+              <CardDescription>
+                Get Markdown returns only the markdown content. Configure cache
+                options below.
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetToDefaults}
+              className="text-xs"
+            >
+              Reset to default
+            </Button>
           </div>
         </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Cache Options */}
+          <Collapsible
+            open={expandedSections.has('markdownCacheOptions')}
+            onOpenChange={() => toggleSection('markdownCacheOptions')}
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+              <h4 className="font-medium text-sm">Cache Options</h4>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3">
+              <div className="grid grid-cols-1 gap-3">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="markdown-cache-enabled"
+                    checked={markdownOptions.cacheOptions?.enabled !== false}
+                    onCheckedChange={(checked) => {
+                      onOptionsChange({
+                        ...markdownOptions,
+                        cacheOptions: {
+                          ...markdownOptions.cacheOptions,
+                          enabled: checked,
+                        },
+                      });
+                    }}
+                  />
+                  <Label htmlFor="markdown-cache-enabled" className="text-sm">
+                    Enable Cache
+                  </Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="markdown-expiration" className="text-sm">
+                    Expiration (epoch timestamp)
+                  </Label>
+                  <Input
+                    id="markdown-expiration"
+                    type="number"
+                    placeholder="1717708800"
+                    value={markdownOptions.cacheOptions?.expiration || ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                        ? Number(e.target.value)
+                        : undefined;
+                      onOptionsChange({
+                        ...markdownOptions,
+                        cacheOptions: {
+                          ...markdownOptions.cacheOptions,
+                          expiration: value,
+                        },
+                      });
+                    }}
+                    className="font-mono text-xs"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="markdown-expirationTtl" className="text-sm">
+                    Expiration TTL (seconds, min 60)
+                  </Label>
+                  <Input
+                    id="markdown-expirationTtl"
+                    type="number"
+                    min="60"
+                    placeholder="86400"
+                    value={markdownOptions.cacheOptions?.expirationTtl || ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                        ? Number(e.target.value)
+                        : undefined;
+                      onOptionsChange({
+                        ...markdownOptions,
+                        cacheOptions: {
+                          ...markdownOptions.cacheOptions,
+                          expirationTtl: value,
+                        },
+                      });
+                    }}
+                    className="font-mono text-xs"
+                  />
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </CardContent>
       </Card>
     );
   }
 
   if (selectedOperation === 'readUrl') {
-    const readOptions = options as ReadOptions;
+    const readOptions = options as ReadUrlOptions;
     return (
       <Card>
         <CardHeader>
@@ -267,13 +367,133 @@ export function OptionsPanel({
               </div>
             </CollapsibleContent>
           </Collapsible>
+
+          <Separator />
+
+          {/* Cache Options */}
+          <Collapsible
+            open={expandedSections.has('cacheOptions')}
+            onOpenChange={() => toggleSection('cacheOptions')}
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+              <h4 className="font-medium text-sm">Cache Options</h4>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3">
+              <div className="grid grid-cols-1 gap-3">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="cache-enabled"
+                    checked={readOptions.cacheOptions?.enabled !== false}
+                    onCheckedChange={(checked) => {
+                      onOptionsChange({
+                        ...readOptions,
+                        cacheOptions: {
+                          ...readOptions.cacheOptions,
+                          enabled: checked,
+                        },
+                      });
+                    }}
+                  />
+                  <Label htmlFor="cache-enabled" className="text-sm">
+                    Enable Cache
+                  </Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expiration" className="text-sm">
+                    Expiration (epoch timestamp)
+                  </Label>
+                  <Input
+                    id="expiration"
+                    type="number"
+                    placeholder="1717708800"
+                    value={readOptions.cacheOptions?.expiration || ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                        ? Number(e.target.value)
+                        : undefined;
+                      onOptionsChange({
+                        ...readOptions,
+                        cacheOptions: {
+                          ...readOptions.cacheOptions,
+                          expiration: value,
+                        },
+                      });
+                    }}
+                    className="font-mono text-xs"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expirationTtl" className="text-sm">
+                    Expiration TTL (seconds, min 60)
+                  </Label>
+                  <Input
+                    id="expirationTtl"
+                    type="number"
+                    min="60"
+                    placeholder="86400"
+                    value={readOptions.cacheOptions?.expirationTtl || ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                        ? Number(e.target.value)
+                        : undefined;
+                      onOptionsChange({
+                        ...readOptions,
+                        cacheOptions: {
+                          ...readOptions.cacheOptions,
+                          expirationTtl: value,
+                        },
+                      });
+                    }}
+                    className="font-mono text-xs"
+                  />
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Separator />
+
+          {/* Cleaning Processor Options */}
+          <Collapsible
+            open={expandedSections.has('cleaningOptions')}
+            onOpenChange={() => toggleSection('cleaningOptions')}
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+              <h4 className="font-medium text-sm">Cleaning Options</h4>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="cleaningProcessor" className="text-sm">
+                  Cleaning Processor
+                </Label>
+                <Select
+                  value={readOptions.cleaningProcessor || 'cheerio-reader'}
+                  onValueChange={(value) =>
+                    updateOption('cleaningProcessor', value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select processor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cheerio-reader">
+                      Cheerio Reader
+                    </SelectItem>
+                    <SelectItem value="html-rewriter">HTML Rewriter</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </CardContent>
       </Card>
     );
   }
 
   if (selectedOperation === 'extractLinks') {
-    const linksOptions = options as LinksOptions;
+    const linksOptions = options as ExtractLinksOptions;
     return (
       <Card>
         <CardHeader>
@@ -582,6 +802,126 @@ export function OptionsPanel({
                     </Label>
                   </div>
                 ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Separator />
+
+          {/* Cache Options for Links */}
+          <Collapsible
+            open={expandedSections.has('linksCacheOptions')}
+            onOpenChange={() => toggleSection('linksCacheOptions')}
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+              <h4 className="font-medium text-sm">Cache Options</h4>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3">
+              <div className="grid grid-cols-1 gap-3">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="links-cache-enabled"
+                    checked={linksOptions.cacheOptions?.enabled !== false}
+                    onCheckedChange={(checked) => {
+                      onOptionsChange({
+                        ...linksOptions,
+                        cacheOptions: {
+                          ...linksOptions.cacheOptions,
+                          enabled: checked,
+                        },
+                      });
+                    }}
+                  />
+                  <Label htmlFor="links-cache-enabled" className="text-sm">
+                    Enable Cache
+                  </Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="links-expiration" className="text-sm">
+                    Expiration (epoch timestamp)
+                  </Label>
+                  <Input
+                    id="links-expiration"
+                    type="number"
+                    placeholder="1717708800"
+                    value={linksOptions.cacheOptions?.expiration || ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                        ? Number(e.target.value)
+                        : undefined;
+                      onOptionsChange({
+                        ...linksOptions,
+                        cacheOptions: {
+                          ...linksOptions.cacheOptions,
+                          expiration: value,
+                        },
+                      });
+                    }}
+                    className="font-mono text-xs"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="links-expirationTtl" className="text-sm">
+                    Expiration TTL (seconds, min 60)
+                  </Label>
+                  <Input
+                    id="links-expirationTtl"
+                    type="number"
+                    min="60"
+                    placeholder="86400"
+                    value={linksOptions.cacheOptions?.expirationTtl || ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                        ? Number(e.target.value)
+                        : undefined;
+                      onOptionsChange({
+                        ...linksOptions,
+                        cacheOptions: {
+                          ...linksOptions.cacheOptions,
+                          expirationTtl: value,
+                        },
+                      });
+                    }}
+                    className="font-mono text-xs"
+                  />
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Separator />
+
+          {/* Cleaning Processor Options for Links */}
+          <Collapsible
+            open={expandedSections.has('linksCleaningOptions')}
+            onOpenChange={() => toggleSection('linksCleaningOptions')}
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+              <h4 className="font-medium text-sm">Cleaning Options</h4>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="links-cleaningProcessor" className="text-sm">
+                  Cleaning Processor
+                </Label>
+                <Select
+                  value={linksOptions.cleaningProcessor || 'cheerio-reader'}
+                  onValueChange={(value) =>
+                    updateOption('cleaningProcessor', value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select processor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cheerio-reader">
+                      Cheerio Reader
+                    </SelectItem>
+                    <SelectItem value="html-rewriter">HTML Rewriter</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CollapsibleContent>
           </Collapsible>

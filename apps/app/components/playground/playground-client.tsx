@@ -1,6 +1,5 @@
 'use client';
 
-import type { LinksOptions, ReadOptions } from '@deepcrawl/types';
 import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
 import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
 import {
@@ -20,8 +19,11 @@ import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type {
+  ExtractLinksOptions,
   ExtractLinksResponse,
+  GetMarkdownOptions,
   GetMarkdownResponse,
+  ReadUrlOptions,
   ReadUrlResponse,
 } from 'deepcrawl';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
@@ -137,8 +139,13 @@ export function PlaygroundClient() {
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
 
   // Options state management - separate state for each operation
-  const [readOptions, setReadOptions] = useState<ReadOptions>({ url: '' });
-  const [linksOptions, setLinksOptions] = useState<LinksOptions>({ url: '' });
+  const [readOptions, setReadOptions] = useState<ReadUrlOptions>({ url: '' });
+  const [linksOptions, setLinksOptions] = useState<ExtractLinksOptions>({
+    url: '',
+  });
+  const [markdownOptions, setMarkdownOptions] = useState<GetMarkdownOptions>({
+    url: '',
+  });
 
   // Initialize execution timer hook
   const { startTimer, stopTimer, getElapsedTime, formatTime } =
@@ -197,7 +204,7 @@ export function PlaygroundClient() {
 
       switch (operation) {
         case 'getMarkdown': {
-          result = await sdkClient.getMarkdown(url);
+          result = await sdkClient.getMarkdown(url, markdownOptions);
           break;
         }
         case 'readUrl': {
@@ -321,13 +328,17 @@ export function PlaygroundClient() {
                   ? { ...readOptions, url }
                   : selectedOperation === 'extractLinks'
                     ? { ...linksOptions, url }
-                    : { url }
+                    : selectedOperation === 'getMarkdown'
+                      ? { ...markdownOptions, url }
+                      : { url }
               }
               onOptionsChange={(newOptions) => {
                 if (selectedOperation === 'readUrl') {
-                  setReadOptions(newOptions as ReadOptions);
+                  setReadOptions(newOptions as ReadUrlOptions);
                 } else if (selectedOperation === 'extractLinks') {
-                  setLinksOptions(newOptions as LinksOptions);
+                  setLinksOptions(newOptions as ExtractLinksOptions);
+                } else if (selectedOperation === 'getMarkdown') {
+                  setMarkdownOptions(newOptions as GetMarkdownOptions);
                 }
               }}
             />
