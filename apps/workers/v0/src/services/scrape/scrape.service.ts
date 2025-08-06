@@ -1,13 +1,12 @@
-import type { MetaFiles } from '@deepcrawl/types';
+import { COMMON_HEADERS, type MetaFiles } from '@deepcrawl/types';
 import type {
   MetadataOptions,
   PageMetadata,
 } from '@deepcrawl/types/services/metadata';
-import {
-  CommonScrapingHeaders,
-  type FetchOptions,
-  type ScrapedData,
-  type ScrapeOptions,
+import type {
+  FetchOptions,
+  ScrapedData,
+  ScrapeOptions,
 } from '@deepcrawl/types/services/scrape';
 import type {
   ReadabilityResult,
@@ -114,7 +113,7 @@ export class ScrapeService {
         ...rest,
         signal: abortController.signal,
         headers: {
-          ...CommonScrapingHeaders.browserLike,
+          ...COMMON_HEADERS.browserLike,
           ...rest.headers,
         },
         // always bypass the cache in Cloudflare
