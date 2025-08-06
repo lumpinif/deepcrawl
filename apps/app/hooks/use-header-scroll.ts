@@ -22,7 +22,7 @@ interface UseHeaderScrollOptions {
 export function useHeaderScroll(
   options: UseHeaderScrollOptions,
 ): UseHeaderScrollReturn {
-  const { threshold = 0, debounceMs = 40, viewportRef } = options;
+  const { threshold = 15, debounceMs = 40, viewportRef } = options;
 
   const [shouldHideHeader, setShouldHideHeader] = useState(false);
 
