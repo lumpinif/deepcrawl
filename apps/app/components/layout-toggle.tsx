@@ -79,22 +79,36 @@ export function LayoutViewToggle({ currentMode }: LayoutToggleProps) {
 
   return (
     <div className="flex w-full justify-between gap-x-2 py-2">
-      <button
-        type="button"
-        className={buttonCN}
-        onClick={(e) => handleClick(e, 'header')}
-      >
-        <LayoutPanelTopIcon svgClassName="size-7 text-muted-foreground/70 stroke-[1.2px]" />
-        <span className="text-xs">Tabs</span>
-      </button>
-      <button
-        type="button"
-        className={buttonCN}
-        onClick={(e) => handleClick(e, 'sidebar')}
-      >
-        <LayoutPanelLeftIcon svgClassName="size-7 text-muted-foreground/70 stroke-[1.2px]" />
-        <span className="text-xs">Sidebar</span>
-      </button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className={buttonCN}
+            onClick={(e) => handleClick(e, 'header')}
+          >
+            <LayoutPanelTopIcon svgClassName="size-7 text-muted-foreground/70 stroke-[1.2px]" />
+            <span className="text-xs">Vercel Tabs</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <span>Vercel-like Tabs</span>
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className={buttonCN}
+            onClick={(e) => handleClick(e, 'sidebar')}
+          >
+            <LayoutPanelLeftIcon svgClassName="size-7 text-muted-foreground/70 stroke-[1.2px]" />
+            <span className="text-xs">Sidebar</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <span>Resizeable Sidebar</span>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }
