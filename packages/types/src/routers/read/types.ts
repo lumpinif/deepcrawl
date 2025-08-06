@@ -57,7 +57,7 @@ export const ReadOptionsSchema = z
      * An object containing the `expiration` (optional) and `expirationTtl` (optional) attributes
      * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
      */
-    cacheOptions: CacheOptionsSchema.meta({
+    cacheOptions: CacheOptionsSchema.optional().meta({
       description:
         'Cache configuration for read operation based on KV put options except for `metadata`',
       examples: [DEFAULT_CACHE_OPTIONS],
