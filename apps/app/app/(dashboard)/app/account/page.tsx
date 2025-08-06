@@ -1,6 +1,5 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { PageContainer, PageHeader } from '@/components/page-elements';
-import { authGetSession } from '@/query/auth-query.server';
 import { getQueryClient } from '@/query/query.client';
 import {
   authListUserAccountsQueryOptions,
@@ -16,19 +15,12 @@ import { UserAvatarCard } from './components/user-avatar-card';
 import { UserNameCard } from './components/user-name-card';
 
 export default async function AccountPage() {
-  // Don't prefetch current session or organization as they can return null
-  const [currentSession] = await Promise.all([
-    authGetSession(),
-    // auth.api.getFullOrganization({
-    // 	headers: requestHeaders,
-    // }),
-  ]);
-
   const queryClient = getQueryClient();
 
+  // Don't prefetch current session or organization as they can return null
   void queryClient.prefetchQuery(authPasskeysQueryOptions());
   void queryClient.prefetchQuery(listSessionsQueryOptions());
-  void queryClient.prefetchQuery(deviceSessionsQueryOptions());
+  void queryClient.prefetchQuery(deviceSessionsQueryOptions()); // it should be populated by layout.tsx already but it doesn't hurt to prefetch it here
   void queryClient.prefetchQuery(authListUserAccountsQueryOptions());
 
   return (
@@ -36,13 +28,13 @@ export default async function AccountPage() {
       <PageHeader title="Account Settings" />
       <PageContainer>
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
-          <UserAvatarCard currentSession={currentSession} />
-          <UserNameCard currentSession={currentSession} />
+          <UserAvatarCard />
+          <UserNameCard />
         </div>
-        <ProvidersManagementCard currentSession={currentSession} />
-        <MultipleAccountsManagementCard currentSession={currentSession} />
-        <PasswordChangeCard currentSession={currentSession} />
-        <SessionsManagementCard currentSession={currentSession} />
+        <ProvidersManagementCard />
+        <MultipleAccountsManagementCard />
+        <PasswordChangeCard />
+        <SessionsManagementCard />
       </PageContainer>
     </HydrationBoundary>
   );

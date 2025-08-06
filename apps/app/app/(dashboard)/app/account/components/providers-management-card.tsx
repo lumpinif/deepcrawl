@@ -1,6 +1,5 @@
 'use client';
 
-import type { Session } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -73,11 +72,9 @@ interface ProviderInfo {
   accountInfo?: string;
 }
 
-export function ProvidersManagementCard(props: {
-  currentSession?: Session | null;
-}) {
+export function ProvidersManagementCard() {
   const { data: currentSession, isPending: isPendingSession } = useQuery(
-    sessionQueryOptionsClient({ init: props.currentSession }),
+    sessionQueryOptionsClient(),
   );
   const { data: linkedAccounts = [], isPending: isPendingLinkedAccounts } =
     useSuspenseQuery(listUserAccountsQueryOptionsClient());

@@ -26,11 +26,9 @@ import {
 import { authViewRoutes } from '@/routes/auth';
 import { SessionsManagementCardSkeleton } from './account-skeletons';
 
-export function SessionsManagementCard(props: {
-  currentSession?: Session | null;
-}) {
+export function SessionsManagementCard() {
   const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
-    sessionQueryOptionsClient({ init: props.currentSession }),
+    sessionQueryOptionsClient(),
   );
   const { data: listSessions, isPending: isPendingListSessions } =
     useSuspenseQuery(listSessionsQueryOptionsClient());
