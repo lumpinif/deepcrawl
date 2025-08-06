@@ -124,6 +124,8 @@ export const DEFAULT_SCRAPE_OPTIONS = {
   fetchOptions: DEFAULT_FETCH_OPTIONS,
 } as const;
 
+/** Read  */
+
 export const DEFAULT_CACHE_OPTIONS = {
   enabled: true,
   expirationTtl: 86400 * 1, // 1 day in seconds
@@ -133,5 +135,28 @@ export const DEFAULT_READ_OPTIONS = {
   markdown: true,
   rawHtml: false,
   cacheOptions: DEFAULT_CACHE_OPTIONS,
+  ...DEFAULT_SCRAPE_OPTIONS,
+} as const;
+
+/** Links  */
+
+export const DEFAULT_LINK_EXTRACTION_OPTIONS = {
+  includeExternal: false,
+  includeMedia: false,
+  removeQueryParams: true,
+} as const;
+
+export const DEFAULT_TREE_OPTIONS = {
+  folderFirst: true,
+  linksOrder: 'page',
+  extractedLinks: true,
+  subdomainAsRootUrl: true,
+} as const;
+
+export const DEFAULT_LINKS_OPTIONS = {
+  tree: true,
+  linkExtractionOptions: DEFAULT_LINK_EXTRACTION_OPTIONS,
+  cacheOptions: DEFAULT_CACHE_OPTIONS,
+  treeOptions: DEFAULT_TREE_OPTIONS,
   ...DEFAULT_SCRAPE_OPTIONS,
 } as const;

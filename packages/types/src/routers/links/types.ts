@@ -1,5 +1,11 @@
+import {
+  DEFAULT_CACHE_OPTIONS,
+  DEFAULT_LINK_EXTRACTION_OPTIONS,
+  DEFAULT_LINKS_OPTIONS,
+  DEFAULT_TREE_OPTIONS,
+} from '@deepcrawl/types/common/constants';
 import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
-import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
+import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
 import { CacheOptionsSchema } from '@deepcrawl/types/services/cache/types';
 
 import {
@@ -13,16 +19,34 @@ import {
 } from '@deepcrawl/types/services/scrape/types';
 import { z } from 'zod/v4';
 
+const { folderFirst, linksOrder, extractedLinks, subdomainAsRootUrl } =
+  DEFAULT_TREE_OPTIONS;
+
 /**
  * Schema for links order enum.
  * Defines how links should be ordered within folders.
  */
-export const LinksOrderSchema = z.enum(['page', 'alphabetical']).meta({
-  title: 'LinksOrder',
-  description:
-    'How to order links within each folder: "page" (preserve original order) or "alphabetical" (sort A→Z by URL).',
-  examples: ['alphabetical'],
-});
+export const LinksOrderSchema = z
+  .enum(['page', 'alphabetical'])
+  .default(linksOrder)
+  .meta({
+    title: 'LinksOrder',
+    description:
+      'How to order links within each folder: "page" (preserve original order) or "alphabetical" (sort A→Z by URL).',
+    default: linksOrder,
+    examples: ['alphabetical', 'page'],
+  });
+
+/**
+ * Type representing the order of links within each folder.
+ * @enum {string} 'page' | 'alphabetical'
+ * @see {@link LinksOrderSchema}
+ * @example
+ * ```typescript
+ * const linksOrder: LinksOrder = 'alphabetical';
+ * ```
+ */
+export type LinksOrder = z.infer<typeof LinksOrderSchema>;
 
 /**
  * Schema for tree options.
@@ -37,26 +61,32 @@ export const TreeOptionsSchema = z
      * Whether to place folders before leaf nodes in the tree.
      * Default: true
      */
-    folderFirst: smartboolTrue().meta({
-      description: 'Whether to place folders before leaf nodes in the tree.',
-      examples: [true],
+    folderFirst: smartboolOptionalWithDefault(folderFirst).meta({
+      description: `Whether to place folders before leaf nodes in the tree. Default: ${folderFirst}`,
+      default: folderFirst,
+      examples: [folderFirst, !folderFirst],
     }),
     /**
+     * @see {@link LinksOrderSchema}
      * How to order links within each folder:
      *  - 'page'        preserve the original document order
      *  - 'alphabetical'  sort A→Z by URL
      * Default: 'page'
      */
-    linksOrder: LinksOrderSchema.optional(),
+    linksOrder: LinksOrderSchema.optional().meta({
+      description: `How to order links within each folder: "page" (preserve original order) or "alphabetical" (sort A→Z by URL). Default: ${linksOrder}`,
+      default: linksOrder,
+      examples: ['alphabetical', 'page'],
+    }),
 
     /**
      * Whether to include extracted links for each node in the tree.
      * Default: true
      */
-    extractedLinks: smartboolTrue().meta({
-      description:
-        'Whether to include extracted links for each node in the tree.',
-      examples: [true],
+    extractedLinks: smartboolOptionalWithDefault(extractedLinks).meta({
+      description: `Whether to include extracted links for each node in the tree. Default: ${extractedLinks}`,
+      default: extractedLinks,
+      examples: [extractedLinks, !extractedLinks],
     }),
 
     /**
@@ -64,16 +94,25 @@ export const TreeOptionsSchema = z
      * Default: true
      * e.g., if false: rootUrl: https://swr.vercel.app -> https://vercel.app
      */
-    subdomainAsRootUrl: smartboolTrue().meta({
-      description:
-        'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL. e.g., if false: rootUrl: `https://swr.vercel.app` -> `https://vercel.app`',
-      examples: [false],
+    subdomainAsRootUrl: smartboolOptionalWithDefault(subdomainAsRootUrl).meta({
+      description: `Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL. e.g., if false: rootUrl: \`https://swr.vercel.app\` -> \`https://vercel.app\`. Default: ${subdomainAsRootUrl}`,
+      default: subdomainAsRootUrl,
+      examples: [subdomainAsRootUrl, !subdomainAsRootUrl],
     }),
   })
   .meta({
     title: 'TreeOptions',
     description: 'Options for building a site map tree',
+    examples: [DEFAULT_TREE_OPTIONS],
   });
+
+/**
+ * Type representing the options for building a site map tree.
+ * @see {@link TreeOptionsSchema}
+ */
+export type TreeOptions = z.infer<typeof TreeOptionsSchema>;
+
+const { tree } = DEFAULT_LINKS_OPTIONS;
 
 /**
  * Schema for links route options.
@@ -116,28 +155,36 @@ export const LinksOptionsSchema = z
      * Whether to build a site map tree.
      * Default: true
      */
-    tree: smartboolTrue().meta({
-      description: 'Whether to build a site map tree.',
-      examples: [true],
+    tree: smartboolOptionalWithDefault(tree).meta({
+      description: `Whether to build a site map tree. Default: ${tree}`,
+      default: tree,
+      examples: [tree, !tree],
     }),
 
     /**
      * Options for link extraction.
      * Controls how links are extracted and categorized.
+     * @see {@link LinkExtractionOptionsSchema}
+     * @see Default: {@link DEFAULT_LINK_EXTRACTION_OPTIONS}
      */
-    linkExtractionOptions: LinkExtractionOptionsSchema.optional(),
+    linkExtractionOptions: LinkExtractionOptionsSchema.optional().meta({
+      title: 'LinkExtractionOptions',
+      description: `Options for link extraction. Default: ${DEFAULT_LINK_EXTRACTION_OPTIONS}`,
+      default: DEFAULT_LINK_EXTRACTION_OPTIONS,
+      examples: [DEFAULT_LINK_EXTRACTION_OPTIONS],
+    }),
 
     /**
      * Cache configuration for links operation based on KV put options except for `metadata`.
      * An object containing the `expiration` (optional) and `expirationTtl` (optional) attributes
      * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
+     * @see Default: {@link DEFAULT_CACHE_OPTIONS}
      */
     cacheOptions: CacheOptionsSchema.optional().meta({
       description:
         'Cache configuration for links operation based on KV put options except for `metadata`',
-      examples: [
-        { expiration: 1717708800, expirationTtl: 86400 }, // expirationTtl: 86400 = 1 day
-      ],
+      default: DEFAULT_CACHE_OPTIONS,
+      examples: [DEFAULT_CACHE_OPTIONS],
     }),
   })
   .extend(TreeOptionsSchema.shape)

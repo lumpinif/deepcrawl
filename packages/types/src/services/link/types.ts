@@ -1,19 +1,24 @@
-import { smartboolOptional } from '@deepcrawl/types/common/smart-schemas';
+import { DEFAULT_LINK_EXTRACTION_OPTIONS } from '@deepcrawl/types/common/constants';
+import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
 import { z } from 'zod/v4';
 
+const { includeExternal, includeMedia, removeQueryParams } =
+  DEFAULT_LINK_EXTRACTION_OPTIONS;
 /**
  * Schema for configuring link extraction behavior.
  * Defines validation rules for controlling how links are extracted from HTML.
  */
 export const LinkExtractionOptionsSchema = z
   .object({
-    includeExternal: smartboolOptional().meta({
-      description: 'Whether to include links from other domains',
-      examples: [false],
+    includeExternal: smartboolOptionalWithDefault(includeExternal).meta({
+      description: `Whether to include links from other domains. Default: ${includeExternal}`,
+      default: includeExternal,
+      examples: [includeExternal, !includeExternal],
     }),
-    includeMedia: smartboolOptional().meta({
-      description: 'Whether to include media files (images, videos, docs)',
-      examples: [true],
+    includeMedia: smartboolOptionalWithDefault(includeMedia).meta({
+      description: `Whether to include media files (images, videos, docs). Default: ${includeMedia}`,
+      default: includeMedia,
+      examples: [includeMedia, !includeMedia],
     }),
     excludePatterns: z
       .array(z.string())
@@ -22,21 +27,21 @@ export const LinkExtractionOptionsSchema = z
         description: 'Array of regex patterns to exclude URLs',
         examples: [['^/admin/', '\\.pdf$', '/private/']],
       }),
-    removeQueryParams: smartboolOptional().meta({
-      description: 'Whether to remove query parameters from URLs',
-      examples: [true],
+    removeQueryParams: smartboolOptionalWithDefault(removeQueryParams).meta({
+      description: `Whether to remove query parameters from URLs. Default: ${removeQueryParams}`,
+      default: removeQueryParams,
+      examples: [removeQueryParams, !removeQueryParams],
     }),
   })
-  .strict()
+  .default(DEFAULT_LINK_EXTRACTION_OPTIONS)
   .meta({
     title: 'LinkExtractionOptions',
     description: 'Schema for configuring link extraction behavior',
+    default: DEFAULT_LINK_EXTRACTION_OPTIONS,
     examples: [
       {
-        includeExternal: false,
-        includeMedia: true,
         excludePatterns: ['^/admin/', '\\.pdf$', '/private/'],
-        removeQueryParams: true,
+        ...DEFAULT_LINK_EXTRACTION_OPTIONS,
       },
     ],
   });
@@ -153,7 +158,7 @@ export const ExtractedLinksSchema = z
  * ```typescript
  * const options: LinkExtractionOptions = {
  *   includeExternal: false,
- *   includeMedia: true,
+ *   includeMedia: false,
  *   excludePatterns: ['^/admin/', '\\.pdf$'],
  *   removeQueryParams: true
  * };
