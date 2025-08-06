@@ -24,8 +24,8 @@ export const linksGETContract = linksOC
   .input(LinksOptionsSchema.pick({ url: true }))
   .output(LinksSuccessResponseSchema);
 
-export type LinksGETInput = Inputs['links']['getLinks'];
-export type GetLinksOutput = Outputs['links']['getLinks'];
+export type GetLinksOptions = Inputs['links']['getLinks'];
+export type GetLinksResponse = Outputs['links']['getLinks'];
 
 export const linksPOSTContract = linksOC
   .route({
@@ -38,5 +38,5 @@ export const linksPOSTContract = linksOC
   .input(LinksOptionsSchema)
   .output(LinksSuccessResponseSchema);
 
-export type LinksPOSTInput = Inputs['links']['extractLinks'];
-export type ExtractLinksOutput = Outputs['links']['extractLinks'];
+export type ExtractLinksOptions = Inputs['links']['extractLinks'];
+export type ExtractLinksResponse = Outputs['links']['extractLinks'];

@@ -1,7 +1,6 @@
 import {
   ReadOptionsSchema,
   type ReadStringResponse,
-  // type ReadStringResponse,
   ReadSuccessResponseSchema,
 } from '@deepcrawl/types';
 import { oc } from '@orpc/contract';
@@ -24,7 +23,7 @@ export const readGETContract = readOC
     summary: 'Get page markdown content',
     description: `Endpoint: GET \`api.deepcrawl.dev/read?url=example.com\`\n\nDirectly return page markdown content from the request URL as a string response.`,
   })
-  .input(ReadOptionsSchema.pick({ url: true }))
+  .input(ReadOptionsSchema.pick({ url: true, cacheOptions: true }))
   // WORKAROUND: Return a Blob to bypass ORPC's JSON serialization since we'd like to return a text/markdown string response - but this introduces some latency
   .output(
     z
@@ -38,9 +37,9 @@ export const readGETContract = readOC
       }),
   );
 
-export type ReadGETInput = Inputs['read']['getMarkdown'];
+export type GetMarkdownOptions = Inputs['read']['getMarkdown'];
 // export type GetMarkdownOutput = Outputs['read']['getMarkdown']; // Blob type is the workaround but we want to return a text/markdown string response
-export type GetMarkdownOutput = ReadStringResponse;
+export type GetMarkdownResponse = ReadStringResponse;
 
 export const readPOSTContract = readOC
   .route({
@@ -53,5 +52,5 @@ export const readPOSTContract = readOC
   .input(ReadOptionsSchema)
   .output(ReadSuccessResponseSchema);
 
-export type ReadPOSTInput = Inputs['read']['readUrl'];
-export type ReadUrlOutput = Outputs['read']['readUrl'];
+export type ReadUrlOptions = Inputs['read']['readUrl'];
+export type ReadUrlResponse = Outputs['read']['readUrl'];
