@@ -1,6 +1,6 @@
 'use client';
 
-import { MAX_SESSIONS } from '@deepcrawl/auth/configs/auth.config';
+import { MAX_SESSIONS } from '@deepcrawl/auth/configs/constants';
 import type {
   LDSUser,
   ListDeviceSession,
