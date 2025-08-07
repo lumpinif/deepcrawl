@@ -38,6 +38,8 @@ export * from './services/html-cleaning';
 export * from './services/html-cleaning/types';
 export * from './services/link';
 export * from './services/link/types';
+export * from './services/markdown';
+export * from './services/markdown/types';
 export * from './services/metadata';
 export * from './services/metadata/types';
 export * from './services/scrape';
