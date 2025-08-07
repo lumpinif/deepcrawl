@@ -140,12 +140,29 @@ export const DEFAULT_READER_CLEANING_OPTIONS = {
 
 export const DEFAULT_FETCH_OPTIONS = {} as const;
 
+/** Markdown Converter */
+
+export const DEFAULT_MARKDOWN_CONVERTER_OPTIONS = {
+  preferNativeParser: false,
+  codeFence: '```' as const,
+  bulletMarker: '*' as const,
+  codeBlockStyle: 'fenced' as const,
+  emDelimiter: '_' as const,
+  strongDelimiter: '**' as const,
+  strikeDelimiter: '~~' as const,
+  maxConsecutiveNewlines: 3,
+  keepDataImages: false,
+  useLinkReferenceDefinitions: false,
+  useInlineLinks: true,
+} as const;
+
 export const DEFAULT_SCRAPE_OPTIONS = {
   metadata: true,
   cleanedHtml: false,
   robots: false,
   sitemapXML: false,
   metadataOptions: DEFAULT_METADATA_OPTIONS,
+  markdownConverterOptions: DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
   cleaningProcessor: 'cheerio-reader',
   htmlRewriterOptions: DEFAULT_HTML_REWRITER_OPTIONS,
   readerCleaningOptions: DEFAULT_READER_CLEANING_OPTIONS,

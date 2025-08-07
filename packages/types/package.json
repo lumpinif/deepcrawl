@@ -36,6 +36,9 @@
     "./services/cache": {
       "types": "./src/services/cache/index.ts"
     },
+    "./services/markdown": {
+      "types": "./src/services/markdown/index.ts"
+    },
     "./common": {
       "types": "./src/common/index.ts"
     },

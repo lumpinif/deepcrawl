@@ -2,10 +2,12 @@ import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schema
 import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
 import {
   DEFAULT_CACHE_OPTIONS,
+  DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
   DEFAULT_READ_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
 } from '@deepcrawl/types/configs';
 import { CacheOptionsSchema } from '@deepcrawl/types/services/cache/types';
+import { MarkdownConverterOptionsSchema } from '@deepcrawl/types/services/markdown/types';
 
 import {
   ScrapedDataSchema,
@@ -61,6 +63,18 @@ export const ReadOptionsSchema = z
       description:
         'Cache configuration for read operation based on KV put options except for `metadata`',
       examples: [DEFAULT_CACHE_OPTIONS],
+    }),
+
+    /**
+     * Options for markdown conversion.
+     * Controls how markdown is converted.
+     * @see {@link MarkdownConverterOptionsSchema}
+     */
+    markdownConverterOptions: MarkdownConverterOptionsSchema.optional().meta({
+      title: 'MarkdownConverterOptions',
+      description: 'Options for markdown conversion.',
+      default: DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
+      examples: [DEFAULT_MARKDOWN_CONVERTER_OPTIONS],
     }),
   })
   .extend(ScrapeOptionsSchema.shape)
