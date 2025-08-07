@@ -353,7 +353,7 @@ export class DeepcrawlApp {
    */
   async getMarkdown(
     url: string,
-    options?: Pick<GetMarkdownOptions, 'cacheOptions'>,
+    options?: GetMarkdownOptions,
   ): Promise<GetMarkdownResponse> {
     const getMarkdownOptions: GetMarkdownOptions = {
       url,
