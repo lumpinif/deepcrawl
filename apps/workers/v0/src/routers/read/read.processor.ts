@@ -7,8 +7,8 @@ import {
   type ReadStringResponse,
   type ReadSuccessResponse,
   type ScrapedData,
-} from '@deepcrawl/types/index';
-import type { NodeHtmlMarkdown } from 'node-html-markdown';
+} from '@deepcrawl/types';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 import type { ORPCContext } from '@/lib/context';
 import { formatDuration } from '@/utils/formater';
@@ -17,6 +17,8 @@ import { kvPutWithRetry } from '@/utils/kv/retry';
 import { logDebug, logError } from '@/utils/loggers';
 import {
   fixCodeBlockFormatting,
+  nhmCustomTranslators,
+  nhmTranslators,
   processMultiLineLinks,
   removeNavigationAidLinks,
 } from '@/utils/markdown';
@@ -158,6 +160,7 @@ export async function processReadRequest(
     cleanedHtml: isCleanedHtml,
     rawHtml: isRawHtml,
     cacheOptions,
+    markdownConverterOptions,
   } = params;
 
   logDebug(
@@ -254,9 +257,18 @@ export async function processReadRequest(
     let markdown: string | undefined;
     if (isMarkdown || isGETRequest) {
       if (cleanedHtml) {
+        // Create markdown converter with custom options if provided, otherwise use defaults
+        const markdownConverter = markdownConverterOptions
+          ? new NodeHtmlMarkdown(
+              markdownConverterOptions,
+              nhmCustomTranslators,
+              nhmTranslators,
+            )
+          : new NodeHtmlMarkdown({}, nhmCustomTranslators, nhmTranslators);
+
         const convertedMarkdown = getMarkdown({
           html: cleanedHtml,
-          markdownConverter: c.var.markdownConverter,
+          markdownConverter,
         });
 
         // Check if the converted markdown has meaningful content

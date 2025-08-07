@@ -17,7 +17,7 @@ import type {
 import type { ExtractedLinks } from '@deepcrawl/types/services/link';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 import type { ORPCContext } from '@/lib/context';
-import type { _linksSets } from '@/services/link/link.service';
+import { type _linksSets, LinkService } from '@/services/link/link.service';
 import { formatDuration } from '@/utils/formater';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
@@ -88,9 +88,9 @@ export async function processLinksRequest(
   const timestamp = new Date().toISOString();
   const startRequestTime = performance.now();
 
-  // Use app-level services from context for optimal performance
+  // Use app-level scrape service from context, create link service locally
   const scrapeService = c.var.scrapeService;
-  const linkService = c.var.linkService;
+  const linkService = new LinkService();
 
   // config
   const withTree = isTree !== false; // True by default, false only if explicitly set to false

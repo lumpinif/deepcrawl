@@ -27,8 +27,6 @@ app.get('/', (c) => {
     connInfo: info,
     services: {
       scrapeService: !!c.var.scrapeService,
-      linkService: !!c.var.linkService,
-      markdownConverter: !!c.var.markdownConverter,
     },
   });
 });
