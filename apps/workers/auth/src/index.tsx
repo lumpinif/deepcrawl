@@ -1,5 +1,5 @@
 import { WorkerEntrypoint } from 'cloudflare:workers';
-import { API_KEY_CACHE_CONFIG } from '@deepcrawl/auth/configs';
+import { API_KEY_CACHE_CONFIG } from '@deepcrawl/auth/configs/constants';
 import type { AppContext } from '@/lib/context';
 import createHonoApp from '@/lib/hono/create-hono-app';
 import { logDebug } from '@/utils/loggers';

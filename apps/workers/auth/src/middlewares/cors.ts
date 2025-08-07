@@ -1,7 +1,7 @@
 import {
   ALLOWED_ORIGINS,
   DEVELOPMENT_ORIGINS,
-} from '@deepcrawl/auth/configs/auth.config';
+} from '@deepcrawl/auth/configs/constants';
 import { cors } from 'hono/cors';
 import { createMiddleware } from 'hono/factory';
 import type { AppContext } from '@/lib/context';
