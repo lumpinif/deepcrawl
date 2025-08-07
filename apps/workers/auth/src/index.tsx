@@ -1,8 +1,9 @@
 import { WorkerEntrypoint } from 'cloudflare:workers';
+import { API_KEY_CACHE_CONFIG } from '@deepcrawl/auth/configs';
 import type { AppContext } from '@/lib/context';
 import createHonoApp from '@/lib/hono/create-hono-app';
 import { logDebug } from '@/utils/loggers';
-import { API_KEY_CACHE_CONFIG, createAuth } from './lib/better-auth';
+import { createAuth } from './lib/better-auth';
 import { validateAPIKeyRouter } from './router/auth';
 
 const app = createHonoApp();

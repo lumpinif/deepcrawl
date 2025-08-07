@@ -81,6 +81,16 @@ export const DEVELOPMENT_ORIGINS = [
 
 export const MAX_SESSIONS = 2;
 
+export const API_KEY_CACHE_CONFIG = {
+  TTL_SECONDS: 86400 * 1, // 1 day in seconds
+  KEY_PREFIX: 'api_key_session:',
+} as const;
+
+export const COOKIE_CACHE_CONFIG = {
+  enabled: true,
+  maxAge: 86400 * 1, // 1 day in seconds
+} as const;
+
 /**
  * This is better-auth built-in rate limiting only used for API Keys validation, and we implement cache for API Keys sessions
  * Currently same as the user-scope free rate limit in backend services worker, but it is better to have max requests higher than the highest service rate limit
@@ -169,10 +179,7 @@ export function createAuthConfig(env: Env) {
     session: {
       storeSessionInDatabase: true, // Store sessions in both DB and secondary storage
       preserveSessionInDatabase: false, // Clean up DB when removing from secondary storage
-      cookieCache: {
-        enabled: true,
-        maxAge: 10 * 60, // Cache session data in cookie for 10 minutes
-      },
+      cookieCache: COOKIE_CACHE_CONFIG,
     },
     plugins: [
       ...(USE_OAUTH_PROXY
