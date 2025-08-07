@@ -1,6 +1,8 @@
 export * from './configs';
 // Auth configuration
 export { createAuthConfig } from './configs/auth.config';
+// Static constants exported from constants.ts only
+export * from './configs/constants';
 export * from './lib';
 // Email templates
 export {
