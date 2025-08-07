@@ -21,9 +21,15 @@ export const readGETContract = readOC
     path: '/',
     method: 'GET',
     summary: 'Get page markdown content',
-    description: `Endpoint: GET \`api.deepcrawl.dev/read?url=example.com\`\n\nDirectly return page markdown content from the request URL as a string response.`,
+    description: `Endpoint: GET \`api.deepcrawl.dev/read?url=example.com\`\n\nDirectly return page markdown content from the request URL as a string response. For advanced use cases, use the POST method instead or use the \`readUrl\` from \`Deepcrawl SDK\`.`,
   })
-  .input(ReadOptionsSchema.pick({ url: true, cacheOptions: true }))
+  .input(
+    ReadOptionsSchema.pick({
+      url: true,
+      cacheOptions: true,
+      markdownConverterOptions: true,
+    }),
+  )
   // WORKAROUND: Return a Blob to bypass ORPC's JSON serialization since we'd like to return a text/markdown string response - but this introduces some latency
   .output(
     z
