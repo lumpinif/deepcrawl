@@ -15,6 +15,25 @@ const readOC = oc.errors({
   READ_ERROR_RESPONSE: errorSpec.READ_ERROR_RESPONSE,
 });
 
+/**
+ * @name ReadGETInputSchema
+ * @description Input schema for the GET endpoint
+ * @note Only includes:
+ * - `url` - The webpage URL to convert to markdown
+ * - `cacheOptions` - Cache settings
+ * - `markdownConverterOptions` - Markdown conversion settings
+ * from {@link ReadOptionsSchema}
+ *
+ * @param {string} [url] - The webpage URL to convert to markdown
+ * @param {object} [cacheOptions] - Cache settings
+ * @param {object} [markdownConverterOptions] - Markdown conversion settings
+ */
+export const ReadGETInputSchema = ReadOptionsSchema.pick({
+  url: true,
+  cacheOptions: true,
+  markdownConverterOptions: true,
+});
+
 export const readGETContract = readOC
   .route({
     tags,
@@ -23,13 +42,7 @@ export const readGETContract = readOC
     summary: 'Get page markdown content',
     description: `Endpoint: GET \`api.deepcrawl.dev/read?url=example.com\`\n\nDirectly return page markdown content from the request URL as a string response. For advanced use cases, use the POST method instead or use the \`readUrl\` from \`Deepcrawl SDK\`.`,
   })
-  .input(
-    ReadOptionsSchema.pick({
-      url: true,
-      cacheOptions: true,
-      markdownConverterOptions: true,
-    }),
-  )
+  .input(ReadGETInputSchema)
   // WORKAROUND: Return a Blob to bypass ORPC's JSON serialization since we'd like to return a text/markdown string response - but this introduces some latency
   .output(
     z
