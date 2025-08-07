@@ -1,5 +1,5 @@
-import { DEFAULT_METADATA_OPTIONS } from '@deepcrawl/types/common/constants';
 import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+import { DEFAULT_METADATA_OPTIONS } from '@deepcrawl/types/configs';
 import { z } from 'zod/v4';
 
 const {

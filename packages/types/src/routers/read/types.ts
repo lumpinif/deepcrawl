@@ -1,10 +1,10 @@
+import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
+import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
 import {
   DEFAULT_CACHE_OPTIONS,
   DEFAULT_READ_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
-} from '@deepcrawl/types/common';
-import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
-import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+} from '@deepcrawl/types/configs';
 import { CacheOptionsSchema } from '@deepcrawl/types/services/cache/types';
 
 import {

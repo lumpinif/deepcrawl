@@ -1,5 +1,5 @@
-import { DEFAULT_CACHE_OPTIONS } from '@deepcrawl/types/common';
 import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+import { DEFAULT_CACHE_OPTIONS } from '@deepcrawl/types/configs';
 import { z } from 'zod/v4';
 
 const { enabled } = DEFAULT_CACHE_OPTIONS;

@@ -1,8 +1,8 @@
+import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
 import {
   DEFAULT_HTML_REWRITER_OPTIONS,
   DEFAULT_READER_CLEANING_OPTIONS,
-} from '@deepcrawl/types/common';
-import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
+} from '@deepcrawl/types/configs';
 import { z } from 'zod/v4';
 
 /**

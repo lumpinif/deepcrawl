@@ -22,9 +22,11 @@ import type { LinksTree } from './routers/links/types';
 export type { LinksTree as Tree };
 
 export * from './common';
-export * from './common/constants';
 export * from './common/response-schemas';
 export * from './common/smart-schemas';
+
+export * from './configs';
+export * from './configs/default';
 
 // Type-only exports for better IDE support
 export * from './routers/links';

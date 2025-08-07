@@ -1,4 +1,4 @@
-import { DEFAULT_HTML_REWRITER_OPTIONS } from '@deepcrawl/types/common';
+import { DEFAULT_HTML_REWRITER_OPTIONS } from '@deepcrawl/types/configs';
 import type {
   HTMLCleaningResult,
   HTMLRewriterOptions,

@@ -1,4 +1,4 @@
-import { DEFAULT_METADATA_OPTIONS } from '@deepcrawl/types/common';
+import { DEFAULT_METADATA_OPTIONS } from '@deepcrawl/types/configs';
 import type {
   MetadataOptions,
   PageMetadata,

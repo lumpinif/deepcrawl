@@ -1,3 +1,4 @@
+import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
 import {
   COMMON_HEADERS,
   DEFAULT_FETCH_OPTIONS,
@@ -5,8 +6,7 @@ import {
   DEFAULT_METADATA_OPTIONS,
   DEFAULT_READER_CLEANING_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
-} from '@deepcrawl/types/common/constants';
-import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+} from '@deepcrawl/types/configs';
 import {
   HTMLRewriterOptionsSchema,
   ReaderCleaningOptionsSchema,

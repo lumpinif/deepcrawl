@@ -3,7 +3,7 @@ import {
   FRAMEWORK_PATTERNS,
   MAX_VISITED_URLS_LIMIT,
   MEDIA_EXTENSIONS,
-} from '@deepcrawl/types/common/constants';
+} from '@deepcrawl/types/configs';
 import type { SkippedUrl, VisitedUrl } from '@deepcrawl/types/routers/links';
 import type {
   ExtractedLinks,

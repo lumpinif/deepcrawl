@@ -38,6 +38,9 @@
     },
     "./common": {
       "types": "./src/common/index.ts"
+    },
+    "./configs": {
+      "types": "./src/configs/index.ts"
     }
   },
   "scripts": {

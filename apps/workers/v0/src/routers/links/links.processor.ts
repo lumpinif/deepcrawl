@@ -4,7 +4,7 @@ import {
   DEFAULT_CACHE_OPTIONS,
   MAX_KIN_LIMIT,
   PLATFORM_URLS,
-} from '@deepcrawl/types/common';
+} from '@deepcrawl/types/configs';
 import type {
   LinksErrorResponse,
   LinksOptions,
