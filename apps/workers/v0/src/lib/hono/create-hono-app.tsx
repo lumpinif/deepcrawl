@@ -10,8 +10,8 @@ import { apiKeyAuthMiddleware } from '@/middlewares/api-key-auth.hono';
 import { connInfoMiddleware } from '@/middlewares/connInfo.hono';
 import { cookieAuthMiddleware } from '@/middlewares/cookie-auth.hono';
 import deepCrawlCors from '@/middlewares/cors.hono';
-import { servicesAppMiddleware } from '@/middlewares/serivces.app';
 import { serviceFetcherMiddleware } from '@/middlewares/service-fetchers.hono';
+import { servicesAppMiddleware } from '@/middlewares/services.app';
 
 export default function createHonoApp() {
   const app = new Hono<AppBindings>();
