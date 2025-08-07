@@ -143,9 +143,10 @@ export function PlaygroundClient() {
   const [linksOptions, setLinksOptions] = useState<ExtractLinksOptions>({
     url: '',
   });
-  const [markdownOptions, setMarkdownOptions] = useState<GetMarkdownOptions>({
-    url: '',
-  });
+  const [getMarkdownOptions, setGetMarkdownOptions] =
+    useState<GetMarkdownOptions>({
+      url: '',
+    });
 
   // Initialize execution timer hook
   const { startTimer, stopTimer, getElapsedTime, formatTime } =
@@ -206,7 +207,7 @@ export function PlaygroundClient() {
         case 'getMarkdown': {
           // Use the configured markdown options, excluding the url field
           const { url: _, ...optionsWithoutUrl } = {
-            ...markdownOptions,
+            ...getMarkdownOptions,
             url: requestUrl,
           };
           result = await sdkClient.getMarkdown(requestUrl, optionsWithoutUrl);
@@ -345,7 +346,7 @@ export function PlaygroundClient() {
                   : selectedOperation === 'extractLinks'
                     ? { ...linksOptions, url: requestUrl }
                     : selectedOperation === 'getMarkdown'
-                      ? { ...markdownOptions, url: requestUrl }
+                      ? { ...getMarkdownOptions, url: requestUrl }
                       : { url: requestUrl }
               }
               onOptionsChange={(newOptions) => {
@@ -354,7 +355,7 @@ export function PlaygroundClient() {
                 } else if (selectedOperation === 'extractLinks') {
                   setLinksOptions(newOptions as ExtractLinksOptions);
                 } else if (selectedOperation === 'getMarkdown') {
-                  setMarkdownOptions(newOptions as GetMarkdownOptions);
+                  setGetMarkdownOptions(newOptions as GetMarkdownOptions);
                 }
               }}
             />

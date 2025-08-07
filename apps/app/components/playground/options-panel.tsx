@@ -30,6 +30,7 @@ import { Textarea } from '@deepcrawl/ui/components/ui/textarea';
 import type {
   ExtractLinksOptions,
   GetMarkdownOptions,
+  MarkdownConverterOptions,
   MetadataOptions,
   ReadUrlOptions,
 } from 'deepcrawl';
@@ -76,19 +77,24 @@ export function OptionsPanel({
     ? keyof NonNullable<ReadUrlOptions['metadataOptions']>
     : T extends 'linkExtractionOptions'
       ? keyof NonNullable<ExtractLinksOptions['linkExtractionOptions']>
-      : never;
+      : T extends 'markdownConverterOptions'
+        ? keyof NonNullable<MarkdownConverterOptions>
+        : never;
 
   const updateNestedOptionValue = <
-    P extends 'metadataOptions' | 'linkExtractionOptions',
+    P extends
+      | 'metadataOptions'
+      | 'linkExtractionOptions'
+      | 'markdownConverterOptions',
   >(
     parentKey: P,
     childKey: NestedOptionKeys<P>,
-    value: boolean | string | string[],
+    value: boolean | string | string[] | number,
   ) => {
     const currentParent =
       (options[parentKey as keyof typeof options] as Record<
         string,
-        boolean | string | string[]
+        boolean | string | string[] | number
       >) || {};
     onOptionsChange({
       ...options,
@@ -212,6 +218,190 @@ export function OptionsPanel({
                           expirationTtl: value,
                         },
                       });
+                    }}
+                    className="font-mono text-xs"
+                  />
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Separator />
+
+          {/* Markdown Converter Options */}
+          <Collapsible
+            open={expandedSections.has('markdownConverterOptions')}
+            onOpenChange={() => toggleSection('markdownConverterOptions')}
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+              <h4 className="font-medium text-sm">Markdown Options</h4>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="markdown-preferNativeParser"
+                    checked={
+                      markdownOptions.markdownConverterOptions
+                        ?.preferNativeParser !== false
+                    }
+                    onCheckedChange={(checked) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'preferNativeParser',
+                        checked,
+                      )
+                    }
+                  />
+                  <Label
+                    htmlFor="markdown-preferNativeParser"
+                    className="text-sm"
+                  >
+                    Prefer Native Parser
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="markdown-keepDataImages"
+                    checked={
+                      markdownOptions.markdownConverterOptions
+                        ?.keepDataImages === true
+                    }
+                    onCheckedChange={(checked) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'keepDataImages',
+                        checked,
+                      )
+                    }
+                  />
+                  <Label htmlFor="markdown-keepDataImages" className="text-sm">
+                    Keep Data Images
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="markdown-useInlineLinks"
+                    checked={
+                      markdownOptions.markdownConverterOptions
+                        ?.useInlineLinks !== false
+                    }
+                    onCheckedChange={(checked) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'useInlineLinks',
+                        checked,
+                      )
+                    }
+                  />
+                  <Label htmlFor="markdown-useInlineLinks" className="text-sm">
+                    Use Inline Links
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="markdown-useLinkReferenceDefinitions"
+                    checked={
+                      markdownOptions.markdownConverterOptions
+                        ?.useLinkReferenceDefinitions === true
+                    }
+                    onCheckedChange={(checked) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'useLinkReferenceDefinitions',
+                        checked,
+                      )
+                    }
+                  />
+                  <Label
+                    htmlFor="markdown-useLinkReferenceDefinitions"
+                    className="text-sm"
+                  >
+                    Use Link References
+                  </Label>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="markdown-bulletMarker" className="text-sm">
+                    Bullet Marker
+                  </Label>
+                  <Select
+                    value={
+                      markdownOptions.markdownConverterOptions?.bulletMarker ||
+                      '*'
+                    }
+                    onValueChange={(value) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'bulletMarker',
+                        value,
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select bullet marker" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="*">* (asterisk)</SelectItem>
+                      <SelectItem value="-">- (dash)</SelectItem>
+                      <SelectItem value="+">+ (plus)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="markdown-codeBlockStyle" className="text-sm">
+                    Code Block Style
+                  </Label>
+                  <Select
+                    value={
+                      markdownOptions.markdownConverterOptions
+                        ?.codeBlockStyle || 'fenced'
+                    }
+                    onValueChange={(value) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'codeBlockStyle',
+                        value,
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select code style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fenced">Fenced (```)</SelectItem>
+                      <SelectItem value="indented">
+                        Indented (4 spaces)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="markdown-maxConsecutiveNewlines"
+                    className="text-sm"
+                  >
+                    Max Consecutive Newlines
+                  </Label>
+                  <Input
+                    id="markdown-maxConsecutiveNewlines"
+                    type="number"
+                    min="1"
+                    max="10"
+                    placeholder="3"
+                    value={
+                      markdownOptions.markdownConverterOptions
+                        ?.maxConsecutiveNewlines || ''
+                    }
+                    onChange={(e) => {
+                      const value = e.target.value ? Number(e.target.value) : 3;
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'maxConsecutiveNewlines',
+                        value,
+                      );
                     }}
                     className="font-mono text-xs"
                   />
@@ -444,6 +634,201 @@ export function OptionsPanel({
                           expirationTtl: value,
                         },
                       });
+                    }}
+                    className="font-mono text-xs"
+                  />
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Separator />
+
+          {/* Markdown Converter Options for ReadUrl */}
+          <Collapsible
+            open={expandedSections.has('readMarkdownConverterOptions')}
+            onOpenChange={() => toggleSection('readMarkdownConverterOptions')}
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
+              <h4 className="font-medium text-sm">Markdown Options</h4>
+              <ChevronDown className="h-4 w-4" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="read-markdown-preferNativeParser"
+                    checked={
+                      readOptions.markdownConverterOptions
+                        ?.preferNativeParser !== false
+                    }
+                    onCheckedChange={(checked) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'preferNativeParser',
+                        checked,
+                      )
+                    }
+                  />
+                  <Label
+                    htmlFor="read-markdown-preferNativeParser"
+                    className="text-sm"
+                  >
+                    Prefer Native Parser
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="read-markdown-keepDataImages"
+                    checked={
+                      readOptions.markdownConverterOptions?.keepDataImages ===
+                      true
+                    }
+                    onCheckedChange={(checked) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'keepDataImages',
+                        checked,
+                      )
+                    }
+                  />
+                  <Label
+                    htmlFor="read-markdown-keepDataImages"
+                    className="text-sm"
+                  >
+                    Keep Data Images
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="read-markdown-useInlineLinks"
+                    checked={
+                      readOptions.markdownConverterOptions?.useInlineLinks !==
+                      false
+                    }
+                    onCheckedChange={(checked) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'useInlineLinks',
+                        checked,
+                      )
+                    }
+                  />
+                  <Label
+                    htmlFor="read-markdown-useInlineLinks"
+                    className="text-sm"
+                  >
+                    Use Inline Links
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="read-markdown-useLinkReferenceDefinitions"
+                    checked={
+                      readOptions.markdownConverterOptions
+                        ?.useLinkReferenceDefinitions === true
+                    }
+                    onCheckedChange={(checked) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'useLinkReferenceDefinitions',
+                        checked,
+                      )
+                    }
+                  />
+                  <Label
+                    htmlFor="read-markdown-useLinkReferenceDefinitions"
+                    className="text-sm"
+                  >
+                    Use Link References
+                  </Label>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="read-markdown-bulletMarker"
+                    className="text-sm"
+                  >
+                    Bullet Marker
+                  </Label>
+                  <Select
+                    value={
+                      readOptions.markdownConverterOptions?.bulletMarker || '*'
+                    }
+                    onValueChange={(value) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'bulletMarker',
+                        value,
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select bullet marker" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="*">* (asterisk)</SelectItem>
+                      <SelectItem value="-">- (dash)</SelectItem>
+                      <SelectItem value="+">+ (plus)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="read-markdown-codeBlockStyle"
+                    className="text-sm"
+                  >
+                    Code Block Style
+                  </Label>
+                  <Select
+                    value={
+                      readOptions.markdownConverterOptions?.codeBlockStyle ||
+                      'fenced'
+                    }
+                    onValueChange={(value) =>
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'codeBlockStyle',
+                        value,
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select code style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fenced">Fenced (```)</SelectItem>
+                      <SelectItem value="indented">
+                        Indented (4 spaces)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="read-markdown-maxConsecutiveNewlines"
+                    className="text-sm"
+                  >
+                    Max Consecutive Newlines
+                  </Label>
+                  <Input
+                    id="read-markdown-maxConsecutiveNewlines"
+                    type="number"
+                    min="1"
+                    max="10"
+                    placeholder="3"
+                    value={
+                      readOptions.markdownConverterOptions
+                        ?.maxConsecutiveNewlines || ''
+                    }
+                    onChange={(e) => {
+                      const value = e.target.value ? Number(e.target.value) : 3;
+                      updateNestedOptionValue(
+                        'markdownConverterOptions',
+                        'maxConsecutiveNewlines',
+                        value,
+                      );
                     }}
                     className="font-mono text-xs"
                   />
