@@ -321,6 +321,9 @@ Based on .cursor/rules/deepcrawl-project.mdc:
 - **Variable Naming**: Use descriptive names with auxiliary verbs (isLoading, hasError)
 - **UI Framework**: shadcn/ui with Tailwind CSS, mobile-first responsive design
 - **Authentication**: Better Auth with unlinkAccount method (requires allowUnlinkingAll config for single accounts)
+- **Development Commands**: Never automatically run dev/build commands for the user - they prefer to control when processes start
+- **Accessibility**: Strict accessibility rules enforced via cursor rules (proper ARIA usage, semantic HTML, keyboard navigation)
+- **Code Quality**: Extensive linting rules enforced including no unused variables, proper error handling, consistent formatting
 
 ## Important Notes
 

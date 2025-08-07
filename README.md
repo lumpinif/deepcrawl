@@ -11,8 +11,8 @@ pnpm install
 # Start all services in development
 pnpm dev
 
-# Start only dashboard + auth services
-pnpm dev:dashboard
+# Start with dashboard + workers services
+pnpm dev:workers
 ```
 
 ## What's Inside
