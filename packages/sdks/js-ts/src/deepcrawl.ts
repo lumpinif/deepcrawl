@@ -5,10 +5,19 @@ import type {
   ExtractLinksResponse,
   GetMarkdownOptions,
   GetMarkdownResponse,
+  ReadGETInputSchema,
   ReadUrlOptions,
   ReadUrlResponse,
 } from '@deepcrawl/contracts';
 import type { LinksErrorResponse, ReadErrorResponse } from '@deepcrawl/types';
+import {
+  LinksOptions,
+  LinksSuccessResponse,
+  ReadOptions,
+  ReadStringResponse,
+  ReadSuccessResponse,
+} from '@deepcrawl/types';
+
 import {
   createORPCClient,
   createSafeClient,
@@ -31,6 +40,7 @@ import {
   DeepcrawlReadError,
   DeepcrawlServerError,
   DeepcrawlValidationError,
+  type OptionsWithoutUrl,
 } from './types';
 
 /**
@@ -348,79 +358,299 @@ export class DeepcrawlApp {
 
   /* Read GET */
   /**
-   * @param url - The URL to get the markdown for.
-   * @returns The markdown.
+   * ---
+   *
+   * @method async `getMarkdown()` - Get clean markdown content from any webpage.
+   * @returns {Promise<string>} Promise<{@link ReadStringResponse string|GetMarkdownResponse|ReadStringResponse}> - The markdown content as a string.
+   * @params {@link getMarkdown} supports two convenient calling patterns:
+   * 1. getMarkdown({@link ReadOptions.url url: string}, {{@link OptionsWithoutUrl<GetMarkdownOptions> ...GetMarkdownOptionsWithoutUrl}}) - Pass URL as first parameter, options without url as the second parameter
+   * 2. getMarkdown({@link ReadGETInputSchema options: GetMarkdownOptions}) - Pass the complete options object as the only parameter which contains the URL
+   *
+   * @example
+   * ```typescript
+   * import { DeepcrawlApp, GetMarkdownResponse } from 'deepcrawl';
+   *
+   * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
+   *
+   * // Simple usage
+   * const markdown: GetMarkdownResponse = await dc.getMarkdown('https://example.com');
+   *
+   * // With custom options
+   * const result: GetMarkdownResponse = await dc.getMarkdown('https://example.com', {
+   *   rawHtml: true,
+   *   metadata: false
+   * });
+   * ```
+   *
+   * @throws `DeepcrawlAuthError` Invalid or missing API key - {@link DeepcrawlAuthError}
+   * @throws `DeepcrawlValidationError` Invalid URL format - {@link DeepcrawlValidationError}
+   * @throws `DeepcrawlReadError` Cannot read or process the page - {@link DeepcrawlReadError}
+   * @throws `DeepcrawlNetworkError` Network request failed - {@link DeepcrawlNetworkError}
+   *
    */
   async getMarkdown(
     url: string,
-    options?: GetMarkdownOptions,
+    options?: OptionsWithoutUrl<GetMarkdownOptions>,
+  ): Promise<GetMarkdownResponse>;
+
+  /**
+   * ---
+   *
+   * @method async `getMarkdown()` - Get clean markdown content from any webpage.
+   * @returns {Promise<string>} Promise<{@link ReadStringResponse string|GetMarkdownResponse|ReadStringResponse}> - The markdown content as a string.
+   * @param options getMarkdown({@link GetMarkdownOptions options: GetMarkdownOptions}) - Pass the complete options object as the only parameter which contains the URL (required)
+   *
+   * @example
+   * ```typescript
+   * import { DeepcrawlApp, GetMarkdownOptions, GetMarkdownResponse } from 'deepcrawl';
+   *
+   * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
+   *
+   * // With complete options
+   * const markdown: GetMarkdownResponse = await dc.getMarkdown({
+   *   url: 'https://example.com',
+   *   rawHtml: true,
+   *   metadata: false
+   * } as GetMarkdownOptions);
+   * ```
+   *
+   * @throws `DeepcrawlAuthError` Invalid or missing API key - {@link DeepcrawlAuthError}
+   * @throws `DeepcrawlValidationError` Invalid URL format - {@link DeepcrawlValidationError}
+   * @throws `DeepcrawlReadError` Cannot read or process the page - {@link DeepcrawlReadError}
+   * @throws `DeepcrawlNetworkError` Network request failed - {@link DeepcrawlNetworkError}
+   *
+   */
+  async getMarkdown(options: GetMarkdownOptions): Promise<GetMarkdownResponse>;
+  async getMarkdown(
+    urlOrOptions: string | GetMarkdownOptions,
+    options?: OptionsWithoutUrl<GetMarkdownOptions>,
   ): Promise<GetMarkdownResponse> {
-    const getMarkdownOptions: GetMarkdownOptions = {
-      url,
-      ...options,
-    };
+    if (typeof urlOrOptions === 'string') {
+      // Pattern 1: getMarkdown(url, options)
+      const getMarkdownOptions: GetMarkdownOptions = {
+        url: urlOrOptions,
+        ...options,
+      };
 
-    const [error, data] =
-      await this.safeClient.read.getMarkdown(getMarkdownOptions);
+      const [error, data] =
+        await this.safeClient.read.getMarkdown(getMarkdownOptions);
 
-    if (error) {
-      handleDeepcrawlError(error, 'read', 'Failed to fetch markdown');
+      if (error) {
+        handleDeepcrawlError(error, 'read', 'Failed to fetch markdown');
+      }
+
+      if (data instanceof Blob) {
+        return await data.text();
+      }
+
+      return data as GetMarkdownResponse;
+    } else {
+      // Pattern 2: getMarkdown(options)
+      const [error, data] =
+        await this.safeClient.read.getMarkdown(urlOrOptions);
+
+      if (error) {
+        handleDeepcrawlError(error, 'read', 'Failed to fetch markdown');
+      }
+
+      if (data instanceof Blob) {
+        return await data.text();
+      }
+
+      return data as GetMarkdownResponse;
     }
-
-    if (data instanceof Blob) {
-      return await data.text();
-    }
-
-    return data as GetMarkdownResponse;
   }
 
   /* Read POST */
   /**
-   * @param url - The URL to read.
-   * @param options - The options to use for the reading.
-   * @returns The read result.
+   * ---
+   *
+   * @method async `readUrl()` - Read and extract structured content from any webpage.
+   * @returns {Promise<ReadUrlResponse>} Promise<{@link ReadSuccessResponse ReadUrlResponse|ReadSuccessResponse}> - Structured content with text, metadata, and more.
+   * @params {@link readUrl} supports two convenient calling patterns:
+   * 1. readUrl({@link ReadOptions.url url: string}, {{@link OptionsWithoutUrl<ReadUrlOptions> ...ReadUrlOptionsWithoutUrl}}) - Pass URL as first parameter, options without url as the second parameter
+   * 2. readUrl({@link ReadOptions options: ReadUrlOptions}) - Pass the complete options object as the only parameter which contains the URL
+   *
+   * @example
+   * ```typescript
+   * import { DeepcrawlApp, ReadUrlResponse } from 'deepcrawl';
+   *
+   * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
+   *
+   * // Simple usage
+   * const content: ReadUrlResponse = await dc.readUrl('https://example.com');
+   *
+   * // With custom options
+   * const result: ReadUrlResponse = await dc.readUrl('https://example.com', {
+   *   rawHtml: true,
+   *   cleanedHtml: true
+   * });
+   * ```
+   *
+   * @throws `DeepcrawlAuthError` Invalid or missing API key - {@link DeepcrawlAuthError}
+   * @throws `DeepcrawlValidationError` Invalid URL format - {@link DeepcrawlValidationError}
+   * @throws `DeepcrawlReadError` Cannot read or process the page - {@link DeepcrawlReadError}
+   * @throws `DeepcrawlNetworkError` Network request failed - {@link DeepcrawlNetworkError}
+   *
    */
   async readUrl(
     url: string,
-    options: Omit<ReadUrlOptions, 'url'> = {},
+    options?: OptionsWithoutUrl<ReadUrlOptions>,
+  ): Promise<ReadUrlResponse>;
+  /**
+   * ---
+   *
+   * @method async `readUrl()` - Read and extract structured content from any webpage.
+   * @returns {Promise<ReadUrlResponse>} Promise<{@link ReadSuccessResponse ReadUrlResponse|ReadSuccessResponse}> - Structured content with text, metadata, and more.
+   * @param options readUrl({@link ReadOptions options: ReadUrlOptions}) - Pass the complete options object as the only parameter which contains the URL (required)
+   *
+   * @example
+   * ```typescript
+   * import { DeepcrawlApp, ReadUrlOptions, ReadUrlResponse } from 'deepcrawl';
+   *
+   * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
+   *
+   * // With complete options
+   * const content: ReadUrlResponse = await dc.readUrl({
+   *   url: 'https://example.com',
+   *   rawHtml: true,
+   *   metadata: false
+   * } as ReadUrlOptions);
+   * ```
+   *
+   * @throws `DeepcrawlAuthError` Invalid or missing API key - {@link DeepcrawlAuthError}
+   * @throws `DeepcrawlValidationError` Invalid URL format - {@link DeepcrawlValidationError}
+   * @throws `DeepcrawlReadError` Cannot read or process the page - {@link DeepcrawlReadError}
+   * @throws `DeepcrawlNetworkError` Network request failed - {@link DeepcrawlNetworkError}
+   *
+   */
+  async readUrl(options: ReadUrlOptions): Promise<ReadUrlResponse>;
+  async readUrl(
+    urlOrOptions: string | ReadUrlOptions,
+    options: OptionsWithoutUrl<ReadUrlOptions> = {},
   ): Promise<ReadUrlResponse> {
-    const readOptions: ReadUrlOptions = {
-      url,
-      ...options,
-    };
+    if (typeof urlOrOptions === 'string') {
+      // Pattern 1: readUrl(url, options)
+      const readOptions: ReadUrlOptions = {
+        url: urlOrOptions,
+        ...options,
+      };
 
-    const [error, data] = await this.safeClient.read.readUrl(readOptions);
+      const [error, data] = await this.safeClient.read.readUrl(readOptions);
 
-    if (error) {
-      handleDeepcrawlError(error, 'read', 'Failed to read URL');
+      if (error) {
+        handleDeepcrawlError(error, 'read', 'Failed to read URL');
+      }
+
+      return data as ReadUrlResponse;
+    } else {
+      // Pattern 2: readUrl(options)
+      const [error, data] = await this.safeClient.read.readUrl(urlOrOptions);
+
+      if (error) {
+        handleDeepcrawlError(error, 'read', 'Failed to read URL');
+      }
+
+      return data as ReadUrlResponse;
     }
-
-    return data as ReadUrlResponse;
   }
 
   /* Links POST */
   /**
-   * @param url - The URL to extract links from.
-   * @param options - The options to use for the extraction.
-   * @returns The extracted links.
+   * ---
+   *
+   * @method async `extractLinks()` - Extract and discover all links from any webpage with smart filtering.
+   * @returns {Promise<ExtractLinksResponse>} Promise<{@link LinksSuccessResponse ExtractLinksResponse|LinksSuccessResponse}> - Array of discovered links with metadata and site tree.
+   * @params {@link extractLinks} supports two convenient calling patterns:
+   * 1. extractLinks({@link LinksOptions.url url: string}, {{@link OptionsWithoutUrl<ExtractLinksOptions> ...ExtractLinksOptionsWithoutUrl}}) - Pass URL as first parameter, options without url as the second parameter
+   * 2. extractLinks({@link LinksOptions options: ExtractLinksOptions}) - Pass the complete options object as the only parameter which contains the URL
+   *
+   * @example
+   * ```typescript
+   * import { DeepcrawlApp, ExtractLinksResponse } from 'deepcrawl';
+   *
+   * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
+   *
+   * // Simple usage
+   * const links: ExtractLinksResponse = await dc.extractLinks('https://example.com');
+   *
+   * // With custom options
+   * const result: ExtractLinksResponse = await dc.extractLinks('https://example.com', {
+   *   tree: true,
+   *   linksOrder: 'alphabetical'
+   * });
+   * ```
+   *
+   * @throws `DeepcrawlAuthError` Invalid or missing API key - {@link DeepcrawlAuthError}
+   * @throws `DeepcrawlValidationError` Invalid URL format - {@link DeepcrawlValidationError}
+   * @throws `DeepcrawlLinksError` Cannot extract links or process the page - {@link DeepcrawlLinksError}
+   * @throws `DeepcrawlNetworkError` Network request failed - {@link DeepcrawlNetworkError}
+   *
    */
   async extractLinks(
     url: string,
-    options: Omit<ExtractLinksOptions, 'url'> = {},
+    options?: OptionsWithoutUrl<ExtractLinksOptions>,
+  ): Promise<ExtractLinksResponse>;
+  /**
+   * ---
+   *
+   * @method async `extractLinks()` - Extract and discover all links from any webpage with smart filtering.
+   * @returns {Promise<ExtractLinksResponse>} Promise<{@link LinksSuccessResponse ExtractLinksResponse|LinksSuccessResponse}> - Array of discovered links with metadata and site tree.
+   * @param options extractLinks({@link LinksOptions options: ExtractLinksOptions}) - Pass the complete options object as the only parameter which contains the URL (required)
+   *
+   * @example
+   * ```typescript
+   * import { DeepcrawlApp, ExtractLinksOptions, ExtractLinksResponse } from 'deepcrawl';
+   *
+   * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
+   *
+   * // With complete options
+   * const links: ExtractLinksResponse = await dc.extractLinks({
+   *   url: 'https://example.com',
+   *   tree: true,
+   *   linksOrder: 'alphabetical'
+   * } as ExtractLinksOptions);
+   * ```
+   *
+   * @throws `DeepcrawlAuthError` Invalid or missing API key - {@link DeepcrawlAuthError}
+   * @throws `DeepcrawlValidationError` Invalid URL format - {@link DeepcrawlValidationError}
+   * @throws `DeepcrawlLinksError` Cannot extract links or process the page - {@link DeepcrawlLinksError}
+   * @throws `DeepcrawlNetworkError` Network request failed - {@link DeepcrawlNetworkError}
+   *
+   */
+  async extractLinks(
+    options: ExtractLinksOptions,
+  ): Promise<ExtractLinksResponse>;
+  async extractLinks(
+    urlOrOptions: string | ExtractLinksOptions,
+    options: OptionsWithoutUrl<ExtractLinksOptions> = {},
   ): Promise<ExtractLinksResponse> {
-    const linksOptions: ExtractLinksOptions = {
-      url,
-      ...options,
-    };
+    if (typeof urlOrOptions === 'string') {
+      // Pattern 1: extractLinks(url, options)
+      const linksOptions: ExtractLinksOptions = {
+        url: urlOrOptions,
+        ...options,
+      };
 
-    const [error, data] =
-      await this.safeClient.links.extractLinks(linksOptions);
+      const [error, data] =
+        await this.safeClient.links.extractLinks(linksOptions);
 
-    if (error) {
-      handleDeepcrawlError(error, 'links', 'Failed to extract links');
+      if (error) {
+        handleDeepcrawlError(error, 'links', 'Failed to extract links');
+      }
+
+      return data as ExtractLinksResponse;
+    } else {
+      // Pattern 2: extractLinks(options)
+      const [error, data] =
+        await this.safeClient.links.extractLinks(urlOrOptions);
+
+      if (error) {
+        handleDeepcrawlError(error, 'links', 'Failed to extract links');
+      }
+
+      return data as ExtractLinksResponse;
     }
-
-    return data as ExtractLinksResponse;
   }
 }
 

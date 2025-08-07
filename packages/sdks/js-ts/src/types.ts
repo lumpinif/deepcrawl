@@ -1,6 +1,17 @@
+import type { ExtractLinksOptions } from '@deepcrawl/contracts/links';
+import type {
+  GetMarkdownOptions,
+  ReadUrlOptions,
+} from '@deepcrawl/contracts/read';
 import type { LinksErrorResponse, ReadErrorResponse } from '@deepcrawl/types';
 import type { ClientRetryPluginContext } from '@orpc/client/plugins';
 import type { Agent } from 'https';
+
+export type OptionsWithoutUrl<
+  T extends GetMarkdownOptions | ReadUrlOptions | ExtractLinksOptions,
+> = {
+  [K in keyof T as K extends 'url' ? never : K]: T[K];
+};
 
 export interface DeepcrawlFetchOptions extends RequestInit {
   agent?: Agent;
