@@ -28,7 +28,7 @@ import { RPCLink } from '@orpc/client/fetch';
 import { ClientRetryPlugin } from '@orpc/client/plugins';
 import type { ContractRouterClient } from '@orpc/contract';
 import * as https from 'https';
-import packageJSON from '../package.json' with { type: 'json' };
+import packageJSON from '../package.json';
 import {
   type DeepCrawlClientContext,
   DeepcrawlAuthError,
