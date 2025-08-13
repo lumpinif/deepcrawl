@@ -13,7 +13,19 @@ export type OptionsWithoutUrl<
   [K in keyof T as K extends 'url' ? never : K]: T[K];
 };
 
-export interface DeepcrawlFetchOptions extends RequestInit {
+/**
+ * Practical fetch options for DeepCrawl SDK
+ * Only includes options that actually affect the HTTP transport layer to the worker
+ * Most RequestInit options are intentionally excluded as they don't apply to RPC-over-HTTP
+ */
+export interface DeepcrawlFetchOptions {
+  // Additional headers (auth headers are handled automatically)
+  headers?: HeadersInit;
+
+  // Cookie handling for dashboard users with session auth
+  credentials?: RequestCredentials; // 'include' | 'omit' | 'same-origin'
+
+  // Node.js connection pooling (ignored in other environments)
   agent?: Agent;
 }
 
