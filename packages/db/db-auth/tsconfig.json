@@ -8,7 +8,7 @@
     "moduleResolution": "Bundler",
     "verbatimModuleSyntax": true,
     "paths": {
-      "@deepcrawl/db/*": ["./src/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["."],

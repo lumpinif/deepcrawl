@@ -7,7 +7,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "check": "biome check --write && pnpm typecheck",
-    "auth:generate": "dotenv -e ../../apps/app/.env.development.local -- pnpm dlx @better-auth/cli@latest generate --output ../db/src/db/schema.ts -y && biome check ../db/src/db/schema.ts --write && turbo typecheck --filter=@deepcrawl/db",
+    "auth:generate": "dotenv -e ../../apps/app/.env.development.local -- pnpm dlx @better-auth/cli@latest generate --output ../db/db-auth/src/db/schema.ts -y && biome check ../db/db-auth/src/db/schema.ts --write && turbo typecheck --filter=@deepcrawl/db-auth",
     "email:dev": "email dev --dir src/templates",
     "email:export": "email export --dir src/templates"
   },
@@ -31,7 +31,7 @@
     "resend": "^4.6.0"
   },
   "devDependencies": {
-    "@deepcrawl/db": "workspace:*",
+    "@deepcrawl/db-auth": "workspace:*",
     "@deepcrawl/typescript-config": "workspace:*",
     "@types/node": "^20",
     "dotenv-cli": "^8.0.0"

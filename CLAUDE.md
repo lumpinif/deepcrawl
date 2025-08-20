@@ -11,7 +11,7 @@ This is a monorepo containing a web scraping and crawling service with the follo
 - **apps/app/**: Next.js dashboard application for managing the service
 - **packages/**: Shared packages including:
   - `@deepcrawl/auth`: Authentication configuration and email templates
-  - `@deepcrawl/db`: Database schema and Drizzle ORM setup
+  - `@deepcrawl/db-auth`: Auth Database schema and Drizzle ORM setup
   - `@deepcrawl/types`: Shared TypeScript types and schemas
   - `@deepcrawl/contracts`: API contract definitions for oRPC
   - `@deepcrawl/ui`: shadcn/ui component library
@@ -83,8 +83,8 @@ cd apps/workers/v0 && pnpm cf-typegen
 
 ### Database Management
 ```bash
-# Database operations (run from packages/db/)
-cd packages/db
+# Auth Database operations (run from packages/db/db-auth/)
+cd packages/db/db-auth
 
 # Generate database migrations
 pnpm db:generate

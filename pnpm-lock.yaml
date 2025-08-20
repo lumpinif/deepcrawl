@@ -50,9 +50,9 @@ importers:
       '@deepcrawl/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@deepcrawl/db':
+      '@deepcrawl/db-auth':
         specifier: workspace:*
-        version: link:../../packages/db
+        version: link:../../packages/db/db-auth
       '@deepcrawl/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -272,9 +272,9 @@ importers:
       '@deepcrawl/auth':
         specifier: workspace:*
         version: link:../../../packages/auth
-      '@deepcrawl/db':
+      '@deepcrawl/db-auth':
         specifier: workspace:*
-        version: link:../../../packages/db
+        version: link:../../../packages/db/db-auth
       '@neondatabase/serverless':
         specifier: ^1.0.0
         version: 1.0.1
@@ -306,9 +306,9 @@ importers:
       '@deepcrawl/contracts':
         specifier: workspace:*
         version: link:../../../packages/contracts
-      '@deepcrawl/db':
+      '@deepcrawl/db-auth':
         specifier: workspace:*
-        version: link:../../../packages/db
+        version: link:../../../packages/db/db-auth
       '@deepcrawl/types':
         specifier: workspace:*
         version: link:../../../packages/types
@@ -440,9 +440,9 @@ importers:
         specifier: ^4.6.0
         version: 4.6.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
     devDependencies:
-      '@deepcrawl/db':
+      '@deepcrawl/db-auth':
         specifier: workspace:*
-        version: link:../db
+        version: link:../db/db-auth
       '@deepcrawl/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -472,7 +472,9 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/db:
+  packages/db: {}
+
+  packages/db/db-auth:
     dependencies:
       '@neondatabase/serverless':
         specifier: ^1.0.0
@@ -483,7 +485,7 @@ importers:
     devDependencies:
       '@deepcrawl/typescript-config':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../../typescript-config
       '@types/node':
         specifier: ^20
         version: 20.8.3

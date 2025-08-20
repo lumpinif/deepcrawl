@@ -36,7 +36,7 @@ jobs:
 
       - name: 🗄️ Sync database to production
         run: pnpm run db:sync:prod
-        working-directory: packages/db
+        working-directory: packages/db/db-auth
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 

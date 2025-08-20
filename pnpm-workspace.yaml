@@ -1,5 +1,6 @@
 packages:
   - "apps/*"
   - "packages/*"
-  - "packages/sdks/js-ts"
   - "apps/workers/*"
+  - "packages/db/db-auth"
+  - "packages/sdks/js-ts"

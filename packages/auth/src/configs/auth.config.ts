@@ -1,4 +1,4 @@
-import { getDrizzleDB, schema } from '@deepcrawl/db';
+import { getDrizzleDB, schema } from '@deepcrawl/db-auth';
 import type { BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
