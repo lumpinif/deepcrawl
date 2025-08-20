@@ -1,0 +1,40 @@
+{
+  "name": "@deepcrawl/db-d1",
+  "version": "0.0.1",
+  "description": "D1 Database package for @deepcrawl data preservation",
+  "main": "index.ts",
+  "author": "deepcrawl.ai - Felix",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "biome check . --write && pnpm typecheck",
+    "db:create": "pnpm wrangler d1 create",
+    "db:push": "dotenv -e ../../../apps/workers/v0/.dev.vars.production -- pnpm drizzle-kit push",
+    "db:studio": "dotenv -e ../../../apps/workers/v0/.dev.vars.production -- pnpm drizzle-kit studio",
+    "db:generate": "dotenv -e ../../../apps/workers/v0/.dev.vars.production -- pnpm drizzle-kit generate",
+    "db:migrate": "dotenv -e ../../../apps/workers/v0/.dev.vars.production -- pnpm drizzle-kit migrate",
+    "db:sync": "pnpm run db:generate && pnpm run db:migrate"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "keywords": [
+    "deepcrawl",
+    "db",
+    "d1",
+    "database",
+    "cloudflare"
+  ],
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250711.0",
+    "@deepcrawl/typescript-config": "workspace:*",
+    "@types/node": "^20",
+    "dotenv-cli": "^8.0.0",
+    "drizzle-kit": "^0.31.1"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.2"
+  }
+}

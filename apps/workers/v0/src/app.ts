@@ -1,3 +1,4 @@
+import { createD1DB, scrapedData } from '@deepcrawl/db-d1/db';
 import { getRuntimeKey } from 'hono/adapter';
 import { getConnInfo } from 'hono/cloudflare-workers';
 import { createContext } from '@/lib/context';
@@ -17,14 +18,19 @@ export const EPHEMERAL_CACHE = new Map();
 const app = createHonoApp();
 
 // Health check
-app.get('/', (c) => {
+app.get('/', async (c) => {
   const info = getConnInfo(c);
+
+  // temporary test
+  const db = createD1DB(c.env.DB_V0);
+  const result = await db.select().from(scrapedData).all();
 
   return c.json({
     message: 'Welcome to Deepcrawl Official API',
     runtime: getRuntimeKey(),
     nodeEnv: c.env.WORKER_NODE_ENV,
     connInfo: info,
+    db: result,
     services: {
       scrapeService: !!c.var.scrapeService,
     },

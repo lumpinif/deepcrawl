@@ -309,6 +309,9 @@ importers:
       '@deepcrawl/db-auth':
         specifier: workspace:*
         version: link:../../../packages/db/db-auth
+      '@deepcrawl/db-d1':
+        specifier: workspace:*
+        version: link:../../../packages/db/db-d1
       '@deepcrawl/types':
         specifier: workspace:*
         version: link:../../../packages/types
@@ -483,6 +486,28 @@ importers:
         specifier: ^0.44.2
         version: 0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(@upstash/redis@1.35.1)(kysely@0.28.2)
     devDependencies:
+      '@deepcrawl/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      '@types/node':
+        specifier: ^20
+        version: 20.8.3
+      dotenv-cli:
+        specifier: ^8.0.0
+        version: 8.0.0
+      drizzle-kit:
+        specifier: ^0.31.1
+        version: 0.31.4
+
+  packages/db/db-d1:
+    dependencies:
+      drizzle-orm:
+        specifier: ^0.44.2
+        version: 0.44.2(@cloudflare/workers-types@4.20250711.0)(@neondatabase/serverless@1.0.1)(@types/pg@8.15.4)(@upstash/redis@1.35.1)(kysely@0.28.2)
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20250711.0
+        version: 4.20250711.0
       '@deepcrawl/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
@@ -12547,8 +12572,8 @@ snapshots:
     dependencies:
       '@drizzle-team/brocli': 0.10.2
       '@esbuild-kit/esm-loader': 2.6.5
-      esbuild: 0.25.6
-      esbuild-register: 3.6.0(esbuild@0.25.6)
+      esbuild: 0.25.8
+      esbuild-register: 3.6.0(esbuild@0.25.8)
     transitivePeerDependencies:
       - supports-color
 
@@ -12743,10 +12768,10 @@ snapshots:
       esast-util-from-estree: 2.0.0
       vfile-message: 4.0.2
 
-  esbuild-register@3.6.0(esbuild@0.25.6):
+  esbuild-register@3.6.0(esbuild@0.25.8):
     dependencies:
       debug: 4.4.1
-      esbuild: 0.25.6
+      esbuild: 0.25.8
     transitivePeerDependencies:
       - supports-color
 
@@ -17369,7 +17394,7 @@ snapshots:
 
   vite@7.0.4(@types/node@20.8.3)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0):
     dependencies:
-      esbuild: 0.25.6
+      esbuild: 0.25.8
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.6
@@ -17386,7 +17411,7 @@ snapshots:
 
   vite@7.0.4(@types/node@22.16.3)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0):
     dependencies:
-      esbuild: 0.25.6
+      esbuild: 0.25.8
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.6
@@ -17403,7 +17428,7 @@ snapshots:
 
   vite@7.0.4(@types/node@24.1.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0):
     dependencies:
-      esbuild: 0.25.6
+      esbuild: 0.25.8
       fdir: 6.4.6(picomatch@4.0.2)
       picomatch: 4.0.2
       postcss: 8.5.6

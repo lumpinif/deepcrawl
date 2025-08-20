@@ -1,0 +1,9 @@
+{
+  "extends": "@deepcrawl/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist"
+  },
+  "types": ["@cloudflare/workers-types"],
+  "include": [".", "src/**/*"],
+  "exclude": ["node_modules", "dist", "drizzle"]
+}
