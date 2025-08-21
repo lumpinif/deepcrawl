@@ -12,6 +12,7 @@ This is a monorepo containing a web scraping and crawling service with the follo
 - **packages/**: Shared packages including:
   - `@deepcrawl/auth`: Authentication configuration and email templates
   - `@deepcrawl/db-auth`: Auth Database schema and Drizzle ORM setup
+  - `@deepcrawl/db-d1`: D1 Database schema and Drizzle ORM setup for Cloudflare D1
   - `@deepcrawl/types`: Shared TypeScript types and schemas
   - `@deepcrawl/contracts`: API contract definitions for oRPC
   - `@deepcrawl/ui`: shadcn/ui component library
@@ -102,6 +103,27 @@ pnpm db:sync
 pnpm db:generate:prod
 pnpm db:push:prod
 pnpm db:sync:prod
+
+# D1 Database operations (run from packages/db/db-d1/)
+cd packages/db/db-d1
+
+# Create new D1 database
+pnpm db:create
+
+# Generate D1 database migrations
+pnpm db:generate
+
+# Push D1 database schema changes
+pnpm db:push
+
+# Run D1 database studio
+pnpm db:studio
+
+# Migrate D1 database
+pnpm db:migrate
+
+# Full D1 database sync (generate + migrate)
+pnpm db:sync
 ```
 
 ### Authentication
@@ -330,7 +352,7 @@ Based on .cursor/rules/deepcrawl-project.mdc:
 - **Node.js**: Requires Node.js >= 20
 - **Package Manager**: Uses pnpm@10.14.0 with workspaces (NEVER use npm - this project uses pnpm)
 - **Deployment**: Cloudflare Workers for backend services
-- **Database**: Neon PostgreSQL with Drizzle ORM
+- **Database**: Dual database setup - Neon PostgreSQL for auth, Cloudflare D1 for data preservation (both with Drizzle ORM)
 - **Authentication**: Better Auth with multiple providers (GitHub, Google, passkeys, magic links)
 - **UI Components**: shadcn/ui with Tailwind CSS
 - **Build System**: Turbo for monorepo orchestration, tsup for SDK builds
