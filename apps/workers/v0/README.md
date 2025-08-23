@@ -35,6 +35,7 @@ pnpm preview
 ## ⚡ Features
 
 ### **Core Capabilities**
+
 - 🌐 **Advanced Web Scraping** - Puppeteer + Cheerio for comprehensive content extraction
 - 🧹 **Content Sanitization** - Professional HTML cleaning and markdown conversion
 - 🔗 **Smart Link Processing** - Link extraction, normalization, and relationship mapping
@@ -42,12 +43,14 @@ pnpm preview
 - 🤖 **AI Integration** - Cloudflare AI binding for intelligent content processing
 
 ### **API Architecture**
+
 - 🎯 **Dual API System** - Both oRPC (type-safe RPC) and OpenAPI/REST endpoints
 - ⚡ **High Performance** - Smart placement and caching with Cloudflare KV
 - 🔐 **Robust Authentication** - API key and cookie-based auth with rate limiting
 - 📚 **Auto-Generated Docs** - OpenAPI documentation at `/docs`
 
 ### **Service Architecture**
+
 - `ScrapeService` - Web scraping with Puppeteer and Cheerio
 - `HTMLCleaningService` - Content sanitization and processing
 - `MetadataService` - Extract comprehensive page metadata
@@ -73,10 +76,12 @@ The worker is configured via `wrangler.jsonc` with:
 ## 🔌 API Endpoints
 
 ### **oRPC Endpoints** (Type-safe)
+
 - `POST /rpc/read` - Read and process URLs
 - `POST /rpc/links` - Extract and analyze links
 
 ### **REST Endpoints** (OpenAPI)
+
 - `GET /read` - Read URL content
 - `GET /links` - Extract links from URL
 - `GET /docs` - Interactive API documentation
