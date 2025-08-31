@@ -48,7 +48,18 @@ export function targetUrlHelper(
   if (shouldRemoveFragment) {
     const urlObj = new URL(result.normalizedURL);
     urlObj.hash = '';
-    return urlObj.toString();
+
+    // Preserve the normalized format without trailing slash
+    // Use the same normalization logic to avoid adding trailing slash back
+    let hostname = urlObj.hostname.toLowerCase();
+    if (hostname.startsWith('www.') && hostname.split('.').length > 2) {
+      hostname = hostname.slice(4);
+    }
+    const pathname = urlObj.pathname === '/' ? '' : urlObj.pathname;
+
+    return `${urlObj.protocol}//${hostname}${
+      urlObj.port ? `:${urlObj.port}` : ''
+    }${pathname}${urlObj.search}`;
   }
 
   return result.normalizedURL;
