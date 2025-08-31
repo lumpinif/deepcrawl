@@ -18,7 +18,9 @@ import type { ExtractedLinks } from '@deepcrawl/types/services/link';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 import type { ORPCContext } from '@/lib/context';
 import { type _linksSets, LinkService } from '@/services/link/link.service';
+import { createActivityLogger } from '@/utils/activity-logger';
 import { formatDuration } from '@/utils/formater';
+import { sha256Hash, stableStringify } from '@/utils/kv/hash-tools';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
@@ -68,6 +70,7 @@ export async function processLinksRequest(
   params: LinksOptions,
   isGETRequest = false,
 ): Promise<LinksResponse> {
+  const startTime = performance.now();
   const {
     url,
     tree: isTree,
@@ -87,7 +90,21 @@ export async function processLinksRequest(
   );
 
   const timestamp = new Date().toISOString();
-  const startRequestTime = performance.now();
+
+  // Initialize activity logging
+  const activityLogger = createActivityLogger(c);
+  const normalizedTargetUrl = targetUrlHelper(url, true);
+  const optionsHash = await sha256Hash(stableStringify(params));
+
+  // Start activity logging (non-blocking for API - returns immediately, D1 serializes writes internally)
+  const activityId = activityLogger.startActivity({
+    endpoint: 'links',
+    method: isGETRequest ? 'GET' : 'POST',
+    targetUrl: normalizedTargetUrl,
+    requestUrl: url,
+    optionsHash,
+    requestOptions: params,
+  });
 
   // Use app-level scrape service from context, create link service locally
   const scrapeService = c.var.scrapeService;
@@ -140,7 +157,7 @@ export async function processLinksRequest(
 
   try {
     // --- Validate and Normalize Input URL & Identify Root ---
-    targetUrl = targetUrlHelper(url);
+    targetUrl = normalizedTargetUrl; // Use the normalized URL from activity logging
 
     // Get ancestors of the target URL first
     ancestors = linkService.getAncestorPaths(targetUrl);
@@ -641,7 +658,8 @@ export async function processLinksRequest(
     }
 
     // Calculate execution time
-    const executionTime = formatDuration(performance.now() - startRequestTime);
+    const executionTimeMs = performance.now() - startTime;
+    const executionTime = formatDuration(executionTimeMs);
 
     // add executionTime to finalTree's root node
     if (finalTree) {
@@ -678,6 +696,13 @@ export async function processLinksRequest(
       throw new Error('Failed to process links request');
     }
 
+    // Complete activity logging (non-blocking)
+    activityLogger.completeActivityAsync(activityId, {
+      success: true,
+      executionTimeMs: Math.round(performance.now() - startTime),
+      cached: linksCacheIsFresh,
+    });
+
     return linksPostResponse as LinksSuccessResponse;
   } catch (error) {
     logError('❌ [LINKS PROCESSOR] error:', error);
@@ -686,6 +711,14 @@ export async function processLinksRequest(
       error instanceof Error
         ? error.message
         : 'Failed to process links request with unknown error';
+
+    // Complete activity logging for errors (non-blocking)
+    activityLogger.completeActivityAsync(activityId, {
+      success: false,
+      executionTimeMs: Math.round(performance.now() - startTime),
+      cached: false,
+      error: errorMessage,
+    });
 
     throw new Error(errorMessage);
   }

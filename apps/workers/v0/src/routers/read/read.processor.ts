@@ -9,9 +9,10 @@ import {
   type ScrapedData,
 } from '@deepcrawl/types';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
-
 import type { ORPCContext } from '@/lib/context';
+import { createActivityLogger } from '@/utils/activity-logger';
 import { formatDuration } from '@/utils/formater';
+import { sha256Hash, stableStringify } from '@/utils/kv/hash-tools';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import { logDebug, logError } from '@/utils/loggers';
@@ -154,6 +155,7 @@ export async function processReadRequest(
   params: ReadOptions,
   isGETRequest = false,
 ): Promise<ReadResponse> {
+  const startTime = performance.now();
   const {
     url,
     markdown: isMarkdown,
@@ -169,18 +171,28 @@ export async function processReadRequest(
     `params: ${JSON.stringify(params, null, 2)}`,
   );
 
+  // Initialize activity logging
+  const activityLogger = createActivityLogger(c);
+  const targetUrl = targetUrlHelper(url, true);
+  const optionsHash = await sha256Hash(stableStringify(params));
+
+  // Start activity logging (non-blocking for API - returns immediately, D1 serializes writes internally)
+  const activityId = activityLogger.startActivity({
+    endpoint: 'read',
+    method: isGETRequest ? 'GET' : 'POST',
+    targetUrl,
+    requestUrl: url,
+    optionsHash,
+    requestOptions: params,
+  });
+
   let readResponse: ReadResponse | undefined;
   // Initialize cache flag
   let isReadCacheFresh = false;
 
   try {
-    // Track URL normalization
-    const targetUrl = targetUrlHelper(url, true);
-
     // override url with normalized target url
     params.url = targetUrl;
-
-    const startRequestTime = performance.now();
 
     // Track cache key generation
     const cacheKey = await getReadCacheKey(params, isGETRequest);
@@ -219,7 +231,7 @@ export async function processReadRequest(
               cachedResult,
             ) as ReadSuccessResponse;
             parsedResponse.cached = true;
-            const metrics = getMetrics(startRequestTime, performance.now());
+            const metrics = getMetrics(startTime, performance.now());
             parsedResponse.metrics = metrics;
             return parsedResponse;
           }
@@ -294,7 +306,7 @@ export async function processReadRequest(
     //   : undefined;
 
     const endRequestTime = performance.now();
-    const metrics = getMetrics(startRequestTime, endRequestTime);
+    const metrics = getMetrics(startTime, endRequestTime);
 
     readResponse = cleanEmptyValues<ReadSuccessResponse>({
       success: true,
@@ -352,6 +364,13 @@ export async function processReadRequest(
       }
     }
 
+    // Complete activity logging (non-blocking)
+    activityLogger.completeActivityAsync(activityId, {
+      success: true,
+      executionTimeMs: Math.round(performance.now() - startTime),
+      cached: isReadCacheFresh,
+    });
+
     if (isGETRequest) {
       // For GET requests, always return markdown content only
       if (markdown) {
@@ -370,6 +389,14 @@ export async function processReadRequest(
         : 'Failed to process read request with unknown error';
 
     logError('[ERROR] Read processor error:', errorMessage);
+
+    // Complete activity logging for errors (non-blocking)
+    activityLogger.completeActivityAsync(activityId, {
+      success: false,
+      executionTimeMs: Math.round(performance.now() - startTime),
+      cached: false,
+      error: errorMessage,
+    });
 
     throw new Error(errorMessage);
   }
