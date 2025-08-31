@@ -155,8 +155,73 @@ export const linksResponse = sqliteTable(
   ],
 );
 
+/**
+ * Unified activity log - tracks all API requests across endpoints
+ * Lightweight table for fast activity tracking and analytics
+ */
+export const activityLog = sqliteTable(
+  'activity_log',
+  {
+    // Primary identification
+    id: text('id').primaryKey(),
+    userId: text('user_id'),
+
+    // Request metadata
+    endpoint: text('endpoint').notNull(), // 'read' or 'links'
+    method: text('method').notNull(), // 'GET' or 'POST'
+    success: integer('success', { mode: 'boolean' }).notNull(),
+    timestamp: text('timestamp').notNull(),
+
+    // URL and options
+    targetUrl: text('target_url').notNull(),
+    requestUrl: text('request_url').notNull(), // Original URL before normalization
+    optionsHash: text('options_hash').notNull(), // Hash of request options
+    requestOptions: text('request_options', { mode: 'json' }), // Full options JSON for reference
+
+    // Performance metrics
+    executionTimeMs: integer('execution_time_ms'),
+    cached: integer('cached', { mode: 'boolean' }),
+
+    // Future content reference (NULL for Phase 1)
+    contentId: text('content_id'), // Will reference content tables in Phase 2
+
+    // Error handling
+    error: text('error'), // NULL if success = true
+
+    // Timestamps
+    createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
+  },
+  (table) => [
+    // Primary user activity queries (dashboard timeline)
+    index('idx_activity_user_timestamp').on(table.userId, table.timestamp),
+
+    // Endpoint-specific queries
+    index('idx_activity_endpoint_success').on(table.endpoint, table.success),
+
+    // Performance analytics
+    index('idx_activity_execution_time')
+      .on(table.executionTimeMs)
+      .where(sql`${table.executionTimeMs} IS NOT NULL`),
+
+    // URL-based queries
+    index('idx_activity_target_url').on(table.targetUrl),
+
+    // User success rate analysis
+    index('idx_activity_user_success').on(
+      table.userId,
+      table.success,
+      table.endpoint,
+    ),
+
+    // Options hash for future content linking
+    index('idx_activity_options_hash').on(table.optionsHash),
+  ],
+);
+
 // TypeScript types for the new tables
 export type ReadResponse = typeof readResponse.$inferSelect;
 export type NewReadResponse = typeof readResponse.$inferInsert;
 export type LinksResponse = typeof linksResponse.$inferSelect;
 export type NewLinksResponse = typeof linksResponse.$inferInsert;
+export type ActivityLog = typeof activityLog.$inferSelect;
+export type NewActivityLog = typeof activityLog.$inferInsert;
