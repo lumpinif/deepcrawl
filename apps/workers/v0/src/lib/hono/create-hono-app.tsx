@@ -10,6 +10,7 @@ import { apiKeyAuthMiddleware } from '@/middlewares/api-key-auth.hono';
 import { connInfoMiddleware } from '@/middlewares/connInfo.hono';
 import { cookieAuthMiddleware } from '@/middlewares/cookie-auth.hono';
 import deepCrawlCors from '@/middlewares/cors.hono';
+import { dbD1Middleware } from '@/middlewares/d1.cloudflare';
 import { serviceFetcherMiddleware } from '@/middlewares/service-fetchers.hono';
 import { servicesAppMiddleware } from '@/middlewares/services.app';
 
@@ -21,27 +22,21 @@ export default function createHonoApp() {
 
   // Apply other middleware in order
   app
+    .use('*', trimTrailingSlash())
     .use('*', serveEmojiFavicon('⚡'))
     .use('*', logger())
     .use('*', requestId())
     .use('*', secureHeaders())
-    .use('*', trimTrailingSlash())
 
+    .use('*', connInfoMiddleware)
     .use('*', serviceFetcherMiddleware)
     .use('*', apiKeyAuthMiddleware)
     .use('*', cookieAuthMiddleware)
-    .use('*', connInfoMiddleware)
+
+    .use('*', dbD1Middleware)
 
     .use('*', servicesAppMiddleware)
     .use('*', prettyJSON());
-
-  // Register check-auth route
-  // app.get('/check-auth', (c) => {
-  //   return c.json({
-  //     user: c.var.user,
-  //     session: c.var.session,
-  //   });
-  // });
 
   app.notFound(notFound);
 

@@ -1,5 +1,5 @@
 import type { Auth, Session } from '@deepcrawl/auth/types';
-import type { createD1DB } from '@deepcrawl/db-d1';
+import type { createDBD1 } from '@deepcrawl/db-d1';
 import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
 import type { Ratelimit } from '@upstash/ratelimit';
 import type { Context as HonoContext } from 'hono';
@@ -9,7 +9,7 @@ import type { ScrapeService } from '@/services/scrape/scrape.service';
 
 export interface AppVariables extends RequestIdVariables {
   /** D1 Database */
-  db: ReturnType<typeof createD1DB>;
+  dbd1: ReturnType<typeof createDBD1>;
   /** Auth Instance */
   auth: Auth;
   /** Better Auth Client */
