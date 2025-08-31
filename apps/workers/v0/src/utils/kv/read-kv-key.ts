@@ -29,36 +29,19 @@ export async function sha256Hash(input: string): Promise<string> {
 
 /**
  * Generates a deterministic cache key for read endpoint KV storage.
- * Includes all options that affect the response.
+ * Includes all options that affect the response content.
  */
 export async function getReadCacheKey(
   params: ReadOptions,
   isStringResponse: boolean,
 ): Promise<string> {
-  const {
-    url,
-    markdown,
-    cleanedHtml,
-    metadata,
-    robots,
-    metadataOptions,
-    rawHtml,
-  } = params;
+  const { url, cacheOptions, ...contentAffectingOptions } = params;
 
-  // Create options object without isStringResponse
-  const keyObj = {
-    markdown: !!markdown,
-    cleanedHtml: !!cleanedHtml,
-    metadata: !!metadata,
-    robots: !!robots,
-    metadataOptions: metadataOptions
-      ? stableStringify(metadataOptions)
-      : undefined,
-    rawHtml: !!rawHtml,
-  };
-
-  // Generate hash of options
-  const optionsHash = await sha256Hash(stableStringify(keyObj));
+  // Generate hash of all options that affect response content
+  // Exclude cacheOptions since it only affects KV storage behavior, not response content
+  const optionsHash = await sha256Hash(
+    stableStringify(contentAffectingOptions),
+  );
 
   // Prefix includes handler type (string or json)
   const handlerType = isStringResponse ? 'string' : 'json';
