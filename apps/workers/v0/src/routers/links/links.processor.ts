@@ -66,6 +66,7 @@ export function createLinksErrorResponse({
 export async function processLinksRequest(
   c: ORPCContext,
   params: LinksOptions,
+  isGETRequest = false,
 ): Promise<LinksResponse> {
   const {
     url,

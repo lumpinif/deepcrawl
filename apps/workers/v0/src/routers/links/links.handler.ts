@@ -15,10 +15,14 @@ export const linksGETHandler = authed
     const { url, ...rest } = input;
 
     try {
-      const result = await processLinksRequest(c, {
-        url,
-        ...rest,
-      });
+      const result = await processLinksRequest(
+        c,
+        {
+          url,
+          ...rest,
+        },
+        true, // isGETRequest
+      );
 
       return result as LinksSuccessResponse;
     } catch (error) {
@@ -47,10 +51,14 @@ export const linksPOSTHandler = authed
     const { url, ...rest } = input;
 
     try {
-      const result = await processLinksRequest(c, {
-        url,
-        ...rest,
-      });
+      const result = await processLinksRequest(
+        c,
+        {
+          url,
+          ...rest,
+        },
+        false, // isGETRequest
+      );
 
       return result as LinksSuccessResponse;
     } catch (error) {
