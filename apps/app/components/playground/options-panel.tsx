@@ -1,5 +1,10 @@
 'use client';
 
+import {
+  DEFAULT_CACHE_OPTIONS,
+  DEFAULT_LINKS_OPTIONS,
+  DEFAULT_READ_OPTIONS,
+} from '@deepcrawl/types/configs';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
@@ -205,7 +210,7 @@ export function OptionsPanel({
                     id="markdown-expirationTtl"
                     type="number"
                     min="60"
-                    placeholder="86400"
+                    placeholder={`default - ${DEFAULT_CACHE_OPTIONS.expirationTtl} (4 days)`}
                     value={markdownOptions.cacheOptions?.expirationTtl || ''}
                     onChange={(e) => {
                       const value = e.target.value
@@ -621,7 +626,7 @@ export function OptionsPanel({
                     id="expirationTtl"
                     type="number"
                     min="60"
-                    placeholder="86400"
+                    placeholder={`default - ${DEFAULT_READ_OPTIONS.cacheOptions.expirationTtl} (4 days)`}
                     value={readOptions.cacheOptions?.expirationTtl || ''}
                     onChange={(e) => {
                       const value = e.target.value
@@ -1254,7 +1259,7 @@ export function OptionsPanel({
                     id="links-expirationTtl"
                     type="number"
                     min="60"
-                    placeholder="86400"
+                    placeholder={`default - ${DEFAULT_LINKS_OPTIONS.cacheOptions.expirationTtl} (4 days)`}
                     value={linksOptions.cacheOptions?.expirationTtl || ''}
                     onChange={(e) => {
                       const value = e.target.value
