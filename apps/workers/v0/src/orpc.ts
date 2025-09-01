@@ -28,7 +28,13 @@ export const authed = publicProcedures
     logDebug('✅ AUTHENTICATED:', context.var.session.user.email);
 
     return next({
-      context,
+      context: {
+        ...context,
+        var: {
+          ...context.var,
+          session: context.var.session,
+        },
+      },
     });
   })
   .use(retry({ times: 2 }));
