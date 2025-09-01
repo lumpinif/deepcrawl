@@ -208,33 +208,23 @@ export async function processReadRequest(
           }>(cacheKey);
 
         if (cachedResult) {
-          // Check if cache is fresh (e.g., within the last day - matches expirationTtl)
-          const cacheTimestamp = metadata?.timestamp
-            ? new Date(metadata.timestamp).getTime()
-            : 0;
-          const oneDayAgo =
-            Date.now() - DEFAULT_CACHE_OPTIONS.expirationTtl * 1000; // 1 day in milliseconds
+          logDebug(
+            `💽 [READ Endpoint] Found cached read response in KV for ${targetUrl}`,
+          );
 
-          if (cacheTimestamp > oneDayAgo) {
-            logDebug(
-              `💽 [READ Endpoint] Found fresh cached read response in KV for ${targetUrl}`,
-            );
+          isReadCacheFresh = true;
 
-            isReadCacheFresh = true;
-
-            if (isGETRequest) {
-              return cachedResult as ReadStringResponse;
-            }
-
-            // Parse the cached value and set the cached flag to true
-            const parsedResponse = JSON.parse(
-              cachedResult,
-            ) as ReadSuccessResponse;
-            parsedResponse.cached = true;
-            const metrics = getMetrics(startTime, performance.now());
-            parsedResponse.metrics = metrics;
-            return parsedResponse;
+          if (isGETRequest) {
+            return cachedResult as ReadStringResponse;
           }
+
+          const parsedResponse = JSON.parse(
+            cachedResult,
+          ) as ReadSuccessResponse;
+          parsedResponse.cached = true;
+          const metrics = getMetrics(startTime, performance.now());
+          parsedResponse.metrics = metrics;
+          return parsedResponse;
         }
       } catch (error) {
         logError('[ERROR] Read processor cache error:', error);
