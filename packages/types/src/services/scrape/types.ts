@@ -489,3 +489,8 @@ export const ScrapeOptionsSchema = z
  * Controls how the scraping operation is performed.
  */
 export type ScrapeOptions = z.infer<typeof ScrapeOptionsSchema>;
+
+/**
+ * Input type for ScrapeOptions - accepts both string and boolean for metadata, cleanedHtml, robots, sitemapXML fields
+ */
+export type ScrapeOptionsInput = z.input<typeof ScrapeOptionsSchema>;
