@@ -173,7 +173,7 @@ export const DEFAULT_SCRAPE_OPTIONS = {
 
 export const DEFAULT_CACHE_OPTIONS = {
   enabled: true,
-  expirationTtl: 86400 * 1, // 1 day in seconds
+  expirationTtl: 86400 * 4, // 4 days in seconds
 } as const;
 
 export const DEFAULT_READ_OPTIONS = {
