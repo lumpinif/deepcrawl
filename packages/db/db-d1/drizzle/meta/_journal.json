@@ -15,6 +15,20 @@
       "when": 1756655549924,
       "tag": "0001_low_odin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1756698542010,
+      "tag": "0002_tranquil_puppet_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1756706388557,
+      "tag": "0003_hot_earthquake",
+      "breakpoints": true
     }
   ]
 }
