@@ -1,3 +1,4 @@
+import type { ReadSuccessResponse } from '@deepcrawl/types/routers/read/types';
 import type { ORPCContext } from '@/lib/context';
 import type { RequestsOptions } from '@/services/analytics/activity-logger.service';
 import { createActivityLogger } from '@/services/analytics/activity-logger.service';
@@ -8,7 +9,7 @@ import {
 import { logError } from '@/utils/loggers';
 
 interface SchedulePostProcessingParams {
-  path: string;
+  path: readonly string[];
   requestUrl: string;
   requestOptions: RequestsOptions;
   response: ResponseTypes;
@@ -18,12 +19,41 @@ interface SchedulePostProcessingParams {
   error?: string;
 }
 
+type ReadSuccessResponseWithoutMetrics = Omit<ReadSuccessResponse, 'metrics'>;
+
+interface ExtractedMetricsResult {
+  responseForHash: ReadSuccessResponseWithoutMetrics | ResponseTypes;
+  metrics?: ReadSuccessResponse['metrics'];
+}
+
+function extractReadUrlMetrics(
+  path: readonly string[],
+  response: ResponseTypes,
+  success: boolean,
+): ExtractedMetricsResult {
+  const isReadUrl = path[1] === 'readUrl';
+  if (!isReadUrl || !success) return { responseForHash: response };
+
+  if (typeof response === 'object' && response && 'success' in response) {
+    const r = response as ReadSuccessResponse | Record<string, unknown>;
+    if ((r as ReadSuccessResponse).success === true) {
+      const { metrics, ...rest } = r as ReadSuccessResponse;
+      return {
+        responseForHash: rest as ReadSuccessResponseWithoutMetrics,
+        metrics,
+      };
+    }
+  }
+
+  return { responseForHash: response };
+}
+
 export function schedulePostProcessing(
   c: ORPCContext,
   params: SchedulePostProcessingParams,
 ): void {
   const {
-    path,
+    path, // such as [ 'read', 'getMarkdown' ]
     requestUrl,
     requestOptions,
     response,
@@ -33,40 +63,67 @@ export function schedulePostProcessing(
     error,
   } = params;
 
-  const responseRecordService = createResponseRecordService(c.var.dbd1);
   const activityLogger = createActivityLogger(c);
+  const responseRecordService = createResponseRecordService(c.var.dbd1);
 
   c.executionCtx.waitUntil(
-    responseRecordService
-      .createRequestOptionsHash({ requestOptions })
-      .then((optionsHash) => {
-        return responseRecordService
-          .createResponseHash({ path, optionsHash, requestUrl, response })
-          .then((responseHash) =>
-            responseRecordService
-              .storeResponseRecord({
-                path,
-                optionsHash,
-                requestUrl,
-                response,
-                responseHash,
-              })
-              .then(() =>
-                activityLogger.logActivity({
-                  path,
-                  requestId: c.var.requestId,
-                  success,
-                  cached: c.cacheHit,
-                  requestTimestamp,
-                  requestUrl,
-                  requestOptions,
-                  executionTimeMs: performance.now() - startedAt,
-                  responseHash,
-                  error,
-                }),
-              ),
-          );
-      })
-      .catch((err) => logError(`[${path} Post-processing] failed`, err)),
+    (async () => {
+      try {
+        // create request options hash
+        const optionsHash =
+          await responseRecordService.createRequestOptionsHash({
+            requestOptions,
+          });
+
+        // derive responseForHash (strip metrics for read-readUrl success)
+        const { responseForHash, metrics } = extractReadUrlMetrics(
+          path,
+          response,
+          success,
+        );
+
+        // create response hash
+        const responseHash = await responseRecordService.createResponseHash({
+          path: path.join('-'),
+          optionsHash,
+          requestUrl,
+          response: responseForHash,
+        });
+
+        // store response record only if success is true
+        if (success) {
+          await responseRecordService.storeResponseRecord({
+            path: path.join('-'),
+            optionsHash,
+            requestUrl,
+            response,
+            responseContent: responseForHash,
+            responseHash,
+          });
+        }
+
+        // log activity
+        await activityLogger.logActivity({
+          path: path.join('-'),
+          requestId: c.var.requestId,
+          success,
+          cached: c.cacheHit,
+          requestTimestamp,
+          requestUrl,
+          requestOptions,
+          executionTimeMs: performance.now() - startedAt,
+          responseHash: success ? responseHash : null, // null if success is false
+          /* dynamic response data fields such as metrics or full error response if success is false */
+          responseMetadata: !success
+            ? response // full error response
+            : path[1] === 'readUrl'
+              ? { metrics }
+              : response,
+          error,
+        });
+      } catch (err) {
+        logError(`[${path.join('-')} Post-processing] failed`, err);
+      }
+    })(),
   );
 }

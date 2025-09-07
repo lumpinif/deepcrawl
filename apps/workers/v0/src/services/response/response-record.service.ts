@@ -34,6 +34,7 @@ interface StoreResponseRecordParams {
   path: string;
   requestUrl: string;
   response: ResponseTypes;
+  responseContent: ResponseTypes;
   optionsHash: string;
   responseHash: string;
 }
@@ -65,7 +66,14 @@ export class ResponseRecordService {
    * store response record with deduplication
    */
   async storeResponseRecord(params: StoreResponseRecordParams): Promise<void> {
-    const { path, response, responseHash, optionsHash, requestUrl } = params;
+    const {
+      path,
+      response,
+      requestUrl,
+      optionsHash,
+      responseHash,
+      responseContent,
+    } = params;
 
     try {
       // Check if response already exists
@@ -96,6 +104,7 @@ export class ResponseRecordService {
         const newResponse: NewResponseRecord = {
           path,
           response,
+          responseContent,
           responseHash,
           optionsHash,
           responseSize,

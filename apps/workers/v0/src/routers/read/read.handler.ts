@@ -6,7 +6,7 @@ import { processReadRequest } from './read.processor';
 
 export const readGETHandler = authed
   .use(rateLimitMiddleware({ operation: 'getMarkdown' }))
-  .read.getMarkdown.handler(async ({ input, context: c, errors, path: p }) => {
+  .read.getMarkdown.handler(async ({ input, context: c, errors, path }) => {
     const { url, ...rest } = input;
     const startedAt = performance.now();
     const requestTimestamp = new Date().toISOString();
@@ -23,7 +23,7 @@ export const readGETHandler = authed
       ); // result here is a string for getMarkdown path and cached status is stored in c.cacheHit
 
       schedulePostProcessing(c, {
-        path: p.join('-'),
+        path,
         requestUrl: url,
         requestOptions: input,
         response: result,
@@ -47,7 +47,7 @@ export const readGETHandler = authed
       };
 
       schedulePostProcessing(c, {
-        path: p.join('-'),
+        path,
         requestUrl: url,
         requestOptions: input,
         response: readErrorResponse,
@@ -65,7 +65,7 @@ export const readGETHandler = authed
 
 export const readPOSTHandler = authed
   .use(rateLimitMiddleware({ operation: 'readURL' }))
-  .read.readUrl.handler(async ({ input, context: c, errors, path: p }) => {
+  .read.readUrl.handler(async ({ input, context: c, errors, path }) => {
     const { url, ...rest } = input;
     const startedAt = performance.now();
     const requestTimestamp = new Date().toISOString();
@@ -82,7 +82,7 @@ export const readPOSTHandler = authed
       );
 
       schedulePostProcessing(c, {
-        path: p.join('-'),
+        path,
         requestUrl: url,
         requestOptions: input,
         response: result,
@@ -103,7 +103,7 @@ export const readPOSTHandler = authed
       };
 
       schedulePostProcessing(c, {
-        path: p.join('-'),
+        path,
         requestUrl: url,
         requestOptions: input,
         response: readErrorResponse,

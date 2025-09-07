@@ -7,6 +7,7 @@ import type {
 import { activityLog, type NewActivityLog } from '@deepcrawl/db-d1';
 import type { AppVariables, ORPCContext } from '@/lib/context';
 import { logDebug, logError } from '@/utils/loggers';
+import type { ResponseTypes } from '../response/response-record.service';
 
 export type RequestsOptions =
   | GetMarkdownOptions
@@ -23,7 +24,8 @@ interface LogActivityParams {
   requestUrl: string;
   requestOptions: RequestsOptions;
   executionTimeMs: number;
-  responseHash: string;
+  responseHash: string | null;
+  responseMetadata: Partial<ResponseTypes>;
   error?: string;
 }
 
@@ -47,6 +49,7 @@ export class ActivityLogger {
       requestOptions,
       executionTimeMs,
       responseHash,
+      responseMetadata,
       error,
     } = params;
 
@@ -61,6 +64,7 @@ export class ActivityLogger {
       requestOptions,
       executionTimeMs,
       responseHash,
+      responseMetadata,
       error,
     } satisfies NewActivityLog;
 
