@@ -166,6 +166,13 @@ export async function processLinksRequest(
       rootUrl = linkService.getRootUrl(targetUrl);
     }
 
+    // TODO: FEATURE: ADD A NEW PROPERTY TO OPTIONS FOR SETTING THE ROOTURL REGARDLESS OF IF IT IS PLATFORM URL OR NOT, OR A NEW ISPLATFORMURL FLAG
+    // Set stable root key in context for KV cache and downstream hashing
+    const rootKeyForCache = !isPlatformUrl
+      ? rootUrl
+      : (ancestors?.[1] ?? rootUrl);
+    c.linksRootKey = rootKeyForCache;
+
     // Helper function to scrape a URL only if not visited before in *this* request
     const scrapeIfNotVisited = async (url: string) => {
       if (_visitedUrls.has(url)) {
@@ -387,7 +394,7 @@ export async function processLinksRequest(
             title?: string;
             description?: string;
             timestamp?: string;
-          }>(!isPlatformUrl ? rootUrl : (ancestors?.[1] ?? rootUrl));
+          }>(rootKeyForCache);
 
         if (value) {
           logDebug(
@@ -561,7 +568,7 @@ export async function processLinksRequest(
           kvPutWithRetry(
             c.env.DEEPCRAWL_V0_LINKS_STORE,
             // Use rootUrl for platform URLs, targetUrl for non-platform URLs to prevent huge confusing cache
-            !isPlatformUrl ? rootUrl : (ancestors?.[1] ?? rootUrl),
+            rootKeyForCache,
             JSON.stringify(treeToStore),
             {
               metadata: {

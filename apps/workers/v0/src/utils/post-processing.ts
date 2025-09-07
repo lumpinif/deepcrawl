@@ -1,3 +1,4 @@
+import type { LinksSuccessResponse } from '@deepcrawl/types/routers/links/types';
 import type { ReadSuccessResponse } from '@deepcrawl/types/routers/read/types';
 import type { ORPCContext } from '@/lib/context';
 import type { RequestsOptions } from '@/services/analytics/activity-logger.service';
@@ -21,31 +22,56 @@ interface SchedulePostProcessingParams {
 
 type ReadSuccessResponseWithoutMetrics = Omit<ReadSuccessResponse, 'metrics'>;
 
-interface ExtractedMetricsResult {
-  responseForHash: ReadSuccessResponseWithoutMetrics | ResponseTypes;
-  metrics?: ReadSuccessResponse['metrics'];
+type Dynamics =
+  | { metrics?: ReadSuccessResponse['metrics'] }
+  | { timestamp?: string; executionTime?: string }
+  | null;
+
+interface ExtractedDynamicsResult {
+  responseForHash: ResponseTypes | ReadSuccessResponseWithoutMetrics;
+  dynamics: Dynamics;
 }
 
-function extractReadUrlMetrics(
+function extractDynamicsForHash(
   path: readonly string[],
   response: ResponseTypes,
   success: boolean,
-): ExtractedMetricsResult {
-  const isReadUrl = path[1] === 'readUrl';
-  if (!isReadUrl || !success) return { responseForHash: response };
+): ExtractedDynamicsResult {
+  if (!success) return { responseForHash: response, dynamics: null };
 
-  if (typeof response === 'object' && response && 'success' in response) {
-    const r = response as ReadSuccessResponse | Record<string, unknown>;
-    if ((r as ReadSuccessResponse).success === true) {
-      const { metrics, ...rest } = r as ReadSuccessResponse;
+  // read/readUrl: strip metrics
+  if (path[0] === 'read' && path[1] === 'readUrl') {
+    if (typeof response === 'object' && response && 'success' in response) {
+      const r = response as ReadSuccessResponse;
+      if (r.success === true) {
+        const { metrics, ...rest } = r;
+        return {
+          responseForHash: rest as ReadSuccessResponseWithoutMetrics,
+          dynamics: { metrics },
+        };
+      }
+    }
+  }
+
+  // links without tree: strip timestamp and executionTime
+  if (path[0] === 'links') {
+    if (
+      typeof response === 'object' &&
+      response &&
+      'success' in response &&
+      (response as LinksSuccessResponse).success === true &&
+      !(response as LinksSuccessResponse).tree
+    ) {
+      const { timestamp, executionTime, ...rest } =
+        response as LinksSuccessResponse;
       return {
-        responseForHash: rest as ReadSuccessResponseWithoutMetrics,
-        metrics,
+        responseForHash: rest as unknown as ResponseTypes,
+        dynamics: { timestamp, executionTime },
       };
     }
   }
 
-  return { responseForHash: response };
+  return { responseForHash: response, dynamics: null };
 }
 
 export function schedulePostProcessing(
@@ -53,7 +79,7 @@ export function schedulePostProcessing(
   params: SchedulePostProcessingParams,
 ): void {
   const {
-    path, // such as [ 'read', 'getMarkdown' ]
+    path, // string[] such as [ 'read', 'getMarkdown' ]
     requestUrl,
     requestOptions,
     response,
@@ -62,6 +88,8 @@ export function schedulePostProcessing(
     success,
     error,
   } = params;
+
+  const joinedPath = path.join('-'); // such as [ 'read', 'getMarkdown' ] => 'read-getMarkdown'
 
   const activityLogger = createActivityLogger(c);
   const responseRecordService = createResponseRecordService(c.var.dbd1);
@@ -75,35 +103,37 @@ export function schedulePostProcessing(
             requestOptions,
           });
 
-        // derive responseForHash (strip metrics for read-readUrl success)
-        const { responseForHash, metrics } = extractReadUrlMetrics(
+        // derive responseForHash and dynamics for activity metadata
+        const { responseForHash, dynamics } = extractDynamicsForHash(
           path,
           response,
           success,
         );
 
-        // create response hash
-        const responseHash = await responseRecordService.createResponseHash({
-          path: path.join('-'),
-          optionsHash,
-          requestUrl,
-          response: responseForHash,
-        });
+        // create response hash (stable strategy for links)
+        const responseHash =
+          await responseRecordService.createStableResponseHash({
+            path: joinedPath,
+            optionsHash,
+            requestUrl,
+            response: responseForHash,
+            linksRootKey: c.linksRootKey,
+          });
 
         // store response record only if success is true
         if (success) {
           await responseRecordService.storeResponseRecord({
-            path: path.join('-'),
+            path: joinedPath,
             optionsHash,
             requestUrl,
             responseHash,
-            responseContent: responseForHash,
+            responseContent: responseForHash, // store canonical content for dedup
           });
         }
 
         // log activity
         await activityLogger.logActivity({
-          path: path.join('-'),
+          path: joinedPath,
           requestId: c.var.requestId,
           success,
           cached: c.cacheHit,
@@ -114,14 +144,12 @@ export function schedulePostProcessing(
           responseHash: success ? responseHash : null, // null if success is false
           /* dynamic response data fields such as metrics or full error response if success is false */
           responseMetadata: !success
-            ? response // full error response
-            : path[1] === 'readUrl'
-              ? { metrics }
-              : null,
+            ? response
+            : ((dynamics as unknown) ?? null),
           error,
         });
       } catch (err) {
-        logError(`[${path.join('-')} Post-processing] failed`, err);
+        logError(`[${joinedPath} Post-processing] failed`, err);
       }
     })(),
   );

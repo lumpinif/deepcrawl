@@ -1,5 +1,8 @@
 import { eq, type NewResponseRecord, responseRecord } from '@deepcrawl/db-d1';
-import type { LinksResponse } from '@deepcrawl/types/routers/links/types';
+import type {
+  LinksResponse,
+  LinksSuccessResponse,
+} from '@deepcrawl/types/routers/links/types';
 import type {
   ReadPostResponse,
   ReadStringResponse,
@@ -23,11 +26,12 @@ interface CreateRequestOptionsHashParams {
   requestOptions: RequestsOptions;
 }
 
-interface CreateResponseHashParams {
+interface CreateStableResponseHashParams {
   path: string;
   requestUrl: string;
   optionsHash: string;
   response: ResponseTypes;
+  linksRootKey?: string;
 }
 
 interface StoreResponseRecordParams {
@@ -51,13 +55,37 @@ export class ResponseRecordService {
     return await sha256Hash(stableStringify(requestOptions));
   }
 
-  async createResponseHash(params: CreateResponseHashParams): Promise<string> {
-    const { optionsHash, response, requestUrl } = params;
+  /**
+   * Stable response hash policy selector across endpoints.
+   * - read-getMarkdown: hash(targetUrl + optionsHash + markdown)
+   * - read-readUrl: hash(targetUrl + optionsHash + responseWithoutMetrics)
+   * - links-*: hash(linksRootKey + optionsHash + 'links-v1')
+   */
+  async createStableResponseHash(
+    params: CreateStableResponseHashParams,
+  ): Promise<string> {
+    const { path, optionsHash, requestUrl, response, linksRootKey } = params;
+    if (path.startsWith('links-') && linksRootKey) {
+      // links without tree (isTree=false) → response already canonicalized upstream
+      if (
+        typeof response === 'object' &&
+        response !== null &&
+        'success' in response &&
+        (response as LinksSuccessResponse).success === true &&
+        !(response as LinksSuccessResponse).tree
+      ) {
+        const canonical = JSON.stringify(response);
+        return await sha256Hash(
+          `${linksRootKey}|${optionsHash}|links-v1|no-tree|${canonical}`,
+        );
+      }
+      // default links (tree present or non-success): stable key only
+      return await sha256Hash(`${linksRootKey}|${optionsHash}|links-v1`);
+    }
     const targetUrl =
       typeof response === 'object'
         ? response.targetUrl
         : targetUrlHelper(requestUrl, true);
-
     return await generateResponseHash(targetUrl, optionsHash, response);
   }
 
@@ -77,14 +105,18 @@ export class ResponseRecordService {
         .limit(1);
 
       const now = new Date().toISOString();
+      const responseSize = calculateResponseSize(responseContent);
 
       if (existing.length > 0) {
-        // Response exists - update the timestamps
+        // Response exists - refresh stored content and updatedAt for links only; for reads, only bump timestamp
+        const isLinks = path.startsWith('links-');
         await this.db
           .update(responseRecord)
-          .set({
-            updatedAt: now,
-          })
+          .set(
+            isLinks
+              ? { responseContent, responseSize, updatedAt: now }
+              : { updatedAt: now },
+          )
           .where(eq(responseRecord.responseHash, responseHash));
 
         logDebug('[ResponseRecordService] 💽 Existing response record found', {
@@ -92,8 +124,6 @@ export class ResponseRecordService {
         });
       } else {
         // New response - insert with deduplication
-        const responseSize = calculateResponseSize(responseContent);
-
         const newResponse: NewResponseRecord = {
           path,
           responseContent,

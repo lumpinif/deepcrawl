@@ -42,6 +42,8 @@ export interface ORPCContext extends ResponseHeadersPluginContext {
   executionCtx: ExecutionContext;
   /** Cache Hit Flag for Activity Logging */
   cacheHit: boolean;
+  /** Stable key for links endpoints hash (root key aligned with KV) */
+  linksRootKey?: string;
 }
 
 export async function createContext({
