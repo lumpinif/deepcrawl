@@ -96,7 +96,6 @@ export function schedulePostProcessing(
             path: path.join('-'),
             optionsHash,
             requestUrl,
-            response,
             responseContent: responseForHash,
             responseHash,
           });
