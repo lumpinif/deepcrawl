@@ -36,6 +36,7 @@ export const activityLog = sqliteTable(
       () => responseRecord.responseHash,
       { onDelete: 'set null', onUpdate: 'cascade' },
     ),
+    // Response metadata reference such as metrics or full error response if success is false
     responseMetadata: text('response_metadata', { mode: 'json' }),
 
     // Error handling
@@ -88,9 +89,6 @@ export const responseRecord = sqliteTable(
     path: text('path').notNull(), // such as 'read-getMarkdown' or 'links-extractLinks'
     optionsHash: text('options_hash').notNull(),
 
-    // response string or json field
-    response: text('response', { mode: 'json' }),
-
     // actual response content field
     responseContent: text('response_content', { mode: 'json' }),
 
@@ -102,11 +100,20 @@ export const responseRecord = sqliteTable(
     updatedAt: text('updated_at').notNull().default(sql`(datetime('now'))`),
   },
   (table) => [
+    // Response hash lookup
+    index('idx_response_record_response_hash').on(table.responseHash),
+
     // Options hash lookup
     index('idx_response_record_options').on(table.optionsHash),
 
     // Path lookup
     index('idx_response_record_path').on(table.path),
+
+    // Updated at lookup
+    index('idx_response_record_updated_at').on(table.updatedAt),
+
+    // Created at lookup
+    index('idx_response_record_created_at').on(table.createdAt),
   ],
 );
 
