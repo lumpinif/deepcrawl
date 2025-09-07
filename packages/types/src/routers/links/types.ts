@@ -847,6 +847,8 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  * Represents a successful links POST route response.
  * Contains the scraped data and related information.
  *
+ * @note some root-level fields that are only included if there is no tree (executionTime, title, description, metadata, extractedLinks, cleanedHtml, skippedUrls), otherwise they are included in the tree data
+ *
  * @property success - Whether the operation was successful
  * @property cached - Whether the result is returned from cache
  * @property targetUrl - The URL that was requested to be scraped
@@ -862,8 +864,10 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  *   success: true,
  *   targetUrl: "https://example.com",
  *   timestamp: "2025-04-02T14:28:23.000Z",
- *   executionTime: "1234ms",
  *   ancestors: ["https://example.com", "https://example.com/about"],
+ *
+ *   // optional root-level fields that are only included if there is tree (title, description, metadata, extractedLinks, cleanedHtml, skippedUrls)
+ *   executionTime: "1234ms",
  *   skippedUrls: {
  *     internal: ["https://example.com/private"],
  *     external: ["https://othersite.com/reference"],
@@ -873,6 +877,8 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  *       documents: ["https://example.com/docs/whitepaper.pdf"]
  *     }
  *   },
+ *
+ *   // tree data including root-level fields
  *   tree: {
  *     data: {
  *       url: "https://example.com",
