@@ -1,0 +1,135 @@
+import { eq, type NewResponseRecord, responseRecord } from '@deepcrawl/db-d1';
+import type { LinksResponse } from '@deepcrawl/types/routers/links/types';
+import type {
+  ReadPostResponse,
+  ReadStringResponse,
+} from '@deepcrawl/types/routers/read/types';
+import type { AppVariables } from '@/lib/context';
+import type { RequestsOptions } from '@/services/analytics/activity-logger.service';
+import { sha256Hash, stableStringify } from '@/utils/hash/hash-tools';
+import {
+  calculateResponseSize,
+  generateResponseHash,
+} from '@/utils/hash/response-hash';
+import { logDebug, logError } from '@/utils/loggers';
+import { targetUrlHelper } from '@/utils/url/target-url-helper';
+
+export type ResponseTypes =
+  | ReadStringResponse
+  | ReadPostResponse
+  | LinksResponse;
+
+interface CreateRequestOptionsHashParams {
+  requestOptions: RequestsOptions;
+}
+
+interface CreateResponseHashParams {
+  path: string;
+  requestUrl: string;
+  optionsHash: string;
+  response: ResponseTypes;
+}
+
+interface StoreResponseRecordParams {
+  path: string;
+  requestUrl: string;
+  response: ResponseTypes;
+  optionsHash: string;
+  responseHash: string;
+}
+
+/**
+ * Response Record Service
+ * Handles deduplication and storage of response record for both read and links endpoints
+ */
+export class ResponseRecordService {
+  constructor(private db: AppVariables['dbd1']) {}
+
+  async createRequestOptionsHash({
+    requestOptions,
+  }: CreateRequestOptionsHashParams): Promise<string> {
+    return await sha256Hash(stableStringify(requestOptions));
+  }
+
+  async createResponseHash(params: CreateResponseHashParams): Promise<string> {
+    const { optionsHash, response, requestUrl } = params;
+    const targetUrl =
+      typeof response === 'object'
+        ? response.targetUrl
+        : targetUrlHelper(requestUrl, true);
+
+    return await generateResponseHash(targetUrl, optionsHash, response);
+  }
+
+  /**
+   * store response record with deduplication
+   */
+  async storeResponseRecord(params: StoreResponseRecordParams): Promise<void> {
+    const { path, response, responseHash, optionsHash, requestUrl } = params;
+
+    try {
+      // Check if response already exists
+      const existing = await this.db
+        .select()
+        .from(responseRecord)
+        .where(eq(responseRecord.responseHash, responseHash))
+        .limit(1);
+
+      const now = new Date().toISOString();
+
+      if (existing.length > 0) {
+        // Response exists - update the timestamps
+        await this.db
+          .update(responseRecord)
+          .set({
+            updatedAt: now,
+          })
+          .where(eq(responseRecord.responseHash, responseHash));
+
+        logDebug('[ResponseRecordService] 💽 Existing response record found', {
+          responseHash,
+        });
+      } else {
+        // New response - insert with deduplication
+        const responseSize = calculateResponseSize(response);
+
+        const newResponse: NewResponseRecord = {
+          path,
+          response,
+          responseHash,
+          optionsHash,
+          responseSize,
+        };
+
+        await this.db.insert(responseRecord).values(newResponse);
+
+        logDebug(
+          '[ResponseRecordService] ✅ Response record stored successfully',
+          {
+            responseHash,
+            requestUrl,
+            responseSize,
+          },
+        );
+      }
+    } catch (error) {
+      logError('[ResponseRecordService] ❌ Response record storage failed', {
+        responseHash,
+        requestUrl,
+        optionsHash,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      throw error;
+    }
+  }
+}
+
+/**
+ * Factory function to create ResponseRecordService instance
+ */
+export function createResponseRecordService(
+  db: AppVariables['dbd1'],
+): ResponseRecordService {
+  return new ResponseRecordService(db);
+}

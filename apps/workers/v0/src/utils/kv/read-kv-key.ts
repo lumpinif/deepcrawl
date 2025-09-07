@@ -1,5 +1,5 @@
 import type { ReadOptions } from '@deepcrawl/types/routers/read';
-import { sha256Hash, stableStringify } from './hash-tools';
+import { sha256Hash, stableStringify } from '../hash/hash-tools';
 
 /**
  * Generates a deterministic cache key for read endpoint KV storage.

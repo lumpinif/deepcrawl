@@ -19,7 +19,6 @@ import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 import type { ORPCContext } from '@/lib/context';
 import { type _linksSets, LinkService } from '@/services/link/link.service';
 import { formatDuration } from '@/utils/formater';
-import { sha256Hash, stableStringify } from '@/utils/kv/hash-tools';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
@@ -93,7 +92,6 @@ export async function processLinksRequest(
 
   // Initialize activity logging
   const normalizedTargetUrl = targetUrlHelper(url, true);
-  const optionsHash = await sha256Hash(stableStringify(params));
 
   // Use app-level scrape service from context, create link service locally
   const scrapeService = c.var.scrapeService;
@@ -676,33 +674,6 @@ export async function processLinksRequest(
     if (!linksPostResponse) {
       throw new Error('Failed to process links request');
     }
-
-    // // Store content
-    // const contentStorageService = createContentStorageService(c.var.dbd1);
-    // let contentId: string | undefined;
-
-    // try {
-    //   contentId = await contentStorageService.storeLinksContent(
-    //     normalizedTargetUrl,
-    //     optionsHash,
-    //     {
-    //       tree: finalTree,
-    //       extractedLinks: linksFromTarget,
-    //       ancestors: linksPostResponse.ancestors,
-    //       skippedUrls: categorizedSkippedUrls,
-    //       title: linksPostResponse.title,
-    //       description: linksPostResponse.description,
-    //       cleanedHtml: linksPostResponse.cleanedHtml,
-    //       metadata: linksPostResponse.metadata,
-    //     },
-    //   );
-    // } catch (error) {
-    //   // Content storage failure shouldn't break the API response
-    //   logError('[ContentStorage] Failed to store links content:', error, {
-    //     targetUrl: normalizedTargetUrl,
-    //     optionsHash,
-    //   });
-    // }
 
     return linksPostResponse as LinksSuccessResponse;
   } catch (error) {

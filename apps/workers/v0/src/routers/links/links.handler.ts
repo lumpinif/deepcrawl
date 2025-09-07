@@ -4,7 +4,7 @@ import type {
 } from '@deepcrawl/types';
 import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
-import { createActivityLogger } from '@/services/analytics/activity-logger.service';
+import { schedulePostProcessing } from '@/utils/post-processing';
 import {
   createLinksErrorResponse,
   processLinksRequest,
@@ -17,7 +17,6 @@ export const linksGETHandler = authed
     const { url, ...rest } = input;
     const startedAt = performance.now();
     const requestTimestamp = new Date().toISOString();
-    const activityLogger = createActivityLogger(c);
 
     try {
       const result = await processLinksRequest(
@@ -29,19 +28,15 @@ export const linksGETHandler = authed
         true, // isGETRequest
       );
 
-      // write activity log; use waitUntil so logging doesn't block the response but still completes reliably
-      c.executionCtx.waitUntil(
-        activityLogger.logActivity({
-          path: p.join('-'),
-          requestId: c.var.requestId,
-          success: true,
-          cached: c.cacheHit,
-          requestTimestamp,
-          requestUrl: url,
-          requestOptions: input,
-          executionTimeMs: performance.now() - startedAt,
-        }),
-      );
+      schedulePostProcessing(c, {
+        path: p.join('-'),
+        requestUrl: url,
+        requestOptions: input,
+        response: result,
+        startedAt,
+        requestTimestamp,
+        success: true,
+      });
 
       return result as LinksSuccessResponse;
     } catch (error) {
@@ -58,18 +53,16 @@ export const linksGETHandler = authed
         tree: undefined,
       });
 
-      c.executionCtx.waitUntil(
-        activityLogger.logActivity({
-          path: p.join('-'),
-          requestId: c.var.requestId,
-          success: false,
-          cached: c.cacheHit,
-          requestTimestamp,
-          requestUrl: url,
-          requestOptions: input,
-          executionTimeMs: performance.now() - startedAt,
-        }),
-      );
+      schedulePostProcessing(c, {
+        path: p.join('-'),
+        requestUrl: url,
+        requestOptions: input,
+        response: linksErrorResponse,
+        startedAt,
+        requestTimestamp,
+        success: false,
+        error: err,
+      });
 
       throw errors.LINKS_ERROR_RESPONSE({
         data: linksErrorResponse,
@@ -84,7 +77,6 @@ export const linksPOSTHandler = authed
       const { url, ...rest } = input;
       const startedAt = performance.now();
       const requestTimestamp = new Date().toISOString();
-      const activityLogger = createActivityLogger(c);
 
       try {
         const result = await processLinksRequest(
@@ -96,18 +88,15 @@ export const linksPOSTHandler = authed
           false, // isGETRequest
         );
 
-        c.executionCtx.waitUntil(
-          activityLogger.logActivity({
-            path: p.join('-'),
-            requestId: c.var.requestId,
-            success: true,
-            cached: c.cacheHit,
-            requestTimestamp,
-            requestUrl: url,
-            requestOptions: input,
-            executionTimeMs: performance.now() - startedAt,
-          }),
-        );
+        schedulePostProcessing(c, {
+          path: p.join('-'),
+          requestUrl: url,
+          requestOptions: input,
+          response: result,
+          startedAt,
+          requestTimestamp,
+          success: true,
+        });
 
         return result as LinksSuccessResponse;
       } catch (error) {
@@ -126,18 +115,16 @@ export const linksPOSTHandler = authed
           },
         );
 
-        c.executionCtx.waitUntil(
-          activityLogger.logActivity({
-            path: p.join('-'),
-            requestId: c.var.requestId,
-            success: false,
-            cached: c.cacheHit,
-            requestTimestamp,
-            requestUrl: url,
-            requestOptions: input,
-            executionTimeMs: performance.now() - startedAt,
-          }),
-        );
+        schedulePostProcessing(c, {
+          path: p.join('-'),
+          requestUrl: url,
+          requestOptions: input,
+          response: linksErrorResponse,
+          startedAt,
+          requestTimestamp,
+          success: false,
+          error: err,
+        });
 
         throw errors.LINKS_ERROR_RESPONSE({
           data: linksErrorResponse,

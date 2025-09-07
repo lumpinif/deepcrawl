@@ -10,9 +10,7 @@ import {
 } from '@deepcrawl/types';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import type { ORPCContext } from '@/lib/context';
-import { createActivityLogger } from '@/utils/activity-logger';
 import { formatDuration } from '@/utils/formater';
-import { sha256Hash, stableStringify } from '@/utils/kv/hash-tools';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import { logDebug, logError } from '@/utils/loggers';
@@ -173,7 +171,6 @@ export async function processReadRequest(
 
   // Initialize activity logging
   const targetUrl = targetUrlHelper(url, true);
-  const optionsHash = await sha256Hash(stableStringify(params));
 
   let readResponse: ReadResponse | undefined;
   // Initialize cache flag

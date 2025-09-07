@@ -6,7 +6,13 @@ import type {
 } from '@deepcrawl/contracts';
 import { activityLog, type NewActivityLog } from '@deepcrawl/db-d1';
 import type { AppVariables, ORPCContext } from '@/lib/context';
-import { logError } from '@/utils/loggers';
+import { logDebug, logError } from '@/utils/loggers';
+
+export type RequestsOptions =
+  | GetMarkdownOptions
+  | ReadUrlOptions
+  | GetLinksOptions
+  | ExtractLinksOptions;
 
 interface LogActivityParams {
   path: string; // such as [ 'read', 'getMarkdown' ] = 'read-getMarkdown'
@@ -15,12 +21,10 @@ interface LogActivityParams {
   cached: boolean;
   requestTimestamp: string;
   requestUrl: string;
-  requestOptions:
-    | GetMarkdownOptions
-    | ReadUrlOptions
-    | GetLinksOptions
-    | ExtractLinksOptions;
+  requestOptions: RequestsOptions;
   executionTimeMs: number;
+  responseHash: string;
+  error?: string;
 }
 
 export class ActivityLogger {
@@ -42,6 +46,8 @@ export class ActivityLogger {
       requestUrl,
       requestOptions,
       executionTimeMs,
+      responseHash,
+      error,
     } = params;
 
     const logData = {
@@ -54,6 +60,8 @@ export class ActivityLogger {
       requestUrl,
       requestOptions,
       executionTimeMs,
+      responseHash,
+      error,
     } satisfies NewActivityLog;
 
     await this.db
@@ -63,6 +71,12 @@ export class ActivityLogger {
         logError('[ActivityLogger] Failed to log activity:', error);
         // Don't throw - logging failures shouldn't break the API
       });
+
+    logDebug('[ActivityLogger] ✅ Activity logged successfully', {
+      path,
+      requestId,
+      requestTimestamp,
+    });
   }
 }
 

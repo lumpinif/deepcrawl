@@ -1,7 +1,7 @@
 import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
-import { createActivityLogger } from '@/services/analytics/activity-logger.service';
+import { schedulePostProcessing } from '@/utils/post-processing';
 import { processReadRequest } from './read.processor';
 
 export const readGETHandler = authed
@@ -10,7 +10,6 @@ export const readGETHandler = authed
     const { url, ...rest } = input;
     const startedAt = performance.now();
     const requestTimestamp = new Date().toISOString();
-    const activityLogger = createActivityLogger(c);
 
     try {
       const result = await processReadRequest(
@@ -23,19 +22,15 @@ export const readGETHandler = authed
         true,
       ); // result here is a string for getMarkdown path and cached status is stored in c.cacheHit
 
-      // write activity log; use waitUntil so logging doesn't block the response but still completes reliably
-      c.executionCtx.waitUntil(
-        activityLogger.logActivity({
-          path: p.join('-'),
-          requestId: c.var.requestId,
-          success: true,
-          cached: c.cacheHit,
-          requestTimestamp,
-          requestUrl: url,
-          requestOptions: input,
-          executionTimeMs: performance.now() - startedAt,
-        }),
-      );
+      schedulePostProcessing(c, {
+        path: p.join('-'),
+        requestUrl: url,
+        requestOptions: input,
+        response: result,
+        startedAt,
+        requestTimestamp,
+        success: true,
+      });
 
       const content =
         typeof result === 'string' ? result : JSON.stringify(result);
@@ -51,18 +46,16 @@ export const readGETHandler = authed
         error: errorMessage,
       };
 
-      c.executionCtx.waitUntil(
-        activityLogger.logActivity({
-          path: p.join('-'),
-          requestId: c.var.requestId,
-          success: false,
-          cached: c.cacheHit,
-          requestTimestamp,
-          requestUrl: url,
-          requestOptions: input,
-          executionTimeMs: performance.now() - startedAt,
-        }),
-      );
+      schedulePostProcessing(c, {
+        path: p.join('-'),
+        requestUrl: url,
+        requestOptions: input,
+        response: readErrorResponse,
+        startedAt,
+        requestTimestamp,
+        success: false,
+        error: errorMessage,
+      });
 
       throw errors.READ_ERROR_RESPONSE({
         data: readErrorResponse,
@@ -76,7 +69,6 @@ export const readPOSTHandler = authed
     const { url, ...rest } = input;
     const startedAt = performance.now();
     const requestTimestamp = new Date().toISOString();
-    const activityLogger = createActivityLogger(c);
 
     try {
       const result = await processReadRequest(
@@ -89,19 +81,15 @@ export const readPOSTHandler = authed
         false,
       );
 
-      // write activity log
-      c.executionCtx.waitUntil(
-        activityLogger.logActivity({
-          path: p.join('-'),
-          requestId: c.var.requestId,
-          success: true,
-          cached: c.cacheHit,
-          requestTimestamp,
-          requestUrl: url,
-          requestOptions: input,
-          executionTimeMs: performance.now() - startedAt,
-        }),
-      );
+      schedulePostProcessing(c, {
+        path: p.join('-'),
+        requestUrl: url,
+        requestOptions: input,
+        response: result,
+        startedAt,
+        requestTimestamp,
+        success: true,
+      });
 
       return result as ReadSuccessResponse;
     } catch (error) {
@@ -114,18 +102,16 @@ export const readPOSTHandler = authed
         error: errorMessage,
       };
 
-      c.executionCtx.waitUntil(
-        activityLogger.logActivity({
-          path: p.join('-'),
-          requestId: c.var.requestId,
-          success: false,
-          cached: c.cacheHit,
-          requestTimestamp,
-          requestUrl: url,
-          requestOptions: input,
-          executionTimeMs: performance.now() - startedAt,
-        }),
-      );
+      schedulePostProcessing(c, {
+        path: p.join('-'),
+        requestUrl: url,
+        requestOptions: input,
+        response: readErrorResponse,
+        startedAt,
+        requestTimestamp,
+        success: false,
+        error: errorMessage,
+      });
 
       throw errors.READ_ERROR_RESPONSE({
         data: readErrorResponse,
