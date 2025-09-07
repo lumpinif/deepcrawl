@@ -168,23 +168,12 @@ export async function processReadRequest(
   logDebug(
     `🪂 [READ Endpoint] Processing read request for ${url}`,
     `isGETRequest: ${isGETRequest}`,
-    `params: ${JSON.stringify(params, null, 2)}`,
+    // `params: ${JSON.stringify(params, null, 2)}`,
   );
 
   // Initialize activity logging
-  const activityLogger = createActivityLogger(c);
   const targetUrl = targetUrlHelper(url, true);
   const optionsHash = await sha256Hash(stableStringify(params));
-
-  // Start activity logging (non-blocking for API - returns immediately, D1 serializes writes internally)
-  const activityId = activityLogger.startActivity({
-    endpoint: 'read',
-    method: isGETRequest ? 'GET' : 'POST',
-    targetUrl,
-    requestUrl: url,
-    optionsHash,
-    requestOptions: params,
-  });
 
   let readResponse: ReadResponse | undefined;
   // Initialize cache flag
@@ -213,6 +202,7 @@ export async function processReadRequest(
           );
 
           isReadCacheFresh = true;
+          c.cacheHit = true; // set cache hit flag in context for activity logging
 
           if (isGETRequest) {
             return cachedResult as ReadStringResponse;
@@ -328,21 +318,24 @@ export async function processReadRequest(
             )
           : JSON.stringify(readResponse);
 
-        await kvPutWithRetry(
-          c.env.DEEPCRAWL_V0_READ_STORE,
-          cacheKey,
-          valueToCache,
-          {
-            expiration: cacheOptions?.expiration ?? undefined,
-            expirationTtl:
-              cacheOptions?.expirationTtl ??
-              DEFAULT_CACHE_OPTIONS.expirationTtl,
-            metadata: {
-              timestamp: new Date().toISOString(),
-              title: readResponse?.title || undefined,
-              description: readResponse?.description || undefined,
+        // non-blocking KV write with waitUntil so it doesn't block the response but still completes reliably
+        c.executionCtx.waitUntil(
+          kvPutWithRetry(
+            c.env.DEEPCRAWL_V0_READ_STORE,
+            cacheKey,
+            valueToCache,
+            {
+              expiration: cacheOptions?.expiration ?? undefined,
+              expirationTtl:
+                cacheOptions?.expirationTtl ??
+                DEFAULT_CACHE_OPTIONS.expirationTtl,
+              metadata: {
+                timestamp: new Date().toISOString(),
+                title: readResponse?.title || undefined,
+                description: readResponse?.description || undefined,
+              },
             },
-          },
+          ),
         );
 
         logDebug(
@@ -353,13 +346,6 @@ export async function processReadRequest(
         // Continue without caching if write fails
       }
     }
-
-    // Complete activity logging (non-blocking)
-    activityLogger.completeActivityAsync(activityId, {
-      success: true,
-      executionTimeMs: Math.round(performance.now() - startTime),
-      cached: isReadCacheFresh,
-    });
 
     if (isGETRequest) {
       // For GET requests, always return markdown content only
@@ -379,14 +365,6 @@ export async function processReadRequest(
         : 'Failed to process read request with unknown error';
 
     logError('[ERROR] Read processor error:', errorMessage);
-
-    // Complete activity logging for errors (non-blocking)
-    activityLogger.completeActivityAsync(activityId, {
-      success: false,
-      executionTimeMs: Math.round(performance.now() - startTime),
-      cached: false,
-      error: errorMessage,
-    });
 
     throw new Error(errorMessage);
   }

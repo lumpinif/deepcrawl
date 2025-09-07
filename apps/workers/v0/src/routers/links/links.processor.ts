@@ -18,7 +18,6 @@ import type { ExtractedLinks } from '@deepcrawl/types/services/link';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 import type { ORPCContext } from '@/lib/context';
 import { type _linksSets, LinkService } from '@/services/link/link.service';
-import { createActivityLogger } from '@/utils/activity-logger';
 import { formatDuration } from '@/utils/formater';
 import { sha256Hash, stableStringify } from '@/utils/kv/hash-tools';
 import { kvPutWithRetry } from '@/utils/kv/retry';
@@ -86,25 +85,15 @@ export async function processLinksRequest(
 
   logDebug(
     `🪂 [LINKS Endpoint] Processing links request for ${url}`,
-    `params: ${JSON.stringify(params, null, 2)}`,
+    `isGETRequest: ${isGETRequest}`,
+    // `params: ${JSON.stringify(params, null, 2)}`,
   );
 
   const timestamp = new Date().toISOString();
 
   // Initialize activity logging
-  const activityLogger = createActivityLogger(c);
   const normalizedTargetUrl = targetUrlHelper(url, true);
   const optionsHash = await sha256Hash(stableStringify(params));
-
-  // Start activity logging (non-blocking for API - returns immediately, D1 serializes writes internally)
-  const activityId = activityLogger.startActivity({
-    endpoint: 'links',
-    method: isGETRequest ? 'GET' : 'POST',
-    targetUrl: normalizedTargetUrl,
-    requestUrl: url,
-    optionsHash,
-    requestOptions: params,
-  });
 
   // Use app-level scrape service from context, create link service locally
   const scrapeService = c.var.scrapeService;
@@ -407,26 +396,16 @@ export async function processLinksRequest(
             `💽 [LINKS Endpoint] Found cached links tree in KV for ${rootUrl}`,
           );
 
-          // Check if cache is fresh (e.g., within the last day - matches expirationTtl)
-          const cacheTimestamp = metadata?.timestamp
-            ? new Date(metadata.timestamp).getTime()
-            : 0;
-          const oneDayAgo =
-            Date.now() - DEFAULT_CACHE_OPTIONS.expirationTtl * 1000; // 1 day in milliseconds
+          c.cacheHit = true; // set cache hit flag in context for activity logging
 
-          if (cacheTimestamp > oneDayAgo) {
-            const parsedValue = JSON.parse(value) as Tree;
-            existingTree = parsedValue ?? undefined;
-            // Extract visited URLs from the tree structure if available
-            if (existingTree) {
-              lastVisitedUrlsInCache =
-                helpers.extractVisitedUrlsFromTree(existingTree);
-            }
-            linksCacheIsFresh = true;
-          } else {
-            // Optional: Could trigger a delete operation here if desired
-            // await c.env.DEEPCRAWL_V0_LINKS_STORE.delete(rootUrl);
+          const parsedValue = JSON.parse(value) as Tree;
+          existingTree = parsedValue ?? undefined;
+          // Extract visited URLs from the tree structure if available
+          if (existingTree) {
+            lastVisitedUrlsInCache =
+              helpers.extractVisitedUrlsFromTree(existingTree);
           }
+          linksCacheIsFresh = true;
         }
       } catch (error) {
         logError(
@@ -580,22 +559,24 @@ export async function processLinksRequest(
       try {
         const treeToStore = finalTree;
 
-        await kvPutWithRetry(
-          c.env.DEEPCRAWL_V0_LINKS_STORE,
-          // Use rootUrl for platform URLs, targetUrl for non-platform URLs to prevent huge confusing cache
-          !isPlatformUrl ? rootUrl : (ancestors?.[1] ?? rootUrl),
-          JSON.stringify(treeToStore),
-          {
-            metadata: {
-              title: targetScrapeResult?.title,
-              description: targetScrapeResult?.description,
-              timestamp: new Date().toISOString(),
+        c.executionCtx.waitUntil(
+          kvPutWithRetry(
+            c.env.DEEPCRAWL_V0_LINKS_STORE,
+            // Use rootUrl for platform URLs, targetUrl for non-platform URLs to prevent huge confusing cache
+            !isPlatformUrl ? rootUrl : (ancestors?.[1] ?? rootUrl),
+            JSON.stringify(treeToStore),
+            {
+              metadata: {
+                title: targetScrapeResult?.title,
+                description: targetScrapeResult?.description,
+                timestamp: new Date().toISOString(),
+              },
+              expiration: cacheOptions?.expiration ?? undefined,
+              expirationTtl:
+                cacheOptions?.expirationTtl ??
+                DEFAULT_CACHE_OPTIONS.expirationTtl,
             },
-            expiration: cacheOptions?.expiration ?? undefined,
-            expirationTtl:
-              cacheOptions?.expirationTtl ??
-              DEFAULT_CACHE_OPTIONS.expirationTtl,
-          },
+          ),
         );
 
         logDebug(
@@ -696,12 +677,32 @@ export async function processLinksRequest(
       throw new Error('Failed to process links request');
     }
 
-    // Complete activity logging (non-blocking)
-    activityLogger.completeActivityAsync(activityId, {
-      success: true,
-      executionTimeMs: Math.round(performance.now() - startTime),
-      cached: linksCacheIsFresh,
-    });
+    // // Store content
+    // const contentStorageService = createContentStorageService(c.var.dbd1);
+    // let contentId: string | undefined;
+
+    // try {
+    //   contentId = await contentStorageService.storeLinksContent(
+    //     normalizedTargetUrl,
+    //     optionsHash,
+    //     {
+    //       tree: finalTree,
+    //       extractedLinks: linksFromTarget,
+    //       ancestors: linksPostResponse.ancestors,
+    //       skippedUrls: categorizedSkippedUrls,
+    //       title: linksPostResponse.title,
+    //       description: linksPostResponse.description,
+    //       cleanedHtml: linksPostResponse.cleanedHtml,
+    //       metadata: linksPostResponse.metadata,
+    //     },
+    //   );
+    // } catch (error) {
+    //   // Content storage failure shouldn't break the API response
+    //   logError('[ContentStorage] Failed to store links content:', error, {
+    //     targetUrl: normalizedTargetUrl,
+    //     optionsHash,
+    //   });
+    // }
 
     return linksPostResponse as LinksSuccessResponse;
   } catch (error) {
@@ -711,14 +712,6 @@ export async function processLinksRequest(
       error instanceof Error
         ? error.message
         : 'Failed to process links request with unknown error';
-
-    // Complete activity logging for errors (non-blocking)
-    activityLogger.completeActivityAsync(activityId, {
-      success: false,
-      executionTimeMs: Math.round(performance.now() - startTime),
-      cached: false,
-      error: errorMessage,
-    });
 
     throw new Error(errorMessage);
   }

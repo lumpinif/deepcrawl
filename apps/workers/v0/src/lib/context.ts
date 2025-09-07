@@ -40,6 +40,8 @@ export interface ORPCContext extends ResponseHeadersPluginContext {
   var: AppVariables;
   signal?: AbortSignal | null;
   executionCtx: ExecutionContext;
+  /** Cache Hit Flag for Activity Logging */
+  cacheHit: boolean;
 }
 
 export async function createContext({
@@ -52,5 +54,6 @@ export async function createContext({
     var: context.var,
     signal: context.req.raw.signal,
     executionCtx: context.executionCtx,
+    cacheHit: false,
   };
 }
