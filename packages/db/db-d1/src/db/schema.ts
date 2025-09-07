@@ -36,6 +36,7 @@ export const activityLog = sqliteTable(
       () => responseRecord.responseHash,
       { onDelete: 'set null', onUpdate: 'cascade' },
     ),
+    responseMetadata: text('response_metadata', { mode: 'json' }),
 
     // Error handling
     error: text('error'), // NULL if success = true
@@ -89,6 +90,9 @@ export const responseRecord = sqliteTable(
 
     // response string or json field
     response: text('response', { mode: 'json' }),
+
+    // actual response content field
+    responseContent: text('response_content', { mode: 'json' }),
 
     // content management
     responseSize: integer('response_size'),

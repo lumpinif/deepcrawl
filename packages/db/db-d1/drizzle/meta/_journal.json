@@ -15,6 +15,13 @@
       "when": 1757239881774,
       "tag": "0001_gifted_ma_gnuci",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1757254992847,
+      "tag": "0002_brown_ultragirl",
+      "breakpoints": true
     }
   ]
 }
