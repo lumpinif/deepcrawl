@@ -25,7 +25,7 @@ interface LogActivityParams {
   requestOptions: RequestsOptions;
   executionTimeMs: number;
   responseHash: string | null;
-  responseMetadata: Partial<ResponseTypes>;
+  responseMetadata: Partial<ResponseTypes> | null;
   error?: string;
 }
 

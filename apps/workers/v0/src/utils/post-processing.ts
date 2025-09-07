@@ -96,8 +96,8 @@ export function schedulePostProcessing(
             path: path.join('-'),
             optionsHash,
             requestUrl,
-            responseContent: responseForHash,
             responseHash,
+            responseContent: responseForHash,
           });
         }
 
@@ -117,7 +117,7 @@ export function schedulePostProcessing(
             ? response // full error response
             : path[1] === 'readUrl'
               ? { metrics }
-              : response,
+              : null,
           error,
         });
       } catch (err) {
