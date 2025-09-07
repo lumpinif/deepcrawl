@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "56ea4dc8-a101-4944-b223-01cd8931114f",
-  "prevId": "c6d4eb67-1a89-435f-9d47-3c374d5462e9",
+  "id": "d4e42b47-c662-4f3a-aa3e-21868491dabb",
+  "prevId": "9fced31a-408a-4c66-be7b-12d398bd46b5",
   "tables": {
     "activity_log": {
       "name": "activity_log",
@@ -21,15 +21,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "endpoint": {
-          "name": "endpoint",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "method": {
-          "name": "method",
+        "path": {
+          "name": "path",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -42,15 +35,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "text",
+        "cached": {
+          "name": "cached",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
-        "target_url": {
-          "name": "target_url",
+        "request_timestamp": {
+          "name": "request_timestamp",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -58,13 +51,6 @@
         },
         "request_url": {
           "name": "request_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "options_hash": {
-          "name": "options_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -79,20 +65,13 @@
         },
         "execution_time_ms": {
           "name": "execution_time_ms",
-          "type": "integer",
+          "type": "real",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "cached": {
-          "name": "cached",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "content_id": {
-          "name": "content_id",
+        "response_hash": {
+          "name": "response_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -119,14 +98,14 @@
           "name": "idx_activity_user_timestamp",
           "columns": [
             "user_id",
-            "timestamp"
+            "request_timestamp"
           ],
           "isUnique": false
         },
-        "idx_activity_endpoint_success": {
-          "name": "idx_activity_endpoint_success",
+        "idx_activity_path_success": {
+          "name": "idx_activity_path_success",
           "columns": [
-            "endpoint",
+            "path",
             "success"
           ],
           "isUnique": false
@@ -139,10 +118,10 @@
           "isUnique": false,
           "where": "\"activity_log\".\"execution_time_ms\" IS NOT NULL"
         },
-        "idx_activity_target_url": {
-          "name": "idx_activity_target_url",
+        "idx_activity_request_url": {
+          "name": "idx_activity_request_url",
           "columns": [
-            "target_url"
+            "request_url"
           ],
           "isUnique": false
         },
@@ -151,472 +130,106 @@
           "columns": [
             "user_id",
             "success",
-            "endpoint"
+            "path"
           ],
           "isUnique": false
         },
-        "idx_activity_options_hash": {
-          "name": "idx_activity_options_hash",
+        "idx_activity_request_options": {
+          "name": "idx_activity_request_options",
+          "columns": [
+            "request_options"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "activity_log_response_hash_response_record_response_hash_fk": {
+          "name": "activity_log_response_hash_response_record_response_hash_fk",
+          "tableFrom": "activity_log",
+          "tableTo": "response_record",
+          "columnsFrom": [
+            "response_hash"
+          ],
+          "columnsTo": [
+            "response_hash"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "response_record": {
+      "name": "response_record",
+      "columns": {
+        "response_hash": {
+          "name": "response_hash",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "options_hash": {
+          "name": "options_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "response": {
+          "name": "response",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "response_size": {
+          "name": "response_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(datetime('now'))"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(datetime('now'))"
+        }
+      },
+      "indexes": {
+        "idx_response_record_options": {
+          "name": "idx_response_record_options",
           "columns": [
             "options_hash"
           ],
           "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "links_response": {
-      "name": "links_response",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "method": {
-          "name": "method",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "success": {
-          "name": "success",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "target_url": {
-          "name": "target_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "request_url": {
-          "name": "request_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "request_options": {
-          "name": "request_options",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cached": {
-          "name": "cached",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "execution_time": {
-          "name": "execution_time",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cleaned_html": {
-          "name": "cleaned_html",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "metadata": {
-          "name": "metadata",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "meta_files": {
-          "name": "meta_files",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "ancestors": {
-          "name": "ancestors",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "skipped_urls": {
-          "name": "skipped_urls",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extracted_links": {
-          "name": "extracted_links",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "tree": {
-          "name": "tree",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "error": {
-          "name": "error",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "execution_time_ms": {
-          "name": "execution_time_ms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "total_urls": {
-          "name": "total_urls",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(datetime('now'))"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(datetime('now'))"
-        }
-      },
-      "indexes": {
-        "idx_links_response_user_created": {
-          "name": "idx_links_response_user_created",
+        "idx_response_record_path": {
+          "name": "idx_response_record_path",
           "columns": [
-            "user_id",
-            "created_at"
+            "path"
           ],
           "isUnique": false
-        },
-        "idx_links_response_success": {
-          "name": "idx_links_response_success",
-          "columns": [
-            "success"
-          ],
-          "isUnique": false
-        },
-        "idx_links_response_method": {
-          "name": "idx_links_response_method",
-          "columns": [
-            "method"
-          ],
-          "isUnique": false
-        },
-        "idx_links_response_target_url": {
-          "name": "idx_links_response_target_url",
-          "columns": [
-            "target_url"
-          ],
-          "isUnique": false
-        },
-        "idx_links_response_execution_time": {
-          "name": "idx_links_response_execution_time",
-          "columns": [
-            "execution_time_ms"
-          ],
-          "isUnique": false,
-          "where": "\"links_response\".\"execution_time_ms\" IS NOT NULL"
-        },
-        "idx_links_response_total_urls": {
-          "name": "idx_links_response_total_urls",
-          "columns": [
-            "total_urls"
-          ],
-          "isUnique": false,
-          "where": "\"links_response\".\"total_urls\" IS NOT NULL"
-        },
-        "idx_links_response_user_success_method": {
-          "name": "idx_links_response_user_success_method",
-          "columns": [
-            "user_id",
-            "success",
-            "method"
-          ],
-          "isUnique": false
-        },
-        "idx_links_response_timestamp": {
-          "name": "idx_links_response_timestamp",
-          "columns": [
-            "timestamp"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "read_response": {
-      "name": "read_response",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "method": {
-          "name": "method",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "success": {
-          "name": "success",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "target_url": {
-          "name": "target_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "request_url": {
-          "name": "request_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "request_options": {
-          "name": "request_options",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cached": {
-          "name": "cached",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "markdown": {
-          "name": "markdown",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "raw_html": {
-          "name": "raw_html",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cleaned_html": {
-          "name": "cleaned_html",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "metadata": {
-          "name": "metadata",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "meta_files": {
-          "name": "meta_files",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "metrics": {
-          "name": "metrics",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "error": {
-          "name": "error",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "execution_time_ms": {
-          "name": "execution_time_ms",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(datetime('now'))"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(datetime('now'))"
-        }
-      },
-      "indexes": {
-        "idx_read_response_user_created": {
-          "name": "idx_read_response_user_created",
-          "columns": [
-            "user_id",
-            "created_at"
-          ],
-          "isUnique": false
-        },
-        "idx_read_response_success": {
-          "name": "idx_read_response_success",
-          "columns": [
-            "success"
-          ],
-          "isUnique": false
-        },
-        "idx_read_response_method": {
-          "name": "idx_read_response_method",
-          "columns": [
-            "method"
-          ],
-          "isUnique": false
-        },
-        "idx_read_response_target_url": {
-          "name": "idx_read_response_target_url",
-          "columns": [
-            "target_url"
-          ],
-          "isUnique": false
-        },
-        "idx_read_response_execution_time": {
-          "name": "idx_read_response_execution_time",
-          "columns": [
-            "execution_time_ms"
-          ],
-          "isUnique": false,
-          "where": "\"read_response\".\"execution_time_ms\" IS NOT NULL"
-        },
-        "idx_read_response_user_success_method": {
-          "name": "idx_read_response_user_success_method",
-          "columns": [
-            "user_id",
-            "success",
-            "method"
-          ],
-          "isUnique": false
-        },
-        "idx_read_response_timestamp": {
-          "name": "idx_read_response_timestamp",
-          "columns": [
-            "timestamp"
-          ],
-          "isUnique": false,
-          "where": "\"read_response\".\"timestamp\" IS NOT NULL"
         }
       },
       "foreignKeys": {},
@@ -630,7 +243,9 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {}
+    "columns": {
+      "\"response_record\".\"response_json\"": "\"response_record\".\"response\""
+    }
   },
   "internal": {
     "indexes": {}

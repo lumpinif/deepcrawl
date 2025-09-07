@@ -1,5 +1,11 @@
 import { sql } from 'drizzle-orm';
-import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import {
+  index,
+  integer,
+  real,
+  sqliteTable,
+  text,
+} from 'drizzle-orm/sqlite-core';
 
 /**
  * Unified activity log - tracks all API requests across endpoints
@@ -22,11 +28,14 @@ export const activityLog = sqliteTable(
     requestUrl: text('request_url').notNull(), // Original URL before normalization
     requestOptions: text('request_options', { mode: 'json' }), // Full options JSON for reference
 
-    // Performance metrics
-    executionTimeMs: integer('execution_time_ms'),
+    // Performance metrics (fractional milliseconds)
+    executionTimeMs: real('execution_time_ms'),
 
-    // Future content reference (NULL for Phase 1)
-    contentId: text('content_id'), // Will reference content tables in Phase 2
+    // Response hash reference
+    responseHash: text('response_hash').references(
+      () => responseRecord.responseHash,
+      { onDelete: 'set null', onUpdate: 'cascade' },
+    ),
 
     // Error handling
     error: text('error'), // NULL if success = true
@@ -65,119 +74,40 @@ export const activityLog = sqliteTable(
 );
 
 /**
- * Read content storage - deduplicated content by hash
- * Separates content from activity for efficient storage and retrieval
+ * Store full response records for both read and links endpoints
+ * Response storage - deduplicated response by hash
  */
-export const readContent = sqliteTable(
-  'read_content',
+export const responseRecord = sqliteTable(
+  'response_record',
   {
-    // Primary key - content hash for deduplication
-    contentHash: text('content_hash').primaryKey(),
+    // Primary key - response hash for deduplication
+    responseHash: text('response_hash').primaryKey(),
 
     // Request identification
-    targetUrl: text('target_url').notNull(),
+    path: text('path').notNull(), // such as 'read-getMarkdown' or 'links-extractLinks'
     optionsHash: text('options_hash').notNull(),
 
-    // Read response content
-    markdown: text('markdown'),
-    rawHtml: text('raw_html'),
-    cleanedHtml: text('cleaned_html'),
-    title: text('title'),
-    description: text('description'),
-    metadata: text('metadata', { mode: 'json' }),
-    metaFiles: text('meta_files', { mode: 'json' }),
-    metrics: text('metrics', { mode: 'json' }),
+    // response string or json field
+    response: text('response', { mode: 'json' }),
 
-    // Content management
-    contentSize: integer('content_size'), // Total content size in bytes
-    firstSeen: text('first_seen').notNull(),
-    lastAccessed: text('last_accessed').notNull(),
-    accessCount: integer('access_count').notNull().default(1),
+    // content management
+    responseSize: integer('response_size'),
 
     // Timestamps
     createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
     updatedAt: text('updated_at').notNull().default(sql`(datetime('now'))`),
   },
   (table) => [
-    // Content lookup by URL and options
-    index('idx_read_content_target_options').on(
-      table.targetUrl,
-      table.optionsHash,
-    ),
+    // Options hash lookup
+    index('idx_response_record_options').on(table.optionsHash),
 
-    // Content cleanup queries
-    index('idx_read_content_last_accessed').on(table.lastAccessed),
-    index('idx_read_content_access_count').on(table.accessCount),
-
-    // Storage analytics
-    index('idx_read_content_size').on(table.contentSize),
-    index('idx_read_content_first_seen').on(table.firstSeen),
-
-    // Target URL analytics
-    index('idx_read_content_target_url').on(table.targetUrl),
-  ],
-);
-
-/**
- * Links content storage - deduplicated content by hash
- * Separates content from activity for efficient storage and retrieval
- */
-export const linksContent = sqliteTable(
-  'links_content',
-  {
-    // Primary key - content hash for deduplication
-    contentHash: text('content_hash').primaryKey(),
-
-    // Request identification
-    targetUrl: text('target_url').notNull(),
-    optionsHash: text('options_hash').notNull(),
-
-    // Links response content
-    tree: text('tree', { mode: 'json' }),
-    extractedLinks: text('extracted_links', { mode: 'json' }),
-    ancestors: text('ancestors', { mode: 'json' }),
-    skippedUrls: text('skipped_urls', { mode: 'json' }),
-    title: text('title'),
-    description: text('description'),
-    cleanedHtml: text('cleaned_html'),
-    metadata: text('metadata', { mode: 'json' }),
-
-    // Content management
-    contentSize: integer('content_size'), // Total content size in bytes
-    totalUrls: integer('total_urls'), // Extracted from tree for analytics
-    firstSeen: text('first_seen').notNull(),
-    lastAccessed: text('last_accessed').notNull(),
-    accessCount: integer('access_count').notNull().default(1),
-
-    // Timestamps
-    createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
-    updatedAt: text('updated_at').notNull().default(sql`(datetime('now'))`),
-  },
-  (table) => [
-    // Content lookup by URL and options
-    index('idx_links_content_target_options').on(
-      table.targetUrl,
-      table.optionsHash,
-    ),
-
-    // Content cleanup queries
-    index('idx_links_content_last_accessed').on(table.lastAccessed),
-    index('idx_links_content_access_count').on(table.accessCount),
-
-    // Storage analytics
-    index('idx_links_content_size').on(table.contentSize),
-    index('idx_links_content_total_urls').on(table.totalUrls),
-    index('idx_links_content_first_seen').on(table.firstSeen),
-
-    // Target URL analytics
-    index('idx_links_content_target_url').on(table.targetUrl),
+    // Path lookup
+    index('idx_response_record_path').on(table.path),
   ],
 );
 
 // TypeScript types for all tables
 export type ActivityLog = typeof activityLog.$inferSelect;
 export type NewActivityLog = typeof activityLog.$inferInsert;
-export type ReadContent = typeof readContent.$inferSelect;
-export type NewReadContent = typeof readContent.$inferInsert;
-export type LinksContent = typeof linksContent.$inferSelect;
-export type NewLinksContent = typeof linksContent.$inferInsert;
+export type ResponseRecord = typeof responseRecord.$inferSelect;
+export type NewResponseRecord = typeof responseRecord.$inferInsert;

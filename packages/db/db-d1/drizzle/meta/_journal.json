@@ -5,43 +5,15 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1756632530173,
-      "tag": "0000_hot_microbe",
+      "when": 1757237158691,
+      "tag": "0000_certain_next_avengers",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "6",
-      "when": 1756655549924,
-      "tag": "0001_low_odin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1756698542010,
-      "tag": "0002_tranquil_puppet_master",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1756706388557,
-      "tag": "0003_hot_earthquake",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1757216342308,
-      "tag": "0004_sweet_bishop",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1757216595151,
-      "tag": "0005_remarkable_cannonball",
+      "when": 1757239881774,
+      "tag": "0001_gifted_ma_gnuci",
       "breakpoints": true
     }
   ]
