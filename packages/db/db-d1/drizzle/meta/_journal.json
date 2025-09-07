@@ -29,6 +29,20 @@
       "when": 1756706388557,
       "tag": "0003_hot_earthquake",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1757216342308,
+      "tag": "0004_sweet_bishop",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1757216595151,
+      "tag": "0005_remarkable_cannonball",
+      "breakpoints": true
     }
   ]
 }

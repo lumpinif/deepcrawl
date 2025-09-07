@@ -13,20 +13,17 @@ export const activityLog = sqliteTable(
     userId: text('user_id'),
 
     // Request metadata
-    endpoint: text('endpoint').notNull(), // 'read' or 'links'
-    method: text('method').notNull(), // 'GET' or 'POST'
+    path: text('path').notNull(), // such as 'read-getMarkdown' or 'links-extractLinks'
     success: integer('success', { mode: 'boolean' }).notNull(),
-    timestamp: text('timestamp').notNull(),
+    cached: integer('cached', { mode: 'boolean' }),
+    requestTimestamp: text('request_timestamp').notNull(),
 
     // URL and options
-    targetUrl: text('target_url').notNull(),
     requestUrl: text('request_url').notNull(), // Original URL before normalization
-    optionsHash: text('options_hash').notNull(), // Hash of request options
     requestOptions: text('request_options', { mode: 'json' }), // Full options JSON for reference
 
     // Performance metrics
     executionTimeMs: integer('execution_time_ms'),
-    cached: integer('cached', { mode: 'boolean' }),
 
     // Future content reference (NULL for Phase 1)
     contentId: text('content_id'), // Will reference content tables in Phase 2
@@ -39,10 +36,13 @@ export const activityLog = sqliteTable(
   },
   (table) => [
     // Primary user activity queries (dashboard timeline)
-    index('idx_activity_user_timestamp').on(table.userId, table.timestamp),
+    index('idx_activity_user_timestamp').on(
+      table.userId,
+      table.requestTimestamp,
+    ),
 
     // Endpoint-specific queries
-    index('idx_activity_endpoint_success').on(table.endpoint, table.success),
+    index('idx_activity_path_success').on(table.path, table.success),
 
     // Performance analytics
     index('idx_activity_execution_time')
@@ -50,17 +50,17 @@ export const activityLog = sqliteTable(
       .where(sql`${table.executionTimeMs} IS NOT NULL`),
 
     // URL-based queries
-    index('idx_activity_target_url').on(table.targetUrl),
+    index('idx_activity_request_url').on(table.requestUrl),
 
     // User success rate analysis
     index('idx_activity_user_success').on(
       table.userId,
       table.success,
-      table.endpoint,
+      table.path,
     ),
 
     // Options hash for future content linking
-    index('idx_activity_options_hash').on(table.optionsHash),
+    index('idx_activity_request_options').on(table.requestOptions),
   ],
 );
 
