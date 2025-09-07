@@ -1,7 +1,7 @@
 import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
-import { createActivityLogger } from '@/utils/activity-logger';
+import { createActivityLogger } from '@/services/analytics/activity-logger.service';
 import { processReadRequest } from './read.processor';
 
 export const readGETHandler = authed
