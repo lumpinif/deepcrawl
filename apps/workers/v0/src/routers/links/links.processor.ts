@@ -648,10 +648,12 @@ export async function processLinksRequest(
     linksPostResponse = cleanEmptyValues<LinksSuccessResponse>({
       success: true,
       cached: linksCacheIsFresh,
-      executionTime: !withTree || !finalTree ? executionTime : undefined,
       targetUrl,
       timestamp,
       ancestors,
+
+      /* root-level fields that are only included if there is no tree */
+      executionTime: !withTree || !finalTree ? executionTime : undefined,
       title: !withTree || !finalTree ? targetScrapeResult?.title : undefined,
       description:
         !withTree || !finalTree ? targetScrapeResult?.description : undefined,
@@ -667,8 +669,10 @@ export async function processLinksRequest(
         isCleanedHtml && (!withTree || !finalTree)
           ? targetScrapeResult?.cleanedHtml
           : undefined,
-      tree: withTree && finalTree ? finalTree : undefined,
       skippedUrls: !withTree || !finalTree ? categorizedSkippedUrls : undefined,
+
+      /* tree data including root-level fields */
+      tree: withTree && finalTree ? finalTree : undefined,
     });
 
     if (!linksPostResponse) {
