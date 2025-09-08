@@ -38,6 +38,16 @@ function isUrlInVisitedSet(
   return false;
 }
 
+export class LinksProcessingError extends Error {
+  readonly data: LinksErrorResponse;
+
+  constructor(data: LinksErrorResponse) {
+    super(data.error);
+    this.name = 'LinksProcessingError';
+    this.data = data;
+  }
+}
+
 export function createLinksErrorResponse({
   targetUrl,
   error = 'Failed to scrape target URL. The URL may be unreachable, a placeholder URL, or returning an error status.',
@@ -67,7 +77,7 @@ export async function processLinksRequest(
   c: ORPCContext,
   params: LinksOptions,
   isGETRequest = false,
-): Promise<LinksResponse> {
+): Promise<LinksSuccessResponse> {
   const startTime = performance.now();
   const {
     url,
@@ -467,9 +477,9 @@ export async function processLinksRequest(
         'error' in result,
     );
 
-    // If we have an error response, return it immediately
+    // If we have an error response, throw an LinksProcessingError
     if (errorResponse) {
-      return errorResponse;
+      throw new LinksProcessingError(errorResponse);
     }
 
     // Extract target URL result from the results array - using proper type checking

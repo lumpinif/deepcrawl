@@ -7,6 +7,7 @@ import { authed } from '@/orpc';
 import { schedulePostProcessing } from '@/utils/post-processing';
 import {
   createLinksErrorResponse,
+  LinksProcessingError,
   processLinksRequest,
 } from './links.processor';
 
@@ -45,13 +46,21 @@ export const linksGETHandler = authed
           ? `${error.name}: ${error.message} - ${error.stack}`
           : String(error);
 
-      const linksErrorResponse: LinksErrorResponse = createLinksErrorResponse({
-        targetUrl: url,
-        error: err,
-        withTree: false,
-        existingTree: undefined,
-        tree: undefined,
-      });
+      let linksErrorResponse: LinksErrorResponse;
+
+      if (error instanceof LinksProcessingError) {
+        // Preserve processor-provided error response (including tree/timestamp) and override message
+        linksErrorResponse = { ...error.data, error: err };
+      } else {
+        // If the error is not a LinksProcessingError, create a generic LinksErrorResponse
+        linksErrorResponse = createLinksErrorResponse({
+          targetUrl: url,
+          error: err,
+          withTree: false,
+          existingTree: undefined,
+          tree: undefined,
+        });
+      }
 
       schedulePostProcessing(c, {
         path,
@@ -61,7 +70,6 @@ export const linksGETHandler = authed
         startedAt,
         requestTimestamp,
         success: false,
-        error: err,
       });
 
       throw errors.LINKS_ERROR_RESPONSE({
@@ -104,13 +112,21 @@ export const linksPOSTHandler = authed
           ? `${error.name}: ${error.message} - ${error.stack}`
           : String(error);
 
-      const linksErrorResponse: LinksErrorResponse = createLinksErrorResponse({
-        targetUrl: url,
-        error: err,
-        withTree: false,
-        existingTree: undefined,
-        tree: undefined,
-      });
+      let linksErrorResponse: LinksErrorResponse;
+
+      if (error instanceof LinksProcessingError) {
+        // Preserve processor-provided error response (including tree/timestamp) and override message
+        linksErrorResponse = { ...error.data, error: err };
+      } else {
+        // If the error is not a LinksProcessingError, create a generic LinksErrorResponse
+        linksErrorResponse = createLinksErrorResponse({
+          targetUrl: url,
+          error: err,
+          withTree: false,
+          existingTree: undefined,
+          tree: undefined,
+        });
+      }
 
       schedulePostProcessing(c, {
         path,
@@ -120,7 +136,6 @@ export const linksPOSTHandler = authed
         startedAt,
         requestTimestamp,
         success: false,
-        error: err,
       });
 
       throw errors.LINKS_ERROR_RESPONSE({
