@@ -54,7 +54,6 @@ export const readGETHandler = authed
         startedAt,
         requestTimestamp,
         success: false,
-        error: errorMessage,
       });
 
       throw errors.READ_ERROR_RESPONSE({
@@ -110,7 +109,6 @@ export const readPOSTHandler = authed
         startedAt,
         requestTimestamp,
         success: false,
-        error: errorMessage,
       });
 
       throw errors.READ_ERROR_RESPONSE({

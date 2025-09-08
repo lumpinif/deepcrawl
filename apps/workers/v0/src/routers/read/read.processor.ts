@@ -2,7 +2,6 @@ import {
   _ENABLE_READ_CACHE,
   DEFAULT_CACHE_OPTIONS,
   type ReadOptions,
-  type ReadPostResponse,
   type ReadResponse,
   type ReadStringResponse,
   type ReadSuccessResponse,
@@ -146,7 +145,7 @@ export async function processReadRequest(
   c: ORPCContext,
   params: ReadOptions,
   isGETRequest?: false,
-): Promise<ReadPostResponse>;
+): Promise<ReadSuccessResponse>;
 
 export async function processReadRequest(
   c: ORPCContext,
