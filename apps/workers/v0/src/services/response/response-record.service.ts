@@ -1,43 +1,33 @@
 import { eq, type NewResponseRecord, responseRecord } from '@deepcrawl/db-d1';
-import type {
-  LinksResponse,
-  LinksSuccessResponse,
-} from '@deepcrawl/types/routers/links/types';
-import type {
-  ReadPostResponse,
-  ReadStringResponse,
-} from '@deepcrawl/types/routers/read/types';
+import type { LinksSuccessResponse } from '@deepcrawl/types/routers/links/types';
+
 import type { AppVariables } from '@/lib/context';
-import type { RequestsOptions } from '@/services/analytics/activity-logger.service';
 import { sha256Hash, stableStringify } from '@/utils/hash/hash-tools';
 import {
   calculateResponseSize,
   generateResponseHash,
 } from '@/utils/hash/response-hash';
 import { logDebug, logError } from '@/utils/loggers';
+import type { ExtractedDynamicsForHashResult } from '@/utils/tail-jobs/dynamics-handling';
+import type { AnyRequestsOptions } from '@/utils/tail-jobs/post-processing';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
 
-export type ResponseTypes =
-  | ReadStringResponse
-  | ReadPostResponse
-  | LinksResponse;
-
 interface CreateRequestOptionsHashParams {
-  requestOptions: RequestsOptions;
+  requestOptions: AnyRequestsOptions;
 }
 
 interface CreateStableResponseHashParams {
   path: string;
   requestUrl: string;
   optionsHash: string;
-  response: ResponseTypes;
+  response: ExtractedDynamicsForHashResult['responseForHash'];
   linksRootKey?: string;
 }
 
 interface StoreResponseRecordParams {
   path: string;
   requestUrl: string;
-  responseContent: ResponseTypes;
+  responseContent: ExtractedDynamicsForHashResult['responseForHash'];
   optionsHash: string;
   responseHash: string;
 }
@@ -76,12 +66,26 @@ export class ResponseRecordService {
       ) {
         const canonical = JSON.stringify(response);
         return await sha256Hash(
-          `${linksRootKey}|${optionsHash}|links-v1|no-tree|${canonical}`,
+          `${linksRootKey}|${optionsHash}|links|no-tree|${canonical}`,
         );
       }
-      // default links (tree present or non-success): stable key only
-      return await sha256Hash(`${linksRootKey}|${optionsHash}|links-v1`);
+
+      // links with tree: use stripped response content for consistent hashing
+      if (
+        typeof response === 'object' &&
+        response !== null &&
+        'success' in response &&
+        (response as LinksSuccessResponse).success === true
+      ) {
+        const canonical = JSON.stringify(response);
+        return await sha256Hash(
+          `${linksRootKey}|${optionsHash}|links|with-tree|${canonical}`,
+        );
+      }
+      // fallback for non-success responses: stable key only
+      return await sha256Hash(`${linksRootKey}|${optionsHash}|links`);
     }
+
     const targetUrl =
       typeof response === 'object'
         ? response.targetUrl
@@ -108,20 +112,20 @@ export class ResponseRecordService {
       const responseSize = calculateResponseSize(responseContent);
 
       if (existing.length > 0) {
-        // Response exists - refresh stored content and updatedAt for links only; for reads, only bump timestamp
-        const isLinks = path.startsWith('links-');
+        // Response exists - only update timestamp to preserve historical accuracy
+        // Never overwrite responseContent as it corrupts data authenticity
         await this.db
           .update(responseRecord)
-          .set(
-            isLinks
-              ? { responseContent, responseSize, updatedAt: now }
-              : { updatedAt: now },
-          )
+          .set({ updatedAt: now })
           .where(eq(responseRecord.responseHash, responseHash));
 
-        logDebug('[ResponseRecordService] 💽 Existing response record found', {
-          responseHash,
-        });
+        logDebug(
+          '[ResponseRecordService] 💽 Existing response record found - timestamp updated',
+          {
+            responseHash,
+            preservedContent: true,
+          },
+        );
       } else {
         // New response - insert with deduplication
         const newResponse: NewResponseRecord = {

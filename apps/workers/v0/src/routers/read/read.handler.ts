@@ -1,7 +1,7 @@
 import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
-import { schedulePostProcessing } from '@/utils/post-processing';
+import { schedulePostProcessing } from '@/utils/tail-jobs/post-processing';
 import { processReadRequest } from './read.processor';
 
 export const readGETHandler = authed

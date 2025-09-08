@@ -1,98 +1,73 @@
-import type { LinksSuccessResponse } from '@deepcrawl/types/routers/links/types';
-import type { ReadSuccessResponse } from '@deepcrawl/types/routers/read/types';
+import type {
+  ExtractLinksOptions,
+  GetLinksOptions,
+  GetMarkdownOptions,
+  ReadUrlOptions,
+} from '@deepcrawl/contracts';
+import type {
+  LinksErrorResponse,
+  LinksSuccessResponse,
+} from '@deepcrawl/types/routers/links/types';
+import type {
+  ReadErrorResponse,
+  ReadStringResponse,
+  ReadSuccessResponse,
+} from '@deepcrawl/types/routers/read/types';
 import type { ORPCContext } from '@/lib/context';
-import type { RequestsOptions } from '@/services/analytics/activity-logger.service';
 import { createActivityLogger } from '@/services/analytics/activity-logger.service';
-import {
-  createResponseRecordService,
-  type ResponseTypes,
-} from '@/services/response/response-record.service';
+import { createResponseRecordService } from '@/services/response/response-record.service';
 import { logError } from '@/utils/loggers';
+import { extractDynamicsForHash } from './dynamics-handling';
 
-interface SchedulePostProcessingParams {
+export type AnyRequestsOptions =
+  | GetMarkdownOptions
+  | ReadUrlOptions
+  | GetLinksOptions
+  | ExtractLinksOptions;
+
+export interface PostProcessingParamsBase {
   path: readonly string[];
   requestUrl: string;
-  requestOptions: RequestsOptions;
-  response: ResponseTypes;
+  requestOptions: AnyRequestsOptions; // all kinds of options unified together
   startedAt: number;
   requestTimestamp: string;
   success: boolean;
-  error?: string;
 }
 
-type ReadSuccessResponseWithoutMetrics = Omit<ReadSuccessResponse, 'metrics'>;
-
-type Dynamics =
-  | { metrics?: ReadSuccessResponse['metrics'] }
-  | { timestamp?: string; executionTime?: string }
-  | null;
-
-interface ExtractedDynamicsResult {
-  responseForHash: ResponseTypes | ReadSuccessResponseWithoutMetrics;
-  dynamics: Dynamics;
+export interface PostProcessingParamsSuccess extends PostProcessingParamsBase {
+  success: true;
+  response: ReadStringResponse | ReadSuccessResponse | LinksSuccessResponse;
 }
 
-function extractDynamicsForHash(
-  path: readonly string[],
-  response: ResponseTypes,
-  success: boolean,
-): ExtractedDynamicsResult {
-  if (!success) return { responseForHash: response, dynamics: null };
-
-  // read/readUrl: strip metrics
-  if (path[0] === 'read' && path[1] === 'readUrl') {
-    if (typeof response === 'object' && response && 'success' in response) {
-      const r = response as ReadSuccessResponse;
-      if (r.success === true) {
-        const { metrics, ...rest } = r;
-        return {
-          responseForHash: rest as ReadSuccessResponseWithoutMetrics,
-          dynamics: { metrics },
-        };
-      }
-    }
-  }
-
-  // links without tree: strip timestamp and executionTime
-  if (path[0] === 'links') {
-    if (
-      typeof response === 'object' &&
-      response &&
-      'success' in response &&
-      (response as LinksSuccessResponse).success === true &&
-      !(response as LinksSuccessResponse).tree
-    ) {
-      const { timestamp, executionTime, ...rest } =
-        response as LinksSuccessResponse;
-      return {
-        responseForHash: rest as unknown as ResponseTypes,
-        dynamics: { timestamp, executionTime },
-      };
-    }
-  }
-
-  return { responseForHash: response, dynamics: null };
+export interface PostProcessingParamsFailure extends PostProcessingParamsBase {
+  success: false;
+  response: ReadErrorResponse | LinksErrorResponse;
 }
+
+export type PostProcessingParams =
+  | PostProcessingParamsFailure
+  | PostProcessingParamsSuccess;
 
 export function schedulePostProcessing(
   c: ORPCContext,
-  params: SchedulePostProcessingParams,
+  params: PostProcessingParams,
 ): void {
   const {
     path, // string[] such as [ 'read', 'getMarkdown' ]
     requestUrl,
     requestOptions,
-    response,
+    success,
+    response, // full response, when success is true, getMarkdown (ReadStringResponse), readUrl (ReadSuccessResponse), getLinks (LinksSuccessResponse), extractLinks (LinksSuccessResponse), when success is false, ReadErrorResponse, LinksErrorResponse
     startedAt,
     requestTimestamp,
-    success,
-    error,
   } = params;
 
   const joinedPath = path.join('-'); // such as [ 'read', 'getMarkdown' ] => 'read-getMarkdown'
 
   const activityLogger = createActivityLogger(c);
   const responseRecordService = createResponseRecordService(c.var.dbd1);
+
+  const isGetMarkdown = path[0] === 'read' && path[1] === 'getMarkdown';
 
   c.executionCtx.waitUntil(
     (async () => {
@@ -104,11 +79,11 @@ export function schedulePostProcessing(
           });
 
         // derive responseForHash and dynamics for activity metadata
-        const { responseForHash, dynamics } = extractDynamicsForHash(
+        const { responseForHash, dynamics } = extractDynamicsForHash({
           path,
           response,
           success,
-        );
+        });
 
         // create response hash (stable strategy for links)
         const responseHash =
@@ -116,7 +91,7 @@ export function schedulePostProcessing(
             path: joinedPath,
             optionsHash,
             requestUrl,
-            response: responseForHash,
+            response: isGetMarkdown ? response : responseForHash,
             linksRootKey: c.linksRootKey,
           });
 
@@ -127,7 +102,7 @@ export function schedulePostProcessing(
             optionsHash,
             requestUrl,
             responseHash,
-            responseContent: responseForHash, // store canonical content for dedup
+            responseContent: isGetMarkdown ? response : responseForHash, // store canonical content for dedup
           });
         }
 
@@ -146,7 +121,7 @@ export function schedulePostProcessing(
           responseMetadata: !success
             ? response
             : ((dynamics as unknown) ?? null),
-          error,
+          error: !success ? response : undefined,
         });
       } catch (err) {
         logError(`[${joinedPath} Post-processing] failed`, err);

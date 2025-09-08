@@ -1,19 +1,10 @@
-import type {
-  ExtractLinksOptions,
-  GetLinksOptions,
-  GetMarkdownOptions,
-  ReadUrlOptions,
-} from '@deepcrawl/contracts';
 import { activityLog, type NewActivityLog } from '@deepcrawl/db-d1';
+import type { LinksErrorResponse } from '@deepcrawl/types/routers/links/types';
+import type { ReadErrorResponse } from '@deepcrawl/types/routers/read/types';
 import type { AppVariables, ORPCContext } from '@/lib/context';
 import { logDebug, logError } from '@/utils/loggers';
-import type { ResponseTypes } from '../response/response-record.service';
-
-export type RequestsOptions =
-  | GetMarkdownOptions
-  | ReadUrlOptions
-  | GetLinksOptions
-  | ExtractLinksOptions;
+import type { AnyResponseTypes } from '@/utils/tail-jobs/dynamics-handling';
+import type { AnyRequestsOptions } from '@/utils/tail-jobs/post-processing';
 
 interface LogActivityParams {
   path: string; // such as [ 'read', 'getMarkdown' ] = 'read-getMarkdown'
@@ -22,11 +13,11 @@ interface LogActivityParams {
   cached: boolean;
   requestTimestamp: string;
   requestUrl: string;
-  requestOptions: RequestsOptions;
+  requestOptions: AnyRequestsOptions;
   executionTimeMs: number;
   responseHash: string | null;
-  responseMetadata: Partial<ResponseTypes> | null;
-  error?: string;
+  responseMetadata: Partial<AnyResponseTypes> | null;
+  error?: ReadErrorResponse | LinksErrorResponse;
 }
 
 export class ActivityLogger {
