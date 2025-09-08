@@ -40,7 +40,7 @@ export const activityLog = sqliteTable(
     responseMetadata: text('response_metadata', { mode: 'json' }),
 
     // Error handling
-    error: text('error'), // NULL if success = true
+    error: text('error', { mode: 'json' }), // NULL if success = true
 
     // Timestamps
     createdAt: text('created_at').notNull().default(sql`(datetime('now'))`),
