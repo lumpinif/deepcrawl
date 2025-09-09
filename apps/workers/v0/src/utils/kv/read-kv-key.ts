@@ -9,15 +9,17 @@ export async function getReadCacheKey(
   params: ReadOptions,
   isStringResponse: boolean,
 ): Promise<string> {
-  const { url, cacheOptions, ...contentAffectingOptions } = params;
+  const { url } = params;
 
-  // Generate hash of all options that affect response content
-  // Exclude cacheOptions since it only affects KV storage behavior, not response content
-  const optionsHash = await sha256Hash(
-    stableStringify(contentAffectingOptions),
-  );
+  // Generate hash of all options
+  const optionsHash = await sha256Hash(stableStringify(params));
 
-  // Prefix includes handler type (string or json)
-  const handlerType = isStringResponse ? 'string' : 'json';
-  return `${handlerType}:read:${url}:${optionsHash}`;
+  // Prefix includes handler type
+  const handlerType = isStringResponse ? 'GET' : 'POST';
+  const expirationTtl = params.cacheOptions?.expirationTtl;
+  const ttl = expirationTtl
+    ? `${Math.floor(expirationTtl / 86400)}d`
+    : 'default-ttl';
+
+  return `${handlerType}:read:${url}:${optionsHash}:${ttl}`;
 }
