@@ -497,7 +497,7 @@ function CleaningProcessorSelect({
           </Label>
         </TooltipTrigger>
         <TooltipContent side="right" className="max-w-md">
-          <p className="text-balance text-pretty">
+          <p className="text-pretty">
             The cleaning processor to use. Cheerio-reader is the default and
             recommended cleaning processor, but our custom html-rewriter is used
             for github.com urls. Try different processors for potential better
@@ -624,6 +624,13 @@ export function OptionsPanel({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          <CleaningProcessorSelect
+            id="markdown-cleaningProcessor"
+            label="HTML Cleaning Processor"
+            value={markdownOptions.cleaningProcessor}
+            onValueChange={(value) => updateOption('cleaningProcessor', value)}
+          />
+          <Separator />
           {/* Cache Options */}
           <CollapsibleSection
             id="markdownCacheOptions"
