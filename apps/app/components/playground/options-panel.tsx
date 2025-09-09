@@ -475,6 +475,49 @@ function CollapsibleSection({
   );
 }
 
+interface CleaningProcessorSelectProps {
+  id: string;
+  label: string;
+  value: string | undefined;
+  onValueChange: (value: string) => void;
+}
+
+function CleaningProcessorSelect({
+  id,
+  label,
+  value,
+  onValueChange,
+}: CleaningProcessorSelectProps) {
+  return (
+    <div className="flex w-full items-center justify-between space-x-2">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Label htmlFor={id} className="cursor-help text-sm">
+            {label}
+          </Label>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="max-w-md">
+          <p className="text-balance text-pretty">
+            The cleaning processor to use. Cheerio-reader is the default and
+            recommended cleaning processor, but our custom html-rewriter is used
+            for github.com urls. Try different processors for potential better
+            results.
+          </p>
+        </TooltipContent>
+      </Tooltip>
+      <Select value={value || 'cheerio-reader'} onValueChange={onValueChange}>
+        <SelectTrigger size="sm">
+          <SelectValue placeholder="Select processor" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="cheerio-reader">Cheerio Reader</SelectItem>
+          <SelectItem value="html-rewriter">HTML Rewriter</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 interface OptionsPanelProps {
   selectedOperation: DeepcrawlOperations;
   options: ReadUrlOptions | ExtractLinksOptions | GetMarkdownOptions;
@@ -656,6 +699,13 @@ export function OptionsPanel({
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Basic Options */}
+          <CleaningProcessorSelect
+            id="cleaningProcessor"
+            label="HTML Cleaning Processor"
+            value={readOptions.cleaningProcessor}
+            onValueChange={(value) => updateOption('cleaningProcessor', value)}
+          />
+          <Separator />
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Content Options</h4>
             <div className="grid grid-cols-2 gap-4">
@@ -698,6 +748,7 @@ export function OptionsPanel({
                 label="Fetch Robots.txt"
                 checked={readOptions.robots === true}
                 onCheckedChange={(checked) => updateOption('robots', checked)}
+                tooltip="Whether to fetch and parse robots.txt."
               />
             </div>
           </div>
@@ -767,36 +818,6 @@ export function OptionsPanel({
               }
             />
           </CollapsibleSection>
-
-          <Separator />
-
-          {/* Cleaning Processor Options */}
-          <CollapsibleSection
-            id="cleaningOptions"
-            title="Cleaning Options"
-            isOpen={expandedSections.has('cleaningOptions')}
-            onToggle={() => toggleSection('cleaningOptions')}
-          >
-            <div className="space-y-2">
-              <Label htmlFor="cleaningProcessor" className="text-sm">
-                Cleaning Processor
-              </Label>
-              <Select
-                value={readOptions.cleaningProcessor || 'cheerio-reader'}
-                onValueChange={(value) =>
-                  updateOption('cleaningProcessor', value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select processor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cheerio-reader">Cheerio Reader</SelectItem>
-                  <SelectItem value="html-rewriter">HTML Rewriter</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CollapsibleSection>
         </CardContent>
       </Card>
     );
@@ -830,6 +851,13 @@ export function OptionsPanel({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          <CleaningProcessorSelect
+            id="links-cleaningProcessor"
+            label="HTML Cleaning Processor"
+            value={linksOptions.cleaningProcessor}
+            onValueChange={(value) => updateOption('cleaningProcessor', value)}
+          />
+          <Separator />
           {/* Basic Options */}
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Content Options</h4>
@@ -991,10 +1019,10 @@ export function OptionsPanel({
               <OptionSwitch
                 id="removeQueryParams"
                 label="Remove Query Params"
-                checked={
-                  linksOptions.linkExtractionOptions?.removeQueryParams !==
-                  false
-                }
+                checked={Boolean(
+                  linksOptions.linkExtractionOptions?.removeQueryParams ??
+                    DEFAULT_LINK_EXTRACTION_OPTIONS.removeQueryParams,
+                )}
                 onCheckedChange={(checked) =>
                   updateNestedOptionValue(
                     'linkExtractionOptions',
@@ -1002,6 +1030,7 @@ export function OptionsPanel({
                     checked,
                   )
                 }
+                tooltip="Whether to remove query parameters from the extracted links."
               />
             </div>
             <div className="space-y-2">
@@ -1074,36 +1103,6 @@ export function OptionsPanel({
               }}
               defaultTtl={DEFAULT_LINKS_OPTIONS.cacheOptions.expirationTtl}
             />
-          </CollapsibleSection>
-
-          <Separator />
-
-          {/* Cleaning Processor Options for Links */}
-          <CollapsibleSection
-            id="linksCleaningOptions"
-            title="Cleaning Options"
-            isOpen={expandedSections.has('linksCleaningOptions')}
-            onToggle={() => toggleSection('linksCleaningOptions')}
-          >
-            <div className="space-y-2">
-              <Label htmlFor="links-cleaningProcessor" className="text-sm">
-                Cleaning Processor
-              </Label>
-              <Select
-                value={linksOptions.cleaningProcessor || 'cheerio-reader'}
-                onValueChange={(value) =>
-                  updateOption('cleaningProcessor', value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select processor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cheerio-reader">Cheerio Reader</SelectItem>
-                  <SelectItem value="html-rewriter">HTML Rewriter</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </CollapsibleSection>
         </CardContent>
       </Card>
