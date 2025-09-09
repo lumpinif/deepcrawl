@@ -160,6 +160,7 @@ export async function processReadRequest(
     rawHtml: isRawHtml,
     cacheOptions,
     markdownConverterOptions,
+    cleaningProcessor,
   } = params;
 
   logDebug(
@@ -236,7 +237,7 @@ export async function processReadRequest(
       url: targetUrl,
       cleanedHtml: true, // required for scraping, but returned as undefined if disabled in the result
       cleaningProcessor:
-        params.cleaningProcessor ??
+        cleaningProcessor ??
         (!isGithubUrl ? 'html-rewriter' : 'cheerio-reader'),
       fetchOptions: { signal: c.signal, ...params.fetchOptions },
     });
