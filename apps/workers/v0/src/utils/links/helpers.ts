@@ -1,8 +1,4 @@
-import {
-  type ExtractedLinks,
-  type LinkExtractionOptions,
-  PLATFORM_URLS,
-} from '@deepcrawl/types';
+import type { ExtractedLinks, LinkExtractionOptions } from '@deepcrawl/types';
 import type {
   SkippedLinks,
   SkippedUrl,
@@ -10,17 +6,17 @@ import type {
   VisitedUrl,
 } from '@deepcrawl/types/routers/links';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
-
+import { checkIsPlatformUrl } from '@/routers/links/links.processor';
 import type { LinkService } from '@/services/link/link.service';
 
-export function getTreeNameForUrl(url: string): string {
+export function getTreeNameForUrl(
+  url: string,
+  isPlatformUrl?: boolean,
+): string {
   try {
     const urlObj = new URL(url);
-    const host = urlObj.hostname;
-    const normalizedUrl = `${urlObj.protocol}//${host}`;
-    const isPlatform = PLATFORM_URLS.some(
-      (platform) => normalizedUrl === platform,
-    );
+    const host = urlObj.hostname.toLowerCase();
+    const isPlatform = checkIsPlatformUrl(url, Boolean(isPlatformUrl));
     if (isPlatform) {
       const segments = urlObj.pathname.split('/').filter(Boolean);
       // For GitHub and other platforms, use org/repo if present, or org if only one segment
@@ -176,7 +172,8 @@ export function buildLinksTree({
   includeExtractedLinks,
   folderFirst = true,
   linksOrder = 'page',
-}: BuildLinksTreeOptions): Tree | undefined {
+  isPlatformUrl,
+}: BuildLinksTreeOptions & { isPlatformUrl?: boolean }): Tree | undefined {
   // Create a Map for faster lookups of visited URLs
   const visitedUrlsMap = new Map<string, string | null | undefined>();
   if (visitedUrls) {
@@ -194,7 +191,7 @@ export function buildLinksTree({
   const rootNode: Tree = {
     totalUrls: 1, // Start with 1 to count the root node itself
     executionTime: undefined,
-    name: getTreeNameForUrl(normalizedRootUrl),
+    name: getTreeNameForUrl(normalizedRootUrl, isPlatformUrl),
     url: normalizedRootUrl,
     rootUrl: normalizedRootUrl,
     lastVisited: visitedUrlsMap.get(normalizedRootUrl) || undefined,
@@ -222,15 +219,12 @@ export function buildLinksTree({
   const urlMap: Map<string, Tree> = new Map();
   urlMap.set(rootNode.url, rootNode);
 
-  // --- 2. Sort Links for Efficient Processing (Optional but helpful) ---
-  /* NO-PRESORTING. DEPRECATED AND SHOULD BE REMOVED IN FUTURE VERSIONS */
-  // Sorting by length/depth helps ensure parent paths are likely processed before children
-  // const sortedLinks = [...internalLinks].sort((a, b) => a.length - b.length);
-
-  const sortedLinks = internalLinks;
+  // Get root URL segments for platform URL filtering
+  const rootUrlObj = new URL(normalizedRootUrl);
+  const rootPathSegments = rootUrlObj.pathname.split('/').filter(Boolean);
 
   // --- 3. Process Each Link and Place in Tree ---
-  for (const linkUrl of sortedLinks) {
+  for (const linkUrl of internalLinks) {
     try {
       // Skip if already processed (shouldn't happen often with sorting, but good safeguard)
       if (urlMap.has(linkUrl)) {
@@ -252,7 +246,6 @@ export function buildLinksTree({
 
       // --- b. Determine Path Segments Relative to Root ---
       const linkUrlObj = new URL(normalizedLinkUrl);
-      const rootUrlObj = new URL(normalizedRootUrl);
       const segments: string[] = [];
 
       // Handle Subdomain differences e.g., https://sub.example.com -> https://example.com
@@ -275,8 +268,29 @@ export function buildLinksTree({
         }
       }
 
-      // Add pathname segments
-      segments.push(...linkUrlObj.pathname.split('/').filter(Boolean)); // filter(Boolean) removes empty strings
+      // Add pathname segments, filtering out segments that are already part of root path
+      const linkPathSegments = linkUrlObj.pathname.split('/').filter(Boolean);
+
+      // If root has path segments and link path starts with root path, skip the common segments
+      if (
+        rootPathSegments.length > 0 &&
+        linkPathSegments.join('/').startsWith(rootPathSegments.join('/'))
+      ) {
+        // Skip segments that already exist in root path
+        // e.g., if root is /blog and link is /blog/post, only add 'post'
+        const filteredSegments = linkPathSegments.slice(
+          rootPathSegments.length,
+        );
+        segments.push(...filteredSegments);
+      } else {
+        // For all other cases, add all path segments
+        segments.push(...linkPathSegments);
+      }
+
+      // Skip if no segments to process (link is same as root)
+      if (segments.length === 0) {
+        continue;
+      }
 
       // --- c. Traverse/Create Nodes ---
       let currentNode = rootNode;
@@ -432,7 +446,8 @@ export async function mergeNewLinksIntoTree({
   includeExtractedLinks,
   folderFirst = true,
   linksOrder = 'page',
-}: MergeNewLinksIntoTreeOptions): Promise<Tree> {
+  isPlatformUrl,
+}: MergeNewLinksIntoTreeOptions & { isPlatformUrl?: boolean }): Promise<Tree> {
   // Create a Map for faster lookups of visited URLs
   const visitedUrlsMap = new Map<string, string | null | undefined>();
   if (visitedUrls) {
@@ -450,7 +465,9 @@ export async function mergeNewLinksIntoTree({
     executionTime: existingTree.executionTime || undefined,
     name:
       existingTree.name ||
-      (existingTree.url ? getTreeNameForUrl(existingTree.url) : undefined),
+      (existingTree.url
+        ? getTreeNameForUrl(existingTree.url, isPlatformUrl)
+        : undefined),
     url: existingTree.url,
     rootUrl: existingTree.rootUrl,
     lastUpdated: now,
@@ -612,13 +629,13 @@ export async function mergeNewLinksIntoTree({
   }
 
   // 4. Process each *new* link and insert it (similar logic to buildLinksTree step 3)
-  /* NO-PRESORTING. DEPRECATED AND SHOULD BE REMOVED IN FUTURE VERSIONS */
-  // const sortedNewLinks = [...newLinksToMerge].sort(
-  //   (a, b) => a.length - b.length,
-  // );
   const sortedNewLinks = newLinksToMerge;
 
   const normalizedRootUrl = linkService.normalizeUrl(rootUrl, rootUrl, true); // Get normalized root once
+
+  // Get root URL segments for platform URL filtering
+  const rootUrlObj = new URL(normalizedRootUrl);
+  const rootPathSegments = rootUrlObj.pathname.split('/').filter(Boolean);
 
   for (const linkUrl of sortedNewLinks) {
     try {
@@ -635,8 +652,8 @@ export async function mergeNewLinksIntoTree({
 
       // Determine segments relative to root (copy/adapt logic from buildLinksTree)
       const linkUrlObj = new URL(normalizedLinkUrl);
-      const rootUrlObj = new URL(normalizedRootUrl);
       const segments: string[] = [];
+
       // --- Add subdomain segment logic from buildLinksTree ---
       if (linkUrlObj.hostname !== rootUrlObj.hostname) {
         if (
@@ -655,8 +672,30 @@ export async function mergeNewLinksIntoTree({
           continue;
         }
       }
-      // --- Add path segment logic from buildLinksTree ---
-      segments.push(...linkUrlObj.pathname.split('/').filter(Boolean));
+
+      // Add pathname segments, filtering out segments that are already part of root path
+      const linkPathSegments = linkUrlObj.pathname.split('/').filter(Boolean);
+
+      // If root has path segments and link path starts with root path, skip the common segments
+      if (
+        rootPathSegments.length > 0 &&
+        linkPathSegments.join('/').startsWith(rootPathSegments.join('/'))
+      ) {
+        // Skip segments that already exist in root path
+        // e.g., if root is /blog and link is /blog/post, only add 'post'
+        const filteredSegments = linkPathSegments.slice(
+          rootPathSegments.length,
+        );
+        segments.push(...filteredSegments);
+      } else {
+        // For all other cases, add all path segments
+        segments.push(...linkPathSegments);
+      }
+
+      // Skip if no segments to process (link is same as root)
+      if (segments.length === 0) {
+        continue;
+      }
 
       // Traverse/Create Nodes, starting from the existing root
       // biome-ignore lint/style/noNonNullAssertion: false positive

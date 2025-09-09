@@ -59,6 +59,22 @@ type ProcessNonTreeRequestParams = {
   isGETRequest?: boolean;
 };
 
+/* 
+  Pre-defined PLATFORM_URLS check has higher priority over the flag.
+  This function checks if the target URL is a platform URL.
+*/
+export function checkIsPlatformUrl(
+  targetUrl: string,
+  isPlatformUrlProp: boolean,
+): boolean {
+  const u = new URL(targetUrl);
+  const normalizedOrigin = `${u.protocol}//${u.hostname.toLowerCase()}`;
+  const isPrebuilt = PLATFORM_URLS.some(
+    (p) => p.toLowerCase() === normalizedOrigin,
+  );
+  return isPrebuilt ? true : Boolean(isPlatformUrlProp);
+}
+
 /**
  * Lightweight processing for non-tree requests
  * Uses separate cache strategy optimized for non-tree responses
@@ -78,13 +94,33 @@ async function processNonTreeRequest({
     extractedLinks: includeExtractedLinks,
     linkExtractionOptions,
     cacheOptions,
+    isPlatformUrl: isPlatformUrlProp,
+    subdomainAsRootUrl,
   } = params;
 
   // Use app-level scrape service from context
   const scrapeService = c.var.scrapeService;
 
   // Get root URL for link extraction context
-  const rootUrl = linkService.getRootUrl(targetUrl);
+  // Check if the root URL is a platform URL, e.g., like github.com
+  let rootUrl: string;
+  const _targetUrlOrigin = new URL(targetUrl).origin;
+
+  const isPlatformUrl = checkIsPlatformUrl(
+    targetUrl,
+    Boolean(isPlatformUrlProp),
+  );
+
+  // Platform URL optimization: use target URL as root to focus on relevant content
+  if (isPlatformUrl) {
+    rootUrl = targetUrl; // Use target as root for platform URLs (e.g., github.com/username)
+  } else if (subdomainAsRootUrl) {
+    // default: use the entire host (incl. subdomain) as our "root"
+    rootUrl = _targetUrlOrigin;
+  } else {
+    // old behaviour: collapse subdomain into base domain
+    rootUrl = linkService.getRootUrl(targetUrl);
+  }
 
   // Check cache first for non-tree requests
   let cacheHit = false;
@@ -150,6 +186,7 @@ async function processNonTreeRequest({
         options: {
           ...linkExtractionOptions,
         },
+        isPlatformUrl,
       });
 
       // Create a filtered version based on user options
@@ -264,7 +301,7 @@ export function createLinksErrorResponse({
   };
 }
 
-/**
+/** Main function to process links request
  * Process a link request for both GET and POST handlers
  */
 export async function processLinksRequest(
@@ -284,6 +321,7 @@ export async function processLinksRequest(
     linksOrder,
     cacheOptions,
     linkExtractionOptions,
+    isPlatformUrl: isPlatformUrlProp,
   } = params;
 
   logDebug(
@@ -369,26 +407,25 @@ export async function processLinksRequest(
 
     // Check if the root URL is a platform URL, e.g., like github.com
     const _targetUrlOrigin = new URL(targetUrl).origin;
-    const isPlatformUrl = PLATFORM_URLS.some(
-      (platform) => _targetUrlOrigin === platform,
+    const isPlatformUrl = checkIsPlatformUrl(
+      targetUrl,
+      Boolean(isPlatformUrlProp),
     );
 
-    // honour new flag: keep full subdomain by default, strip only when false
-    if (subdomainAsRootUrl) {
-      // default: use the entire host (incl. subdomain) as our “root”
-      rootUrl = !isPlatformUrl
-        ? _targetUrlOrigin
-        : (ancestors?.[1] ?? _targetUrlOrigin);
+    // Platform URL optimization: use target URL as root to focus on relevant content
+    if (isPlatformUrl) {
+      rootUrl = targetUrl; // Use target as root for platform URLs (e.g., github.com/username)
+    } else if (subdomainAsRootUrl) {
+      // default: use the entire host (incl. subdomain) as our "root"
+      rootUrl = _targetUrlOrigin;
     } else {
       // old behaviour: collapse subdomain into base domain
       rootUrl = linkService.getRootUrl(targetUrl);
     }
 
-    // TODO: FEATURE: ADD A NEW PROPERTY TO OPTIONS FOR SETTING THE ROOTURL REGARDLESS OF IF IT IS PLATFORM URL OR NOT, OR A NEW ISPLATFORMURL FLAG
     // Set stable root key in context for KV cache and downstream hashing
-    const rootKeyForCache = !isPlatformUrl
-      ? rootUrl
-      : (ancestors?.[1] ?? rootUrl);
+    // For platform URLs, we now use the target URL as root, so use it directly for cache key
+    const rootKeyForCache = rootUrl;
     c.linksRootKey = rootKeyForCache;
 
     // Helper function to scrape a URL only if not visited before in *this* request
@@ -474,6 +511,7 @@ export async function processLinksRequest(
           ...linkExtractionOptions,
         },
         skippedUrls,
+        isPlatformUrl,
       });
 
       // Store in the map if linksFromTarget is enabled
@@ -528,6 +566,7 @@ export async function processLinksRequest(
                 ...linkExtractionOptions,
               },
               skippedUrls,
+              isPlatformUrl,
             });
 
             // Store in the map if linksFromTarget is enabled
@@ -574,6 +613,7 @@ export async function processLinksRequest(
             ...linkExtractionOptions,
           },
           skippedUrls,
+          isPlatformUrl,
         });
 
         // Store in the map if linksFromTarget is enabled
@@ -761,6 +801,7 @@ export async function processLinksRequest(
         includeExtractedLinks,
         folderFirst,
         linksOrder,
+        isPlatformUrl,
       });
     } else {
       // --- Build tree from scratch (works for both empty and non-empty _internalLinks) ---
@@ -774,6 +815,7 @@ export async function processLinksRequest(
         includeExtractedLinks,
         folderFirst,
         linksOrder,
+        isPlatformUrl,
       });
     }
 
@@ -836,6 +878,7 @@ export async function processLinksRequest(
         includeExtractedLinks,
         folderFirst,
         linksOrder,
+        isPlatformUrl: isPlatformUrlProp,
       });
     }
 

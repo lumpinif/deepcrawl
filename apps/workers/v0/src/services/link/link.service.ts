@@ -40,10 +40,12 @@ export class LinkService {
     rootUrl,
     options,
     skippedUrls,
+    isPlatformUrl,
   }: {
     html?: string;
     baseUrl: string;
     rootUrl?: string;
+    isPlatformUrl: boolean;
     options?: LinkExtractionOptions;
     skippedUrls?: Map<SkippedUrl['url'], SkippedUrl['reason']>;
   }): Promise<ExtractedLinks> {
@@ -134,6 +136,7 @@ export class LinkService {
       baseUrl,
       rootUrl || this.getRootUrl(baseUrl),
       mergedOptions,
+      isPlatformUrl,
     );
 
     return categorizedLinks;
@@ -325,6 +328,7 @@ export class LinkService {
     baseUrl: string,
     rootUrl: string,
     options: LinkExtractionOptions,
+    isPlatformUrl: boolean,
   ): ExtractedLinks {
     const result: ExtractedLinks = {};
 
@@ -357,6 +361,11 @@ export class LinkService {
 
       const baseRootDomain = baseHostnameParts.slice(-2).join('.');
       const rootRootDomain = rootHostnameParts.slice(-2).join('.');
+
+      // Check if we should apply platform-specific filtering
+      const platformTargetPath = isPlatformUrl
+        ? new URL(rootUrl).pathname
+        : undefined; // e.g., "/lumpinif"
 
       for (const url of links) {
         try {
@@ -399,10 +408,27 @@ export class LinkService {
               parsedRootDomain === rootRootDomain
             ) {
               if (parsedUrl.pathname !== '/') {
-                result.internal?.push(url);
+                // Apply platform-specific filtering if needed
+                if (isPlatformUrl && platformTargetPath) {
+                  // For platform URLs, only include links that start with the target path
+                  // e.g., for github.com/lumpinif, only include /lumpinif/* paths
+                  if (parsedUrl.pathname.startsWith(platformTargetPath)) {
+                    result.internal?.push(url);
+                  } else {
+                    // Platform URLs that don't match the target path are considered external
+                    if (options.includeExternal && result.external) {
+                      result.external.push(url);
+                    }
+                  }
+                } else {
+                  // Normal behavior for non-platform URLs
+                  result.internal?.push(url);
+                }
               }
             } else {
-              result.external?.push(url);
+              if (options.includeExternal && result.external) {
+                result.external.push(url);
+              }
             }
           }
         } catch (error) {
