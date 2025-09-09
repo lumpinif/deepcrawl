@@ -1,7 +1,7 @@
 import { eq, type NewResponseRecord, responseRecord } from '@deepcrawl/db-d1';
 import type { LinksSuccessResponse } from '@deepcrawl/types/routers/links/types';
 
-import type { AppVariables } from '@/lib/context';
+import type { AppVariables, ORPCContext } from '@/lib/context';
 import { sha256Hash, stableStringify } from '@/utils/hash/hash-tools';
 import {
   calculateResponseSize,
@@ -37,7 +37,10 @@ interface StoreResponseRecordParams {
  * Handles deduplication and storage of response record for both read and links endpoints
  */
 export class ResponseRecordService {
-  constructor(private db: AppVariables['dbd1']) {}
+  constructor(
+    private db: AppVariables['dbd1'],
+    private userId: string,
+  ) {}
 
   async createRequestOptionsHash({
     requestOptions,
@@ -116,7 +119,7 @@ export class ResponseRecordService {
         // Never overwrite responseContent as it corrupts data authenticity
         await this.db
           .update(responseRecord)
-          .set({ updatedAt: now })
+          .set({ updatedAt: now, updatedBy: this.userId })
           .where(eq(responseRecord.responseHash, responseHash));
 
         logDebug(
@@ -134,6 +137,7 @@ export class ResponseRecordService {
           responseHash,
           optionsHash,
           responseSize,
+          updatedBy: this.userId,
         };
 
         await this.db.insert(responseRecord).values(newResponse);
@@ -164,7 +168,9 @@ export class ResponseRecordService {
  * Factory function to create ResponseRecordService instance
  */
 export function createResponseRecordService(
-  db: AppVariables['dbd1'],
+  c: ORPCContext,
 ): ResponseRecordService {
-  return new ResponseRecordService(db);
+  const db = c.var.dbd1;
+  const userId = c.var.session?.user.id as string; // we know it must be a string because of the authed procedure
+  return new ResponseRecordService(db, userId);
 }

@@ -65,7 +65,7 @@ export function schedulePostProcessing(
   const joinedPath = path.join('-'); // such as [ 'read', 'getMarkdown' ] => 'read-getMarkdown'
 
   const activityLogger = createActivityLogger(c);
-  const responseRecordService = createResponseRecordService(c.var.dbd1);
+  const responseRecordService = createResponseRecordService(c);
 
   const isGetMarkdown = path[0] === 'read' && path[1] === 'getMarkdown';
 
