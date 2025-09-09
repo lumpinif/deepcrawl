@@ -40,6 +40,11 @@ import {
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { Switch } from '@deepcrawl/ui/components/ui/switch';
 import { Textarea } from '@deepcrawl/ui/components/ui/textarea';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@deepcrawl/ui/components/ui/tooltip';
 import type {
   ExtractLinksOptions,
   GetMarkdownOptions,
@@ -68,6 +73,7 @@ interface OptionSwitchProps {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   badge?: React.ReactNode;
+  tooltip?: string;
 }
 
 function OptionSwitch({
@@ -76,15 +82,29 @@ function OptionSwitch({
   checked,
   onCheckedChange,
   badge,
+  tooltip,
 }: OptionSwitchProps) {
-  return (
-    <div className="flex items-center space-x-2">
+  const content = (
+    <div className="flex w-fit items-center space-x-2">
       <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
-      <Label htmlFor={id} className="text-sm">
+      <Label htmlFor={id} className="cursor-pointer text-sm">
         {label} {badge}
       </Label>
     </div>
   );
+
+  if (tooltip) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{content}</TooltipTrigger>
+        <TooltipContent side="right">
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return content;
 }
 
 interface OptionCheckboxProps {
@@ -92,6 +112,7 @@ interface OptionCheckboxProps {
   label: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+  tooltip?: string;
 }
 
 function OptionCheckbox({
@@ -99,15 +120,29 @@ function OptionCheckbox({
   label,
   checked,
   onCheckedChange,
+  tooltip,
 }: OptionCheckboxProps) {
-  return (
-    <div className="flex items-center space-x-2">
+  const content = (
+    <div className="flex w-fit items-center space-x-2">
       <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} />
-      <Label htmlFor={id} className="text-sm">
+      <Label htmlFor={id} className="cursor-pointer text-sm">
         {label}
       </Label>
     </div>
   );
+
+  if (tooltip) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{content}</TooltipTrigger>
+        <TooltipContent side="right">
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return content;
 }
 
 interface NumberInputProps {
@@ -185,6 +220,7 @@ function CacheOptionsComponent({
         onCheckedChange={(checked) =>
           updateCacheOption('enabled', Boolean(checked))
         }
+        tooltip="Whether to enable cache. Default is true."
       />
       <NumberInput
         id={`${idPrefix}-expiration`}
@@ -216,22 +252,66 @@ function MetadataOptionsComponent({
   metadataOptions,
   onMetadataOptionChange,
 }: MetadataOptionsComponentProps) {
-  const metadataFields: Array<{ key: keyof MetadataOptions; label: string }> = [
-    { key: 'title', label: 'Title' },
-    { key: 'description', label: 'Description' },
-    { key: 'language', label: 'Language' },
-    { key: 'canonical', label: 'Canonical URL' },
-    { key: 'robots', label: 'Robots' },
-    { key: 'author', label: 'Author' },
-    { key: 'keywords', label: 'Keywords' },
-    { key: 'favicon', label: 'Favicon' },
-    { key: 'openGraph', label: 'Open Graph' },
-    { key: 'twitter', label: 'Twitter Cards' },
+  const metadataFields: Array<{
+    key: keyof MetadataOptions;
+    label: string;
+    tooltip: string;
+  }> = [
+    {
+      key: 'title',
+      label: 'Title',
+      tooltip: 'Extract page title from title tag or meta title',
+    },
+    {
+      key: 'description',
+      label: 'Description',
+      tooltip: 'Extract meta description content',
+    },
+    {
+      key: 'language',
+      label: 'Language',
+      tooltip: 'Extract page language from html lang attribute',
+    },
+    {
+      key: 'canonical',
+      label: 'Canonical URL',
+      tooltip: 'Extract canonical URL from link rel="canonical"',
+    },
+    {
+      key: 'robots',
+      label: 'Robots',
+      tooltip: 'Extract robots directives from meta robots',
+    },
+    {
+      key: 'author',
+      label: 'Author',
+      tooltip: 'Extract author information from meta author',
+    },
+    {
+      key: 'keywords',
+      label: 'Keywords',
+      tooltip: 'Extract meta keywords and convert to array',
+    },
+    {
+      key: 'favicon',
+      label: 'Favicon',
+      tooltip: 'Extract favicon URL from link rel="icon" or similar',
+    },
+    {
+      key: 'openGraph',
+      label: 'Open Graph',
+      tooltip: 'Extract Open Graph metadata (og:* properties)',
+    },
+    {
+      key: 'twitter',
+      label: 'Twitter Cards',
+      tooltip: 'Extract Twitter Card metadata (twitter:* properties)',
+    },
   ];
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {metadataFields.map(({ key, label }) => (
+      {metadataFields.map(({ key, label, tooltip }) => (
         <OptionCheckbox
           key={key}
           id={`${idPrefix}-metadata-${key}`}
@@ -240,6 +320,7 @@ function MetadataOptionsComponent({
             metadataOptions?.[key] ?? DEFAULT_METADATA_OPTIONS[key],
           )}
           onCheckedChange={(checked) => onMetadataOptionChange(key, checked)}
+          tooltip={tooltip}
         />
       ))}
     </div>
@@ -273,6 +354,7 @@ function MarkdownOptionsComponent({
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('preferNativeParser', checked)
           }
+          tooltip="Use native window DOMParser when available instead of fallback parser"
         />
         <OptionCheckbox
           id={`${idPrefix}-markdown-keepDataImages`}
@@ -281,6 +363,7 @@ function MarkdownOptionsComponent({
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('keepDataImages', checked)
           }
+          tooltip="Whether to preserve images with data: URIs (can be up to 1MB each)"
         />
         <OptionCheckbox
           id={`${idPrefix}-markdown-useInlineLinks`}
@@ -292,6 +375,7 @@ function MarkdownOptionsComponent({
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('useInlineLinks', checked)
           }
+          tooltip="Wrap URL text in <> instead of []() syntax when text matches URL"
         />
         <OptionCheckbox
           id={`${idPrefix}-markdown-useLinkReferenceDefinitions`}
@@ -300,6 +384,7 @@ function MarkdownOptionsComponent({
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('useLinkReferenceDefinitions', checked)
           }
+          tooltip="Format links using reference definitions at bottom instead of inline"
         />
       </div>
       <div className="grid grid-cols-1 gap-3">
@@ -581,6 +666,7 @@ export function OptionsPanel({
                   readOptions.metadata ?? DEFAULT_READ_OPTIONS.metadata,
                 )}
                 onCheckedChange={(checked) => updateOption('metadata', checked)}
+                tooltip="Whether to extract metadata from the page."
               />
               <OptionSwitch
                 id="markdown"
@@ -589,6 +675,7 @@ export function OptionsPanel({
                   readOptions.markdown ?? DEFAULT_READ_OPTIONS.markdown,
                 )}
                 onCheckedChange={(checked) => updateOption('markdown', checked)}
+                tooltip="Whether to extract markdown from the page."
               />
               <OptionSwitch
                 id="cleanedHtml"
@@ -597,12 +684,14 @@ export function OptionsPanel({
                 onCheckedChange={(checked) =>
                   updateOption('cleanedHtml', checked)
                 }
+                tooltip="Whether to return cleaned HTML."
               />
               <OptionSwitch
                 id="rawHtml"
                 label="Raw HTML"
                 checked={readOptions.rawHtml === true}
                 onCheckedChange={(checked) => updateOption('rawHtml', checked)}
+                tooltip="Whether to return raw HTML."
               />
               <OptionSwitch
                 id="robots"
@@ -752,6 +841,7 @@ export function OptionsPanel({
                   linksOptions.tree ?? DEFAULT_LINKS_OPTIONS.tree,
                 )}
                 onCheckedChange={(checked) => updateOption('tree', checked)}
+                tooltip="Whether to build a site map tree."
               />
               <OptionSwitch
                 id="metadata"
@@ -760,6 +850,7 @@ export function OptionsPanel({
                   linksOptions.metadata ?? DEFAULT_SCRAPE_OPTIONS.metadata,
                 )}
                 onCheckedChange={(checked) => updateOption('metadata', checked)}
+                tooltip="Whether to extract metadata from the page."
               />
               <OptionSwitch
                 id="cleanedHtml"
@@ -768,6 +859,7 @@ export function OptionsPanel({
                 onCheckedChange={(checked) =>
                   updateOption('cleanedHtml', checked)
                 }
+                tooltip="Whether to return cleaned HTML."
               />
               <OptionSwitch
                 id="robots"
@@ -806,6 +898,7 @@ export function OptionsPanel({
                 onCheckedChange={(checked) =>
                   updateOption('folderFirst', checked)
                 }
+                tooltip="Whether to place folders before leaf nodes in the tree."
               />
               <OptionSwitch
                 id="extractedLinks"
@@ -817,6 +910,7 @@ export function OptionsPanel({
                 onCheckedChange={(checked) =>
                   updateOption('extractedLinks', checked)
                 }
+                tooltip="Whether to include extracted links for each node in the tree."
               />
               <OptionSwitch
                 id="subdomainAsRootUrl"
@@ -828,6 +922,7 @@ export function OptionsPanel({
                 onCheckedChange={(checked) =>
                   updateOption('subdomainAsRootUrl', checked)
                 }
+                tooltip="Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL."
               />
               <div className="space-y-2">
                 <Label htmlFor="linksOrder" className="text-sm">
@@ -875,6 +970,7 @@ export function OptionsPanel({
                     checked,
                   )
                 }
+                tooltip="Whether to include links from other domains."
               />
               <OptionSwitch
                 id="includeMedia"
@@ -890,6 +986,7 @@ export function OptionsPanel({
                     checked,
                   )
                 }
+                tooltip="Whether to include media files (images, videos, docs)."
               />
               <OptionSwitch
                 id="removeQueryParams"
