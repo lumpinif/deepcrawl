@@ -26,11 +26,13 @@ const readOC = oc.errors({
  *
  * @param {string} [url] - The webpage URL to convert to markdown
  * @param {object} [cacheOptions] - Cache settings
+ * @param {string} [cleaningProcessor] - HTML cleaning processor
  * @param {object} [markdownConverterOptions] - Markdown conversion settings
  */
 export const ReadGETInputSchema = ReadOptionsSchema.pick({
   url: true,
   cacheOptions: true,
+  cleaningProcessor: true,
   markdownConverterOptions: true,
 });
 
