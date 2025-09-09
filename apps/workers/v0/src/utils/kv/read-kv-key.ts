@@ -21,5 +21,5 @@ export async function getReadCacheKey(
     ? `${Math.floor(expirationTtl / 86400)}d`
     : 'default-ttl';
 
-  return `${handlerType}:read:${url}:${optionsHash}:${ttl}`;
+  return `${handlerType}|read|${url}|${optionsHash}|${ttl}`;
 }
