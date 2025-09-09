@@ -88,6 +88,7 @@ export const responseRecord = sqliteTable(
     // Request identification
     path: text('path').notNull(), // such as 'read-getMarkdown' or 'links-extractLinks'
     optionsHash: text('options_hash').notNull(),
+    updatedBy: text('updated_by'), // such as 'user_id'
 
     // actual response content field
     responseContent: text('response_content', { mode: 'json' }),
@@ -102,6 +103,9 @@ export const responseRecord = sqliteTable(
   (table) => [
     // Response hash lookup
     index('idx_response_record_response_hash').on(table.responseHash),
+
+    // Updated by lookup
+    index('idx_response_record_updated_by').on(table.updatedBy),
 
     // Options hash lookup
     index('idx_response_record_options').on(table.optionsHash),
