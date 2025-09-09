@@ -196,6 +196,7 @@ export const DEFAULT_TREE_OPTIONS = {
   linksOrder: 'page',
   extractedLinks: true,
   subdomainAsRootUrl: true,
+  isPlatformUrl: false,
 } as const;
 
 export const DEFAULT_LINKS_OPTIONS = {

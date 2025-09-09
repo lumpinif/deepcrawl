@@ -19,8 +19,13 @@ import {
 } from '@deepcrawl/types/services/scrape/types';
 import { z } from 'zod/v4';
 
-const { folderFirst, linksOrder, extractedLinks, subdomainAsRootUrl } =
-  DEFAULT_TREE_OPTIONS;
+const {
+  folderFirst,
+  linksOrder,
+  extractedLinks,
+  subdomainAsRootUrl,
+  isPlatformUrl,
+} = DEFAULT_TREE_OPTIONS;
 
 /**
  * Schema for links order enum.
@@ -99,6 +104,18 @@ export const TreeOptionsSchema = z
       default: subdomainAsRootUrl,
       examples: [subdomainAsRootUrl, !subdomainAsRootUrl],
     }),
+
+    /**
+     * Whether the URL is a platform URL.
+     * Default: false
+     * e.g., if the root URL is a platform URL, e.g., like github.com
+     * This will be used to determine the root URL of the website. For example, if the root URL is a platform URL, e.g., like github.com, the targetUrl will be the platform URL such as `https://github.com/lumpinif`. If the root URL is not a platform URL, the targetUrl will be the root URL.
+     */
+    isPlatformUrl: smartboolOptionalWithDefault(isPlatformUrl).meta({
+      description: `Whether the URL is a platform URL. If true, the targetUrl will be the platform URL. e.g., if true: targetUrl: \`https://github.com\` -> \`https://github.com/lumpinif\`. Default: ${isPlatformUrl}`,
+      default: isPlatformUrl,
+      examples: [isPlatformUrl, !isPlatformUrl],
+    }),
   })
   .meta({
     title: 'TreeOptions',
@@ -109,6 +126,18 @@ export const TreeOptionsSchema = z
 /**
  * Type representing the options for building a site map tree.
  * @see {@link TreeOptionsSchema}
+ *
+ * @example
+ * ```typescript
+ * const options = {
+ *   folderFirst: true,
+ *   linksOrder: 'alphabetical',
+ *   extractedLinks: true,
+ *   subdomainAsRootUrl: true,
+ *   isPlatformUrl: false,
+ * };
+ *
+ * ```
  */
 export type TreeOptions = z.infer<typeof TreeOptionsSchema>;
 
@@ -129,6 +158,7 @@ const { tree } = DEFAULT_LINKS_OPTIONS;
  * @property linkExtractionOptions - Options for link extraction
  * @property htmlRewriterOptions - Options for HTML cleaning
  * @property subdomainAsRootUrl - Whether to exclude subdomain as root URL
+ * @property isPlatformUrl - Whether the URL is a platform URL
  *
  * @example
  * ```typescript
@@ -137,6 +167,8 @@ const { tree } = DEFAULT_LINKS_OPTIONS;
  *   tree: true,
  *   metadata: true,
  *   cleanedHtml: false,
+ *   subdomainAsRootUrl: true,
+ *   isPlatformUrl: false,
  * };
  * ```
  */
@@ -375,23 +407,6 @@ export const SkippedLinksSchema = z
       },
     ],
   });
-
-// Define the type first to avoid circular reference
-// export type LinksTree = {
-//   url: string;
-//   rootUrl?: string;
-//   name?: string;
-//   totalUrls?: number;
-//   executionTime?: string;
-//   lastUpdated: string;
-//   lastVisited?: string | null;
-//   error?: string;
-//   metadata?: z.infer<typeof PageMetadataSchema>;
-//   cleanedHtml?: string;
-//   extractedLinks?: z.infer<typeof ExtractedLinksSchema>;
-//   skippedUrls?: z.infer<typeof SkippedLinksSchema>;
-//   children?: LinksTree[];
-// };
 
 export type LinksTree = z.infer<typeof LinksTreeSchema>;
 
@@ -791,6 +806,33 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
 /**
  * Type representing options for link scraping operations.
  * Derived from the linksOptionsSchema.
+ *
+ * @see {@link LinksOptionsSchema}
+ *
+ * @property url - The URL to scrape
+ * @property tree - Whether to build a site map tree
+ * @property metadata - Whether to extract metadata from the page
+ * @property cleanedHtml - Whether to return cleaned HTML
+ * @property robots - Whether to fetch and parse robots.txt
+ * @property sitemapXML - Whether to fetch and parse sitemap.xml
+ * @property linksFromTarget - Whether to extract links from the target page
+ * @property metadataOptions - Options for metadata extraction
+ * @property linkExtractionOptions - Options for link extraction
+ * @property htmlRewriterOptions - Options for HTML cleaning
+ * @property subdomainAsRootUrl - Whether to exclude subdomain as root URL
+ * @property isPlatformUrl - Whether the URL is a platform URL
+ *
+ * @example
+ * ```typescript
+ * const options = {
+ *   url: "https://example.com",
+ *   tree: true,
+ *   metadata: true,
+ *   cleanedHtml: false,
+ *   subdomainAsRootUrl: true,
+ *   isPlatformUrl: false,
+ * };
+ * ```
  */
 export type LinksOptions = z.infer<typeof LinksOptionsSchema>;
 
