@@ -2,8 +2,13 @@
 
 import {
   DEFAULT_CACHE_OPTIONS,
+  DEFAULT_LINK_EXTRACTION_OPTIONS,
   DEFAULT_LINKS_OPTIONS,
+  DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
+  DEFAULT_METADATA_OPTIONS,
   DEFAULT_READ_OPTIONS,
+  DEFAULT_SCRAPE_OPTIONS,
+  DEFAULT_TREE_OPTIONS,
 } from '@deepcrawl/types/configs';
 import type { LinksOrder } from '@deepcrawl/types/routers/links/types';
 import type { MetadataOptions } from '@deepcrawl/types/services/metadata/types';
@@ -174,7 +179,9 @@ function CacheOptionsComponent({
       <OptionSwitch
         id={`${idPrefix}-cache-enabled`}
         label="Enable Cache"
-        checked={cacheOptions?.enabled !== false}
+        checked={Boolean(
+          cacheOptions?.enabled ?? DEFAULT_CACHE_OPTIONS.enabled,
+        )}
         onCheckedChange={(checked) =>
           updateCacheOption('enabled', Boolean(checked))
         }
@@ -229,7 +236,9 @@ function MetadataOptionsComponent({
           key={key}
           id={`${idPrefix}-metadata-${key}`}
           label={label}
-          checked={metadataOptions?.[key] !== false}
+          checked={Boolean(
+            metadataOptions?.[key] ?? DEFAULT_METADATA_OPTIONS[key],
+          )}
           onCheckedChange={(checked) => onMetadataOptionChange(key, checked)}
         />
       ))}
@@ -257,7 +266,10 @@ function MarkdownOptionsComponent({
         <OptionCheckbox
           id={`${idPrefix}-markdown-preferNativeParser`}
           label="Prefer Native Parser"
-          checked={markdownOptions?.preferNativeParser !== false}
+          checked={
+            markdownOptions?.preferNativeParser ??
+            DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser
+          }
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('preferNativeParser', checked)
           }
@@ -273,7 +285,10 @@ function MarkdownOptionsComponent({
         <OptionCheckbox
           id={`${idPrefix}-markdown-useInlineLinks`}
           label="Use Inline Links"
-          checked={markdownOptions?.useInlineLinks !== false}
+          checked={
+            markdownOptions?.useInlineLinks ??
+            DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks
+          }
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('useInlineLinks', checked)
           }
@@ -562,13 +577,17 @@ export function OptionsPanel({
               <OptionSwitch
                 id="metadata"
                 label="Extract Metadata"
-                checked={readOptions.metadata !== false}
+                checked={Boolean(
+                  readOptions.metadata ?? DEFAULT_READ_OPTIONS.metadata,
+                )}
                 onCheckedChange={(checked) => updateOption('metadata', checked)}
               />
               <OptionSwitch
                 id="markdown"
                 label="Extract Markdown"
-                checked={readOptions.markdown !== false}
+                checked={Boolean(
+                  readOptions.markdown ?? DEFAULT_READ_OPTIONS.markdown,
+                )}
                 onCheckedChange={(checked) => updateOption('markdown', checked)}
               />
               <OptionSwitch
@@ -729,13 +748,17 @@ export function OptionsPanel({
               <OptionSwitch
                 id="tree"
                 label="Build Site Tree"
-                checked={linksOptions.tree !== false}
+                checked={Boolean(
+                  linksOptions.tree ?? DEFAULT_LINKS_OPTIONS.tree,
+                )}
                 onCheckedChange={(checked) => updateOption('tree', checked)}
               />
               <OptionSwitch
                 id="metadata"
                 label="Extract Metadata"
-                checked={linksOptions.metadata !== false}
+                checked={Boolean(
+                  linksOptions.metadata ?? DEFAULT_SCRAPE_OPTIONS.metadata,
+                )}
                 onCheckedChange={(checked) => updateOption('metadata', checked)}
               />
               <OptionSwitch
@@ -777,7 +800,9 @@ export function OptionsPanel({
               <OptionSwitch
                 id="folderFirst"
                 label="Folders First"
-                checked={linksOptions.folderFirst !== false}
+                checked={Boolean(
+                  linksOptions.folderFirst ?? DEFAULT_TREE_OPTIONS.folderFirst,
+                )}
                 onCheckedChange={(checked) =>
                   updateOption('folderFirst', checked)
                 }
@@ -785,7 +810,10 @@ export function OptionsPanel({
               <OptionSwitch
                 id="extractedLinks"
                 label="Include Extracted Links"
-                checked={linksOptions.extractedLinks !== false}
+                checked={Boolean(
+                  linksOptions.extractedLinks ??
+                    DEFAULT_TREE_OPTIONS.extractedLinks,
+                )}
                 onCheckedChange={(checked) =>
                   updateOption('extractedLinks', checked)
                 }
@@ -793,7 +821,10 @@ export function OptionsPanel({
               <OptionSwitch
                 id="subdomainAsRootUrl"
                 label="Subdomain as Root URL"
-                checked={linksOptions.subdomainAsRootUrl !== false}
+                checked={Boolean(
+                  linksOptions.subdomainAsRootUrl ??
+                    DEFAULT_TREE_OPTIONS.subdomainAsRootUrl,
+                )}
                 onCheckedChange={(checked) =>
                   updateOption('subdomainAsRootUrl', checked)
                 }
@@ -833,9 +864,10 @@ export function OptionsPanel({
               <OptionSwitch
                 id="includeExternal"
                 label="Include External"
-                checked={
-                  linksOptions.linkExtractionOptions?.includeExternal !== false
-                }
+                checked={Boolean(
+                  linksOptions.linkExtractionOptions?.includeExternal ??
+                    DEFAULT_LINK_EXTRACTION_OPTIONS.includeExternal,
+                )}
                 onCheckedChange={(checked) =>
                   updateNestedOptionValue(
                     'linkExtractionOptions',
@@ -847,9 +879,10 @@ export function OptionsPanel({
               <OptionSwitch
                 id="includeMedia"
                 label="Include Media"
-                checked={
-                  linksOptions.linkExtractionOptions?.includeMedia !== false
-                }
+                checked={Boolean(
+                  linksOptions.linkExtractionOptions?.includeMedia ??
+                    DEFAULT_LINK_EXTRACTION_OPTIONS.includeMedia,
+                )}
                 onCheckedChange={(checked) =>
                   updateNestedOptionValue(
                     'linkExtractionOptions',
