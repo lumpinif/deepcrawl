@@ -19,6 +19,7 @@ import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 import type { ORPCContext } from '@/lib/context';
 import { type _linksSets, LinkService } from '@/services/link/link.service';
 import { formatDuration } from '@/utils/formater';
+import { getLinksNonTreeCacheKey } from '@/utils/kv/links-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
@@ -45,6 +46,199 @@ export class LinksProcessingError extends Error {
     super(data.error);
     this.name = 'LinksProcessingError';
     this.data = data;
+  }
+}
+
+type ProcessNonTreeRequestParams = {
+  c: ORPCContext;
+  params: LinksOptions;
+  targetUrl: string;
+  timestamp: string;
+  linkService: LinkService;
+  startTime: number;
+  isGETRequest?: boolean;
+};
+
+/**
+ * Lightweight processing for non-tree requests
+ * Uses separate cache strategy optimized for non-tree responses
+ */
+async function processNonTreeRequest({
+  c,
+  params,
+  targetUrl,
+  timestamp,
+  linkService,
+  startTime,
+  isGETRequest = false,
+}: ProcessNonTreeRequestParams): Promise<LinksSuccessResponse> {
+  const {
+    metadata: isMetadata,
+    cleanedHtml: isCleanedHtml,
+    extractedLinks: includeExtractedLinks,
+    linkExtractionOptions,
+    cacheOptions,
+  } = params;
+
+  // Use app-level scrape service from context
+  const scrapeService = c.var.scrapeService;
+
+  // Get root URL for link extraction context
+  const rootUrl = linkService.getRootUrl(targetUrl);
+
+  // Check cache first for non-tree requests
+  let cacheHit = false;
+  const nonTreeCacheKey = await getLinksNonTreeCacheKey(params, isGETRequest);
+
+  if (_ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
+    try {
+      const { value, metadata } =
+        await c.env.DEEPCRAWL_V0_LINKS_STORE.getWithMetadata<{
+          title?: string;
+          description?: string;
+          timestamp?: string;
+        }>(nonTreeCacheKey);
+
+      if (value) {
+        logDebug(
+          `💽 [LINKS NON-TREE] Found cached non-tree response for ${targetUrl}`,
+        );
+
+        c.cacheHit = true; // set cache hit flag in context for activity logging
+        cacheHit = true;
+
+        const cachedResponse = JSON.parse(value) as LinksSuccessResponse;
+
+        // Update timestamp and top-level executionTime but keep cached flag as true
+        return {
+          ...cachedResponse,
+          cached: true,
+          timestamp: new Date().toISOString(),
+          executionTime: formatDuration(performance.now() - startTime),
+        };
+      }
+    } catch (error) {
+      logError(`Error reading non-tree cache for ${targetUrl}:`, error);
+      // Proceed without cache if read fails
+    }
+  }
+
+  try {
+    // Scrape only the target URL
+    const targetScrapeResult = await scrapeService.scrape({
+      ...params,
+      url: targetUrl,
+      metadata: true, // always get metadata
+      cleanedHtml: isCleanedHtml,
+      robots: params.robots,
+      sitemapXML: params.sitemapXML,
+      fetchOptions: { signal: c.signal, ...params.fetchOptions },
+    });
+
+    // If scraping failed, throw error
+    if (!targetScrapeResult || !targetScrapeResult.rawHtml) {
+      throw new Error('Failed to scrape target URL');
+    }
+
+    // Extract links from target URL only
+    let extractedTargetLinks: ExtractedLinks | undefined;
+    if (includeExtractedLinks) {
+      const allExtractedLinks = await linkService.extractLinksFromHtml({
+        html: targetScrapeResult.rawHtml,
+        baseUrl: targetUrl,
+        rootUrl,
+        options: {
+          ...linkExtractionOptions,
+        },
+      });
+
+      // Create a filtered version based on user options
+      extractedTargetLinks = {
+        internal: allExtractedLinks.internal,
+        external: linkExtractionOptions?.includeExternal
+          ? allExtractedLinks.external
+          : undefined,
+        media: linkExtractionOptions?.includeMedia
+          ? allExtractedLinks.media
+          : undefined,
+      };
+    }
+
+    // Calculate execution time
+    const executionTimeMs = performance.now() - startTime;
+    const executionTime = formatDuration(executionTimeMs);
+
+    // Build minimal response - only include fields that have values
+    const response: Partial<LinksSuccessResponse> = {
+      success: true,
+      cached: false, // Always false for non-tree requests (no cache operations)
+      targetUrl,
+      timestamp,
+      executionTime,
+    };
+
+    // Add optional fields only if they have values
+    if (targetScrapeResult?.title) {
+      response.title = targetScrapeResult.title;
+    }
+    if (targetScrapeResult?.description) {
+      response.description = targetScrapeResult.description;
+    }
+    if (isMetadata && targetScrapeResult?.metadata) {
+      response.metadata = targetScrapeResult.metadata;
+    }
+    if (includeExtractedLinks && extractedTargetLinks) {
+      response.extractedLinks = extractedTargetLinks;
+    }
+    if (isCleanedHtml && targetScrapeResult?.cleanedHtml) {
+      response.cleanedHtml = targetScrapeResult.cleanedHtml;
+    }
+
+    const finalResponse = cleanEmptyValues(response) as LinksSuccessResponse;
+
+    // Store non-tree response in cache with separate key
+    if (_ENABLE_LINKS_CACHE && cacheOptions?.enabled && !cacheHit) {
+      try {
+        c.executionCtx.waitUntil(
+          kvPutWithRetry(
+            c.env.DEEPCRAWL_V0_LINKS_STORE,
+            nonTreeCacheKey,
+            JSON.stringify(finalResponse),
+            {
+              metadata: {
+                title: targetScrapeResult?.title,
+                description: targetScrapeResult?.description,
+                timestamp: new Date().toISOString(),
+              },
+              expiration: cacheOptions?.expiration ?? undefined,
+              expirationTtl:
+                cacheOptions?.expirationTtl ??
+                DEFAULT_CACHE_OPTIONS.expirationTtl,
+            },
+          ),
+        );
+
+        logDebug(
+          `💽 [LINKS NON-TREE] Cached non-tree response for ${targetUrl}`,
+        );
+      } catch (error) {
+        logWarn(
+          `[LINKS NON-TREE] Failed to cache non-tree response for ${targetUrl}. Error: ${error instanceof Error ? error.message : String(error)}`,
+        );
+        // Continue without caching on error
+      }
+    }
+
+    return finalResponse;
+  } catch (error) {
+    logError('❌ [LINKS PROCESSOR - NON-TREE] error:', error);
+
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : 'Failed to process non-tree links request with unknown error';
+
+    throw new Error(errorMessage);
   }
 }
 
@@ -109,6 +303,20 @@ export async function processLinksRequest(
 
   // config
   const withTree = isTree !== false; // True by default, false only if explicitly set to false
+
+  // Early return optimization for non-tree requests
+  // Uses separate cache strategy optimized for non-tree responses
+  if (!withTree) {
+    return processNonTreeRequest({
+      c,
+      params,
+      targetUrl: normalizedTargetUrl,
+      timestamp,
+      linkService,
+      startTime,
+      isGETRequest,
+    });
+  }
 
   // Root
   let rootUrl: string;
