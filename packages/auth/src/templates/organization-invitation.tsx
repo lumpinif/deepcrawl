@@ -32,7 +32,7 @@ export default function OrganizationInvitation({
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Heading style={heading}>DeepCrawl</Heading>
+            <Heading style={heading}>Deepcrawl</Heading>
           </Section>
 
           <Section style={content}>
@@ -54,7 +54,7 @@ export default function OrganizationInvitation({
             </Text>
 
             <Section style={buttonContainer}>
-              <Button style={button} href={invitationUrl}>
+              <Button href={invitationUrl} style={button}>
                 Accept Invitation
               </Button>
             </Section>

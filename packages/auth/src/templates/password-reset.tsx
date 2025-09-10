@@ -26,7 +26,7 @@ export default function PasswordReset({
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Heading style={heading}>DeepCrawl</Heading>
+            <Heading style={heading}>Deepcrawl</Heading>
           </Section>
 
           <Section style={content}>
@@ -40,7 +40,7 @@ export default function PasswordReset({
             </Text>
 
             <Section style={buttonContainer}>
-              <Button style={button} href={resetUrl}>
+              <Button href={resetUrl} style={button}>
                 Reset Password
               </Button>
             </Section>

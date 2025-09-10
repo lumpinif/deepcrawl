@@ -26,7 +26,7 @@ export default function MagicLink({
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Heading style={heading}>DeepCrawl</Heading>
+            <Heading style={heading}>Deepcrawl</Heading>
           </Section>
 
           <Section style={content}>
@@ -40,7 +40,7 @@ export default function MagicLink({
             </Text>
 
             <Section style={buttonContainer}>
-              <Button style={button} href={magicLinkUrl}>
+              <Button href={magicLinkUrl} style={button}>
                 Sign In to DeepCrawl
               </Button>
             </Section>

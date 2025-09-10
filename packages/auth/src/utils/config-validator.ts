@@ -97,9 +97,7 @@ export function validateAuthConfiguration(
   }
 
   if (
-    !useAuthWorker &&
-    !betterAuthUrl.includes('/api/auth') &&
-    !isDevelopment
+    !(useAuthWorker || betterAuthUrl.includes('/api/auth') || isDevelopment)
   ) {
     warning = `[${context}] Warning: BETTER_AUTH_URL for Next.js mode should typically include '/api/auth' path in production.`;
   }

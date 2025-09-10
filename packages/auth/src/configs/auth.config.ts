@@ -193,7 +193,9 @@ export function createAuthConfig(env: Env) {
           // First try x-api-key header
           const apiKeyHeader = ctx.headers?.get('x-api-key');
 
-          if (apiKeyHeader) return apiKeyHeader;
+          if (apiKeyHeader) {
+            return apiKeyHeader;
+          }
 
           // Then try Authorization Bearer header
           const authHeader = ctx.headers?.get('authorization');
@@ -210,7 +212,7 @@ export function createAuthConfig(env: Env) {
       }),
       magicLink({
         sendMagicLink: async ({ email, token }) => {
-          if (!emailEnabled || !resend) {
+          if (!(emailEnabled && resend)) {
             console.warn('⚠️ Magic link email not sent - Resend not configured');
             return;
           }
@@ -242,7 +244,7 @@ export function createAuthConfig(env: Env) {
       }),
       organization({
         async sendInvitationEmail(data) {
-          if (!emailEnabled || !resend) {
+          if (!(emailEnabled && resend)) {
             return;
           }
 
@@ -272,7 +274,7 @@ export function createAuthConfig(env: Env) {
       autoSignIn: false,
       requireEmailVerification: true,
       async sendResetPassword({ user, url }) {
-        if (!emailEnabled || !resend) {
+        if (!(emailEnabled && resend)) {
           return;
         }
 
@@ -293,7 +295,7 @@ export function createAuthConfig(env: Env) {
     },
     emailVerification: {
       sendVerificationEmail: async ({ user, url, token }, _request) => {
-        if (!emailEnabled || !resend) {
+        if (!(emailEnabled && resend)) {
           console.warn('⚠️ Email verification not sent - Resend not configured');
           return;
         }

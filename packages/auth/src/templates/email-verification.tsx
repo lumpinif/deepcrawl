@@ -26,7 +26,7 @@ export default function EmailVerification({
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Heading style={heading}>DeepCrawl</Heading>
+            <Heading style={heading}>Deepcrawl</Heading>
           </Section>
 
           <Section style={content}>
@@ -40,7 +40,7 @@ export default function EmailVerification({
             </Text>
 
             <Section style={buttonContainer}>
-              <Button style={button} href={verificationUrl}>
+              <Button href={verificationUrl} style={button}>
                 Verify Email Address
               </Button>
             </Section>
