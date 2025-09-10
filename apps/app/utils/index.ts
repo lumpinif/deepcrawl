@@ -1,4 +1,4 @@
-import z from 'zod';
+import * as z from 'zod';
 import type { AuthView, AuthViewRoutes } from '@/routes/auth';
 
 // Re-export utilities
@@ -185,21 +185,21 @@ export function getPasswordSchema(
   message?: PasswordSchemaMessage,
 ) {
   let schema = z.string().min(1, {
-    message: message?.passwordRequired || 'Password is required',
+    error: message?.passwordRequired || 'Password is required',
   });
   if (passwordValidation?.minLength) {
     schema = schema.min(passwordValidation.minLength, {
-      message: message?.passwordTooShort || 'Password is too short',
+      error: message?.passwordTooShort || 'Password is too short',
     });
   }
   if (passwordValidation?.maxLength) {
     schema = schema.max(passwordValidation.maxLength, {
-      message: message?.passwordTooLong || 'Password is too long',
+      error: message?.passwordTooLong || 'Password is too long',
     });
   }
   if (passwordValidation?.regex) {
     schema = schema.regex(passwordValidation.regex, {
-      message: message?.passwordInvalid || 'Password is invalid',
+      error: message?.passwordInvalid || 'Password is invalid',
     });
   }
   return schema;

@@ -26,6 +26,11 @@ import { authViewRoutes } from '@/routes/auth';
 import { getPasswordSchema, type PasswordValidation } from '@/utils';
 import { PasswordInput } from '../password-input';
 
+/* Configurable compile-time constants for form fields */
+const nameRequired = true;
+const emailVerification = true;
+const confirmPasswordEnabled = true;
+
 export interface SignUpFormProps {
   className?: string;
   isSubmitting?: boolean;
@@ -33,10 +38,6 @@ export interface SignUpFormProps {
   setIsSubmitting?: (value: boolean) => void;
   passwordValidation?: PasswordValidation;
 }
-
-const nameRequired = true;
-const emailVerification = true;
-const confirmPasswordEnabled = true;
 
 export function SignUpForm({
   className,
@@ -52,55 +53,61 @@ export function SignUpForm({
     redirectTo,
   });
 
-  // Create the base schema for standard fields
-  const schemaFields: Record<string, z.ZodTypeAny> = {
-    email: z
-      .string()
-      .min(1, {
-        message: 'Email is required',
-      })
-      .email({
-        message: 'Email is invalid',
-      }),
-    password: getPasswordSchema(passwordValidation),
+  // Form values type aligned with the schema (uses compile-time constants)
+  type BaseFormValues = {
+    email: string;
+    password: string;
   };
+  type Empty = Record<never, never>;
+  type MaybeName = typeof nameRequired extends true ? { name: string } : Empty;
+  type MaybeConfirm = typeof confirmPasswordEnabled extends true
+    ? { confirmPassword: string }
+    : Empty;
+  type OptionalExtras = { username?: string };
+  /* We chose explicit conditional types instead of z.infer<typeof formSchema> to make optional field inclusion follow the compile-time flags precisely */
+  type FormValues = BaseFormValues & MaybeName & MaybeConfirm & OptionalExtras;
 
-  // Add confirmPassword field if enabled
-  schemaFields.confirmPassword = getPasswordSchema(passwordValidation, {
-    passwordRequired: 'Confirm Password is required',
-    passwordTooShort: 'Password is too short',
-    passwordTooLong: 'Password is too long',
-    passwordInvalid: 'Password is invalid',
-  });
-
-  // required name
-  if (nameRequired) {
-    schemaFields.name = z.string().min(1, {
-      message: 'Name is required',
-    });
-  }
-
-  const formSchema = z.object(schemaFields).refine(
-    (data) => {
-      // Skip validation if confirmPassword is not enabled
-      if (!confirmPasswordEnabled) return true;
-      return data.password === data.confirmPassword;
-    },
-    {
-      message: 'Passwords do not match',
-      path: ['confirmPassword'],
-    },
-  );
+  const formSchema = z
+    .object({
+      email: z
+        .email({ error: 'Email is invalid' })
+        .min(1, { error: 'Email is required' }),
+      password: getPasswordSchema(passwordValidation),
+      ...(confirmPasswordEnabled && {
+        confirmPassword: getPasswordSchema(passwordValidation, {
+          passwordRequired: 'Confirm Password is required',
+          passwordTooShort: 'Password is too short',
+          passwordTooLong: 'Password is too long',
+          passwordInvalid: 'Password is invalid',
+        }),
+      }),
+      ...(nameRequired && {
+        name: z.string().min(1, { error: 'Name is required' }),
+      }),
+      // Accept but don't require username if present in downstream API
+      username: z.string().optional(),
+    })
+    .refine(
+      (data) => {
+        // Skip validation if confirmPassword is not enabled
+        if (!confirmPasswordEnabled) return true;
+        return data.password === data.confirmPassword;
+      },
+      {
+        error: 'Passwords do not match',
+        path: ['confirmPassword'],
+      },
+    );
 
   // Create default values for the form
-  const defaultValues: Record<string, unknown> = {
+  const defaultValues: FormValues = {
     email: '',
     password: '',
     ...(confirmPasswordEnabled && { confirmPassword: '' }),
     ...(nameRequired ? { name: '' } : {}),
-  };
+  } as FormValues;
 
-  const form = useForm({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
@@ -119,7 +126,7 @@ export function SignUpForm({
     username,
     confirmPassword,
     ...additionalFieldValues
-  }: z.infer<typeof formSchema>) {
+  }: FormValues) {
     try {
       const { data, error } = await authClient.signUp.email({
         email,

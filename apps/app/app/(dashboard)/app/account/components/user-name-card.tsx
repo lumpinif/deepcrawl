@@ -53,7 +53,7 @@ export function UserNameCard() {
 
     const result = displayNameSchema.safeParse(name);
     if (!result.success) {
-      setValidationError(result.error.errors[0]?.message || 'Invalid name');
+      setValidationError(result.error.issues[0]?.message || 'Invalid name');
     } else {
       setValidationError(null);
     }
@@ -104,7 +104,7 @@ export function UserNameCard() {
     // Validate before saving
     const result = displayNameSchema.safeParse(name);
     if (!result.success) {
-      toast.error(result.error.errors[0]?.message || 'Invalid display name');
+      toast.error(result.error.issues[0]?.message || 'Invalid display name');
       return;
     }
 

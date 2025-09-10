@@ -291,7 +291,7 @@ export const useUpdateUserName = () => {
 
       // Handle validation errors specifically
       if (err instanceof z.ZodError) {
-        toast.error(err.errors[0]?.message || 'Invalid display name');
+        toast.error(err.issues[0]?.message || 'Invalid display name');
       } else {
         toast.error(err.message || 'Failed to update display name');
       }
