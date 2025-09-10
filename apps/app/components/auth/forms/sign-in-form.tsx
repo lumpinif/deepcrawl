@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 import { SpinnerButton } from '@/components/spinner-button';
 import { useIsHydrated } from '@/hooks/use-hydrated';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
@@ -51,7 +51,7 @@ export function SignInForm({
   });
 
   const formSchema = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: getPasswordSchema(passwordValidation),
     rememberMe: z.boolean().optional(),
   });
