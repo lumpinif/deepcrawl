@@ -5,7 +5,9 @@ import { useAuthSession } from '@/hooks/auth.hooks';
 export default function SessionPage() {
   const { data: session, error, isPending } = useAuthSession();
 
-  if (isPending) return <div>Loading session...</div>;
+  if (isPending) {
+    return <div>Loading session...</div>;
+  }
 
   return (
     <div>

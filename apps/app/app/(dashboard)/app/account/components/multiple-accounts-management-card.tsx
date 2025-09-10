@@ -161,7 +161,9 @@ export function MultipleAccountsManagementCard() {
   };
 
   const confirmRemoveAccount = () => {
-    if (!sessionToRemove) return;
+    if (!sessionToRemove) {
+      return;
+    }
 
     setRemovingSessionToken(sessionToRemove.session.token);
     revokeDeviceSession(sessionToRemove.session.token, {

@@ -132,7 +132,9 @@ export function AuthCard({
                               (socialProvider) =>
                                 socialProvider.providerId === provider,
                             );
-                            if (!socialProvider) return null;
+                            if (!socialProvider) {
+                              return null;
+                            }
 
                             return (
                               <ProviderButton

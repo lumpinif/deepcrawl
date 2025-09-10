@@ -212,9 +212,15 @@ export const useCanUnlinkProvider = (providerId: string) => {
 
   // Provide detailed information about why they can't unlink
   const reasons = [];
-  if (!hasPassword) reasons.push('set up a password');
-  if (!hasPasskeys) reasons.push('add a passkey');
-  if (!hasOtherOAuth) reasons.push('link another social account');
+  if (!hasPassword) {
+    reasons.push('set up a password');
+  }
+  if (!hasPasskeys) {
+    reasons.push('add a passkey');
+  }
+  if (!hasOtherOAuth) {
+    reasons.push('link another social account');
+  }
 
   return {
     canUnlink,
@@ -267,7 +273,9 @@ export const useUpdateUserName = () => {
 
       // Optimistically update the user name
       queryClient.setQueryData<Session>(userQueryKeys.session, (old) => {
-        if (!old?.user) return old;
+        if (!old?.user) {
+          return old;
+        }
         return {
           ...old,
           user: {
@@ -623,7 +631,9 @@ export const useRemovePasskey = () => {
       queryClient.setQueryData(
         userQueryKeys.passkeys,
         (old: Passkey[] | undefined) => {
-          if (!old) return old;
+          if (!old) {
+            return old;
+          }
           return old.filter((passkey) => passkey.id !== passkeyId);
         },
       );
@@ -740,7 +750,9 @@ export const useUpdateApiKey = () => {
 
       // Optimistically update the API key
       queryClient.setQueryData<ListApiKeys>(userQueryKeys.apiKeys, (old) => {
-        if (!old) return old;
+        if (!old) {
+          return old;
+        }
         return old.map((apiKey) =>
           apiKey.id === keyId
             ? {

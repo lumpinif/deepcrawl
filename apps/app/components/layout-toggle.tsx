@@ -57,7 +57,9 @@ export function LayoutViewToggle({ currentMode }: LayoutToggleProps) {
   const router = useRouter();
 
   const toggleMode = (mode: NavigationMode) => {
-    if (mode === currentMode) return;
+    if (mode === currentMode) {
+      return;
+    }
 
     const newMode = mode;
     // Set cookie with 7 days expiry

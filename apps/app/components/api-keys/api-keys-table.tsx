@@ -95,7 +95,9 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
   };
 
   const formatLastUsed = (lastRequest: Date | null) => {
-    if (!lastRequest) return 'Never';
+    if (!lastRequest) {
+      return 'Never';
+    }
     return formatDistanceToNow(new Date(lastRequest), { addSuffix: true });
   };
 

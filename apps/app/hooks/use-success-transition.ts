@@ -24,7 +24,9 @@ export function useOnSuccessTransition({
   const { refetch: refetchSession } = useAuthSession();
 
   useEffect(() => {
-    if (!success || isPending) return;
+    if (!success || isPending) {
+      return;
+    }
 
     startTransition(() => {
       const redirectPath = getRedirectTo();

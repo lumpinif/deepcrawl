@@ -21,7 +21,9 @@ export function makeQueryClient() {
         // Reduce aggressive retries on the server
         retry: (failureCount, error) => {
           // Don't retry on 404s
-          if (error?.message?.includes('404')) return false;
+          if (error?.message?.includes('404')) {
+            return false;
+          }
           // Don't retry more than 3 times
           return failureCount < 3;
         },
@@ -64,6 +66,8 @@ export function getQueryClient() {
   // This is very important, so we don't re-make a new client if React
   // suspends during the initial render. This may not be needed if we
   // have a suspense boundary BELOW the creation of the query client
-  if (!browserQueryClient) browserQueryClient = makeQueryClient();
+  if (!browserQueryClient) {
+    browserQueryClient = makeQueryClient();
+  }
   return browserQueryClient;
 }

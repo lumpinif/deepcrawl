@@ -9,7 +9,9 @@ import { authViewRoutes } from '@/routes/auth';
 import { useOnSuccessTransition } from '../../hooks/use-success-transition';
 
 function cleanupMultiSessionCookies() {
-  if (typeof document === 'undefined') return; // Server-side guard
+  if (typeof document === 'undefined') {
+    return; // Server-side guard
+  }
 
   // Get all cookies
   const cookies = document.cookie.split(';');
@@ -37,7 +39,9 @@ export function Logout() {
   });
 
   useEffect(() => {
-    if (signingOut.current) return;
+    if (signingOut.current) {
+      return;
+    }
     signingOut.current = true;
 
     authClient.signOut({

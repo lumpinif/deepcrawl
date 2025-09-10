@@ -90,7 +90,9 @@ export function SignUpForm({
     .refine(
       (data) => {
         // Skip validation if confirmPassword is not enabled
-        if (!confirmPasswordEnabled) return true;
+        if (!confirmPasswordEnabled) {
+          return true;
+        }
         return data.password === data.confirmPassword;
       },
       {

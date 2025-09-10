@@ -17,7 +17,7 @@ import { userQueryKeys } from './query-keys';
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
 export const sessionQueryOptionsClient = ({
-  init = undefined,
+  init,
 }: {
   init?: Session | null;
 } = {}) =>

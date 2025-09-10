@@ -179,7 +179,7 @@ export function PasswordChangeCard() {
               </div>
             </div>
           </div>
-          {!isChangingPassword && !isSettingPassword && (
+          {!(isChangingPassword || isSettingPassword) && (
             <Button
               className="max-sm:w-full"
               disabled={isPending}

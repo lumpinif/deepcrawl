@@ -107,8 +107,12 @@ export function SessionsManagementCard() {
         const aIsCurrent = a.id === currentSession.session.id;
         const bIsCurrent = b.id === currentSession.session.id;
 
-        if (aIsCurrent && !bIsCurrent) return -1;
-        if (!aIsCurrent && bIsCurrent) return 1;
+        if (aIsCurrent && !bIsCurrent) {
+          return -1;
+        }
+        if (!aIsCurrent && bIsCurrent) {
+          return 1;
+        }
         return 0;
       })
     : [];

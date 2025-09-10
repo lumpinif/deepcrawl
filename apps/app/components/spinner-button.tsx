@@ -69,7 +69,9 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
 
   // Memoize variant calculation
   const variant = useMemo(() => {
-    if (!withSuccess || !buttonState) return buttonVariant;
+    if (!(withSuccess && buttonState)) {
+      return buttonVariant;
+    }
 
     switch (buttonState) {
       case 'success':
@@ -84,11 +86,11 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
   // Memoize className calculation
   const buttonClassName = useMemo(() => {
     const baseClasses = 'relative select-none overflow-hidden';
-    const successClasses = !loadingElement
-      ? ''
-      : currentState === 'success'
+    const successClasses = loadingElement
+      ? currentState === 'success'
         ? 'disabled:bg-current dark:disabled:bg-inherit'
-        : '';
+        : ''
+      : '';
 
     return cn(baseClasses, className, withSuccess && successClasses);
   }, [className, loadingElement, currentState, withSuccess]);

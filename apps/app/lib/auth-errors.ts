@@ -218,7 +218,9 @@ export const getAuthErrorMessage = (error: {
  * These errors should be handled silently as they represent intentional user actions
  */
 export function isWebAuthnCancellationError(error: unknown): boolean {
-  if (!error) return false;
+  if (!error) {
+    return false;
+  }
 
   const errorMessage = error instanceof Error ? error.message : String(error);
   const lowerMessage = errorMessage.toLowerCase();

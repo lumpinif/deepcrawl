@@ -31,7 +31,7 @@ export default async function DashboardLayout({
   });
 
   // Redirect to login if no session
-  if (!currentSession || !currentSession.user) {
+  if (!currentSession?.user) {
     redirect('/login');
   }
 

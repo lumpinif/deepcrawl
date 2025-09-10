@@ -52,10 +52,10 @@ export function UserNameCard() {
     }
 
     const result = displayNameSchema.safeParse(name);
-    if (!result.success) {
-      setValidationError(result.error.issues[0]?.message || 'Invalid name');
-    } else {
+    if (result.success) {
       setValidationError(null);
+    } else {
+      setValidationError(result.error.issues[0]?.message || 'Invalid name');
     }
   }, [name]);
 

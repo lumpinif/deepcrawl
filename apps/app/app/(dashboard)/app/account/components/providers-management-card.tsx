@@ -50,11 +50,15 @@ import { ProvidersManagementCardSkeleton } from './account-skeletons';
 
 // Helper function to safely format dates from server data
 const formatDate = (date: Date | string | null): string => {
-  if (!date) return 'Creation date unknown';
+  if (!date) {
+    return 'Creation date unknown';
+  }
 
   try {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    if (Number.isNaN(dateObj.getTime())) return 'Creation date unknown';
+    if (Number.isNaN(dateObj.getTime())) {
+      return 'Creation date unknown';
+    }
     return dateObj.toLocaleDateString();
   } catch {
     return 'Creation date unknown';
@@ -102,7 +106,7 @@ export function ProvidersManagementCard() {
 
   // Reset processing provider when mutations complete
   useEffect(() => {
-    if (!isLinkingProvider && !isUnlinkingProvider) {
+    if (!(isLinkingProvider || isUnlinkingProvider)) {
       setProcessingProvider(null);
     }
   }, [isLinkingProvider, isUnlinkingProvider]);

@@ -182,7 +182,7 @@ export function PlaygroundClient() {
     operation: DeepcrawlOperations,
     label: string,
   ) => {
-    if (!sdkClient || !isReady) {
+    if (!(sdkClient && isReady)) {
       toast.error('Please wait for the SDK client to be ready');
       return;
     }
@@ -372,6 +372,7 @@ export function PlaygroundClient() {
             className="relative"
             onMouseEnter={() => linkIconRef.current?.startAnimation()}
             onMouseLeave={() => linkIconRef.current?.stopAnimation()}
+            role="link"
           >
             <LinkIcon
               className="-translate-y-1/2 absolute top-1/2 left-3 text-muted-foreground"
@@ -421,7 +422,9 @@ export function PlaygroundClient() {
           <div>
             {(() => {
               const response = responses[selectedOP?.operation || ''];
-              if (!response) return null;
+              if (!response) {
+                return null;
+              }
 
               return (
                 <PGResponseArea

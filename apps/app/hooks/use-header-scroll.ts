@@ -32,7 +32,9 @@ export function useHeaderScroll(
 
   const handleScroll = useCallback(() => {
     const element = viewportRef.current;
-    if (!element) return;
+    if (!element) {
+      return;
+    }
 
     // Cancel existing RAF if scheduled
     if (rafIdRef.current) {
@@ -40,7 +42,9 @@ export function useHeaderScroll(
     }
 
     rafIdRef.current = requestAnimationFrame(() => {
-      if (!element) return;
+      if (!element) {
+        return;
+      }
 
       const currentScrollY = element.scrollTop;
       const scrollDifference = currentScrollY - lastScrollY.current;

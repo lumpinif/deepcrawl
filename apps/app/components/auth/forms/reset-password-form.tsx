@@ -65,7 +65,9 @@ export function ResetPasswordForm({
   const isSubmitting = form.formState.isSubmitting;
 
   useEffect(() => {
-    if (tokenChecked.current) return;
+    if (tokenChecked.current) {
+      return;
+    }
     tokenChecked.current = true;
 
     const searchParams = new URLSearchParams(window.location.search);

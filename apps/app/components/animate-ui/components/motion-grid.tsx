@@ -36,7 +36,9 @@ const MotionGrid = ({
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
-    if (!animate || frames.length === 0) return;
+    if (!animate || frames.length === 0) {
+      return;
+    }
     intervalRef.current = setInterval(
       () => setIndex((i) => (i + 1) % frames.length),
       duration,

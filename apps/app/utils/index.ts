@@ -22,7 +22,9 @@ export function isValidAuthRoute(
   authViewRoutes: AuthViewRoutes,
   pathname?: string,
 ): boolean {
-  if (!pathname) return false;
+  if (!pathname) {
+    return false;
+  }
 
   // Extract the last part of the pathname (in case it's a full path)
   const path = pathname.split('/').pop();
@@ -45,7 +47,9 @@ export function validateAuthPathname(
   authViewRoutes: AuthViewRoutes,
   pathname?: string,
 ): string | null {
-  if (!pathname) return null;
+  if (!pathname) {
+    return null;
+  }
 
   const path = pathname.split('/').pop();
 
@@ -140,7 +144,9 @@ export function getAuthTitleFromPath(
   authViewRoutes: AuthViewRoutes,
   pathname?: string,
 ): string {
-  if (!pathname) return 'Authentication';
+  if (!pathname) {
+    return 'Authentication';
+  }
 
   const authView = getAuthViewByPath(authViewRoutes, pathname);
 
