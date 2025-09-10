@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Checkbox } from '@deepcrawl/ui/components/ui/checkbox';
 import {
   Form,
@@ -45,6 +46,8 @@ export function SignInForm({
 }: SignInFormProps) {
   const isHydrated = useIsHydrated();
   // const { captchaRef, getCaptchaHeaders } = useCaptcha()
+  const lastUsedMethod = authClient.getLastUsedLoginMethod();
+  const isEmailLastUsed = lastUsedMethod === 'email';
 
   const { onSuccess, isPending: transitionPending } = useOnSuccessTransition({
     redirectTo,
@@ -113,8 +116,18 @@ export function SignInForm({
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
+            <FormItem className="group">
+              <FormLabel className="flex items-center justify-between">
+                Email
+                {isEmailLastUsed && (
+                  <Badge
+                    variant="secondary"
+                    className="text-muted-foreground text-xs transition-colors duration-150 group-focus-within:text-foreground group-hover:text-foreground"
+                  >
+                    Last used
+                  </Badge>
+                )}
+              </FormLabel>
 
               <FormControl>
                 <Input

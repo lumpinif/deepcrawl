@@ -22,99 +22,99 @@ import {
 
 export const socialProviders = [
   {
-    provider: 'apple',
+    providerId: 'apple',
     name: 'Apple',
     icon: AppleIcon,
   },
   {
-    provider: 'discord',
+    providerId: 'discord',
     name: 'Discord',
     icon: DiscordIcon,
   },
   {
-    provider: 'dropbox',
+    providerId: 'dropbox',
     name: 'Dropbox',
     icon: DropboxIcon,
   },
   {
-    provider: 'facebook',
+    providerId: 'facebook',
     name: 'Facebook',
     icon: FacebookIcon,
   },
   {
-    provider: 'github',
+    providerId: 'github',
     name: 'GitHub',
     icon: GitHubIcon,
   },
   {
-    provider: 'gitlab',
+    providerId: 'gitlab',
     name: 'GitLab',
     icon: GitLabIcon,
   },
   {
-    provider: 'google',
+    providerId: 'google',
     name: 'Google',
     icon: GoogleIcon,
   },
   {
-    provider: 'kick',
+    providerId: 'kick',
     name: 'Kick',
     icon: KickIcon,
   },
   {
-    provider: 'linkedin',
+    providerId: 'linkedin',
     name: 'LinkedIn',
     icon: LinkedInIcon,
   },
   {
-    provider: 'microsoft',
+    providerId: 'microsoft',
     name: 'Microsoft',
     icon: MicrosoftIcon,
   },
   {
-    provider: 'reddit',
+    providerId: 'reddit',
     name: 'Reddit',
     icon: RedditIcon,
   },
   {
-    provider: 'roblox',
+    providerId: 'roblox',
     name: 'Roblox',
     icon: RobloxIcon,
   },
   {
-    provider: 'spotify',
+    providerId: 'spotify',
     name: 'Spotify',
     icon: SpotifyIcon,
   },
   {
-    provider: 'tiktok',
+    providerId: 'tiktok',
     name: 'TikTok',
     icon: TikTokIcon,
   },
   {
-    provider: 'twitch',
+    providerId: 'twitch',
     name: 'Twitch',
     icon: TwitchIcon,
   },
   {
-    provider: 'vk',
+    providerId: 'vk',
     name: 'VK',
     icon: VKIcon,
   },
   {
-    provider: 'twitter',
+    providerId: 'twitter',
     name: 'X',
     icon: XIcon,
   },
   {
-    provider: 'zoom',
+    providerId: 'zoom',
     name: 'Zoom',
     icon: ZoomIcon,
   },
-] as const;
+] as const satisfies Provider[];
 
 export type Provider = {
-  provider: string;
+  providerId: string;
   name: string;
   icon?: ProviderIcon;
 };

@@ -4,6 +4,7 @@ import { assertValidAuthConfiguration } from '@deepcrawl/auth/utils/config-valid
 import type { ClientOptions } from 'better-auth';
 import {
   inferAdditionalFields,
+  lastLoginMethodClient,
   twoFactorClient,
 } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
@@ -62,6 +63,9 @@ export const authClient = createAuthClient({
       onTwoFactorRedirect() {
         window.location.href = '/auth/two-factor';
       },
+    }),
+    lastLoginMethodClient({
+      cookieName: 'dc-lastLoginMethod',
     }),
     inferAdditionalFields<typeof auth>(),
     // oneTapClient({

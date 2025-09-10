@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -17,6 +18,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useIsHydrated } from '@/hooks/use-hydrated';
+import { authClient } from '@/lib/auth.client';
 import { type AuthView, authViewRoutes } from '@/routes/auth';
 import {
   getAuthViewByPath,
@@ -53,6 +55,10 @@ export function AuthCard({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [moreAuthOptions, setMoreAuthOptions] = useState(false);
+
+  const isPasskeyOrMagicLinkLastUsed =
+    authClient.getLastUsedLoginMethod() === 'passkey' ||
+    authClient.getLastUsedLoginMethod() === 'magic-link';
 
   // Preventing Stuck Loading States when the page is hidden or navigated away from
   useEffect(() => {
@@ -124,7 +130,7 @@ export function AuthCard({
                           {providers?.map((provider) => {
                             const socialProvider = socialProviders.find(
                               (socialProvider) =>
-                                socialProvider.provider === provider,
+                                socialProvider.providerId === provider,
                             );
                             if (!socialProvider) return null;
 
@@ -156,13 +162,21 @@ export function AuthCard({
 
                         {!moreAuthOptions && view !== 'magicLink' && (
                           <Button
-                            className="w-full"
+                            className="group relative w-full"
                             variant="authButton"
                             disabled={isSubmitting}
                             onClick={() => setMoreAuthOptions(true)}
                           >
                             <RectangleEllipsis />
                             Passkey or Magic Link
+                            {isPasskeyOrMagicLinkLastUsed && (
+                              <Badge
+                                variant="secondary"
+                                className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
+                              >
+                                Last used
+                              </Badge>
+                            )}
                           </Button>
                         )}
                       </div>

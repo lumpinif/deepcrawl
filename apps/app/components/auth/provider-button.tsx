@@ -1,3 +1,4 @@
+import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { SocialProvider } from 'better-auth/social-providers';
@@ -23,13 +24,15 @@ export function ProviderButton({
   setIsSubmitting,
 }: ProviderButtonProps) {
   const { getFrontendCallbackURL } = useAuthRedirect(redirectTo);
+  const lastUsedMethod = authClient.getLastUsedLoginMethod();
+  const isLastUsed = lastUsedMethod === provider.providerId;
 
   const doSignInSocial = async () => {
     setIsSubmitting(true);
 
     try {
       const socialParams = {
-        provider: provider.provider as SocialProvider,
+        provider: provider.providerId as SocialProvider,
         callbackURL: getFrontendCallbackURL(),
       };
 
@@ -50,15 +53,25 @@ export function ProviderButton({
       variant="authButton"
       disabled={isSubmitting}
       onClick={doSignInSocial}
-      className={cn('w-full', className)}
+      className={cn('group relative w-full', className)}
     >
-      {provider.icon && (
-        <>
-          <provider.icon variant="color" className="dark:hidden" />
-          <provider.icon className="hidden dark:block" />
-        </>
+      <div className="flex items-center gap-2">
+        {provider.icon && (
+          <>
+            <provider.icon variant="color" className="dark:hidden" />
+            <provider.icon className="hidden dark:block" />
+          </>
+        )}
+        Continue with {provider.name}
+      </div>
+      {isLastUsed && (
+        <Badge
+          variant="secondary"
+          className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
+        >
+          Last used
+        </Badge>
       )}
-      Continue with {provider.name}
     </Button>
   );
 }

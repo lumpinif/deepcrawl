@@ -1,4 +1,6 @@
+import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import { KeyIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
@@ -20,6 +22,8 @@ export function PasskeyButton({
   setIsSubmitting,
 }: PasskeyButtonProps) {
   const { onSuccess } = useOnSuccessTransition({ redirectTo });
+  const lastUsedMethod = authClient.getLastUsedLoginMethod();
+  const isLastUsed = lastUsedMethod === 'passkey';
 
   const signInPassKey = async () => {
     setIsSubmitting?.(true);
@@ -68,10 +72,20 @@ export function PasskeyButton({
       variant="authButton"
       disabled={isSubmitting}
       onClick={signInPassKey}
-      className="w-full"
+      className="group relative w-full"
     >
-      <KeyIcon />
-      Continue with Passkey
+      <div className="flex items-center gap-2">
+        <KeyIcon />
+        Continue with Passkey
+      </div>
+      {isLastUsed && (
+        <Badge
+          variant="secondary"
+          className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
+        >
+          Last used
+        </Badge>
+      )}
     </Button>
   );
 }

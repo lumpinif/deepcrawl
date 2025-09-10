@@ -4,6 +4,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
   admin,
   apiKey,
+  lastLoginMethod,
   magicLink,
   multiSession,
   oAuthProxy,
@@ -134,6 +135,38 @@ export function createAuthConfig(env: Env) {
       oneTap(),
       openAPI(),
       emailHarmony(),
+      lastLoginMethod({
+        cookieName: 'dc-lastLoginMethod',
+        customResolveMethod: (ctx) => {
+          // Track magic link authentication
+          if (ctx.path === '/verify-magic-link') {
+            return 'magic-link';
+          }
+
+          // Track passkey authentication
+          if (ctx.path === '/passkey/verify-authentication') {
+            return 'passkey';
+          }
+
+          // email authentication
+          if (ctx.path === '/sign-in/email') {
+            return 'email';
+          }
+
+          // Replicate default OAuth logic - this is a workaround to fix a known issue where the default logic was not being extended
+          const defaultPaths = [
+            '/callback/:id',
+            '/oauth2/callback/:id',
+            '/sign-in/email',
+            '/sign-up/email',
+          ];
+          if (defaultPaths.includes(ctx.path)) {
+            return ctx.params?.id ? ctx.params.id : ctx.path.split('/').pop();
+          }
+
+          return null;
+        },
+      }),
       apiKey({
         startingCharactersConfig: {
           charactersLength: 10, // default 6
