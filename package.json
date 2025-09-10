@@ -11,7 +11,7 @@
     "check": "pnpm install && turbo check && turbo check && pnpm sherif:fix"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.2",
+    "@biomejs/biome": "^2.2.4",
     "@deepcrawl/typescript-config": "workspace:*",
     "@orpc/client": "^1.8.7",
     "@orpc/contract": "^1.8.7",

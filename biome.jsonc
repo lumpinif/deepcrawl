@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
   "root": true,
   "files": {
     "ignoreUnknown": true,
@@ -45,10 +45,11 @@
     "rules": {
       "recommended": true,
       "nursery": {
-        "useSortedClasses": "info"
+        "useSortedClasses": "info",
+        "noUselessUndefined": "error"
       },
       "a11y": {
-        "noStaticElementInteractions": "off",
+        "noStaticElementInteractions": "error",
         "useSemanticElements": "off", // Rule is buggy, revisit later
         "noSvgWithoutTitle": "off", // We do not intend to adhere to this rule
         "noAutofocus": "off", // We're highly intentional about when we use autofocus
@@ -57,6 +58,13 @@
         "useKeyWithClickEvents": "off" // Disable keyboard event requirement with click events
       },
       "style": {
+        "noNestedTernary": "off",
+        "noNegationElse": "error",
+        "useBlockStatements": {
+          "options": {},
+          "fix": "safe",
+          "level": "error"
+        },
         "useFragmentSyntax": "warn", // Not in recommended ruleset, turning on manually
         "noYodaExpression": "warn", // Not in recommended ruleset, turning on manually
         "useDefaultParameterLast": "warn", // Not in recommended ruleset, turning on manually
@@ -81,9 +89,12 @@
         "useExhaustiveDependencies": "off" // Community feedback on this rule has been poor, we will continue with ESLint
       },
       "complexity": {
-        "noForEach": "warn"
+        "noForEach": "warn",
+        "noVoid": "off",
+        "useSimplifiedLogicExpression": "warn"
       },
       "suspicious": {
+        "noConsole": "off",
         "noArrayIndexKey": "off",
         "noShadowRestrictedNames": "off",
         "noHeadImportInDocument": "error",
