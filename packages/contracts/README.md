@@ -1,6 +1,6 @@
 # @deepcrawl/contracts
 
-**API contract definitions** for oRPC endpoints in the DeepCrawl ecosystem.
+**API contract definitions** for oRPC endpoints in the Deepcrawl ecosystem.
 
 ## Features
 
@@ -8,7 +8,7 @@
 - ✅ **Shared Interfaces** - Consistent contracts between client and server
 - ✅ **Error Definitions** - Standardized error types and responses
 - ✅ **Input/Output Schemas** - Request and response validation schemas
-- ✅ **Universal Types** - Works across all DeepCrawl services
+- ✅ **Universal Types** - Works across all Deepcrawl services
 
 ## Package Structure
 
