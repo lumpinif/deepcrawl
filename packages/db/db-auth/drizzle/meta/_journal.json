@@ -50,6 +50,13 @@
       "when": 1753282687457,
       "tag": "0006_secret_jamie_braddock",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1757515880057,
+      "tag": "0007_keen_kid_colt",
+      "breakpoints": true
     }
   ]
 }
