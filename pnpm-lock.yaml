@@ -452,9 +452,6 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.8.3
-      dotenv-cli:
-        specifier: ^8.0.0
-        version: 8.0.0
 
   packages/contracts:
     dependencies:
@@ -483,9 +480,6 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.8.3
-      dotenv-cli:
-        specifier: ^8.0.0
-        version: 8.0.0
       drizzle-kit:
         specifier: ^0.31.1
         version: 0.31.4
@@ -505,9 +499,6 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.8.3
-      dotenv-cli:
-        specifier: ^8.0.0
-        version: 8.0.0
       drizzle-kit:
         specifier: ^0.31.1
         version: 0.31.4
@@ -4673,14 +4664,6 @@ packages:
   dotenv-cli@10.0.0:
     resolution: {integrity: sha512-lnOnttzfrzkRx2echxJHQRB6vOAMSCzzZg79IxpC00tU42wZPuZkQxNNrrwVAxaQZIIh001l4PxVlCrBxngBzA==}
     hasBin: true
-
-  dotenv-cli@8.0.0:
-    resolution: {integrity: sha512-aLqYbK7xKOiTMIRf1lDPbI+Y+Ip/wo5k3eyp6ePysVaSqbyxjyK3dK35BTxG+rmd7djf5q2UPs4noPNH+cj0Qw==}
-    hasBin: true
-
-  dotenv-expand@10.0.0:
-    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
-    engines: {node: '>=12'}
 
   dotenv-expand@11.0.7:
     resolution: {integrity: sha512-zIHwmZPRshsCdpMDyVsqGmgyP0yT8GAgXUnkdAoJisxvf33k7yO6OuoKmcTGuXPWSsm8Oh88nZicRLA9Y0rUeA==}
@@ -12600,15 +12583,6 @@ snapshots:
       dotenv: 17.2.2
       dotenv-expand: 11.0.7
       minimist: 1.2.8
-
-  dotenv-cli@8.0.0:
-    dependencies:
-      cross-spawn: 7.0.6
-      dotenv: 16.6.1
-      dotenv-expand: 10.0.0
-      minimist: 1.2.8
-
-  dotenv-expand@10.0.0: {}
 
   dotenv-expand@11.0.7:
     dependencies:
