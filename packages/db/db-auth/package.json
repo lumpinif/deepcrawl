@@ -31,7 +31,6 @@
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
     "@types/node": "^20",
-    "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.31.1"
   },
   "dependencies": {
