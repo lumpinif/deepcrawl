@@ -294,7 +294,7 @@ export class DeepcrawlApp {
           ...init,
           ...this.config.fetchOptions,
           credentials: this.config.fetchOptions?.credentials || 'include',
-          // @ts-ignore - Node.js specific option
+          // @ts-expect-error - Node.js specific option
           agent:
             this.config.fetchOptions?.agent || (await this.getHttpsAgent()),
         }),
