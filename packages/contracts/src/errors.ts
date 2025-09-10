@@ -11,11 +11,10 @@ const RateLimitedSchema = z.object({
     description: 'The operation that was rate limited',
     examples: ['read GET', 'read POST', 'links GET', 'links POST'],
   }),
-  retryAfter: z.int()
-    .meta({
-      description: 'The time to retry in seconds',
-      examples: [10],
-    }),
+  retryAfter: z.int().meta({
+    description: 'The time to retry in seconds',
+    examples: [10],
+  }),
 });
 
 export const errorConfig: {
