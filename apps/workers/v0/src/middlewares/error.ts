@@ -3,7 +3,7 @@ import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 import type { StatusCode } from 'hono/utils/http-status';
 import * as HttpStatusCodes from 'stoker/http-status-codes';
-import { ZodError } from 'zod';
+import { ZodError } from 'zod/v4';
 import type { $ZodIssue } from 'zod/v4/core';
 import type { AppBindings, AppContext } from '@/lib/context';
 import { isProduction } from '@/utils/worker-env';
