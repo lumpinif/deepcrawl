@@ -28,6 +28,7 @@
     },
     "biome.enabled": false, // enabled in .vscode/settings.json, disable to prevent conflicts
     "editor.codeActionsOnSave": {
+      "source.action.useSortedAttributes.biome": "explicit",
       "source.organizeImports.biome": "explicit",
       "source.fixAll.biome": "explicit"
     },
