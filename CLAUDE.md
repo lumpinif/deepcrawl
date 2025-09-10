@@ -74,6 +74,9 @@ cd apps/app && pnpm check
 
 # Run all checks from root (typecheck, lint, format, sherif)
 pnpm check
+
+# Clean all build artifacts and node_modules across the monorepo
+pnpm clean
 ```
 
 ### OpenAPI and Types
@@ -264,12 +267,14 @@ Key environment variables are defined in `turbo.json` globalEnv section:
 
 ## Code Quality and Formatting
 
-The project uses Biome for code formatting and linting:
+The project uses Biome for code formatting and linting with Ultracite integration:
 
-- **Configuration**: `biome.jsonc` at root level
+- **Configuration**: `biome.jsonc` at root level, enhanced by `.claude/CLAUDE.md` rules
 - **Formatting**: 2-space indentation, single quotes, trailing commas
 - **Linting**: Extended ruleset with accessibility and security rules
 - **Import Organization**: Automatic import sorting enabled
+- **Ultracite**: AI-friendly code generation with strict type safety and accessibility standards
+- **Comprehensive Rules**: 300+ code quality, accessibility, React, TypeScript, and Next.js rules enforced
 
 ## Testing
 
@@ -357,17 +362,19 @@ pnpm ui add button  # Example: add button component
 
 ## Code Style Guidelines
 
-Based on .cursor/rules/deepcrawl-project.mdc:
+Based on `.claude/CLAUDE.md` (Ultracite/Biome rules):
 
-- **TypeScript**: Use interfaces over types, avoid enums (use maps instead)
-- **Programming Style**: Functional and declarative patterns, avoid classes
-- **React**: Prefer Server Components over client components, minimal 'use client', wrap client components in Suspense
+- **TypeScript**: Use interfaces over types, avoid enums (use maps instead), avoid `any` type, use `export type`/`import type` for types
+- **Programming Style**: Functional and declarative patterns, avoid classes, use arrow functions over function expressions
+- **React**: Prefer Server Components over client components, minimal 'use client', wrap client components in Suspense, don't use `<img>` in Next.js (use `next/image`)
 - **Variable Naming**: Use descriptive names with auxiliary verbs (isLoading, hasError)
 - **UI Framework**: shadcn/ui with Tailwind CSS, mobile-first responsive design
 - **Authentication**: Better Auth with unlinkAccount method (requires allowUnlinkingAll config for single accounts)
 - **Development Commands**: Never automatically run dev/build commands for the user - they prefer to control when processes start
-- **Accessibility**: Strict accessibility rules enforced via cursor rules (proper ARIA usage, semantic HTML, keyboard navigation)
-- **Code Quality**: Extensive linting rules enforced including no unused variables, proper error handling, consistent formatting
+- **Accessibility**: Strict accessibility rules enforced - proper ARIA usage, semantic HTML, keyboard navigation, include `lang` attribute on html element
+- **Code Quality**: Extensive Biome linting rules enforced including no unused variables, proper error handling, consistent formatting, no console statements
+- **Error Handling**: Always provide comprehensive error handling with meaningful messages, don't swallow errors
+- **Security**: Never hardcode sensitive data like API keys and tokens in code
 
 ## Important Notes
 
