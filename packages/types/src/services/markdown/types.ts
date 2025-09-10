@@ -156,7 +156,6 @@ export const MarkdownConverterOptionsSchema = z
      * @default 3 - @see {@link DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines}
      */
     maxConsecutiveNewlines: z
-      .number()
       .int()
       .positive()
       .optional()

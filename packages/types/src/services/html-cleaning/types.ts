@@ -457,22 +457,19 @@ export type HTMLRewriterOptions = z.infer<typeof HTMLRewriterOptionsSchema>;
  * Used to create selectors for targeting specific elements during HTML processing.
  */
 export const ElementPatternSchema = z
-  .object({
+  .strictObject({
     tag: z.union([z.string(), z.instanceof(RegExp)]).optional(),
     attributes: z
       .array(
-        z
-          .object({
-            name: z.union([z.string(), z.instanceof(RegExp)]),
-            value: z.union([z.string(), z.instanceof(RegExp)]).optional(),
-          })
-          .strict(),
+        z.strictObject({
+          name: z.union([z.string(), z.instanceof(RegExp)]),
+          value: z.union([z.string(), z.instanceof(RegExp)]).optional(),
+        }),
       )
       .optional(),
     classNames: z.array(z.union([z.string(), z.instanceof(RegExp)])).optional(),
     ids: z.array(z.union([z.string(), z.instanceof(RegExp)])).optional(),
   })
-  .strict()
   .meta({
     title: 'ElementPattern',
     description: 'Schema for defining patterns to match DOM elements',

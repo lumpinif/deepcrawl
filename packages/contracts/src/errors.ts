@@ -11,9 +11,7 @@ const RateLimitedSchema = z.object({
     description: 'The operation that was rate limited',
     examples: ['read GET', 'read POST', 'links GET', 'links POST'],
   }),
-  retryAfter: z
-    .number()
-    .int()
+  retryAfter: z.int()
     .meta({
       description: 'The time to retry in seconds',
       examples: [10],

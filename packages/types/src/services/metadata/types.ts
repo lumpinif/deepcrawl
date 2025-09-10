@@ -161,7 +161,6 @@ export const PageMetadataSchema = z
         examples: ['en'],
       }),
     canonical: z
-      .string()
       .url()
       .optional()
       .meta({
@@ -229,7 +228,6 @@ export const PageMetadataSchema = z
         examples: ['https://example.com/images/og-image.jpg'],
       }),
     ogUrl: z
-      .string()
       .url()
       .optional()
       .meta({
