@@ -11,7 +11,7 @@ import type { Passkey } from 'better-auth/plugins/passkey';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import {
   createApiKey,
   deleteApiKey,

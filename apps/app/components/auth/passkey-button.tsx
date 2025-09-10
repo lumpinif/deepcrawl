@@ -1,6 +1,5 @@
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
-import { cn } from '@deepcrawl/ui/lib/utils';
 import { KeyIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';

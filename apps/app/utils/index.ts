@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import * as z from 'zod/v4';
 import type { AuthView, AuthViewRoutes } from '@/routes/auth';
 
 // Re-export utilities

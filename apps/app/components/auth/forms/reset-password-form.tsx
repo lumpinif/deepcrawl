@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 import { SpinnerButton } from '@/components/spinner-button';
 import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';

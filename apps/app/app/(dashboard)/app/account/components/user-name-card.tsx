@@ -14,7 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Edit3 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { SpinnerButton } from '@/components/spinner-button';
 import { useUpdateUserName } from '@/hooks/auth.hooks';
 import { sessionQueryOptionsClient } from '@/query/query-options.client';
