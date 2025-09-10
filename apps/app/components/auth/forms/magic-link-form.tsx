@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 import { SpinnerButton } from '@/components/spinner-button';
 import { useAuthRedirect } from '@/hooks/auth.hooks';
 import { authClient } from '@/lib/auth.client';
@@ -39,9 +39,8 @@ export function MagicLinkForm({
 
   const formSchema = z.object({
     email: z
-      .string()
-      .min(1, { message: 'Email is required' })
-      .email({ message: 'Email is invalid' }),
+      .email({ error: 'Email is invalid' })
+      .min(1, { error: 'Email is required' }),
   });
 
   const form = useForm({
