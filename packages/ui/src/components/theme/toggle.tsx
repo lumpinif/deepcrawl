@@ -12,14 +12,14 @@ export function ThemeToggle() {
 
   return (
     <Button
-      size="icon"
-      variant="ghost"
       className="text-muted-foreground"
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      size="icon"
+      variant="ghost"
     >
       <IconBrightness
-        className="dark:-rotate-180 size-4 rotate-0 transition-all duration-200 ease-out"
         aria-hidden="true"
+        className="dark:-rotate-180 size-4 rotate-0 transition-all duration-200 ease-out"
       />
       {/* <Sun
         className="dark:-rotate-90 size-4 rotate-0 scale-100 transition-all dark:scale-0"
@@ -69,8 +69,6 @@ export function ThemeGroupToggle({
         // <Tooltip key={value} disableHoverableContent={true} delayDuration={200}>
         //   <TooltipTrigger asChild>
         <Button
-          key={value}
-          size="icon"
           className={cn(
             buttonClassName,
             'h-5 w-5 rounded-full',
@@ -78,11 +76,13 @@ export function ThemeGroupToggle({
               ? 'bg-muted text-primary shadow-sm'
               : 'hover:bg-muted/50',
           )}
-          variant={mounted && theme === value ? 'outline' : 'ghost'}
+          key={value}
           onClick={(e) => {
             e.stopPropagation();
             setTheme(value);
           }}
+          size="icon"
+          variant={mounted && theme === value ? 'outline' : 'ghost'}
         >
           <Icon className={cn('size-3', iconClassName)} />
           {withLabel && (

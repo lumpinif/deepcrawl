@@ -272,7 +272,9 @@ export function useInsetResize({
   // Handle mouse movement and resizing
   React.useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isInteractingWithRail.current) return;
+      if (!isInteractingWithRail.current) {
+        return;
+      }
 
       const deltaX = Math.abs(e.clientX - startX.current);
       if (!isDragging.current && deltaX > 5) {
@@ -429,7 +431,9 @@ export function useInsetResize({
     };
 
     const handleMouseUp = () => {
-      if (!isInteractingWithRail.current) return;
+      if (!isInteractingWithRail.current) {
+        return;
+      }
 
       // Handle click (not drag) behavior
       if (!isDragging.current && onToggle && enableToggle) {

@@ -2,7 +2,13 @@
   "root": false,
   "extends": "//",
   "files": {
-    "includes": ["**", "!node_modules", "!.next", "!src/components/ui"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!src/components/ui",
+      "!components/ui"
+    ]
   },
   "linter": {
     "enabled": true,
@@ -17,6 +23,7 @@
         "noUnknownProperty": "off"
       },
       "a11y": {
+        "noStaticElementInteractions": "off",
         "useValidAnchor": "off",
         "useSemanticElements": "off", // Rule is buggy, revisit later
         "noSvgWithoutTitle": "off", // We do not intend to adhere to this rule

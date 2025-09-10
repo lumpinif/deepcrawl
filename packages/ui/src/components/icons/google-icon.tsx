@@ -1,12 +1,12 @@
 export default function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg
-      width="24"
+      className={`${className}`}
+      fill="none"
       height="24"
       viewBox="0 0 90 90"
-      fill="none"
+      width="24"
       xmlns="http://www.w3.org/2000/svg"
-      className={`${className}`}
     >
       <path
         d="M45.9997 37.7273V53.2183H67.527C66.5817 58.2002 63.745 62.4186 59.4905 65.2549L72.4724 75.3278C80.036 68.3461 84.3997 58.0914 84.3997 45.9096C84.3997 43.0733 84.1453 40.3457 83.6724 37.7278L45.9997 37.7273Z"

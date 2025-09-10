@@ -44,10 +44,10 @@ const LayoutPanelTopIcon = forwardRef<
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isControlledRef.current) {
-          controls.start('animate');
-        } else {
+        if (isControlledRef.current) {
           onMouseEnter?.(e);
+        } else {
+          controls.start('animate');
         }
       },
       [controls, onMouseEnter],
@@ -55,10 +55,10 @@ const LayoutPanelTopIcon = forwardRef<
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isControlledRef.current) {
-          controls.start('normal');
-        } else {
+        if (isControlledRef.current) {
           onMouseLeave?.(e);
+        } else {
+          controls.start('normal');
         }
       },
       [controls, onMouseLeave],
@@ -72,25 +72,22 @@ const LayoutPanelTopIcon = forwardRef<
         {...props}
       >
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width={size}
-          height={size}
-          viewBox="0 0 24 24"
+          className={svgClassName}
           fill="none"
+          height={size}
           stroke="currentColor"
-          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={svgClassName}
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          width={size}
+          xmlns="http://www.w3.org/2000/svg"
         >
           <motion.rect
-            width="18"
-            height="7"
-            x="3"
-            y="3"
-            rx="1"
-            initial="normal"
             animate={controls}
+            height="7"
+            initial="normal"
+            rx="1"
             variants={{
               normal: { opacity: 1, y: 0 },
               animate: {
@@ -102,15 +99,15 @@ const LayoutPanelTopIcon = forwardRef<
                 },
               },
             }}
+            width="18"
+            x="3"
+            y="3"
           />
           <motion.rect
-            width="7"
-            height="7"
-            x="3"
-            y="14"
-            rx="1"
-            initial="normal"
             animate={controls}
+            height="7"
+            initial="normal"
+            rx="1"
             variants={{
               normal: { opacity: 1, x: 0 },
               animate: {
@@ -123,15 +120,15 @@ const LayoutPanelTopIcon = forwardRef<
                 },
               },
             }}
+            width="7"
+            x="3"
+            y="14"
           />
           <motion.rect
-            width="7"
-            height="7"
-            x="14"
-            y="14"
-            rx="1"
-            initial="normal"
             animate={controls}
+            height="7"
+            initial="normal"
+            rx="1"
             variants={{
               normal: { opacity: 1, x: 0 },
               animate: {
@@ -144,6 +141,9 @@ const LayoutPanelTopIcon = forwardRef<
                 },
               },
             }}
+            width="7"
+            x="14"
+            y="14"
           />
         </svg>
       </div>

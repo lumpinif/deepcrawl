@@ -1,6 +1,6 @@
 # @deepcrawl/ui
 
-**Shared UI component library** built with shadcn/ui, Tailwind CSS, and React for the DeepCrawl ecosystem.
+**Shared UI component library** built with shadcn/ui, Tailwind CSS, and React for the Deepcrawl ecosystem.
 
 ## Features
 
@@ -54,7 +54,7 @@ export function MyComponent() {
   return (
     <Card>
       <CardHeader>
-        <h2>DeepCrawl Dashboard</h2>
+        <h2>Deepcrawl Dashboard</h2>
       </CardHeader>
       <CardContent>
         <Button variant="default" size="lg">
@@ -89,7 +89,7 @@ import { ThemeToggle } from "@deepcrawl/ui/components/theme/toggle";
 export function Header() {
   return (
     <header>
-      <h1>DeepCrawl</h1>
+      <h1>Deepcrawl</h1>
       <ThemeToggle />
     </header>
   );
