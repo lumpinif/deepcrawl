@@ -1,4 +1,4 @@
-# DeepCrawl D1 Database Schema
+# Deepcrawl D1 Database Schema
 
 This document describes the D1 database schema for storing API activity logs and analytics data.
 

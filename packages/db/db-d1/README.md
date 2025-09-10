@@ -1,6 +1,6 @@
 # @deepcrawl/db-d1
 
-**D1 database** package for DeepCrawl data preservation using Cloudflare D1 and Drizzle ORM.
+**D1 database** package for Deepcrawl data preservation using Cloudflare D1 and Drizzle ORM.
 
 ## Features
 
@@ -54,7 +54,7 @@ pnpm db:sync
 The D1 database is configured for use with:
 
 - **Cloudflare D1** - Edge-distributed SQLite database
-- **DeepCrawl Worker** - Primary consumer of stored data
+- **Deepcrawl Worker** - Primary consumer of stored data
 - **Environment Variables** - D1 binding configuration
 - **Production Deployment** - Automatic replication across edge locations
 

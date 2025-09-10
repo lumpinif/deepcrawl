@@ -1,6 +1,6 @@
 # @deepcrawl/db-auth
 
-**Authentication database** package for DeepCrawl using PostgreSQL and Drizzle ORM.
+**Authentication database** package for Deepcrawl using PostgreSQL and Drizzle ORM.
 
 ## Features
 
