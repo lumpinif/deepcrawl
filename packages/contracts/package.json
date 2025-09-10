@@ -23,8 +23,7 @@
     "@deepcrawl/types": "workspace:*"
   },
   "devDependencies": {
-    "@deepcrawl/typescript-config": "workspace:*",
-    "typescript": "^5.8.3"
+    "@deepcrawl/typescript-config": "workspace:*"
   },
   "keywords": [
     "deepcrawl",
