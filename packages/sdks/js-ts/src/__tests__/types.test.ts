@@ -6,7 +6,7 @@
 //     it('should create error with message', () => {
 //       const error = new DeepcrawlError('Test error');
 //       expect(error.message).toBe('Test error');
-//       expect(error.name).toBe('DeepCrawlError');
+//       expect(error.name).toBe('DeepcrawlError');
 //       expect(error).toBeInstanceOf(Error);
 //     });
 
@@ -22,7 +22,7 @@
 //     it('should create auth error with default message', () => {
 //       const error = new DeepcrawlAuthError();
 //       expect(error.message).toBe('Authentication failed');
-//       expect(error.name).toBe('DeepCrawlAuthError');
+//       expect(error.name).toBe('DeepcrawlAuthError');
 //       expect(error.statusCode).toBe(401);
 //     });
 
@@ -41,7 +41,7 @@
 //     it('should create network error with default message', () => {
 //       const error = new DeepcrawlNetworkError();
 //       expect(error.message).toBe('Network error');
-//       expect(error.name).toBe('DeepCrawlNetworkError');
+//       expect(error.name).toBe('DeepcrawlNetworkError');
 //     });
 
 //     it('should create network error with custom message and cause', () => {

@@ -14,7 +14,7 @@ export type OptionsWithoutUrl<
 };
 
 /**
- * Practical fetch options for DeepCrawl SDK
+ * Practical fetch options for Deepcrawl SDK
  * Only includes options that actually affect the HTTP transport layer to the worker
  * Most RequestInit options are intentionally excluded as they don't apply to RPC-over-HTTP
  */
@@ -39,7 +39,7 @@ export interface DeepcrawlConfig {
   fetchOptions?: DeepcrawlFetchOptions;
 }
 
-export interface DeepCrawlClientContext extends ClientRetryPluginContext {}
+export interface DeepcrawlClientContext extends ClientRetryPluginContext {}
 
 /**
  * Base error class that preserves oRPC structure while providing enhanced developer experience

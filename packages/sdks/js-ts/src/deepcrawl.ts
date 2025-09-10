@@ -30,8 +30,8 @@ import type { ContractRouterClient } from '@orpc/contract';
 import * as https from 'https';
 import packageJSON from '../package.json';
 import {
-  type DeepCrawlClientContext,
   DeepcrawlAuthError,
+  type DeepcrawlClientContext,
   type DeepcrawlConfig,
   DeepcrawlLinksError,
   DeepcrawlNetworkError,
@@ -162,7 +162,9 @@ function handleDeepcrawlError(
 function extractAuthHeaders(
   headers: DeepcrawlConfig['headers'],
 ): Record<string, string | string[] | undefined> {
-  if (!headers) return {};
+  if (!headers) {
+    return {};
+  }
 
   // Check if this is a Next.js headers object (has .get method)
   const isNextJSHeaders = 'get' in headers && typeof headers.get === 'function';
@@ -196,10 +198,10 @@ const HTTP_AGENT_OPTIONS = {
 } satisfies AgentOptions;
 
 export class DeepcrawlApp {
-  public client: ContractRouterClient<typeof contract, DeepCrawlClientContext>;
+  public client: ContractRouterClient<typeof contract, DeepcrawlClientContext>;
   private safeClient: ReturnType<
     typeof createSafeClient<
-      ContractRouterClient<typeof contract, DeepCrawlClientContext>
+      ContractRouterClient<typeof contract, DeepcrawlClientContext>
     >
   >;
   private config: DeepcrawlConfig;
@@ -211,7 +213,7 @@ export class DeepcrawlApp {
    */
   private async getHttpsAgent(): Promise<Agent | undefined> {
     if (this.nodeEnv !== 'nodeJs') {
-      return undefined;
+      return;
     }
 
     if (!this.httpsAgent) {
@@ -221,7 +223,7 @@ export class DeepcrawlApp {
         });
       } catch (error) {
         console.warn('Failed to initialize HTTPS agent:', error);
-        return undefined;
+        return;
       }
     }
 
@@ -268,7 +270,7 @@ export class DeepcrawlApp {
       );
     }
 
-    const link = new RPCLink<DeepCrawlClientContext>({
+    const link = new RPCLink<DeepcrawlClientContext>({
       url: () => {
         return `${this.config.baseUrl}/rpc`;
       },
@@ -303,9 +305,13 @@ export class DeepcrawlApp {
           default: {
             retry: ({ path }) => {
               // Retry read operations up to 2 times
-              if (path[0] === 'read') return 2;
+              if (path[0] === 'read') {
+                return 2;
+              }
               // Retry link operations up to 2 times
-              if (path[0] === 'links') return 2;
+              if (path[0] === 'links') {
+                return 2;
+              }
               return 0;
             },
             retryDelay: ({ attemptIndex }) =>

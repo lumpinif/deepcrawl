@@ -1,6 +1,6 @@
 // import { describe, it, expect } from 'vitest';
 // import { DeepcrawlApp } from '../deepcrawl';
-// import type { DeepCrawlClient, DeepCrawlContract } from '../index';
+// import type { DeepcrawlClient, DeepcrawlContract } from '../index';
 
 // describe('Integration Tests', () => {
 //   describe('TypeScript types', () => {
@@ -17,7 +17,7 @@
 //     it('should work with custom client type', () => {
 //       // This demonstrates that advanced users can use the exported types
 //       const app = new DeepcrawlApp({ apiKey: 'test' });
-//       const client: DeepCrawlClient = app.client;
+//       const client: DeepcrawlClient = app.client;
 
 //       expect(client).toBeDefined();
 //     });
@@ -72,7 +72,7 @@
 //       } catch (error) {
 //         // Users can check error types
 //         if (error instanceof Error) {
-//           expect(['DeepCrawlError', 'DeepCrawlNetworkError', 'DeepCrawlAuthError'])
+//           expect(['DeepcrawlError', 'DeepcrawlNetworkError', 'DeepcrawlAuthError'])
 //             .toContain(error.name);
 //         }
 //       }
