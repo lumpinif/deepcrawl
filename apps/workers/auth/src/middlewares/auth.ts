@@ -17,7 +17,7 @@ export const authContextMiddleware = createMiddleware<AppContext>(
       headers: c.req.raw.headers,
     });
 
-    if (!session || !session.session) {
+    if (!session?.session) {
       c.set('user', null);
       c.set('session', null);
       return next();

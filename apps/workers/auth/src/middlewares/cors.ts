@@ -21,7 +21,9 @@ export const deepCrawlCors = createMiddleware<AppContext>(async (c, next) => {
   return cors({
     origin: (origin) => {
       // Allow requests with no origin (server-to-server, mobile apps, curl)
-      if (!origin) return origin;
+      if (!origin) {
+        return origin;
+      }
 
       // Check if origin is in allowed list
       const isAllowed = allowedOrigins.some((allowed) => {
