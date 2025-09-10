@@ -4,6 +4,7 @@ import { HTTPException } from 'hono/http-exception';
 import type { StatusCode } from 'hono/utils/http-status';
 import * as HttpStatusCodes from 'stoker/http-status-codes';
 import { ZodError } from 'zod';
+import type { $ZodIssue } from 'zod/v4/core';
 import type { AppBindings, AppContext } from '@/lib/context';
 import { isProduction } from '@/utils/worker-env';
 
@@ -23,7 +24,7 @@ interface ErrorResponse {
     | string
     | {
         name: string;
-        issues: ErrorIssue[];
+        issues: ErrorIssue[] | $ZodIssue[];
       };
 }
 
@@ -106,7 +107,7 @@ export function createErrorResponse(
         error instanceof BaseError
           ? error.issues
           : error instanceof ZodError
-            ? error.errors
+            ? error.issues
             : [
                 {
                   code: 'unknown_error',
