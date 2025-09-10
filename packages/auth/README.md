@@ -1,6 +1,6 @@
 # @deepcrawl/auth
 
-Authentication package for DeepCrawl using Better Auth with email functionality powered by Resend and React Email.
+Authentication package for Deepcrawl using Better Auth with email functionality powered by Resend and React Email.
 
 ## Features
 
@@ -39,7 +39,7 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 
 # Email (optional - emails will be logged if not provided)
 RESEND_API_KEY=re_your_resend_api_key
-FROM_EMAIL="DeepCrawl <noreply@deepcrawl.dev>"
+FROM_EMAIL="Deepcrawl <noreply@deepcrawl.dev>"
 ```
 
 ## Basic Usage

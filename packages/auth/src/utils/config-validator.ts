@@ -1,5 +1,5 @@
 /**
- * Configuration validation utilities for DeepCrawl Auth
+ * Configuration validation utilities for Deepcrawl Auth
  * Ensures consistency between auth worker settings and URLs
  */
 

@@ -91,7 +91,7 @@ export function createAuthConfig(env: Env) {
   const db = getDrizzleDB({ DATABASE_URL: env.DATABASE_URL });
 
   // Email configuration
-  const fromEmail = env.FROM_EMAIL || 'DeepCrawl <noreply@deepcrawl.dev>';
+  const fromEmail = env.FROM_EMAIL || 'Deepcrawl <noreply@deepcrawl.dev>';
   const emailEnabled = validateEmailConfig(env.RESEND_API_KEY, fromEmail);
   const resend = env.RESEND_API_KEY
     ? createResendClient(env.RESEND_API_KEY)
@@ -104,7 +104,7 @@ export function createAuthConfig(env: Env) {
   }
 
   const config = {
-    appName: 'DeepCrawl',
+    appName: 'Deepcrawl',
     /**
      * Base path for Better Auth.
      * Must match the path in the app.on for auth handlers
@@ -224,7 +224,7 @@ export function createAuthConfig(env: Env) {
           try {
             await sendEmail(resend, {
               to: email,
-              subject: 'Sign in to your DeepCrawl account',
+              subject: 'Sign in to your Deepcrawl account',
               template: MagicLink({
                 username: email.split('@')[0], // Use email prefix as fallback username
                 magicLinkUrl: customUrl, // Use custom URL for better UX
@@ -238,7 +238,7 @@ export function createAuthConfig(env: Env) {
         expiresIn: 300, // 5 minutes
       }),
       passkey({
-        rpName: 'DeepCrawl Passkey',
+        rpName: 'Deepcrawl Passkey',
         // always use explicit rpID for simplicity instead of relying on baseAuthURL
         rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
       }),
@@ -253,7 +253,7 @@ export function createAuthConfig(env: Env) {
           try {
             await sendEmail(resend, {
               to: data.email,
-              subject: `You've been invited to join ${data.organization.name} - DeepCrawl`,
+              subject: `You've been invited to join ${data.organization.name} - Deepcrawl`,
               template: OrganizationInvitation({
                 invitedEmail: data.email,
                 inviterName: data.inviter.user.name || 'Someone',
@@ -281,7 +281,7 @@ export function createAuthConfig(env: Env) {
         try {
           await sendEmail(resend, {
             to: user.email,
-            subject: 'Reset your password - DeepCrawl',
+            subject: 'Reset your password - Deepcrawl',
             template: PasswordReset({
               username: user.name || user.email,
               resetUrl: url,
@@ -308,7 +308,7 @@ export function createAuthConfig(env: Env) {
         try {
           await sendEmail(resend, {
             to: user.email,
-            subject: 'Verify your email address - DeepCrawl',
+            subject: 'Verify your email address - Deepcrawl',
             template: EmailVerification({
               username: user.name || user.email,
               verificationUrl: customUrl, // Use custom URL for better UX

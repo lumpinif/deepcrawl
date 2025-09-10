@@ -44,11 +44,11 @@ export default function OrganizationInvitation({
 
             <Text style={text}>
               {inviterName} ({inviterEmail}) has invited you to join{' '}
-              <strong>{organizationName}</strong> on DeepCrawl.
+              <strong>{organizationName}</strong> on Deepcrawl.
             </Text>
 
             <Text style={text}>
-              DeepCrawl is a powerful platform for web crawling and SEO
+              Deepcrawl is a powerful platform for web crawling and SEO
               analysis. Join your team to start collaborating on projects and
               insights.
             </Text>
@@ -151,6 +151,6 @@ OrganizationInvitation.PreviewProps = {
   invitedEmail: 'newmember@example.com',
   inviterName: 'Sarah Johnson',
   inviterEmail: 'sarah@deepcrawl.dev',
-  organizationName: 'DeepCrawl Team',
+  organizationName: 'Deepcrawl Team',
   invitationUrl: 'https://auth.deepcrawl.dev/accept-invitation/inv_123456789',
 } as OrganizationInvitationProps;

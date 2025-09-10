@@ -35,7 +35,7 @@ export default function EmailVerification({
             <Text style={text}>Hi {username},</Text>
 
             <Text style={text}>
-              Welcome to DeepCrawl! Please verify your email address by clicking
+              Welcome to Deepcrawl! Please verify your email address by clicking
               the button below.
             </Text>
 
@@ -46,7 +46,7 @@ export default function EmailVerification({
             </Section>
 
             <Text style={text}>
-              If you didn't create an account with DeepCrawl, you can safely
+              If you didn't create an account with Deepcrawl, you can safely
               ignore this email.
             </Text>
 

@@ -35,7 +35,7 @@ export default function PasswordReset({
             <Text style={text}>Hi {username},</Text>
 
             <Text style={text}>
-              We received a request to reset your password for your DeepCrawl
+              We received a request to reset your password for your Deepcrawl
               account. Click the button below to create a new password.
             </Text>
 

@@ -35,13 +35,13 @@ export default function MagicLink({
             <Text style={text}>Hi {username},</Text>
 
             <Text style={text}>
-              You requested a magic link to sign in to your DeepCrawl account.
+              You requested a magic link to sign in to your Deepcrawl account.
               Click the button below to continue.
             </Text>
 
             <Section style={buttonContainer}>
               <Button href={magicLinkUrl} style={button}>
-                Sign In to DeepCrawl
+                Sign In to Deepcrawl
               </Button>
             </Section>
 

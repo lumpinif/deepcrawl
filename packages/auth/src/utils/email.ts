@@ -20,7 +20,7 @@ export async function sendEmail(resend: Resend, options: SendEmailOptions) {
     to,
     subject,
     template,
-    from = 'DeepCrawl <noreply@deepcrawl.dev>',
+    from = 'Deepcrawl <noreply@deepcrawl.dev>',
     replyTo,
   } = options;
 
