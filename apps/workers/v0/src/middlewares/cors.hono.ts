@@ -34,6 +34,7 @@ export const CORS_OPTIONS = {
     'X-RateLimit-Limit',
     'X-RateLimit-Remaining',
     'X-RateLimit-Reset',
+    'X-Retry-After',
   ],
 } satisfies CORSOptions;
 

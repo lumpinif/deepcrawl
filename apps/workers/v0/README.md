@@ -1,4 +1,4 @@
-# 🕷️ DeepCrawl API Worker
+# 🕷️ Deepcrawl API Worker
 
 **High-performance web scraping and reading APIs** powered by Cloudflare Workers with enterprise-grade features.
 

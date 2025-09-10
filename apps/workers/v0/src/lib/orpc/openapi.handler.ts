@@ -42,7 +42,7 @@ export const SchemaConverters: ConditionalSchemaConverter[] = [
 
 export const OpenAPISpecGenerateOptions = {
   info: {
-    title: 'DeepCrawl',
+    title: 'Deepcrawl',
     version: packageJSON.version,
   },
   security: [{ bearerAuth: [] }],

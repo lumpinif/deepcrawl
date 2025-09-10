@@ -1,5 +1,5 @@
 info:
-  title: DeepCrawl
+  title: Deepcrawl
   version: 0.0.1
 security:
   - bearerAuth: []
