@@ -29,6 +29,7 @@ import {
   BA_API_KEY_RATE_LIMIT,
   COOKIE_CACHE_CONFIG,
   DEVELOPMENT_ORIGINS,
+  LAST_USED_LOGIN_METHOD_COOKIE_NAME,
   MAX_SESSIONS,
   PROD_APP_URL,
   PROD_AUTH_WORKER_URL,
@@ -136,7 +137,7 @@ export function createAuthConfig(env: Env) {
       openAPI(),
       emailHarmony(),
       lastLoginMethod({
-        cookieName: 'dc-lastLoginMethod',
+        cookieName: LAST_USED_LOGIN_METHOD_COOKIE_NAME,
         customResolveMethod: (ctx) => {
           // Track magic link authentication
           if (ctx.path === '/verify-magic-link') {

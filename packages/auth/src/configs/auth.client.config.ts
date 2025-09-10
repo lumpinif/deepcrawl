@@ -3,11 +3,13 @@ import {
   adminClient,
   apiKeyClient,
   genericOAuthClient,
+  lastLoginMethodClient,
   magicLinkClient,
   multiSessionClient,
   organizationClient,
   passkeyClient,
 } from 'better-auth/client/plugins';
+import { LAST_USED_LOGIN_METHOD_COOKIE_NAME } from './constants';
 
 export function createAuthClientConfig({
   baseURL,
@@ -27,6 +29,9 @@ export function createAuthClientConfig({
       organizationClient(),
       multiSessionClient(),
       genericOAuthClient(),
+      lastLoginMethodClient({
+        cookieName: LAST_USED_LOGIN_METHOD_COOKIE_NAME,
+      }),
     ],
     fetchOptions: {
       credentials: 'include',

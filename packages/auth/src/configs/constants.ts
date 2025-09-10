@@ -56,3 +56,6 @@ export const BA_API_KEY_RATE_LIMIT = {
 
 // BUG: OAUTH PROXY CURRENTLY DOES NOT WORK IN LOCALHOST WITH AUTH WORKER
 export const USE_OAUTH_PROXY = true;
+
+export const LAST_USED_LOGIN_METHOD_COOKIE_NAME =
+  'deepcrawl.last_used_login_method';
