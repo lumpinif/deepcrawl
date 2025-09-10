@@ -90,7 +90,7 @@ export const useHasPassword = () => {
   // Check if user has credential provider (email/password) account
   const hasCredentialAccount =
     Array.isArray(linkedAccounts) &&
-    linkedAccounts.some((account) => account.provider === 'credential');
+    linkedAccounts.some((account) => account.providerId === 'credential');
 
   return hasCredentialAccount;
 };
@@ -195,12 +195,12 @@ export const useCanUnlinkProvider = (providerId: string) => {
   // Check if user has credential provider (email/password) account
   const hasCredentialAccount =
     Array.isArray(linkedAccounts) &&
-    linkedAccounts.some((account) => account.provider === 'credential');
+    linkedAccounts.some((account) => account.providerId === 'credential');
   const hasPassword = hasCredentialAccount;
 
   const otherOAuthAccounts =
     Array.isArray(linkedAccounts) &&
-    linkedAccounts.filter((account) => account.provider !== providerId);
+    linkedAccounts.filter((account) => account.providerId !== providerId);
 
   const hasOtherOAuth =
     Array.isArray(otherOAuthAccounts) && otherOAuthAccounts.length > 0;

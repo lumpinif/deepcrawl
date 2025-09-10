@@ -152,13 +152,13 @@ export function ProvidersManagementCard() {
   // Check if providers are connected based on linked accounts
   const isGoogleConnected =
     Array.isArray(linkedAccounts) &&
-    linkedAccounts?.some((account) => account.provider === 'google');
+    linkedAccounts?.some((account) => account.providerId === 'google');
   const isGithubConnected =
     Array.isArray(linkedAccounts) &&
-    linkedAccounts?.some((account) => account.provider === 'github');
+    linkedAccounts?.some((account) => account.providerId === 'github');
   const hasPassword =
     Array.isArray(linkedAccounts) &&
-    linkedAccounts?.some((account) => account.provider === 'credential');
+    linkedAccounts?.some((account) => account.providerId === 'credential');
 
   // Magic Link detection: If user has verified email but no OAuth accounts or passkeys,
   // they likely used magic link or email verification
