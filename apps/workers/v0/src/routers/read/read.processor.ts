@@ -78,7 +78,9 @@ function getDefaultMarkdown(
  * @returns true if markdown has meaningful content, false otherwise
  */
 function hasMeaningfulMarkdown(markdown: string): boolean {
-  if (!markdown) return false;
+  if (!markdown) {
+    return false;
+  }
 
   // Remove whitespace, newlines, and common markdown formatting
   const cleanedContent = markdown
@@ -237,8 +239,7 @@ export async function processReadRequest(
       url: targetUrl,
       cleanedHtml: true, // required for scraping, but returned as undefined if disabled in the result
       cleaningProcessor:
-        cleaningProcessor ??
-        (!isGithubUrl ? 'html-rewriter' : 'cheerio-reader'),
+        cleaningProcessor ?? (isGithubUrl ? 'cheerio-reader' : 'html-rewriter'),
       fetchOptions: { signal: c.signal, ...params.fetchOptions },
     });
 

@@ -13,11 +13,7 @@ export const publicProcedures = implement(contract).$context<ORPCContext>();
 
 export const authed = publicProcedures
   .use(({ context, next }) => {
-    if (
-      !context.var.session ||
-      !context.var.session.user ||
-      !context.var.session.session
-    ) {
+    if (!(context.var.session?.user && context.var.session.session)) {
       throw new ORPCError('UNAUTHORIZED:', {
         status: 401,
         cause: 'No session found',

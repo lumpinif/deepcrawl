@@ -172,7 +172,9 @@ function extractTreeDynamics(
 
   while (queue.length > 0) {
     const node = queue.shift();
-    if (!node) continue;
+    if (!node) {
+      continue;
+    }
 
     if (node.lastUpdated) {
       childTimestamps.add(node.lastUpdated);

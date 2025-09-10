@@ -137,9 +137,11 @@ export class ScrapeService {
 
       // More lenient content type check - if it contains text or html in any form
       if (
-        !contentType.toLowerCase().includes('html') &&
-        !contentType.toLowerCase().includes('text') &&
-        !contentType.toLowerCase().includes('xml')
+        !(
+          contentType.toLowerCase().includes('html') ||
+          contentType.toLowerCase().includes('text') ||
+          contentType.toLowerCase().includes('xml')
+        )
       ) {
         throw new Error(
           `URL content type "${contentType}" is not allowed for scraping`,
@@ -337,7 +339,9 @@ export class ScrapeService {
     url: string | undefined,
     baseUrl: string,
   ): string | undefined {
-    if (!url) return undefined;
+    if (!url) {
+      return;
+    }
     try {
       // If url is already absolute, return as is
       return new URL(url, baseUrl).toString();
@@ -398,38 +402,51 @@ export class ScrapeService {
           }
         }
       }
-      if (pageTitle) metadata.title = pageTitle;
+      if (pageTitle) {
+        metadata.title = pageTitle;
+      }
     }
 
     // Description
     if (description) {
       const desc = $('meta[name="description"]').attr('content');
-      if (desc) metadata.description = desc;
+      if (desc) {
+        metadata.description = desc;
+      }
     }
 
     // Language
     if (language) {
       const lang = $('html').attr('lang');
-      if (lang) metadata.language = lang;
+      if (lang) {
+        metadata.language = lang;
+      }
     }
 
     // Canonical
     if (canonical) {
       const canon = $('link[rel="canonical"]').attr('href');
-      if (canon) metadata.canonical = canon;
-      else metadata.canonical = baseUrl;
+      if (canon) {
+        metadata.canonical = canon;
+      } else {
+        metadata.canonical = baseUrl;
+      }
     }
 
     // Robots
     if (robots) {
       const robotsVal = $('meta[name="robots"]').attr('content');
-      if (robotsVal) metadata.robots = robotsVal;
+      if (robotsVal) {
+        metadata.robots = robotsVal;
+      }
     }
 
     // Author
     if (author) {
       const authorVal = $('meta[name="author"]').attr('content');
-      if (authorVal) metadata.author = authorVal;
+      if (authorVal) {
+        metadata.author = authorVal;
+      }
     }
 
     // Keywords

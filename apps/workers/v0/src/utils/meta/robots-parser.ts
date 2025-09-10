@@ -35,7 +35,9 @@ export class RobotsParser {
 
       for (const line of lines) {
         const trimmedLine = line.trim();
-        if (!trimmedLine || trimmedLine.startsWith('#')) continue;
+        if (!trimmedLine || trimmedLine.startsWith('#')) {
+          continue;
+        }
 
         const [directive, ...value] = trimmedLine
           .split(':')

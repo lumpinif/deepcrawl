@@ -103,7 +103,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       }
 
       // Check if session exists
-      if (!sessionData.session || !sessionData.user) {
+      if (!(sessionData.session && sessionData.user)) {
         logDebug('🚨 Missing session or user data:', {
           hasSession: !!sessionData.session,
           hasUser: !!sessionData.user,

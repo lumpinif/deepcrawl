@@ -7,18 +7,18 @@
 export function cleanEmptyValues<T>(data: T): T | undefined {
   // Handle null or undefined
   if (data === null || data === undefined) {
-    return undefined;
+    return;
   }
 
   // Handle empty strings
   if (typeof data === 'string' && data.trim() === '') {
-    return undefined;
+    return;
   }
 
   // Handle arrays
   if (Array.isArray(data)) {
     if (data.length === 0) {
-      return undefined;
+      return;
     }
 
     const cleanedArray = data

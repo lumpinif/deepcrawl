@@ -15,7 +15,7 @@ export function retry(options: { times: number }) {
       const { user, session: userSession } = session ?? {};
       const isAuthenticated = !!session && !!user && !!userSession;
 
-      if (!canRetry || !isAuthenticated) {
+      if (!(canRetry && isAuthenticated)) {
         return next();
       }
 

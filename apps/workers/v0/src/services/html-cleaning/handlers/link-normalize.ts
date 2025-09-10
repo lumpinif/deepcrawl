@@ -82,7 +82,9 @@ abstract class BaseURLHandler
 export class LinkNormalizeHandler extends BaseURLHandler {
   element(element: Element): void {
     const href = element.getAttribute('href');
-    if (!href) return;
+    if (!href) {
+      return;
+    }
 
     // Skip fragment-only URLs as they're handled by AnchorFragmentHandler
     if (href.startsWith('#')) {
@@ -108,7 +110,9 @@ export class AnchorFragmentHandler
 {
   element(element: Element): void {
     const href = element.getAttribute('href');
-    if (!href || !href.startsWith('#')) return;
+    if (!href?.startsWith('#')) {
+      return;
+    }
 
     // Remove the href attribute
     element.removeAttribute('href');
@@ -141,7 +145,9 @@ export class AnchorFragmentHandler
 export class ImageSrcNormalizeHandler extends BaseURLHandler {
   element(element: Element): void {
     const src = element.getAttribute('src');
-    if (!src) return;
+    if (!src) {
+      return;
+    }
 
     try {
       const normalizedUrl = this.normalizeUrl(src);

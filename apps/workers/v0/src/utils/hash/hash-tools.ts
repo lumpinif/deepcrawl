@@ -11,21 +11,31 @@ export function stableStringify(
   const seen = new WeakSet<object>();
 
   function normalize(value: unknown): unknown {
-    if (value === null) return null;
+    if (value === null) {
+      return null;
+    }
     const valueType = typeof value;
-    if (valueType !== 'object') return value;
+    if (valueType !== 'object') {
+      return value;
+    }
 
     // Arrays: preserve order, normalize items
-    if (Array.isArray(value)) return value.map((item) => normalize(item));
+    if (Array.isArray(value)) {
+      return value.map((item) => normalize(item));
+    }
 
     // Objects: deep sort keys
     const objectValue = value as Record<string, unknown>;
-    if (seen.has(objectValue)) return null; // guard against cycles
+    if (seen.has(objectValue)) {
+      return null; // guard against cycles
+    }
     seen.add(objectValue);
 
     const sortedKeys = Object.keys(objectValue).sort();
     const normalized: Record<string, unknown> = {};
-    for (const key of sortedKeys) normalized[key] = normalize(objectValue[key]);
+    for (const key of sortedKeys) {
+      normalized[key] = normalize(objectValue[key]);
+    }
     return normalized;
   }
 

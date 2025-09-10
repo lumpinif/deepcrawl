@@ -26,7 +26,9 @@ export class TagFilterHandler implements HTMLRewriterElementContentHandlers {
         if (pattern.startsWith('*') && pattern.endsWith('*')) {
           const regex = new RegExp(pattern.slice(1, -1), 'i');
           // Check tag name
-          if (regex.test(tagName)) return true;
+          if (regex.test(tagName)) {
+            return true;
+          }
 
           // Special handling for class matches if pattern starts with *
           if (pattern.startsWith('*.')) {

@@ -172,7 +172,7 @@ async function processNonTreeRequest({
     });
 
     // If scraping failed, throw error
-    if (!targetScrapeResult || !targetScrapeResult.rawHtml) {
+    if (!targetScrapeResult?.rawHtml) {
       throw new Error('Failed to scrape target URL');
     }
 
@@ -486,7 +486,7 @@ export async function processLinksRequest(
       const targetScrapeResult = await scrapeIfNotVisited(targetUrl);
 
       // If scraping failed, handle the error properly
-      if (!targetScrapeResult || !targetScrapeResult.rawHtml) {
+      if (!targetScrapeResult?.rawHtml) {
         const tree: Tree | undefined = existingTree;
 
         // create a links post error response and return it
@@ -680,7 +680,7 @@ export async function processLinksRequest(
     }
 
     // Define a type for all possible promise results
-    type ParallelPromiseResult = TargetUrlResult | undefined;
+    type ParallelPromiseResult = TargetUrlResult | null;
 
     // Create an array to store promises that can be executed in parallel
     const parallelPromises: Array<Promise<ParallelPromiseResult>> = [];
@@ -689,12 +689,10 @@ export async function processLinksRequest(
     if (targetUrl !== rootUrl) {
       if (!isPlatformUrl) {
         // Cast the result to match our ParallelPromiseResult type
-        parallelPromises.push(processRootUrl(rootUrl).then(() => undefined));
+        parallelPromises.push(processRootUrl(rootUrl).then(() => null));
       } else if (ancestors && ancestors.length > 0) {
         // Cast the result to match our ParallelPromiseResult type
-        parallelPromises.push(
-          processRootUrl(ancestors[1]).then(() => undefined),
-        );
+        parallelPromises.push(processRootUrl(ancestors[1]).then(() => null));
       }
     }
 
@@ -705,7 +703,7 @@ export async function processLinksRequest(
         .slice(0, MAX_KIN_LIMIT);
       // Cast the result to match our ParallelPromiseResult type
       parallelPromises.push(
-        processKinLinks(ancestorsExceptRoot).then(() => undefined),
+        processKinLinks(ancestorsExceptRoot).then(() => null),
       );
     }
 
@@ -921,23 +919,23 @@ export async function processLinksRequest(
       ancestors,
 
       /* root-level fields that are only included if there is no tree */
-      executionTime: !withTree || !finalTree ? executionTime : undefined,
-      title: !withTree || !finalTree ? targetScrapeResult?.title : undefined,
+      executionTime: withTree && finalTree ? undefined : executionTime,
+      title: withTree && finalTree ? undefined : targetScrapeResult?.title,
       description:
-        !withTree || !finalTree ? targetScrapeResult?.description : undefined,
+        withTree && finalTree ? undefined : targetScrapeResult?.description,
       metadata:
-        isMetadata && (!withTree || !finalTree)
+        isMetadata && !(withTree && finalTree)
           ? targetScrapeResult?.metadata
           : undefined,
       extractedLinks:
-        includeExtractedLinks && (!withTree || !finalTree)
+        includeExtractedLinks && !(withTree && finalTree)
           ? linksFromTarget
           : undefined,
       cleanedHtml:
-        isCleanedHtml && (!withTree || !finalTree)
+        isCleanedHtml && !(withTree && finalTree)
           ? targetScrapeResult?.cleanedHtml
           : undefined,
-      skippedUrls: !withTree || !finalTree ? categorizedSkippedUrls : undefined,
+      skippedUrls: withTree && finalTree ? undefined : categorizedSkippedUrls,
 
       /* tree data including root-level fields */
       tree: withTree && finalTree ? finalTree : undefined,

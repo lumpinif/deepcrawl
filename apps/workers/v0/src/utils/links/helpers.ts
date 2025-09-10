@@ -823,7 +823,7 @@ export function processExtractedLinksInTree(
   linkOptions?: LinkExtractionOptions,
 ): Tree | undefined {
   if (!tree) {
-    return undefined;
+    return;
   }
 
   // Create a queue for breadth-first traversal
@@ -831,7 +831,9 @@ export function processExtractedLinksInTree(
 
   while (queue.length > 0) {
     const node = queue.shift();
-    if (!node) continue;
+    if (!node) {
+      continue;
+    }
 
     // Process extractedLinks based on options
     if (node.extractedLinks) {
@@ -941,7 +943,9 @@ export function categorizeSkippedUrls(
   // Process each skipped URL
   for (const [url, reason] of filteredEntries) {
     // Skip undefined or null URLs
-    if (!url) continue;
+    if (!url) {
+      continue;
+    }
 
     // Create the base skipped URL object
     const skippedUrl: SkippedUrl = { url, reason };
@@ -1007,8 +1011,12 @@ export function categorizeSkippedUrls(
   }
 
   // Add non-empty categories to the result
-  if (internal.length > 0) categorized.internal = internal;
-  if (external.length > 0) categorized.external = external;
+  if (internal.length > 0) {
+    categorized.internal = internal;
+  }
+  if (external.length > 0) {
+    categorized.external = external;
+  }
 
   // Add media if any media types exist
   if (
@@ -1017,13 +1025,21 @@ export function categorizeSkippedUrls(
     mediaDocuments.length > 0
   ) {
     categorized.media = {};
-    if (mediaImages.length > 0) categorized.media.images = mediaImages;
-    if (mediaVideos.length > 0) categorized.media.videos = mediaVideos;
-    if (mediaDocuments.length > 0) categorized.media.documents = mediaDocuments;
+    if (mediaImages.length > 0) {
+      categorized.media.images = mediaImages;
+    }
+    if (mediaVideos.length > 0) {
+      categorized.media.videos = mediaVideos;
+    }
+    if (mediaDocuments.length > 0) {
+      categorized.media.documents = mediaDocuments;
+    }
   }
 
   // Add other category if needed
-  if (other.length > 0) categorized.other = other;
+  if (other.length > 0) {
+    categorized.other = other;
+  }
 
   return categorized;
 }

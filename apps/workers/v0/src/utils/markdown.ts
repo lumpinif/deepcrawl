@@ -156,7 +156,9 @@ const preCodeTranslators: TranslatorConfigObject = {
       return {
         noEscape: true,
         postprocess: ({ content }) => {
-          if (!content) return '';
+          if (!content) {
+            return '';
+          }
 
           // Replace newlines with spaces like Turndown does
           const processedContent = content.replace(/\r?\n|\r/g, ' ');

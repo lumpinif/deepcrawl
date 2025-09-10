@@ -118,10 +118,10 @@ export function schedulePostProcessing(
           executionTimeMs: performance.now() - startedAt,
           responseHash: success ? responseHash : null, // null if success is false
           /* dynamic response data fields such as metrics or full error response if success is false */
-          responseMetadata: !success
-            ? response
-            : ((dynamics as unknown) ?? null),
-          error: !success ? response : undefined,
+          responseMetadata: success
+            ? ((dynamics as unknown) ?? null)
+            : response,
+          error: success ? undefined : response,
         });
       } catch (err) {
         logError(`[${joinedPath} Post-processing] failed`, err);

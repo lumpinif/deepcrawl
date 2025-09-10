@@ -248,7 +248,9 @@ export class LinkService {
    * Checks if a URL matches any exclude patterns
    */
   private isExcluded(url: string, patterns?: string[]): boolean {
-    if (!patterns?.length) return false;
+    if (!patterns?.length) {
+      return false;
+    }
     return patterns.some((pattern) => {
       try {
         return new RegExp(pattern).test(url);
@@ -512,9 +514,7 @@ export class LinkService {
 
       // If all media arrays are undefined, set the entire media object to undefined
       if (
-        !result.media.images &&
-        !result.media.videos &&
-        !result.media.documents
+        !(result.media.images || result.media.videos || result.media.documents)
       ) {
         result.media = undefined;
       }
@@ -538,7 +538,9 @@ export class LinkService {
       // Remove leading and trailing slashes, then count segments
       const path = parsedUrl.pathname.replace(/^\/|\/$/g, '');
       // Empty path means root (0 segments)
-      if (!path) return 0;
+      if (!path) {
+        return 0;
+      }
       // Count segments by splitting on slashes
       return path.split('/').length;
     } catch (error) {
@@ -610,8 +612,12 @@ export class LinkService {
     const urlArray = Array.from(urlMap.values());
     urlArray.sort((a, b) => {
       // Handle null or undefined lastVisited values
-      if (!a.lastVisited) return 1;
-      if (!b.lastVisited) return -1;
+      if (!a.lastVisited) {
+        return 1;
+      }
+      if (!b.lastVisited) {
+        return -1;
+      }
       // Sort newest first
       return (
         new Date(b.lastVisited).getTime() - new Date(a.lastVisited).getTime()
