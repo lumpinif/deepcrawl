@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@biomejs/biome':
-        specifier: ^2.0.6
-        version: 2.0.6
+        specifier: ^2.2.3
+        version: 2.2.3
       '@deepcrawl/typescript-config':
         specifier: workspace:*
         version: link:packages/typescript-config
@@ -320,10 +320,10 @@ importers:
         version: 0.2.2(@cloudflare/workers-types@4.20250711.0)(hono@4.8.4)
       '@hono/zod-openapi':
         specifier: ^0.19.9
-        version: 0.19.9(hono@4.8.4)(zod@4.0.14)
+        version: 0.19.9(hono@4.8.4)(zod@3.25.76)
       '@hono/zod-validator':
         specifier: ^0.5.0
-        version: 0.5.0(hono@4.8.4)(zod@4.0.14)
+        version: 0.5.0(hono@4.8.4)(zod@3.25.76)
       '@orpc/client':
         specifier: ^1.7.4
         version: 1.7.4
@@ -344,7 +344,7 @@ importers:
         version: 1.7.4
       '@orpc/zod':
         specifier: ^1.7.4
-        version: 1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@4.0.14)
+        version: 1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@3.25.76)
       '@paoramen/cheer-reader':
         specifier: npm:@jsr/paoramen__cheer-reader@^0.1.2
         version: '@jsr/paoramen__cheer-reader@0.1.2'
@@ -383,13 +383,13 @@ importers:
         version: 13.0.0
       stoker:
         specifier: ^1.4.2
-        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@4.0.14))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.0.14))(hono@4.8.4)(openapi3-ts@4.5.0)
+        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0)
       xss:
         specifier: ^1.0.15
         version: 1.0.15
       zod-to-json-schema:
         specifier: ^3.24.6
-        version: 3.24.6(zod@4.0.14)
+        version: 3.24.6(zod@3.25.76)
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^4.13.2
@@ -888,55 +888,55 @@ packages:
   '@better-fetch/fetch@1.1.18':
     resolution: {integrity: sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==}
 
-  '@biomejs/biome@2.0.6':
-    resolution: {integrity: sha512-RRP+9cdh5qwe2t0gORwXaa27oTOiQRQvrFf49x2PA1tnpsyU7FIHX4ZOFMtBC4QNtyWsN7Dqkf5EDbg4X+9iqA==}
+  '@biomejs/biome@2.2.3':
+    resolution: {integrity: sha512-9w0uMTvPrIdvUrxazZ42Ib7t8Y2yoGLKLdNne93RLICmaHw7mcLv4PPb5LvZLJF3141gQHiCColOh/v6VWlWmg==}
     engines: {node: '>=14.21.3'}
     hasBin: true
 
-  '@biomejs/cli-darwin-arm64@2.0.6':
-    resolution: {integrity: sha512-AzdiNNjNzsE6LfqWyBvcL29uWoIuZUkndu+wwlXW13EKcBHbbKjNQEZIJKYDc6IL+p7bmWGx3v9ZtcRyIoIz5A==}
+  '@biomejs/cli-darwin-arm64@2.2.3':
+    resolution: {integrity: sha512-OrqQVBpadB5eqzinXN4+Q6honBz+tTlKVCsbEuEpljK8ASSItzIRZUA02mTikl3H/1nO2BMPFiJ0nkEZNy3B1w==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [darwin]
 
-  '@biomejs/cli-darwin-x64@2.0.6':
-    resolution: {integrity: sha512-wJjjP4E7bO4WJmiQaLnsdXMa516dbtC6542qeRkyJg0MqMXP0fvs4gdsHhZ7p9XWTAmGIjZHFKXdsjBvKGIJJQ==}
+  '@biomejs/cli-darwin-x64@2.2.3':
+    resolution: {integrity: sha512-OCdBpb1TmyfsTgBAM1kPMXyYKTohQ48WpiN9tkt9xvU6gKVKHY4oVwteBebiOqyfyzCNaSiuKIPjmHjUZ2ZNMg==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [darwin]
 
-  '@biomejs/cli-linux-arm64-musl@2.0.6':
-    resolution: {integrity: sha512-CVPEMlin3bW49sBqLBg2x016Pws7eUXA27XYDFlEtponD0luYjg2zQaMJ2nOqlkKG9fqzzkamdYxHdMDc2gZFw==}
+  '@biomejs/cli-linux-arm64-musl@2.2.3':
+    resolution: {integrity: sha512-q3w9jJ6JFPZPeqyvwwPeaiS/6NEszZ+pXKF+IczNo8Xj6fsii45a4gEEicKyKIytalV+s829ACZujQlXAiVLBQ==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
 
-  '@biomejs/cli-linux-arm64@2.0.6':
-    resolution: {integrity: sha512-ZSVf6TYo5rNMUHIW1tww+rs/krol7U5A1Is/yzWyHVZguuB0lBnIodqyFuwCNqG9aJGyk7xIMS8HG0qGUPz0SA==}
+  '@biomejs/cli-linux-arm64@2.2.3':
+    resolution: {integrity: sha512-g/Uta2DqYpECxG+vUmTAmUKlVhnGEcY7DXWgKP8ruLRa8Si1QHsWknPY3B/wCo0KgYiFIOAZ9hjsHfNb9L85+g==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
 
-  '@biomejs/cli-linux-x64-musl@2.0.6':
-    resolution: {integrity: sha512-mKHE/e954hR/hSnAcJSjkf4xGqZc/53Kh39HVW1EgO5iFi0JutTN07TSjEMg616julRtfSNJi0KNyxvc30Y4rQ==}
+  '@biomejs/cli-linux-x64-musl@2.2.3':
+    resolution: {integrity: sha512-y76Dn4vkP1sMRGPFlNc+OTETBhGPJ90jY3il6jAfur8XWrYBQV3swZ1Jo0R2g+JpOeeoA0cOwM7mJG6svDz79w==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
 
-  '@biomejs/cli-linux-x64@2.0.6':
-    resolution: {integrity: sha512-geM1MkHTV1Kh2Cs/Xzot9BOF3WBacihw6bkEmxkz4nSga8B9/hWy5BDiOG3gHDGIBa8WxT0nzsJs2f/hPqQIQw==}
+  '@biomejs/cli-linux-x64@2.2.3':
+    resolution: {integrity: sha512-LEtyYL1fJsvw35CxrbQ0gZoxOG3oZsAjzfRdvRBRHxOpQ91Q5doRVjvWW/wepgSdgk5hlaNzfeqpyGmfSD0Eyw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
 
-  '@biomejs/cli-win32-arm64@2.0.6':
-    resolution: {integrity: sha512-290V4oSFoKaprKE1zkYVsDfAdn0An5DowZ+GIABgjoq1ndhvNxkJcpxPsiYtT7slbVe3xmlT0ncdfOsN7KruzA==}
+  '@biomejs/cli-win32-arm64@2.2.3':
+    resolution: {integrity: sha512-Ms9zFYzjcJK7LV+AOMYnjN3pV3xL8Prxf9aWdDVL74onLn5kcvZ1ZMQswE5XHtnd/r/0bnUd928Rpbs14BzVmA==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [win32]
 
-  '@biomejs/cli-win32-x64@2.0.6':
-    resolution: {integrity: sha512-bfM1Bce0d69Ao7pjTjUS+AWSZ02+5UHdiAP85Th8e9yV5xzw6JrHXbL5YWlcEKQ84FIZMdDc7ncuti1wd2sdbw==}
+  '@biomejs/cli-win32-x64@2.2.3':
+    resolution: {integrity: sha512-gvCpewE7mBwBIpqk1YrUqNR4mCiyJm6UI3YWQQXkedSSEwzRdodRpaKhbdbHw1/hmTWOVXQ+Eih5Qctf4TCVOQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
@@ -8810,12 +8810,6 @@ snapshots:
     dependencies:
       openapi3-ts: 4.5.0
       zod: 3.25.76
-    optional: true
-
-  '@asteasolutions/zod-to-openapi@7.3.4(zod@4.0.14)':
-    dependencies:
-      openapi3-ts: 4.5.0
-      zod: 4.0.14
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -8877,39 +8871,39 @@ snapshots:
 
   '@better-fetch/fetch@1.1.18': {}
 
-  '@biomejs/biome@2.0.6':
+  '@biomejs/biome@2.2.3':
     optionalDependencies:
-      '@biomejs/cli-darwin-arm64': 2.0.6
-      '@biomejs/cli-darwin-x64': 2.0.6
-      '@biomejs/cli-linux-arm64': 2.0.6
-      '@biomejs/cli-linux-arm64-musl': 2.0.6
-      '@biomejs/cli-linux-x64': 2.0.6
-      '@biomejs/cli-linux-x64-musl': 2.0.6
-      '@biomejs/cli-win32-arm64': 2.0.6
-      '@biomejs/cli-win32-x64': 2.0.6
+      '@biomejs/cli-darwin-arm64': 2.2.3
+      '@biomejs/cli-darwin-x64': 2.2.3
+      '@biomejs/cli-linux-arm64': 2.2.3
+      '@biomejs/cli-linux-arm64-musl': 2.2.3
+      '@biomejs/cli-linux-x64': 2.2.3
+      '@biomejs/cli-linux-x64-musl': 2.2.3
+      '@biomejs/cli-win32-arm64': 2.2.3
+      '@biomejs/cli-win32-x64': 2.2.3
 
-  '@biomejs/cli-darwin-arm64@2.0.6':
+  '@biomejs/cli-darwin-arm64@2.2.3':
     optional: true
 
-  '@biomejs/cli-darwin-x64@2.0.6':
+  '@biomejs/cli-darwin-x64@2.2.3':
     optional: true
 
-  '@biomejs/cli-linux-arm64-musl@2.0.6':
+  '@biomejs/cli-linux-arm64-musl@2.2.3':
     optional: true
 
-  '@biomejs/cli-linux-arm64@2.0.6':
+  '@biomejs/cli-linux-arm64@2.2.3':
     optional: true
 
-  '@biomejs/cli-linux-x64-musl@2.0.6':
+  '@biomejs/cli-linux-x64-musl@2.2.3':
     optional: true
 
-  '@biomejs/cli-linux-x64@2.0.6':
+  '@biomejs/cli-linux-x64@2.2.3':
     optional: true
 
-  '@biomejs/cli-win32-arm64@2.0.6':
+  '@biomejs/cli-win32-arm64@2.2.3':
     optional: true
 
-  '@biomejs/cli-win32-x64@2.0.6':
+  '@biomejs/cli-win32-x64@2.2.3':
     optional: true
 
   '@bundled-es-modules/cookie@2.0.1':
@@ -9505,31 +9499,16 @@ snapshots:
       hono: 4.8.4
       openapi3-ts: 4.5.0
       zod: 3.25.76
-    optional: true
 
-  '@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.0.14)':
-    dependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.4(zod@4.0.14)
-      '@hono/zod-validator': 0.7.0(hono@4.8.4)(zod@4.0.14)
-      hono: 4.8.4
-      openapi3-ts: 4.5.0
-      zod: 4.0.14
-
-  '@hono/zod-validator@0.5.0(hono@4.8.4)(zod@4.0.14)':
+  '@hono/zod-validator@0.5.0(hono@4.8.4)(zod@3.25.76)':
     dependencies:
       hono: 4.8.4
-      zod: 4.0.14
+      zod: 3.25.76
 
   '@hono/zod-validator@0.7.0(hono@4.8.4)(zod@3.25.76)':
     dependencies:
       hono: 4.8.4
       zod: 3.25.76
-    optional: true
-
-  '@hono/zod-validator@0.7.0(hono@4.8.4)(zod@4.0.14)':
-    dependencies:
-      hono: 4.8.4
-      zod: 4.0.14
 
   '@hookform/resolvers@5.1.1(react-hook-form@7.60.0(react@19.1.0))':
     dependencies:
@@ -10059,7 +10038,7 @@ snapshots:
     dependencies:
       '@orpc/shared': 1.7.4
 
-  '@orpc/zod@1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@4.0.14)':
+  '@orpc/zod@1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@3.25.76)':
     dependencies:
       '@orpc/contract': 1.7.4
       '@orpc/json-schema': 1.7.4
@@ -10068,7 +10047,7 @@ snapshots:
       '@orpc/shared': 1.7.4
       escape-string-regexp: 5.0.0
       wildcard-match: 5.1.4
-      zod: 4.0.14
+      zod: 3.25.76
     transitivePeerDependencies:
       - crossws
       - ws
@@ -11672,6 +11651,7 @@ snapshots:
     optionalDependencies:
       msw: 2.10.3(@types/node@20.8.3)(typescript@5.8.3)
       vite: 7.0.4(@types/node@20.8.3)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0)
+    optional: true
 
   '@vitest/mocker@3.2.4(msw@2.10.3(@types/node@24.1.0)(typescript@5.8.3))(vite@7.0.4(@types/node@24.1.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0))':
     dependencies:
@@ -11711,7 +11691,7 @@ snapshots:
       sirv: 3.0.1
       tinyglobby: 0.2.14
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@20.8.3)(@vitest/ui@3.2.4)(happy-dom@18.0.1)(jiti@2.4.2)(lightningcss@1.30.1)(msw@2.10.3(@types/node@20.8.3)(typescript@5.8.3))(terser@5.43.1)(yaml@2.8.0)
+      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@24.1.0)(@vitest/ui@3.2.4)(happy-dom@18.0.1)(jiti@2.4.2)(lightningcss@1.30.1)(msw@2.10.3(@types/node@24.1.0)(typescript@5.8.3))(terser@5.43.1)(yaml@2.8.0)
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -16687,14 +16667,6 @@ snapshots:
       '@hono/zod-openapi': 0.19.9(hono@4.8.4)(zod@3.25.76)
       openapi3-ts: 4.5.0
 
-  stoker@1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@4.0.14))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.0.14))(hono@4.8.4)(openapi3-ts@4.5.0):
-    dependencies:
-      hono: 4.8.4
-    optionalDependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.4(zod@4.0.14)
-      '@hono/zod-openapi': 0.19.9(hono@4.8.4)(zod@4.0.14)
-      openapi3-ts: 4.5.0
-
   stop-iteration-iterator@1.1.0:
     dependencies:
       es-errors: 1.3.0
@@ -17397,6 +17369,7 @@ snapshots:
       - terser
       - tsx
       - yaml
+    optional: true
 
   vite-node@3.2.4(@types/node@24.1.0)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0):
     dependencies:
@@ -17434,6 +17407,7 @@ snapshots:
       lightningcss: 1.30.1
       terser: 5.43.1
       yaml: 2.8.0
+    optional: true
 
   vite@7.0.4(@types/node@22.16.3)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0):
     dependencies:
@@ -17511,6 +17485,7 @@ snapshots:
       - terser
       - tsx
       - yaml
+    optional: true
 
   vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.1.0)(@vitest/ui@3.2.4)(happy-dom@18.0.1)(jiti@2.4.2)(lightningcss@1.30.1)(msw@2.10.3(@types/node@24.1.0)(typescript@5.8.3))(terser@5.43.1)(yaml@2.8.0):
     dependencies:
@@ -17791,9 +17766,9 @@ snapshots:
       cookie: 1.0.2
       youch-core: 0.3.3
 
-  zod-to-json-schema@3.24.6(zod@4.0.14):
+  zod-to-json-schema@3.24.6(zod@3.25.76):
     dependencies:
-      zod: 4.0.14
+      zod: 3.25.76
 
   zod@3.22.3: {}
 

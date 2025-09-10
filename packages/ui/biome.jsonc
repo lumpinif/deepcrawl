@@ -2,11 +2,14 @@
   "root": false,
   "extends": "//",
   "files": {
-    "includes": ["**", "!node_modules", "!.next", "!src/components/ui/**"]
+    "includes": ["**", "!node_modules", "!.next", "!src/components/ui"]
   },
   "linter": {
     "enabled": true,
     "rules": {
+      "suspicious": {
+        "noUnknownAtRules": "off"
+      },
       "security": {
         "noDangerouslySetInnerHtml": "off"
       },

@@ -41,7 +41,7 @@ export default function CopyButton({ textToCopy }: CopyButtonProps) {
             className="h-8 w-8"
           >
             {isCopied ? (
-              <Check className="h-4 w-4 " />
+              <Check className="h-4 w-4" />
             ) : (
               <Copy className="h-4 w-4" />
             )}

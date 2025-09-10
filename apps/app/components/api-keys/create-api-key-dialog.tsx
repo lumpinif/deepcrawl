@@ -58,7 +58,7 @@ export function CreateApiKeyDialog({
 
     let expiresIn: number | undefined;
     if (expirationDays !== 'never') {
-      const days = Number.parseInt(expirationDays);
+      const days = Number.parseInt(expirationDays, 10);
       expiresIn = days * 24 * 60 * 60; // Convert days to seconds
     }
 

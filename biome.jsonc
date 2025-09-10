@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.3/schema.json",
   "root": true,
   "files": {
     "ignoreUnknown": true,
@@ -12,16 +12,16 @@
       "!./apps/main/src/lib/editor/react-renderer.tsx",
       "!node_modules",
       "!wrangler",
-      "!.wrangler/**",
+      "!.wrangler",
       "!drizzle",
-      "!drizzle/**",
+      "!drizzle",
       "!node_modules/**/*",
-      "!.turbo/**",
-      "!.next/**",
-      "!public/**",
-      "!.vercel/**",
-      "!.react-email/**",
-      "!dist/**",
+      "!.turbo",
+      "!.next",
+      "!public",
+      "!.vercel",
+      "!.react-email",
+      "!dist",
       "!./dist/**/*",
       "!worker-configuration.d.ts"
     ]
@@ -73,6 +73,7 @@
         "noInferrableTypes": "error"
       },
       "correctness": {
+        "useUniqueElementIds": "off",
         "noUnusedVariables": "off",
         "noUnusedFunctionParameters": "off",
         "noUnusedImports": "warn", // Not in recommended ruleset, turning on manually

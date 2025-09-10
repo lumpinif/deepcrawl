@@ -450,7 +450,7 @@ export function ProvidersManagementCard() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className=" max-sm:w-full"
+                    className="max-sm:w-full"
                     onClick={() => {
                       router.push(getAppRoute('/account#password-card'));
                     }}
