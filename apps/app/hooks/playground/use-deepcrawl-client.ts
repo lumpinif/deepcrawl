@@ -1,7 +1,7 @@
 import { DeepcrawlApp } from 'deepcrawl';
 import { useEffect, useMemo, useRef } from 'react';
 
-interface UseDeepCrawlClientOptions {
+interface UseDeepcrawlClientOptions {
   apiKey: string;
   baseUrl?: string;
 }
@@ -10,10 +10,10 @@ interface UseDeepCrawlClientOptions {
  * Custom hook for managing DeepcrawlApp SDK client
  * Provides memoized client instance with proper initialization
  */
-export function useDeepCrawlClient({
+export function useDeepcrawlClient({
   apiKey,
   baseUrl,
-}: UseDeepCrawlClientOptions) {
+}: UseDeepcrawlClientOptions) {
   const clientRef = useRef<DeepcrawlApp | null>(null);
 
   // Memoize client configuration to prevent unnecessary re-initialization

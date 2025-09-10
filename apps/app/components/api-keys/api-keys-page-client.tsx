@@ -13,7 +13,7 @@ import { CreateApiKeyDialog } from './create-api-key-dialog';
 function ApiKeysPageDescription({ className }: { className?: string }) {
   return (
     <p className={cn('text-muted-foreground text-xs md:text-sm', className)}>
-      API keys are used to authenticate your applications with DeepCrawl
+      API keys are used to authenticate your applications with Deepcrawl
       services. Keep your keys secure and never share them publicly.
     </p>
   );
@@ -23,7 +23,7 @@ export function ApiKeysPageSkeleton() {
   return (
     <>
       <PageHeader
-        description="Manage your API keys for accessing DeepCrawl services."
+        description="Manage your API keys for accessing Deepcrawl services."
         title="Your API Keys"
       />
       <PageContainer>
@@ -31,7 +31,7 @@ export function ApiKeysPageSkeleton() {
         <PageHeader
           className="mb-4 max-sm:w-full"
           title="Your API Keys"
-          description="Manage your API keys for accessing DeepCrawl services."
+          description="Manage your API keys for accessing Deepcrawl services."
         />
         <Button disabled className="max-sm:w-full">
           <Plus className="size-4" />
@@ -91,7 +91,7 @@ export function ApiKeysPageClient() {
     <>
       <PageHeader
         containerClassName="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4"
-        description="Manage your API keys for accessing DeepCrawl services."
+        description="Manage your API keys for accessing Deepcrawl services."
         title="Your API Keys"
       >
         <Button

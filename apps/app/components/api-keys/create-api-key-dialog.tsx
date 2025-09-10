@@ -123,7 +123,7 @@ export function CreateApiKeyDialog({
           <DialogHeader>
             <DialogTitle>Create API Key</DialogTitle>
             <DialogDescription>
-              Create a new API key to access DeepCrawl services.
+              Create a new API key to access Deepcrawl services.
             </DialogDescription>
           </DialogHeader>
           <form className="space-y-4" onSubmit={handleSubmit}>

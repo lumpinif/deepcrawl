@@ -35,7 +35,7 @@ import {
   ReadUrlGridIcon,
 } from '@/components/animate-ui/components/grid-icons';
 import { SpinnerButton } from '@/components/spinner-button';
-import { useDeepCrawlClient } from '@/hooks/playground/use-deepcrawl-client';
+import { useDeepcrawlClient } from '@/hooks/playground/use-deepcrawl-client';
 import { useExecutionTimer } from '@/hooks/playground/use-execution-timer';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
 import { OptionsPanel } from './options-panel';
@@ -120,7 +120,7 @@ export function PlaygroundClient() {
   );
 
   // Initialize SDK client with custom hook
-  const { client: sdkClient, isReady } = useDeepCrawlClient({
+  const { client: sdkClient, isReady } = useDeepcrawlClient({
     apiKey: API_KEY,
     baseUrl:
       process.env.NODE_ENV === 'development'

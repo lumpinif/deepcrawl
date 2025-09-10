@@ -1,6 +1,6 @@
-# 📊 DeepCrawl Dashboard
+# 📊 Deepcrawl Dashboard
 
-**Modern management interface** for the DeepCrawl service built with Next.js 15 and cutting-edge web technologies.
+**Modern management interface** for the Deepcrawl service built with Next.js 15 and cutting-edge web technologies.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
@@ -34,7 +34,7 @@ pnpm check
 - 🔑 **API Key Management** - Generate, manage, and monitor API keys
 - 📊 **Usage Analytics** - Real-time monitoring and analytics dashboard
 - 👥 **Multi-Session Support** - Manage multiple accounts simultaneously
-- 🌍 **Universal SDK Integration** - Built-in DeepCrawl TypeScript SDK
+- 🌍 **Universal SDK Integration** - Built-in Deepcrawl TypeScript SDK
 
 ### **Technical Stack**
 - ⚡ **Next.js 15** - Latest App Router with React 19
@@ -86,7 +86,7 @@ BETTER_AUTH_SECRET=your_secret_key
 # Database
 DATABASE_URL=your_postgres_url
 
-# DeepCrawl API
+# Deepcrawl API
 DEEPCRAWL_API_URL=https://api.deepcrawl.dev
 ```
 
