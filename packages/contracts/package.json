@@ -20,9 +20,7 @@
     "check": "biome check --write && pnpm typecheck"
   },
   "dependencies": {
-    "@deepcrawl/types": "workspace:*",
-    "@orpc/contract": "^1.7.4",
-    "@orpc/openapi": "^1.7.4"
+    "@deepcrawl/types": "workspace:*"
   },
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",

@@ -20,7 +20,14 @@
     "turbo": "^2.4.2",
     "typescript": "^5.8.3",
     "wrangler": "^4.31.0",
-    "zod": "^4.1.5"
+    "zod": "^4.1.5",
+    "@orpc/client": "^1.8.7",
+    "@orpc/contract": "^1.8.7",
+    "@orpc/json-schema": "^1.8.7",
+    "@orpc/openapi": "^1.8.7",
+    "@orpc/openapi-client": "^1.8.7",
+    "@orpc/server": "^1.8.7",
+    "@orpc/zod": "^1.8.7"
   },
   "packageManager": "pnpm@10.15.0",
   "engines": {
