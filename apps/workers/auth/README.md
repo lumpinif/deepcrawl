@@ -1,4 +1,4 @@
-# 🔐 DeepCrawl Auth Worker
+# 🔐 Deepcrawl Auth Worker
 
 **Enterprise-grade authentication service** powered by Better Auth and Cloudflare Workers.
 
@@ -52,7 +52,7 @@ pnpm preview
 - 👥 **Organization Invitations** - Team invitation system
 
 ### **Advanced Features**
-- 🔗 **Service Bindings** - Communication with main DeepCrawl worker
+- 🔗 **Service Bindings** - Communication with main Deepcrawl worker
 - 🌍 **Environment Aware** - Development and production configurations
 - 📊 **Rate Limiting** - Built-in protection against abuse
 - 🛠️ **Special API Keys** - `USE_COOKIE_AUTH_INSTEAD_OF_API_KEY` for dashboard
@@ -74,7 +74,7 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 
 # Email service (optional)
 RESEND_API_KEY=re_your_resend_api_key
-FROM_EMAIL="DeepCrawl <noreply@deepcrawl.dev>"
+FROM_EMAIL="Deepcrawl <noreply@deepcrawl.dev>"
 ```
 
 ## 🏗️ Architecture
@@ -82,5 +82,5 @@ FROM_EMAIL="DeepCrawl <noreply@deepcrawl.dev>"
 Built on Better Auth with:
 - **Database Integration** - PostgreSQL with Drizzle ORM
 - **Email Templates** - React components with universal rendering
-- **Service Communication** - Bindings to main DeepCrawl worker
+- **Service Communication** - Bindings to main Deepcrawl worker
 - **Multi-Environment** - Development and production configurations

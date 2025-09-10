@@ -7,12 +7,12 @@ import { createMiddleware } from 'hono/factory';
 import type { AppContext } from '@/lib/context';
 
 /**
- * CORS middleware for DeepCrawl auth service - only allows trusted origins
+ * CORS middleware for Deepcrawl auth service - only allows trusted origins
  */
 export const deepCrawlCors = createMiddleware<AppContext>(async (c, next) => {
   const isDevelopment = c.env.AUTH_WORKER_NODE_ENV === 'development';
 
-  // Only allow trusted DeepCrawl origins
+  // Only allow trusted Deepcrawl origins
   const allowedOrigins = [
     ...ALLOWED_ORIGINS,
     ...(isDevelopment ? DEVELOPMENT_ORIGINS : []),
@@ -48,7 +48,7 @@ export const deepCrawlCors = createMiddleware<AppContext>(async (c, next) => {
       'X-Requested-With',
       'Cookie',
     ],
-    exposeHeaders: ['Content-Length', 'Content-Type'],
+    exposeHeaders: ['Content-Length', 'Content-Type', 'X-Retry-After'],
   })(c, next);
 });
 

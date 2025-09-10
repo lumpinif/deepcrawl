@@ -14,7 +14,7 @@
   "vars": {
     "NEXT_PUBLIC_APP_URL": "http://localhost:3000",
     "AUTH_WORKER_NODE_ENV": "development",
-    "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
+    "FROM_EMAIL": "Deepcrawl <noreply@deepcrawl.dev>"
   },
   "observability": {
     "enabled": true
@@ -46,7 +46,7 @@
       "vars": {
         "NEXT_PUBLIC_APP_URL": "https://deepcrawl.dev",
         "AUTH_WORKER_NODE_ENV": "production",
-        "FROM_EMAIL": "DeepCrawl <noreply@deepcrawl.dev>"
+        "FROM_EMAIL": "Deepcrawl <noreply@deepcrawl.dev>"
       },
       "kv_namespaces": [
         {
