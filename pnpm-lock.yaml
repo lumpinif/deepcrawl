@@ -36,8 +36,8 @@ importers:
         specifier: ^4.31.0
         version: 4.31.0
       zod:
-        specifier: ^3.25.74
-        version: 3.25.76
+        specifier: ^4.1.5
+        version: 4.1.5
 
   apps/app:
     dependencies:
@@ -286,7 +286,7 @@ importers:
         version: 4.8.4
       stoker:
         specifier: ^1.4.2
-        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0)
+        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@4.1.5))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.1.5))(hono@4.8.4)(openapi3-ts@4.5.0)
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250711.0
@@ -320,10 +320,10 @@ importers:
         version: 0.2.2(@cloudflare/workers-types@4.20250711.0)(hono@4.8.4)
       '@hono/zod-openapi':
         specifier: ^0.19.9
-        version: 0.19.9(hono@4.8.4)(zod@3.25.76)
+        version: 0.19.9(hono@4.8.4)(zod@4.1.5)
       '@hono/zod-validator':
         specifier: ^0.5.0
-        version: 0.5.0(hono@4.8.4)(zod@3.25.76)
+        version: 0.5.0(hono@4.8.4)(zod@4.1.5)
       '@orpc/client':
         specifier: ^1.7.4
         version: 1.7.4
@@ -344,7 +344,7 @@ importers:
         version: 1.7.4
       '@orpc/zod':
         specifier: ^1.7.4
-        version: 1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@3.25.76)
+        version: 1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@4.1.5)
       '@paoramen/cheer-reader':
         specifier: npm:@jsr/paoramen__cheer-reader@^0.1.2
         version: '@jsr/paoramen__cheer-reader@0.1.2'
@@ -383,13 +383,13 @@ importers:
         version: 13.0.0
       stoker:
         specifier: ^1.4.2
-        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0)
+        version: 1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@4.1.5))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.1.5))(hono@4.8.4)(openapi3-ts@4.5.0)
       xss:
         specifier: ^1.0.15
         version: 1.0.15
       zod-to-json-schema:
         specifier: ^3.24.6
-        version: 3.24.6(zod@3.25.76)
+        version: 3.24.6(zod@4.1.5)
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^4.13.2
@@ -8731,14 +8731,11 @@ packages:
   zod@3.24.1:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
-
   zod@4.0.14:
     resolution: {integrity: sha512-nGFJTnJN6cM2v9kXL+SOBq3AtjQby3Mv5ySGFof5UGRHrRioSJ5iG680cYNjE/yWk671nROcpPj4hAS8nyLhSw==}
 
-  zod@4.0.5:
-    resolution: {integrity: sha512-/5UuuRPStvHXu7RS+gmvRf4NXrNxpSllGwDnCBcJZtQsKrviYXm54yDGV2KYNLT5kq0lHGcl7lqWJLgSaG+tgA==}
+  zod@4.1.5:
+    resolution: {integrity: sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -8806,10 +8803,10 @@ snapshots:
       package-manager-detector: 1.3.0
       tinyexec: 1.0.1
 
-  '@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76)':
+  '@asteasolutions/zod-to-openapi@7.3.4(zod@4.1.5)':
     dependencies:
       openapi3-ts: 4.5.0
-      zod: 3.25.76
+      zod: 4.1.5
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -9492,23 +9489,23 @@ snapshots:
       '@cloudflare/workers-types': 4.20250711.0
       hono: 4.8.4
 
-  '@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76)':
+  '@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.1.5)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.4(zod@3.25.76)
-      '@hono/zod-validator': 0.7.0(hono@4.8.4)(zod@3.25.76)
+      '@asteasolutions/zod-to-openapi': 7.3.4(zod@4.1.5)
+      '@hono/zod-validator': 0.7.0(hono@4.8.4)(zod@4.1.5)
       hono: 4.8.4
       openapi3-ts: 4.5.0
-      zod: 3.25.76
+      zod: 4.1.5
 
-  '@hono/zod-validator@0.5.0(hono@4.8.4)(zod@3.25.76)':
+  '@hono/zod-validator@0.5.0(hono@4.8.4)(zod@4.1.5)':
     dependencies:
       hono: 4.8.4
-      zod: 3.25.76
+      zod: 4.1.5
 
-  '@hono/zod-validator@0.7.0(hono@4.8.4)(zod@3.25.76)':
+  '@hono/zod-validator@0.7.0(hono@4.8.4)(zod@4.1.5)':
     dependencies:
       hono: 4.8.4
-      zod: 3.25.76
+      zod: 4.1.5
 
   '@hookform/resolvers@5.1.1(react-hook-form@7.60.0(react@19.1.0))':
     dependencies:
@@ -10038,7 +10035,7 @@ snapshots:
     dependencies:
       '@orpc/shared': 1.7.4
 
-  '@orpc/zod@1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@3.25.76)':
+  '@orpc/zod@1.7.4(@orpc/contract@1.7.4)(@orpc/server@1.7.4)(zod@4.1.5)':
     dependencies:
       '@orpc/contract': 1.7.4
       '@orpc/json-schema': 1.7.4
@@ -10047,7 +10044,7 @@ snapshots:
       '@orpc/shared': 1.7.4
       escape-string-regexp: 5.0.0
       wildcard-match: 5.1.4
-      zod: 3.25.76
+      zod: 4.1.5
     transitivePeerDependencies:
       - crossws
       - ws
@@ -11996,7 +11993,7 @@ snapshots:
       jose: 5.10.0
       kysely: 0.28.2
       nanostores: 0.11.4
-      zod: 4.0.5
+      zod: 4.1.5
     optionalDependencies:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -16659,12 +16656,12 @@ snapshots:
 
   stdin-discarder@0.2.2: {}
 
-  stoker@1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@3.25.76))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@3.25.76))(hono@4.8.4)(openapi3-ts@4.5.0):
+  stoker@1.4.3(@asteasolutions/zod-to-openapi@7.3.4(zod@4.1.5))(@hono/zod-openapi@0.19.9(hono@4.8.4)(zod@4.1.5))(hono@4.8.4)(openapi3-ts@4.5.0):
     dependencies:
       hono: 4.8.4
     optionalDependencies:
-      '@asteasolutions/zod-to-openapi': 7.3.4(zod@3.25.76)
-      '@hono/zod-openapi': 0.19.9(hono@4.8.4)(zod@3.25.76)
+      '@asteasolutions/zod-to-openapi': 7.3.4(zod@4.1.5)
+      '@hono/zod-openapi': 0.19.9(hono@4.8.4)(zod@4.1.5)
       openapi3-ts: 4.5.0
 
   stop-iteration-iterator@1.1.0:
@@ -17766,18 +17763,16 @@ snapshots:
       cookie: 1.0.2
       youch-core: 0.3.3
 
-  zod-to-json-schema@3.24.6(zod@3.25.76):
+  zod-to-json-schema@3.24.6(zod@4.1.5):
     dependencies:
-      zod: 3.25.76
+      zod: 4.1.5
 
   zod@3.22.3: {}
 
   zod@3.24.1: {}
 
-  zod@3.25.76: {}
-
   zod@4.0.14: {}
 
-  zod@4.0.5: {}
+  zod@4.1.5: {}
 
   zwitch@2.0.4: {}
