@@ -16,13 +16,14 @@ This is a monorepo containing a web scraping and crawling service with the follo
   - `@deepcrawl/types`: Shared TypeScript types and schemas
   - `@deepcrawl/contracts`: API contract definitions for oRPC
   - `@deepcrawl/ui`: shadcn/ui component library
-  - `deepcrawl`: TypeScript SDK for DeepCrawl API
+  - `deepcrawl`: TypeScript SDK for Deepcrawl API
 
 ## Common Commands
 
 All commands should be run from the repository root unless otherwise specified.
 
 ### Development
+
 ```bash
 # Start all services in development mode
 pnpm dev
@@ -36,11 +37,12 @@ cd apps/app && pnpm dev:auth-worker
 # Start deepcrawl worker in development mode
 cd apps/workers/v0 && pnpm dev
 
-# Start auth worker in development mode  
+# Start auth worker in development mode
 cd apps/workers/auth && pnpm dev
 ```
 
 ### Building and Deployment
+
 ```bash
 # Build all services
 pnpm build
@@ -56,6 +58,7 @@ cd apps/workers/v0 && pnpm deploy
 ```
 
 ### Testing and Quality
+
 ```bash
 # Run sherif dependency checks
 pnpm sherif
@@ -74,6 +77,7 @@ pnpm check
 ```
 
 ### OpenAPI and Types
+
 ```bash
 # Generate OpenAPI YAML for deepcrawl worker
 cd apps/workers/v0 && pnpm gen:openapi
@@ -83,6 +87,7 @@ cd apps/workers/v0 && pnpm cf-typegen
 ```
 
 ### Database Management
+
 ```bash
 # Auth Database operations (run from packages/db/db-auth/)
 cd packages/db/db-auth
@@ -127,6 +132,7 @@ pnpm db:sync
 ```
 
 ### Authentication
+
 ```bash
 # Generate auth schema (run from packages/auth/)
 cd packages/auth
@@ -140,6 +146,7 @@ pnpm email:export
 ```
 
 ### SDK Development
+
 ```bash
 # TypeScript SDK (run from packages/sdks/js-ts/)
 cd packages/sdks/js-ts
@@ -176,7 +183,8 @@ tsx src/test.ts
 
 ## Architecture Overview
 
-### DeepCrawl Worker (apps/workers/v0/)
+### Deepcrawl Worker (apps/workers/v0/)
+
 - **Framework**: Hono.js with Cloudflare Workers
 - **API Pattern**: Dual API approach using both oRPC and Hono/Zod-OpenAPI
 - **Services**:
@@ -188,6 +196,7 @@ tsx src/test.ts
 - **AI**: Cloudflare AI binding for content processing
 
 ### Key Service Patterns
+
 - **Dual API System**: Both oRPC and OpenAPI/REST share the same business logic through a unified contract system
   - **oRPC**: Type-safe RPC endpoints at `/rpc/*` for SDK consumption
   - **OpenAPI**: RESTful endpoints at `/read`, `/links`, `/docs`, `/openapi` for general API access
@@ -206,12 +215,14 @@ tsx src/test.ts
   11. Pretty JSON
 
 ### Frontend (apps/app/)
+
 - **Framework**: Next.js 14 with App Router
 - **Authentication**: Better Auth with multiple providers
 - **UI**: shadcn/ui components with Tailwind CSS
 - **State**: TanStack Query for server state management
 
 ### Authentication (apps/workers/auth/)
+
 - **Framework**: Hono.js with Better Auth
 - **Features**: OAuth providers, passkeys, magic links
 - **Database**: Configured for user management
@@ -243,6 +254,7 @@ tsx src/test.ts
 ## Environment Variables
 
 Key environment variables are defined in `turbo.json` globalEnv section:
+
 - `BETTER_AUTH_*`: Authentication configuration
 - `DATABASE_URL`: Database connection
 - `RESEND_API_KEY`: Email service
@@ -253,6 +265,7 @@ Key environment variables are defined in `turbo.json` globalEnv section:
 ## Code Quality and Formatting
 
 The project uses Biome for code formatting and linting:
+
 - **Configuration**: `biome.jsonc` at root level
 - **Formatting**: 2-space indentation, single quotes, trailing commas
 - **Linting**: Extended ruleset with accessibility and security rules
@@ -261,28 +274,33 @@ The project uses Biome for code formatting and linting:
 ## Testing
 
 This project uses Vitest for testing the TypeScript SDK. For other parts of the monorepo, manual testing should be done using:
+
 - Development servers (`pnpm dev`)
 - OpenAPI documentation endpoints (`/docs`)
 - Database studio for data verification (`pnpm db:studio` from packages/db/)
 - SDK test files with `tsx` command
 
 ### SDK Testing
+
 The TypeScript SDK has a complete test suite using Vitest:
+
 - Unit tests in `packages/sdks/js-ts/src/__tests__/`
 - Integration tests available
 - Run tests with `pnpm test` from the SDK directory
 - Coverage reports available with `pnpm test:coverage`
 
 ### SDK Package Details
+
 The TypeScript SDK (`deepcrawl`) provides:
-- **Client library** for DeepCrawl API
+
+- **Client library** for Deepcrawl API
 - **Methods**: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`
 - **Built with tsup** for both CommonJS and ESM formats
 - **Published to npm** with version management
 - **RPC-First Design**: Uses oRPC's RPCLink for efficient communication
 - **Universal Runtime Support**: Works in Node.js, browsers, Edge Runtime, and Server Actions
 - **Automatic Header Forwarding**: In Next.js Server Actions, automatically extracts auth headers
-- **Custom Error Classes**: 
+- **Custom Error Classes**:
   - `DeepcrawlError`: Base error class
   - `DeepcrawlAuthError`: Authentication failures
   - `DeepcrawlNetworkError`: Network issues
@@ -291,7 +309,8 @@ The TypeScript SDK (`deepcrawl`) provides:
 
 ## Worker Development
 
-### DeepCrawl Worker Development
+### Deepcrawl Worker Development
+
 ```bash
 # Development with remote Cloudflare environment
 cd apps/workers/v0
@@ -304,7 +323,8 @@ pnpm cf-typegen
 pnpm deploy
 ```
 
-### Auth Worker Development  
+### Auth Worker Development
+
 ```bash
 # Development with remote Cloudflare environment
 cd apps/workers/auth
@@ -315,6 +335,7 @@ pnpm deploy
 ```
 
 ### Dashboard Development
+
 ```bash
 # Development with Next.js Turbopack
 cd apps/app
@@ -337,6 +358,7 @@ pnpm ui add button  # Example: add button component
 ## Code Style Guidelines
 
 Based on .cursor/rules/deepcrawl-project.mdc:
+
 - **TypeScript**: Use interfaces over types, avoid enums (use maps instead)
 - **Programming Style**: Functional and declarative patterns, avoid classes
 - **React**: Prefer Server Components over client components, minimal 'use client', wrap client components in Suspense
@@ -362,7 +384,7 @@ Based on .cursor/rules/deepcrawl-project.mdc:
   - Markdown linting with markdownlint-cli2
   - Automatic Cloudflare Worker types generation
 - **Environment URLs**:
-  - Development: `http://localhost:8080` (DeepCrawl Worker)
+  - Development: `http://localhost:8080` (Deepcrawl Worker)
   - Production: `https://api.deepcrawl.dev`
 - **Worker Configuration**:
   - Smart Placement enabled for optimal performance

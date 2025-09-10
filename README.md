@@ -1,4 +1,4 @@
-# 🕷️ DeepCrawl
+# 🕷️ Deepcrawl
 
 **World-class web scraping and crawling service** built with modern technologies for enterprise-grade performance and reliability.
 
@@ -22,14 +22,16 @@ cd apps/app && pnpm dev:workers
 
 ## 🏗️ Architecture
 
-DeepCrawl is a comprehensive monorepo featuring:
+Deepcrawl is a comprehensive monorepo featuring:
 
 ### 🎯 **Core Services**
-- **🌐 DeepCrawl Worker** (`apps/workers/v0/`) - High-performance web scraping with dual API (oRPC + REST)
+
+- **🌐 Deepcrawl Worker** (`apps/workers/v0/`) - High-performance web scraping with dual API (oRPC + REST)
 - **🔐 Auth Worker** (`apps/workers/auth/`) - Authentication with Better Auth, OAuth, and passkeys
 - **📊 Dashboard** (`apps/app/`) - Next.js management interface with TanStack Query
 
 ### 📦 **Shared Packages**
+
 - **🛠️ TypeScript SDK** (`packages/sdks/js-ts/`) - Universal client library with world-class error handling
 - **🗄️ Database Packages** - Dual setup with PostgreSQL (auth) and Cloudflare D1 (data preservation)
 - **🎨 UI Components** (`@deepcrawl/ui`) - shadcn/ui component library
@@ -38,11 +40,12 @@ DeepCrawl is a comprehensive monorepo featuring:
 ## 🚀 Development
 
 ### **Individual Services**
+
 ```bash
 # Dashboard only (Next.js with Turbopack)
 cd apps/app && pnpm dev
 
-# DeepCrawl worker only (port 8080)
+# Deepcrawl worker only (port 8080)
 cd apps/workers/v0 && pnpm dev
 
 # Auth worker only
@@ -50,6 +53,7 @@ cd apps/workers/auth && pnpm dev
 ```
 
 ### **Combined Development**
+
 ```bash
 # Dashboard + auth worker only
 cd apps/app && pnpm dev:auth-worker
@@ -59,6 +63,7 @@ cd apps/app && pnpm dev:workers
 ```
 
 ### **Build & Quality**
+
 ```bash
 # Build everything
 pnpm build
@@ -89,6 +94,7 @@ import { Button } from "@deepcrawl/ui/components/ui/button";
 ## 🗄️ Database Management
 
 ### **Auth Database (PostgreSQL)**
+
 ```bash
 cd packages/db/db-auth
 pnpm db:push      # Push schema changes
@@ -97,6 +103,7 @@ pnpm db:sync      # Generate + migrate
 ```
 
 ### **D1 Database (Cloudflare)**
+
 ```bash
 cd packages/db/db-d1
 pnpm db:create    # Create new D1 database
@@ -107,7 +114,7 @@ pnpm db:studio    # Open Drizzle Studio
 ## 🏢 Deployment
 
 ```bash
-# Deploy DeepCrawl worker to production
+# Deploy Deepcrawl worker to production
 cd apps/workers/v0 && pnpm deploy
 
 # Deploy auth worker to production
