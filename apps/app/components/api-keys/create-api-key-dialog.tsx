@@ -85,11 +85,11 @@ export function CreateApiKeyDialog({
 
   return (
     <Dialog
-      open={open}
       onOpenChange={(isOpen) => {
         onOpenChange(isOpen);
         // State will be reset via useEffect with delay to prevent flickering
       }}
+      open={open}
     >
       {createdKey ? (
         <DialogContent className="space-y-4 outline-none ring-0 sm:max-w-xl">
@@ -106,7 +106,7 @@ export function CreateApiKeyDialog({
             <CopyButton textToCopy={createdKey || ''} />
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Separator orientation="vertical" className="h-full" />
+            <Separator className="h-full" orientation="vertical" />
             <div>
               <h4 className="font-semibold text-sm">
                 Important Security Notice
@@ -126,15 +126,15 @@ export function CreateApiKeyDialog({
               Create a new API key to access DeepCrawl services.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="expiration" className="text-right">
+                <Label className="text-right" htmlFor="expiration">
                   Expires
                 </Label>
                 <Select
-                  value={expirationDays}
                   onValueChange={setExpirationDays}
+                  value={expirationDays}
                 >
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select expiration" />
@@ -151,27 +151,27 @@ export function CreateApiKeyDialog({
               </div>
 
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
+                <Label className="text-right" htmlFor="name">
                   Name
                 </Label>
                 <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
                   className="col-span-3"
+                  id="name"
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="My API Key"
+                  value={name}
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleClose}>
+              <Button onClick={handleClose} type="button" variant="outline">
                 Cancel
               </Button>
               <SpinnerButton
-                type="submit"
                 className="w-full sm:w-32"
                 disabled={createApiKey.isPending}
                 isLoading={createApiKey.isPending}
+                type="submit"
               >
                 Create API Key
               </SpinnerButton>

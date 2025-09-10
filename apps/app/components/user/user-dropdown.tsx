@@ -46,7 +46,7 @@ import { LayoutViewToggle } from '../layout-toggle';
 function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (
     <Avatar className="size-6 cursor-pointer rounded-full ring-0 ring-transparent">
-      <AvatarImage src={user.image || ''} alt={user.name} />
+      <AvatarImage alt={user.name} src={user.image || ''} />
       <AvatarFallback className="rounded-full">
         {user.name?.charAt(0).toUpperCase() ||
           user.email?.charAt(0).toUpperCase()}
@@ -106,9 +106,9 @@ export function UserDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
+        className="w-(--radix-dropdown-menu-trigger-width) min-w-xs rounded-xl bg-background-subtle px-1.5 dark:text-muted-foreground"
         side="bottom"
         sideOffset={12}
-        className="w-(--radix-dropdown-menu-trigger-width) min-w-xs rounded-xl bg-background-subtle px-1.5 dark:text-muted-foreground"
       >
         <DropdownMenuGroup>
           <Popover
@@ -117,10 +117,9 @@ export function UserDropdown({
           >
             <PopoverTrigger
               asChild
-              disabled={!hasMultipleSessions}
+              className="group/popover data-[variant=destructive]:*:[svg]:!text-destructive relative flex w-full cursor-default select-none items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-[inset]:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 hover:[&:not([disabled])]:bg-accent [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0"
               // biome-ignore lint/nursery/useSortedClasses: false positive
-              className="group/popover w-full focus:bg-accent justify-between hover:[&:not([disabled])]:bg-accent
-              focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+              disabled={!hasMultipleSessions}
             >
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
@@ -142,22 +141,22 @@ export function UserDropdown({
               </div>
             </PopoverTrigger>
             <PopoverContent
-              side="left"
               align="start"
-              sideOffset={12}
               className="flex w-(--radix-dropdown-menu-trigger-width) min-w-xs flex-col gap-2 rounded-lg bg-background-subtle p-2"
+              side="left"
+              sideOffset={12}
             >
               <DropdownMenuLabel className="px-2 text-muted-foreground text-xs">
                 Switch Account
               </DropdownMenuLabel>
               {otherSessions.map((sessionData, i) => (
                 <button
-                  type="button"
+                  className="flex items-center gap-2 rounded-sm px-1 py-1.5 text-left text-sm outline-none hover:bg-accent"
                   key={sessionData.session.id || i}
                   onClick={() => {
                     setActiveSession(sessionData.session.token);
                   }}
-                  className="flex items-center gap-2 rounded-sm px-1 py-1.5 text-left text-sm outline-none hover:bg-accent"
+                  type="button"
                 >
                   <UserAvatar user={sessionData.user} />
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -177,8 +176,8 @@ export function UserDropdown({
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link
-              href={getAppRoute('/app')}
               className="flex w-full items-center justify-between"
+              href={getAppRoute('/app')}
             >
               Dashboard
             </Link>
@@ -189,8 +188,8 @@ export function UserDropdown({
           <DropdownMenuItem
             asChild
             onFocus={handleHoverToPrefetchAccount}
-            onMouseOver={handleHoverToPrefetchAccount}
             onMouseEnter={handleHoverToPrefetchAccount}
+            onMouseOver={handleHoverToPrefetchAccount}
             onPointerEnter={handleHoverToPrefetchAccount}
           >
             <Link href={getAppRoute('/account')}>Account Settings</Link>
@@ -250,9 +249,9 @@ export function UserDropdown({
         </Link>
 
         <a
-          target="_blank"
-          rel="noopener noreferrer"
           href="https://github.com/lumpinif/deepcrawl"
+          rel="noopener noreferrer"
+          target="_blank"
         >
           <DropdownMenuItem className="flex w-full items-center justify-between">
             Github

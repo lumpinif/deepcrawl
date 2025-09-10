@@ -50,15 +50,15 @@ export function ProviderButton({
 
   return (
     <Button
-      variant="authButton"
+      className={cn('group relative w-full', className)}
       disabled={isSubmitting}
       onClick={doSignInSocial}
-      className={cn('group relative w-full', className)}
+      variant="authButton"
     >
       <div className="flex items-center gap-2">
         {provider.icon && (
           <>
-            <provider.icon variant="color" className="dark:hidden" />
+            <provider.icon className="dark:hidden" variant="color" />
             <provider.icon className="hidden dark:block" />
           </>
         )}
@@ -66,8 +66,8 @@ export function ProviderButton({
       </div>
       {isLastUsed && (
         <Badge
-          variant="secondary"
           className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
+          variant="secondary"
         >
           Last used
         </Badge>

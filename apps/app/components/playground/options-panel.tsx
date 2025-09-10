@@ -86,8 +86,8 @@ function OptionSwitch({
 }: OptionSwitchProps) {
   const content = (
     <div className="flex w-fit items-center space-x-2">
-      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
-      <Label htmlFor={id} className="cursor-pointer text-sm">
+      <Switch checked={checked} id={id} onCheckedChange={onCheckedChange} />
+      <Label className="cursor-pointer text-sm" htmlFor={id}>
         {label} {badge}
       </Label>
     </div>
@@ -124,8 +124,8 @@ function OptionCheckbox({
 }: OptionCheckboxProps) {
   const content = (
     <div className="flex w-fit items-center space-x-2">
-      <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} />
-      <Label htmlFor={id} className="cursor-pointer text-sm">
+      <Checkbox checked={checked} id={id} onCheckedChange={onCheckedChange} />
+      <Label className="cursor-pointer text-sm" htmlFor={id}>
         {label}
       </Label>
     </div>
@@ -166,21 +166,21 @@ function NumberInput({
 }: NumberInputProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id} className="text-sm">
+      <Label className="text-sm" htmlFor={id}>
         {label}
       </Label>
       <Input
+        className="font-mono text-xs"
         id={id}
-        type="number"
-        min={min}
         max={max}
-        placeholder={placeholder}
-        value={value || ''}
+        min={min}
         onChange={(e) => {
           const newValue = e.target.value ? Number(e.target.value) : undefined;
           onChange(newValue);
         }}
-        className="font-mono text-xs"
+        placeholder={placeholder}
+        type="number"
+        value={value || ''}
       />
     </div>
   );
@@ -212,11 +212,11 @@ function CacheOptionsComponent({
   return (
     <div className="grid grid-cols-1 gap-3">
       <OptionSwitch
-        id={`${idPrefix}-cache-enabled`}
-        label="Enable Cache"
         checked={Boolean(
           cacheOptions?.enabled ?? DEFAULT_CACHE_OPTIONS.enabled,
         )}
+        id={`${idPrefix}-cache-enabled`}
+        label="Enable Cache"
         onCheckedChange={(checked) =>
           updateCacheOption('enabled', Boolean(checked))
         }
@@ -225,17 +225,17 @@ function CacheOptionsComponent({
       <NumberInput
         id={`${idPrefix}-expiration`}
         label="Expiration (epoch timestamp)"
-        value={cacheOptions?.expiration || ''}
         onChange={(value) => updateCacheOption('expiration', value)}
         placeholder="1717708800"
+        value={cacheOptions?.expiration || ''}
       />
       <NumberInput
         id={`${idPrefix}-expirationTtl`}
         label="Expiration TTL (seconds, min 60)"
-        value={cacheOptions?.expirationTtl || ''}
+        min="60"
         onChange={(value) => updateCacheOption('expirationTtl', value)}
         placeholder={`default - ${defaultTtl} (4 days)`}
-        min="60"
+        value={cacheOptions?.expirationTtl || ''}
       />
     </div>
   );
@@ -313,12 +313,12 @@ function MetadataOptionsComponent({
     <div className="grid grid-cols-2 gap-3">
       {metadataFields.map(({ key, label, tooltip }) => (
         <OptionCheckbox
-          key={key}
-          id={`${idPrefix}-metadata-${key}`}
-          label={label}
           checked={Boolean(
             metadataOptions?.[key] ?? DEFAULT_METADATA_OPTIONS[key],
           )}
+          id={`${idPrefix}-metadata-${key}`}
+          key={key}
+          label={label}
           onCheckedChange={(checked) => onMetadataOptionChange(key, checked)}
           tooltip={tooltip}
         />
@@ -345,42 +345,42 @@ function MarkdownOptionsComponent({
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <OptionCheckbox
-          id={`${idPrefix}-markdown-preferNativeParser`}
-          label="Prefer Native Parser"
           checked={
             markdownOptions?.preferNativeParser ??
             DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser
           }
+          id={`${idPrefix}-markdown-preferNativeParser`}
+          label="Prefer Native Parser"
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('preferNativeParser', checked)
           }
           tooltip="Use native window DOMParser when available instead of fallback parser"
         />
         <OptionCheckbox
+          checked={markdownOptions?.keepDataImages === true}
           id={`${idPrefix}-markdown-keepDataImages`}
           label="Keep Data Images"
-          checked={markdownOptions?.keepDataImages === true}
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('keepDataImages', checked)
           }
           tooltip="Whether to preserve images with data: URIs (can be up to 1MB each)"
         />
         <OptionCheckbox
-          id={`${idPrefix}-markdown-useInlineLinks`}
-          label="Use Inline Links"
           checked={
             markdownOptions?.useInlineLinks ??
             DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks
           }
+          id={`${idPrefix}-markdown-useInlineLinks`}
+          label="Use Inline Links"
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('useInlineLinks', checked)
           }
           tooltip="Wrap URL text in <> instead of []() syntax when text matches URL"
         />
         <OptionCheckbox
+          checked={markdownOptions?.useLinkReferenceDefinitions === true}
           id={`${idPrefix}-markdown-useLinkReferenceDefinitions`}
           label="Use Link References"
-          checked={markdownOptions?.useLinkReferenceDefinitions === true}
           onCheckedChange={(checked) =>
             onMarkdownOptionChange('useLinkReferenceDefinitions', checked)
           }
@@ -390,16 +390,16 @@ function MarkdownOptionsComponent({
       <div className="grid grid-cols-1 gap-3">
         <div className="space-y-2">
           <Label
-            htmlFor={`${idPrefix}-markdown-bulletMarker`}
             className="text-sm"
+            htmlFor={`${idPrefix}-markdown-bulletMarker`}
           >
             Bullet Marker
           </Label>
           <Select
-            value={markdownOptions?.bulletMarker || '*'}
             onValueChange={(value) =>
               onMarkdownOptionChange('bulletMarker', value)
             }
+            value={markdownOptions?.bulletMarker || '*'}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select bullet marker" />
@@ -413,16 +413,16 @@ function MarkdownOptionsComponent({
         </div>
         <div className="space-y-2">
           <Label
-            htmlFor={`${idPrefix}-markdown-codeBlockStyle`}
             className="text-sm"
+            htmlFor={`${idPrefix}-markdown-codeBlockStyle`}
           >
             Code Block Style
           </Label>
           <Select
-            value={markdownOptions?.codeBlockStyle || 'fenced'}
             onValueChange={(value) =>
               onMarkdownOptionChange('codeBlockStyle', value)
             }
+            value={markdownOptions?.codeBlockStyle || 'fenced'}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select code style" />
@@ -436,13 +436,13 @@ function MarkdownOptionsComponent({
         <NumberInput
           id={`${idPrefix}-markdown-maxConsecutiveNewlines`}
           label="Max Consecutive Newlines"
-          value={markdownOptions?.maxConsecutiveNewlines || ''}
+          max="10"
+          min="1"
           onChange={(value) =>
             onMarkdownOptionChange('maxConsecutiveNewlines', value || 3)
           }
           placeholder="3"
-          min="1"
-          max="10"
+          value={markdownOptions?.maxConsecutiveNewlines || ''}
         />
       </div>
     </div>
@@ -465,7 +465,7 @@ function CollapsibleSection({
   children,
 }: CollapsibleSectionProps) {
   return (
-    <Collapsible open={isOpen} onOpenChange={onToggle}>
+    <Collapsible onOpenChange={onToggle} open={isOpen}>
       <CollapsibleTrigger className="flex w-full items-center justify-between py-2">
         <h4 className="font-medium text-sm">{title}</h4>
         <ChevronDown className="h-4 w-4" />
@@ -492,11 +492,11 @@ function CleaningProcessorSelect({
     <div className="flex w-full items-center justify-between space-x-2">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Label htmlFor={id} className="cursor-help text-sm">
+          <Label className="cursor-help text-sm" htmlFor={id}>
             {label}
           </Label>
         </TooltipTrigger>
-        <TooltipContent side="right" className="max-w-md">
+        <TooltipContent className="max-w-md" side="right">
           <p className="text-pretty">
             The cleaning processor to use. Cheerio-reader is the default and
             recommended cleaning processor, but our custom html-rewriter is used
@@ -505,7 +505,7 @@ function CleaningProcessorSelect({
           </p>
         </TooltipContent>
       </Tooltip>
-      <Select value={value || 'cheerio-reader'} onValueChange={onValueChange}>
+      <Select onValueChange={onValueChange} value={value || 'cheerio-reader'}>
         <SelectTrigger size="sm">
           <SelectValue placeholder="Select processor" />
         </SelectTrigger>
@@ -604,7 +604,7 @@ export function OptionsPanel({
             <div>
               <CardTitle className="flex items-center gap-2">
                 Options for Get Markdown
-                <Badge variant="outline" className="text-xs">
+                <Badge className="text-xs" variant="outline">
                   GET /read
                 </Badge>
               </CardTitle>
@@ -614,10 +614,10 @@ export function OptionsPanel({
               </CardDescription>
             </div>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={resetToDefaults}
               className="text-xs"
+              onClick={resetToDefaults}
+              size="sm"
+              variant="outline"
             >
               Reset to default
             </Button>
@@ -627,27 +627,27 @@ export function OptionsPanel({
           <CleaningProcessorSelect
             id="markdown-cleaningProcessor"
             label="HTML Cleaning Processor"
-            value={markdownOptions.cleaningProcessor}
             onValueChange={(value) => updateOption('cleaningProcessor', value)}
+            value={markdownOptions.cleaningProcessor}
           />
           <Separator />
           {/* Cache Options */}
           <CollapsibleSection
             id="markdownCacheOptions"
-            title="Cache Options"
             isOpen={expandedSections.has('markdownCacheOptions')}
             onToggle={() => toggleSection('markdownCacheOptions')}
+            title="Cache Options"
           >
             <CacheOptionsComponent
-              idPrefix="markdown"
               cacheOptions={markdownOptions.cacheOptions}
+              defaultTtl={DEFAULT_CACHE_OPTIONS.expirationTtl}
+              idPrefix="markdown"
               onCacheOptionsChange={(cacheOptions) => {
                 onOptionsChange({
                   ...markdownOptions,
                   cacheOptions,
                 });
               }}
-              defaultTtl={DEFAULT_CACHE_OPTIONS.expirationTtl}
             />
           </CollapsibleSection>
 
@@ -656,9 +656,9 @@ export function OptionsPanel({
           {/* Markdown Converter Options */}
           <CollapsibleSection
             id="markdownConverterOptions"
-            title="Markdown Options"
             isOpen={expandedSections.has('markdownConverterOptions')}
             onToggle={() => toggleSection('markdownConverterOptions')}
+            title="Markdown Options"
           >
             <MarkdownOptionsComponent
               idPrefix="getMarkdown"
@@ -686,7 +686,7 @@ export function OptionsPanel({
             <div>
               <CardTitle className="flex items-center gap-2">
                 Options for Read URL
-                <Badge variant="outline" className="text-xs">
+                <Badge className="text-xs" variant="outline">
                   POST /read
                 </Badge>
               </CardTitle>
@@ -695,10 +695,10 @@ export function OptionsPanel({
               </CardDescription>
             </div>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={resetToDefaults}
               className="text-xs"
+              onClick={resetToDefaults}
+              size="sm"
+              variant="outline"
             >
               Reset to default
             </Button>
@@ -709,51 +709,51 @@ export function OptionsPanel({
           <CleaningProcessorSelect
             id="cleaningProcessor"
             label="HTML Cleaning Processor"
-            value={readOptions.cleaningProcessor}
             onValueChange={(value) => updateOption('cleaningProcessor', value)}
+            value={readOptions.cleaningProcessor}
           />
           <Separator />
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Content Options</h4>
             <div className="grid grid-cols-2 gap-4">
               <OptionSwitch
-                id="metadata"
-                label="Extract Metadata"
                 checked={Boolean(
                   readOptions.metadata ?? DEFAULT_READ_OPTIONS.metadata,
                 )}
+                id="metadata"
+                label="Extract Metadata"
                 onCheckedChange={(checked) => updateOption('metadata', checked)}
                 tooltip="Whether to extract metadata from the page."
               />
               <OptionSwitch
-                id="markdown"
-                label="Extract Markdown"
                 checked={Boolean(
                   readOptions.markdown ?? DEFAULT_READ_OPTIONS.markdown,
                 )}
+                id="markdown"
+                label="Extract Markdown"
                 onCheckedChange={(checked) => updateOption('markdown', checked)}
                 tooltip="Whether to extract markdown from the page."
               />
               <OptionSwitch
+                checked={readOptions.cleanedHtml === true}
                 id="cleanedHtml"
                 label="Cleaned HTML"
-                checked={readOptions.cleanedHtml === true}
                 onCheckedChange={(checked) =>
                   updateOption('cleanedHtml', checked)
                 }
                 tooltip="Whether to return cleaned HTML."
               />
               <OptionSwitch
+                checked={readOptions.rawHtml === true}
                 id="rawHtml"
                 label="Raw HTML"
-                checked={readOptions.rawHtml === true}
                 onCheckedChange={(checked) => updateOption('rawHtml', checked)}
                 tooltip="Whether to return raw HTML."
               />
               <OptionSwitch
+                checked={readOptions.robots === true}
                 id="robots"
                 label="Fetch Robots.txt"
-                checked={readOptions.robots === true}
                 onCheckedChange={(checked) => updateOption('robots', checked)}
                 tooltip="Whether to fetch and parse robots.txt."
               />
@@ -765,9 +765,9 @@ export function OptionsPanel({
           {/* Metadata Options */}
           <CollapsibleSection
             id="metadataOptions"
-            title="Metadata Options"
             isOpen={expandedSections.has('metadataOptions')}
             onToggle={() => toggleSection('metadataOptions')}
+            title="Metadata Options"
           >
             <MetadataOptionsComponent
               idPrefix="read"
@@ -787,20 +787,20 @@ export function OptionsPanel({
           {/* Cache Options */}
           <CollapsibleSection
             id="cacheOptions"
-            title="Cache Options"
             isOpen={expandedSections.has('cacheOptions')}
             onToggle={() => toggleSection('cacheOptions')}
+            title="Cache Options"
           >
             <CacheOptionsComponent
-              idPrefix="read"
               cacheOptions={readOptions.cacheOptions}
+              defaultTtl={DEFAULT_READ_OPTIONS.cacheOptions.expirationTtl}
+              idPrefix="read"
               onCacheOptionsChange={(cacheOptions) => {
                 onOptionsChange({
                   ...readOptions,
                   cacheOptions,
                 });
               }}
-              defaultTtl={DEFAULT_READ_OPTIONS.cacheOptions.expirationTtl}
             />
           </CollapsibleSection>
 
@@ -809,9 +809,9 @@ export function OptionsPanel({
           {/* Markdown Converter Options for ReadUrl */}
           <CollapsibleSection
             id="readMarkdownConverterOptions"
-            title="Markdown Options"
             isOpen={expandedSections.has('readMarkdownConverterOptions')}
             onToggle={() => toggleSection('readMarkdownConverterOptions')}
+            title="Markdown Options"
           >
             <MarkdownOptionsComponent
               idPrefix="readUrl"
@@ -839,7 +839,7 @@ export function OptionsPanel({
             <div>
               <CardTitle className="flex items-center gap-2">
                 Options for Extract Links
-                <Badge variant="outline" className="text-xs">
+                <Badge className="text-xs" variant="outline">
                   POST /links
                 </Badge>
               </CardTitle>
@@ -848,10 +848,10 @@ export function OptionsPanel({
               </CardDescription>
             </div>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={resetToDefaults}
               className="text-xs"
+              onClick={resetToDefaults}
+              size="sm"
+              variant="outline"
             >
               Reset to default
             </Button>
@@ -861,8 +861,8 @@ export function OptionsPanel({
           <CleaningProcessorSelect
             id="links-cleaningProcessor"
             label="HTML Cleaning Processor"
-            value={linksOptions.cleaningProcessor}
             onValueChange={(value) => updateOption('cleaningProcessor', value)}
+            value={linksOptions.cleaningProcessor}
           />
           <Separator />
           {/* Basic Options */}
@@ -870,46 +870,46 @@ export function OptionsPanel({
             <h4 className="font-medium text-sm">Content Options</h4>
             <div className="grid grid-cols-2 gap-4">
               <OptionSwitch
-                id="tree"
-                label="Build Site Tree"
                 checked={Boolean(
                   linksOptions.tree ?? DEFAULT_LINKS_OPTIONS.tree,
                 )}
+                id="tree"
+                label="Build Site Tree"
                 onCheckedChange={(checked) => updateOption('tree', checked)}
                 tooltip="Whether to build a site map tree."
               />
               <OptionSwitch
-                id="metadata"
-                label="Extract Metadata"
                 checked={Boolean(
                   linksOptions.metadata ?? DEFAULT_SCRAPE_OPTIONS.metadata,
                 )}
+                id="metadata"
+                label="Extract Metadata"
                 onCheckedChange={(checked) => updateOption('metadata', checked)}
                 tooltip="Whether to extract metadata from the page."
               />
               <OptionSwitch
+                checked={linksOptions.cleanedHtml === true}
                 id="cleanedHtml"
                 label="Cleaned HTML"
-                checked={linksOptions.cleanedHtml === true}
                 onCheckedChange={(checked) =>
                   updateOption('cleanedHtml', checked)
                 }
                 tooltip="Whether to return cleaned HTML."
               />
               <OptionSwitch
+                checked={linksOptions.robots === true}
                 id="robots"
                 label="Fetch Robots.txt"
-                checked={linksOptions.robots === true}
                 onCheckedChange={(checked) => updateOption('robots', checked)}
               />
               <OptionSwitch
+                badge={<Badge variant="secondary">Beta</Badge>}
+                checked={linksOptions.sitemapXML === true}
                 id="sitemapXML"
                 label="Sitemap XML"
-                checked={linksOptions.sitemapXML === true}
                 onCheckedChange={(checked) =>
                   updateOption('sitemapXML', checked)
                 }
-                badge={<Badge variant="secondary">Beta</Badge>}
               />
             </div>
           </div>
@@ -919,55 +919,55 @@ export function OptionsPanel({
           {/* Tree Options */}
           <CollapsibleSection
             id="treeOptions"
-            title="Tree Options"
             isOpen={expandedSections.has('treeOptions')}
             onToggle={() => toggleSection('treeOptions')}
+            title="Tree Options"
           >
             <div className="grid grid-cols-1 gap-3">
               <OptionSwitch
-                id="folderFirst"
-                label="Folders First"
                 checked={Boolean(
                   linksOptions.folderFirst ?? DEFAULT_TREE_OPTIONS.folderFirst,
                 )}
+                id="folderFirst"
+                label="Folders First"
                 onCheckedChange={(checked) =>
                   updateOption('folderFirst', checked)
                 }
                 tooltip="Whether to place folders before leaf nodes in the tree."
               />
               <OptionSwitch
-                id="extractedLinks"
-                label="Include Extracted Links"
                 checked={Boolean(
                   linksOptions.extractedLinks ??
                     DEFAULT_TREE_OPTIONS.extractedLinks,
                 )}
+                id="extractedLinks"
+                label="Include Extracted Links"
                 onCheckedChange={(checked) =>
                   updateOption('extractedLinks', checked)
                 }
                 tooltip="Whether to include extracted links for each node in the tree."
               />
               <OptionSwitch
-                id="subdomainAsRootUrl"
-                label="Subdomain as Root URL"
                 checked={Boolean(
                   linksOptions.subdomainAsRootUrl ??
                     DEFAULT_TREE_OPTIONS.subdomainAsRootUrl,
                 )}
+                id="subdomainAsRootUrl"
+                label="Subdomain as Root URL"
                 onCheckedChange={(checked) =>
                   updateOption('subdomainAsRootUrl', checked)
                 }
                 tooltip="Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL."
               />
               <div className="space-y-2">
-                <Label htmlFor="linksOrder" className="text-sm">
+                <Label className="text-sm" htmlFor="linksOrder">
                   Links Ordering
                 </Label>
                 <Select
-                  value={linksOptions.linksOrder || 'page'}
                   onValueChange={(value: LinksOrder) =>
                     updateOption('linksOrder', value)
                   }
+                  value={linksOptions.linksOrder || 'page'}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select ordering" />
@@ -986,18 +986,18 @@ export function OptionsPanel({
           {/* Link Extraction Options */}
           <CollapsibleSection
             id="linksOptions"
-            title="Link Extraction Options"
             isOpen={expandedSections.has('linksOptions')}
             onToggle={() => toggleSection('linksOptions')}
+            title="Link Extraction Options"
           >
             <div className="grid grid-cols-2 gap-3">
               <OptionSwitch
-                id="includeExternal"
-                label="Include External"
                 checked={Boolean(
                   linksOptions.linkExtractionOptions?.includeExternal ??
                     DEFAULT_LINK_EXTRACTION_OPTIONS.includeExternal,
                 )}
+                id="includeExternal"
+                label="Include External"
                 onCheckedChange={(checked) =>
                   updateNestedOptionValue(
                     'linkExtractionOptions',
@@ -1008,12 +1008,12 @@ export function OptionsPanel({
                 tooltip="Whether to include links from other domains."
               />
               <OptionSwitch
-                id="includeMedia"
-                label="Include Media"
                 checked={Boolean(
                   linksOptions.linkExtractionOptions?.includeMedia ??
                     DEFAULT_LINK_EXTRACTION_OPTIONS.includeMedia,
                 )}
+                id="includeMedia"
+                label="Include Media"
                 onCheckedChange={(checked) =>
                   updateNestedOptionValue(
                     'linkExtractionOptions',
@@ -1024,12 +1024,12 @@ export function OptionsPanel({
                 tooltip="Whether to include media files (images, videos, docs)."
               />
               <OptionSwitch
-                id="removeQueryParams"
-                label="Remove Query Params"
                 checked={Boolean(
                   linksOptions.linkExtractionOptions?.removeQueryParams ??
                     DEFAULT_LINK_EXTRACTION_OPTIONS.removeQueryParams,
                 )}
+                id="removeQueryParams"
+                label="Remove Query Params"
                 onCheckedChange={(checked) =>
                   updateNestedOptionValue(
                     'linkExtractionOptions',
@@ -1041,17 +1041,12 @@ export function OptionsPanel({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="excludePatterns" className="text-sm">
+              <Label className="text-sm" htmlFor="excludePatterns">
                 Exclude Patterns (regex, one per line)
               </Label>
               <Textarea
+                className="font-mono text-xs"
                 id="excludePatterns"
-                placeholder="/admin/&#10;\.pdf$&#10;/private/"
-                value={
-                  linksOptions.linkExtractionOptions?.excludePatterns?.join(
-                    '\n',
-                  ) || ''
-                }
                 onChange={(e) => {
                   const patterns = e.target.value
                     .split('\n')
@@ -1062,8 +1057,13 @@ export function OptionsPanel({
                     patterns,
                   );
                 }}
+                placeholder="/admin/&#10;\.pdf$&#10;/private/"
                 rows={3}
-                className="font-mono text-xs"
+                value={
+                  linksOptions.linkExtractionOptions?.excludePatterns?.join(
+                    '\n',
+                  ) || ''
+                }
               />
             </div>
           </CollapsibleSection>
@@ -1073,9 +1073,9 @@ export function OptionsPanel({
           {/* Metadata Options for Links */}
           <CollapsibleSection
             id="metadataOptions"
-            title="Metadata Options"
             isOpen={expandedSections.has('metadataOptions')}
             onToggle={() => toggleSection('metadataOptions')}
+            title="Metadata Options"
           >
             <MetadataOptionsComponent
               idPrefix="links"
@@ -1095,20 +1095,20 @@ export function OptionsPanel({
           {/* Cache Options for Links */}
           <CollapsibleSection
             id="linksCacheOptions"
-            title="Cache Options"
             isOpen={expandedSections.has('linksCacheOptions')}
             onToggle={() => toggleSection('linksCacheOptions')}
+            title="Cache Options"
           >
             <CacheOptionsComponent
-              idPrefix="links"
               cacheOptions={linksOptions.cacheOptions}
+              defaultTtl={DEFAULT_LINKS_OPTIONS.cacheOptions.expirationTtl}
+              idPrefix="links"
               onCacheOptionsChange={(cacheOptions) => {
                 onOptionsChange({
                   ...linksOptions,
                   cacheOptions,
                 });
               }}
-              defaultTtl={DEFAULT_LINKS_OPTIONS.cacheOptions.expirationTtl}
             />
           </CollapsibleSection>
         </CardContent>

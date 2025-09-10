@@ -153,10 +153,10 @@ export function SessionsManagementCard() {
                   session.id === currentSession.session.id;
                 return (
                   <div
-                    key={session.id || index}
                     className={`flex items-center justify-between rounded-lg border p-3 max-sm:flex-col max-sm:items-start max-sm:gap-y-2 ${
                       isCurrentSession && 'bg-background-subtle'
                     }`}
+                    key={session.id || index}
                   >
                     <div className="flex items-center gap-3 max-sm:w-full max-sm:justify-between">
                       <div className="flex items-center gap-x-2">
@@ -186,7 +186,7 @@ export function SessionsManagementCard() {
                       </div>
                       <div className="flex flex-row-reverse items-center gap-x-2 max-sm:flex-col max-sm:items-end max-sm:gap-y-1">
                         {isCurrentSession && (
-                          <Badge variant="secondary" className="py-0 text-xs">
+                          <Badge className="py-0 text-xs" variant="secondary">
                             Current
                           </Badge>
                         )}
@@ -203,39 +203,39 @@ export function SessionsManagementCard() {
                         listSessions &&
                         listSessions.length > 1 && (
                           <SpinnerButton
-                            size="sm"
-                            variant="outline"
                             className="!max-sm:flex-1 max-sm:w-fit"
-                            onClick={handleRevokeOtherSessions}
-                            isLoading={isRevokingOtherSessions}
                             disabled={
                               isRevokingOtherSessions ||
                               !listSessions ||
                               listSessions.length <= 1
                             }
+                            isLoading={isRevokingOtherSessions}
+                            onClick={handleRevokeOtherSessions}
+                            size="sm"
+                            variant="outline"
                           >
                             Revoke other sessions
                           </SpinnerButton>
                         )}
                       <SpinnerButton
-                        size="sm"
-                        variant="outline"
                         className="w-24 max-sm:w-fit max-sm:flex-1"
-                        isLoading={
-                          (isPending && revokingSessionId === session.id) ||
-                          (isCurrentSession && signingOutCurrentSession)
-                        }
                         disabled={
                           isPending ||
                           revokingSessionId === session.id ||
                           (isCurrentSession && signingOutCurrentSession)
                         }
+                        isLoading={
+                          (isPending && revokingSessionId === session.id) ||
+                          (isCurrentSession && signingOutCurrentSession)
+                        }
                         onClick={() => handleRevokeSession(session)}
+                        size="sm"
+                        variant="outline"
                       >
                         {(isPending && revokingSessionId === session.id) ||
                         (isCurrentSession && signingOutCurrentSession) ? (
                           <>
-                            <Loader2 size={15} className="mr-2 animate-spin" />
+                            <Loader2 className="mr-2 animate-spin" size={15} />
                             {isCurrentSession
                               ? 'Signing Out...'
                               : 'Terminating...'}

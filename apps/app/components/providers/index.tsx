@@ -31,8 +31,8 @@ export async function Providers({ children }: { children: ReactNode }) {
     >
       <TooltipProvider delayDuration={0}>
         <SidebarProvider
-          defaultWidth={sidebarWidth}
           defaultOpen={defaultSidebarOpen}
+          defaultWidth={sidebarWidth}
         >
           <NuqsAdapter>
             <QueryProviders>{children}</QueryProviders>

@@ -53,7 +53,7 @@ import { MultipleAccountsManagementCardSkeleton } from './account-skeletons';
 function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
   return (
     <Avatar className="h-8 w-8 rounded-full">
-      <AvatarImage src={user.image || ''} alt={user.name} />
+      <AvatarImage alt={user.name} src={user.image || ''} />
       <AvatarFallback className="rounded-full">
         {user.name?.charAt(0).toUpperCase() ||
           user.email?.charAt(0).toUpperCase()}
@@ -236,8 +236,8 @@ export function MultipleAccountsManagementCard() {
 
                 return (
                   <div
-                    key={session.session.id || index}
                     className="flex items-center justify-between rounded-lg border p-3"
+                    key={session.session.id || index}
                   >
                     <div className="flex items-center gap-3">
                       <UserAvatar user={session.user} />
@@ -273,15 +273,15 @@ export function MultipleAccountsManagementCard() {
 
                     <div className="flex items-center gap-2">
                       <SpinnerButton
+                        disabled={isSwitching || isRemoving}
+                        isLoading={isSwitchingThis}
+                        onClick={() => handleSwitchAccount(session)}
                         size="sm"
                         variant="outline"
-                        isLoading={isSwitchingThis}
-                        disabled={isSwitching || isRemoving}
-                        onClick={() => handleSwitchAccount(session)}
                       >
                         {isSwitchingThis ? (
                           <>
-                            <Loader2 size={15} className="mr-2 animate-spin" />
+                            <Loader2 className="mr-2 animate-spin" size={15} />
                             Switching...
                           </>
                         ) : (
@@ -293,15 +293,15 @@ export function MultipleAccountsManagementCard() {
                       </SpinnerButton>
 
                       <SpinnerButton
+                        disabled={isSwitching || isRemoving}
+                        isLoading={isRemovingThis}
+                        onClick={() => handleRemoveAccount(session)}
                         size="sm"
                         variant="outline"
-                        isLoading={isRemovingThis}
-                        disabled={isSwitching || isRemoving}
-                        onClick={() => handleRemoveAccount(session)}
                       >
                         {isRemovingThis ? (
                           <>
-                            <Loader2 size={15} className="mr-2 animate-spin" />
+                            <Loader2 className="mr-2 animate-spin" size={15} />
                             Removing...
                           </>
                         ) : (
@@ -330,9 +330,9 @@ export function MultipleAccountsManagementCard() {
             </p>
             <Button
               asChild
+              className="max-sm:w-full"
               size="sm"
               variant="outline"
-              className="max-sm:w-full"
             >
               <Link href="/login">
                 <Plus className="mr-2 h-4 w-4" />
@@ -343,7 +343,7 @@ export function MultipleAccountsManagementCard() {
         )}
 
         {/* Remove Account Confirmation Dialog */}
-        <Dialog open={isRemoveDialogOpen} onOpenChange={setIsRemoveDialogOpen}>
+        <Dialog onOpenChange={setIsRemoveDialogOpen} open={isRemoveDialogOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Remove Account</DialogTitle>
@@ -366,17 +366,17 @@ export function MultipleAccountsManagementCard() {
               </div>
             )}
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={cancelRemoveAccount}>
+              <Button onClick={cancelRemoveAccount} variant="outline">
                 Cancel
               </Button>
               <SpinnerButton
-                variant="destructive"
                 isLoading={isRemoving}
                 onClick={confirmRemoveAccount}
+                variant="destructive"
               >
                 {isRemoving ? (
                   <>
-                    <Loader2 size={15} className="mr-2 animate-spin" />
+                    <Loader2 className="mr-2 animate-spin" size={15} />
                     Removing...
                   </>
                 ) : (

@@ -108,9 +108,9 @@ export function SignInForm({
   return (
     <Form {...form}>
       <form
+        className={cn('grid w-full gap-6', className)}
         noValidate={isHydrated}
         onSubmit={form.handleSubmit(signIn)}
-        className={cn('grid w-full gap-6', className)}
       >
         <FormField
           control={form.control}
@@ -121,8 +121,8 @@ export function SignInForm({
                 Email
                 {isEmailLastUsed && (
                   <Badge
-                    variant="secondary"
                     className="text-muted-foreground text-xs transition-colors duration-150 group-focus-within:text-foreground group-hover:text-foreground"
+                    variant="secondary"
                   >
                     Last used
                   </Badge>
@@ -131,13 +131,13 @@ export function SignInForm({
 
               <FormControl>
                 <Input
-                  type="email"
-                  spellCheck={false}
                   autoCapitalize="off"
                   autoComplete="email"
                   disabled={isSubmitting}
                   placeholder="your@email.com"
+                  spellCheck={false}
                   suppressHydrationWarning={true}
+                  type="email"
                   {...field}
                 />
               </FormControl>
@@ -165,9 +165,9 @@ export function SignInForm({
 
               <FormControl>
                 <PasswordInput
+                  autoComplete="current-password"
                   disabled={isSubmitting}
                   suppressHydrationWarning={true}
-                  autoComplete="current-password"
                   {...field}
                 />
               </FormControl>
@@ -204,11 +204,11 @@ export function SignInForm({
         /> */}
 
         <SpinnerButton
-          type="submit"
+          buttonState={isSubmitting ? 'loading' : 'idle'}
+          className="w-full text-md"
           disabled={isSubmitting}
           isLoading={isSubmitting}
-          className="w-full text-md"
-          buttonState={isSubmitting ? 'loading' : 'idle'}
+          type="submit"
         >
           Login
         </SpinnerButton>

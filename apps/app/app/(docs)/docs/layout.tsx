@@ -16,13 +16,13 @@ export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <DocsLayout {...docsOptions}>
       <SiteHeader
+        className="sticky top-0 z-50 w-full bg-background max-sm:hidden"
+        deviceSessions={listDeviceSessions}
+        enableDocsLink={false}
+        enableLayoutViewToggle={false}
         enableTitle={false}
         navigationMode="header"
-        enableDocsLink={false}
         session={currentSession}
-        enableLayoutViewToggle={false}
-        deviceSessions={listDeviceSessions}
-        className="sticky top-0 z-50 w-full bg-background max-sm:hidden"
       />
       {children}
     </DocsLayout>

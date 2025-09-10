@@ -89,12 +89,12 @@ export function UserAvatarCard() {
         <CardDescription>Your account information and status</CardDescription>
         <CardAction>
           <span
-            title={user.emailVerified ? 'Verified' : 'Unverified'}
             className={cn(
               'flex select-none items-center gap-1 border-none text-muted-foreground/10 text-xs shadow-none transition-colors duration-200 ease-out group-hover/user-avatar-card:text-muted-foreground/20',
               user.emailVerified &&
                 'group-hover/user-avatar-card:text-green-600',
             )}
+            title={user.emailVerified ? 'Verified' : 'Unverified'}
           >
             {user.emailVerified ? (
               <IconShieldLockFilled className="size-4 md:size-5" />
@@ -109,8 +109,8 @@ export function UserAvatarCard() {
         <div className="flex items-center gap-4">
           <Avatar className="size-20 border shadow-sm max-sm:size-16 dark:border-none">
             <AvatarImage
-              src={user.image || undefined}
               alt={user.name || 'User'}
+              src={user.image || undefined}
             />
             <AvatarFallback className="text-lg">{initials}</AvatarFallback>
           </Avatar>

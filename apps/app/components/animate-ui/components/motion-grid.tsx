@@ -66,7 +66,6 @@ const MotionGrid = ({
     >
       {Array.from({ length: cols * rows }).map((_, i) => (
         <motion.div
-          key={i}
           className={cn(
             'aspect-square size-3 rounded-full',
             active.has(i)
@@ -74,6 +73,7 @@ const MotionGrid = ({
               : cn('scale-100 bg-muted', cellInactiveClassName),
             cellClassName,
           )}
+          key={i}
           {...cellProps}
           transition={{ duration, ease: 'easeInOut' }}
         />

@@ -142,16 +142,16 @@ export function UserNameCard() {
               </span>
             </div>
             <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={32}
-              disabled={isPending}
-              placeholder="Enter your display name"
               className={cn(
                 '!bg-background',
                 validationError && 'border-destructive',
               )}
+              disabled={isPending}
+              id="name"
+              maxLength={32}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your display name"
+              value={name}
             />
             {validationError && (
               <p className="text-destructive text-sm">{validationError}</p>
@@ -159,11 +159,11 @@ export function UserNameCard() {
           </div>
           <div className="flex justify-end gap-2">
             <SpinnerButton
-              size="sm"
               className="w-16"
-              onClick={handleSave}
-              isLoading={isPending}
               disabled={!canSave}
+              isLoading={isPending}
+              onClick={handleSave}
+              size="sm"
             >
               Save
             </SpinnerButton>

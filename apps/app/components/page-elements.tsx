@@ -59,9 +59,9 @@ export function PageHeader({
     <div className={cn('mb-8 border-b py-8 md:mb-10 md:py-10', className)}>
       <div className={cn(baseContainerCN, containerClassName)}>
         <PageTitle
-          title={title}
-          description={description}
           className={cn('my-0', titleClassName)}
+          description={description}
+          title={title}
         />
         {children}
       </div>

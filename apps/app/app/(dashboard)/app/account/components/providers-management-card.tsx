@@ -280,8 +280,8 @@ export function ProvidersManagementCard() {
 
           return (
             <div
-              key={provider.id}
               className="flex justify-between rounded-lg border p-4 max-sm:flex-col max-sm:gap-y-2 sm:items-center"
+              key={provider.id}
             >
               <div className="flex flex-1 items-center gap-3">
                 <IconComponent className="h-5 w-5 text-muted-foreground" />
@@ -307,22 +307,22 @@ export function ProvidersManagementCard() {
                   <>
                     {provider.id === 'email' && (
                       <Button
-                        size="sm"
-                        variant="outline"
                         className="max-sm:w-full"
                         onClick={() => {
                           router.push(getAppRoute('/account#password-card'));
                         }}
+                        size="sm"
+                        variant="outline"
                       >
                         Change Password
                       </Button>
                     )}
                     {provider.id === 'magic-link' && (
                       <Button
-                        size="sm"
-                        variant="outline"
                         className="w-24 max-sm:w-full"
                         disabled
+                        size="sm"
+                        variant="outline"
                       >
                         Enabled
                       </Button>
@@ -330,15 +330,15 @@ export function ProvidersManagementCard() {
                     {provider.id === 'passkeys' && (
                       <div className="flex gap-2 max-sm:w-full max-sm:flex-col">
                         <Dialog
-                          open={isPasskeysDialogOpen}
                           onOpenChange={setIsPasskeysDialogOpen}
+                          open={isPasskeysDialogOpen}
                         >
                           <DialogTrigger asChild>
                             <Button
-                              size="sm"
-                              variant="outline"
                               className="w-24 max-sm:w-full"
                               disabled={isAnyProviderProcessing}
+                              size="sm"
+                              variant="outline"
                             >
                               Manage
                             </Button>
@@ -373,8 +373,8 @@ export function ProvidersManagementCard() {
                                         : Monitor;
                                     return (
                                       <div
-                                        key={passkey.id}
                                         className="flex items-center gap-3 rounded-lg border p-3"
+                                        key={passkey.id}
                                       >
                                         <IconComponent className="h-4 w-4 text-muted-foreground" />
                                         <div className="flex-1">
@@ -397,12 +397,12 @@ export function ProvidersManagementCard() {
                                           </div>
                                         </div>
                                         <Button
-                                          variant="ghost"
-                                          size="sm"
+                                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
                                           onClick={() =>
                                             handleRemovePasskey(passkey)
                                           }
-                                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                                          size="sm"
+                                          variant="ghost"
                                         >
                                           <Trash2 className="h-4 w-4" />
                                           <span className="sr-only">
@@ -422,12 +422,12 @@ export function ProvidersManagementCard() {
                           </DialogContent>
                         </Dialog>
                         <SpinnerButton
-                          size="sm"
-                          variant="outline"
                           className="w-24 max-sm:w-full"
+                          disabled={isAnyProviderProcessing || !canUnlink}
                           isLoading={isAddingPasskey}
                           onClick={handleAddPasskey}
-                          disabled={isAnyProviderProcessing || !canUnlink}
+                          size="sm"
+                          variant="outline"
                         >
                           Add
                         </SpinnerButton>
@@ -435,12 +435,12 @@ export function ProvidersManagementCard() {
                     )}
                     {(provider.id === 'google' || provider.id === 'github') && (
                       <SpinnerButton
-                        size="sm"
-                        variant="outline"
                         className="w-24 max-sm:w-full"
+                        disabled={isAnyProviderProcessing || !canUnlink}
                         isLoading={isThisProviderUnlinking}
                         onClick={() => handleDisconnectProvider(provider.id)}
-                        disabled={isAnyProviderProcessing || !canUnlink}
+                        size="sm"
+                        variant="outline"
                       >
                         Disconnect
                       </SpinnerButton>
@@ -448,34 +448,34 @@ export function ProvidersManagementCard() {
                   </>
                 ) : provider.id === 'email' ? (
                   <Button
-                    size="sm"
-                    variant="outline"
                     className="max-sm:w-full"
                     onClick={() => {
                       router.push(getAppRoute('/account#password-card'));
                     }}
+                    size="sm"
+                    variant="outline"
                   >
                     Set Password
                   </Button>
                 ) : provider.id === 'passkeys' ? (
                   <SpinnerButton
-                    size="sm"
-                    variant="outline"
                     className="w-20 max-sm:w-full"
+                    disabled={isAnyProviderProcessing || !canUnlink}
                     isLoading={isAddingPasskey}
                     onClick={handleAddPasskey}
-                    disabled={isAnyProviderProcessing || !canUnlink}
+                    size="sm"
+                    variant="outline"
                   >
                     Add
                   </SpinnerButton>
                 ) : provider.id === 'google' || provider.id === 'github' ? (
                   <SpinnerButton
-                    size="sm"
-                    variant="outline"
                     className="w-24 max-sm:w-full"
+                    disabled={isAnyProviderProcessing || !canUnlink}
                     isLoading={isThisProviderLinking}
                     onClick={() => handleConnectProvider(provider.id)}
-                    disabled={isAnyProviderProcessing || !canUnlink}
+                    size="sm"
+                    variant="outline"
                   >
                     Connect
                   </SpinnerButton>
@@ -488,8 +488,8 @@ export function ProvidersManagementCard() {
 
       {/* Passkey Removal Confirmation Dialog */}
       <Dialog
-        open={!!passkeyToRemove}
         onOpenChange={() => setPasskeyToRemove(null)}
+        open={!!passkeyToRemove}
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -518,10 +518,10 @@ export function ProvidersManagementCard() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col-reverse gap-y-2 md:flex-row md:justify-end md:space-x-2 md:space-y-0">
-            <Button variant="outline" onClick={cancelRemovePasskey}>
+            <Button onClick={cancelRemovePasskey} variant="outline">
               Cancel
             </Button>
-            <Button variant="destructive" onClick={confirmRemovePasskey}>
+            <Button onClick={confirmRemovePasskey} variant="destructive">
               Remove passkey
             </Button>
           </div>

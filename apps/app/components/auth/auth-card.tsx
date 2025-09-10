@@ -136,10 +136,10 @@ export function AuthCard({
 
                             return (
                               <ProviderButton
-                                key={provider}
-                                redirectTo={redirectTo}
-                                provider={socialProvider}
                                 isSubmitting={isSubmitting}
+                                key={provider}
+                                provider={socialProvider}
+                                redirectTo={redirectTo}
                                 setIsSubmitting={setIsSubmitting}
                               />
                             );
@@ -149,13 +149,13 @@ export function AuthCard({
                         {(moreAuthOptions || view === 'magicLink') && (
                           <>
                             <PasskeyButton
-                              redirectTo={redirectTo}
                               isSubmitting={isSubmitting}
+                              redirectTo={redirectTo}
                               setIsSubmitting={setIsSubmitting}
                             />
                             <MagicLinkButton
-                              view={view}
                               isSubmitting={isSubmitting}
+                              view={view}
                             />
                           </>
                         )}
@@ -163,16 +163,16 @@ export function AuthCard({
                         {!moreAuthOptions && view !== 'magicLink' && (
                           <Button
                             className="group relative w-full"
-                            variant="authButton"
                             disabled={isSubmitting}
                             onClick={() => setMoreAuthOptions(true)}
+                            variant="authButton"
                           >
                             <RectangleEllipsis />
                             Passkey or Magic Link
                             {isPasskeyOrMagicLinkLastUsed && (
                               <Badge
-                                variant="secondary"
                                 className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
+                                variant="secondary"
                               >
                                 Last used
                               </Badge>
@@ -220,10 +220,10 @@ export function AuthCard({
 
           <div className="grid gap-4">
             <AuthForm
-              pathname={pathname}
-              redirectTo={redirectTo}
               isSubmitting={isSubmitting}
               otpSeparators={otpSeparators}
+              pathname={pathname}
+              redirectTo={redirectTo}
               setIsSubmitting={setIsSubmitting}
             />
           </div>
@@ -247,9 +247,9 @@ export function AuthCard({
                       href={`/${authViewRoutes.signUp}${isHydrated ? window.location.search : ''}`}
                     >
                       <Button
+                        className="px-1 text-foreground hover:underline"
                         size="sm"
                         variant="link"
-                        className="px-1 text-foreground hover:underline"
                       >
                         Sign up
                       </Button>
@@ -265,9 +265,9 @@ export function AuthCard({
                       href={`/${authViewRoutes.login}${isHydrated ? window.location.search : ''}`}
                     >
                       <Button
+                        className="px-1 text-foreground hover:underline"
                         size="sm"
                         variant="link"
-                        className="px-1 text-foreground hover:underline"
                       >
                         Sign in
                       </Button>
@@ -279,10 +279,10 @@ export function AuthCard({
                   <>
                     <ArrowLeftIcon className="size-3" />
                     <Button
-                      size="sm"
-                      variant="link"
                       className="px-0 text-muted-foreground hover:text-foreground hover:underline"
                       onClick={() => window.history.back()}
+                      size="sm"
+                      variant="link"
                     >
                       Go back
                     </Button>

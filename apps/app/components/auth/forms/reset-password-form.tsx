@@ -107,8 +107,8 @@ export function ResetPasswordForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(resetPassword)}
         className={cn('grid w-full gap-6', className)}
+        onSubmit={form.handleSubmit(resetPassword)}
       >
         <FormField
           control={form.control}
@@ -120,8 +120,8 @@ export function ResetPasswordForm({
               <FormControl>
                 <PasswordInput
                   autoComplete="new-password"
-                  placeholder="New Password"
                   disabled={isSubmitting}
+                  placeholder="New Password"
                   {...field}
                 />
               </FormControl>
@@ -141,8 +141,8 @@ export function ResetPasswordForm({
               <FormControl>
                 <PasswordInput
                   autoComplete="new-password"
-                  placeholder="Confirm Password"
                   disabled={isSubmitting}
+                  placeholder="Confirm Password"
                   {...field}
                 />
               </FormControl>
@@ -153,11 +153,11 @@ export function ResetPasswordForm({
         />
 
         <SpinnerButton
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full text-md"
-          isLoading={isSubmitting}
           buttonState={isSubmitting ? 'loading' : 'idle'}
+          className="w-full text-md"
+          disabled={isSubmitting}
+          isLoading={isSubmitting}
+          type="submit"
         >
           Reset Password
         </SpinnerButton>

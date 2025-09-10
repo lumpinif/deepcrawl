@@ -9,7 +9,7 @@ export default async function DashboardPage() {
     <>
       <PageHeader title="Dashboard" />
       <PageContainer>
-        <PageTitle titleSize="2xl" title="Overview" />
+        <PageTitle title="Overview" titleSize="2xl" />
       </PageContainer>
     </>
   );

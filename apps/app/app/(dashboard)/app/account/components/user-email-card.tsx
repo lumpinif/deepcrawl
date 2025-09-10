@@ -80,11 +80,11 @@ export function UserEmailCard() {
             <div className="font-medium">{user.email}</div>
           </div>
           <Badge
-            variant="outline"
             className={cn(
               'select-none text-muted-foreground text-xs',
               user.emailVerified && 'text-green-600',
             )}
+            variant="outline"
           >
             {user.emailVerified ? <IconShieldLockFilled /> : <IconShieldOff />}
             {user.emailVerified ? 'Verified' : 'Unverified'}

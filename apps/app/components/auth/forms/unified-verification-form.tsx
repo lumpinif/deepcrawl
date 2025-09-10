@@ -341,7 +341,7 @@ export function UnifiedVerificationForm({
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
             {showResend && (
-              <Button onClick={handleResendVerification} className="w-full">
+              <Button className="w-full" onClick={handleResendVerification}>
                 {verificationType === 'email'
                   ? 'Send New Verification Email'
                   : 'Request New Magic Link'}
@@ -349,8 +349,8 @@ export function UnifiedVerificationForm({
             )}
             {!showResend && (
               <Button
-                onClick={() => router.push(`/${authViewRoutes.login}`)}
                 className="w-full"
+                onClick={() => router.push(`/${authViewRoutes.login}`)}
               >
                 Back to Login
               </Button>
@@ -370,7 +370,7 @@ export function UnifiedVerificationForm({
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
             {showResend && (
-              <Button onClick={handleResendVerification} className="w-full">
+              <Button className="w-full" onClick={handleResendVerification}>
                 {verificationType === 'email'
                   ? 'Request New Verification'
                   : 'Request New Magic Link'}
@@ -378,8 +378,8 @@ export function UnifiedVerificationForm({
             )}
             {!showResend && (
               <Button
-                onClick={() => router.push(`/${authViewRoutes.login}`)}
                 className="w-full"
+                onClick={() => router.push(`/${authViewRoutes.login}`)}
               >
                 Back to Login
               </Button>
@@ -398,8 +398,8 @@ export function UnifiedVerificationForm({
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
             <Button
-              onClick={() => router.push(`/${authViewRoutes.login}`)}
               className="w-full"
+              onClick={() => router.push(`/${authViewRoutes.login}`)}
             >
               Sign In
             </Button>
@@ -417,8 +417,8 @@ export function UnifiedVerificationForm({
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
             <Button
-              onClick={() => router.push(getAppRoute(BASE_APP_PATH))}
               className="w-full"
+              onClick={() => router.push(getAppRoute(BASE_APP_PATH))}
             >
               Continue to Dashboard
             </Button>
@@ -436,6 +436,7 @@ export function UnifiedVerificationForm({
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
             <Button
+              className="w-full"
               onClick={() => {
                 if (verificationType === 'accept-invitation' && invitationId) {
                   verifyInvitation(invitationId);
@@ -446,7 +447,6 @@ export function UnifiedVerificationForm({
                   );
                 }
               }}
-              className="w-full"
             >
               Try Again
             </Button>
@@ -464,8 +464,8 @@ export function UnifiedVerificationForm({
               <p className="text-muted-foreground text-sm">{errorMessage}</p>
             </div>
             <Button
-              onClick={() => router.push(`/${authViewRoutes.login}`)}
               className="w-full"
+              onClick={() => router.push(`/${authViewRoutes.login}`)}
             >
               Back to Login
             </Button>
@@ -509,16 +509,16 @@ export function UnifiedVerificationForm({
           </div>
           <div className="space-y-4">
             <Button
-              onClick={() => router.push(getAppRoute(BASE_APP_PATH))}
               className="w-full"
+              onClick={() => router.push(getAppRoute(BASE_APP_PATH))}
             >
               Go to Dashboard
             </Button>
             {verificationType !== 'accept-invitation' && (
               <Button
-                variant="outline"
-                onClick={() => router.push(getAppRoute('/account'))}
                 className="w-full"
+                onClick={() => router.push(getAppRoute('/account'))}
+                variant="outline"
               >
                 Go to Account Settings
               </Button>

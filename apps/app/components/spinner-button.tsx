@@ -107,19 +107,19 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
 
   return (
     <Button
-      variant={variant}
       className={buttonClassName}
       disabled={isDisabled}
+      variant={variant}
       {...props}
     >
-      <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence initial={false} mode="popLayout">
         <motion.span
+          animate={MOTION_VARIANTS.animate}
+          className={motionSpanClassName}
+          exit={MOTION_VARIANTS.exit}
+          initial={MOTION_VARIANTS.initial}
           key={currentState}
           transition={MOTION_CONFIG}
-          exit={MOTION_VARIANTS.exit}
-          className={motionSpanClassName}
-          initial={MOTION_VARIANTS.initial}
-          animate={MOTION_VARIANTS.animate}
         >
           {buttonContent}
         </motion.span>

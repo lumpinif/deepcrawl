@@ -335,8 +335,8 @@ export function GetMarkdownGridIcon({
     <MotionGrid
       animate={animate}
       duration={duration || 100}
-      gridSize={gridSize || [5, 5]}
       frames={grids.getMarkdown.frames}
+      gridSize={gridSize || [5, 5]}
       {...props}
     />
   );
@@ -352,8 +352,8 @@ export function ReadUrlGridIcon({
     <MotionGrid
       animate={animate}
       duration={duration || 100}
-      gridSize={gridSize || [5, 5]}
       frames={grids.readUrl.frames}
+      gridSize={gridSize || [5, 5]}
       {...props}
     />
   );
@@ -369,8 +369,8 @@ export function ExtractLinksGridIcon({
     <MotionGrid
       animate={animate}
       duration={duration || 100}
-      gridSize={gridSize || [5, 5]}
       frames={grids.extractLinks.frames}
+      gridSize={gridSize || [5, 5]}
       {...props}
     />
   );

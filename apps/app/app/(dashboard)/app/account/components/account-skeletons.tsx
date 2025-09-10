@@ -103,8 +103,8 @@ export function ProvidersManagementCardSkeleton() {
         {/* Provider items skeleton */}
         {Array.from({ length: 5 }).map((_, index) => (
           <div
-            key={index}
             className="flex items-center justify-between rounded-lg border p-3"
+            key={index}
           >
             <div className="flex items-center gap-3">
               <Skeleton className="h-5 w-5" />
@@ -160,8 +160,8 @@ export function MultipleAccountsManagementCardSkeleton() {
           <div className="space-y-3">
             {Array.from({ length: 2 }).map((_, index) => (
               <div
-                key={index}
                 className="flex items-center justify-between rounded-lg border p-3"
+                key={index}
               >
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-8 w-8 rounded-full" />
@@ -227,8 +227,8 @@ export function SessionsManagementCardSkeleton() {
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, index) => (
             <div
-              key={index}
               className="flex items-center justify-between rounded-lg border p-3 max-sm:flex-col max-sm:items-start max-sm:gap-y-2"
+              key={index}
             >
               <div className="flex items-center gap-3 max-sm:w-full max-sm:justify-between">
                 <div className="flex items-center gap-x-2">

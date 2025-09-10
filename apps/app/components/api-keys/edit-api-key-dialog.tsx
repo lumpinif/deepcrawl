@@ -61,7 +61,7 @@ export function EditApiKeyDialog({
     name.trim() !== (apiKey.name || '') || enabled !== apiKey.enabled;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit API Key</DialogTitle>
@@ -72,37 +72,37 @@ export function EditApiKeyDialog({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
+              <Label className="text-right" htmlFor="name">
                 Name
               </Label>
               <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
                 className="col-span-3"
+                id="name"
+                onChange={(e) => setName(e.target.value)}
                 placeholder="Enter API key name"
+                value={name}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="enabled" className="text-right">
+              <Label className="text-right" htmlFor="enabled">
                 Enabled
               </Label>
               <Switch
-                id="enabled"
                 checked={enabled}
+                id="enabled"
                 onCheckedChange={setEnabled}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button onClick={onClose} type="button" variant="outline">
               Cancel
             </Button>
             <SpinnerButton
-              type="submit"
               className="w-full sm:w-32"
               disabled={!hasChanges || updateApiKey.isPending}
               isLoading={updateApiKey.isPending}
+              type="submit"
             >
               Update API Key
             </SpinnerButton>

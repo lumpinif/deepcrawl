@@ -49,10 +49,10 @@ export function HeaderNavigationLayout({
             'absolute top-0 right-0 left-0 z-50 h-16 transition-transform duration-100 ease-in-out will-change-transform',
             shouldHideHeader && '-translate-y-full',
           )}
-          session={session}
+          deviceSessions={deviceSessions}
           enableThemeToggle={false}
           navigationMode={navigationMode}
-          deviceSessions={deviceSessions}
+          session={session}
         />
 
         {/* Add spacing for absolute header only when visible */}
@@ -68,8 +68,8 @@ export function HeaderNavigationLayout({
       </div>
 
       <ScrollArea
-        viewportRef={viewportRef}
         className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6"
+        viewportRef={viewportRef}
       >
         {children}
       </ScrollArea>

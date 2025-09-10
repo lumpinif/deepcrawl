@@ -119,15 +119,15 @@ export default function AppNavTabs() {
     () =>
       NAVGATION_ITEMS.map((item, index) => (
         <Link
-          key={`${item.url}-${index}`} // More stable key
-          href={item.url}
-          ref={setTabRef(index)}
           className={`h-8 cursor-pointer border-none bg-transparent transition-colors duration-300 ${
             index === activeIndex ? 'text-primary' : 'text-muted-foreground'
-          }`}
+          }`} // More stable key
+          href={item.url}
+          key={`${item.url}-${index}`}
+          onFocus={() => handlePrefetch(item.url)}
           onMouseEnter={() => handleMouseEnter(index, item.url)}
           onMouseLeave={handleMouseLeave}
-          onFocus={() => handlePrefetch(item.url)}
+          ref={setTabRef(index)}
         >
           <div className="flex h-full items-center justify-center whitespace-nowrap px-3 pb-1 text-sm">
             {item.title}

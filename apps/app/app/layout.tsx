@@ -11,25 +11,25 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
         {/* Theme color matches bg-background from globals.css */}
         <meta
-          name="theme-color"
           content="#ffffff"
           media="(prefers-color-scheme: light)"
+          name="theme-color"
         />
         <meta
-          name="theme-color"
           content="#000000"
           media="(prefers-color-scheme: dark)"
+          name="theme-color"
         />
         {/* Status bar style for iOS */}
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta content="default" name="apple-mobile-web-app-status-bar-style" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
       </head>
       <body
-        suppressHydrationWarning
         className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col antialiased`}
+        suppressHydrationWarning
       >
         <Providers>{children}</Providers>
       </body>

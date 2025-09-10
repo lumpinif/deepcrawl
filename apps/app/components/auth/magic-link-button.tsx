@@ -18,15 +18,15 @@ export function MagicLinkButton({ isSubmitting, view }: MagicLinkButtonProps) {
 
   return (
     <Button
-      type="button"
       className="group relative w-full"
-      variant="authButton"
       disabled={isSubmitting}
       onClick={() =>
         router.push(
           `/${view === 'magicLink' ? authViewRoutes.login : authViewRoutes.magicLink}${window.location.search}`,
         )
       }
+      type="button"
+      variant="authButton"
     >
       <div className="flex items-center gap-2">
         {view === 'magicLink' ? <LockIcon /> : <MailIcon />}
@@ -34,16 +34,16 @@ export function MagicLinkButton({ isSubmitting, view }: MagicLinkButtonProps) {
       </div>
       {isMagicLinkLastUsed && view === 'login' && (
         <Badge
-          variant="secondary"
           className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
+          variant="secondary"
         >
           Last used
         </Badge>
       )}
       {isEmailLastUsed && view === 'magicLink' && (
         <Badge
-          variant="secondary"
           className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
+          variant="secondary"
         >
           Last used
         </Badge>

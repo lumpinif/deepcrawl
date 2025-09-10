@@ -54,10 +54,10 @@ export default async function DashboardLayout({
         <AppSidebar />
         <SidebarInset className={defaultInsetClassname}>
           <SiteHeader
-            session={currentSession}
+            deviceSessions={listDeviceSessions}
             enableThemeToggle={false}
             navigationMode={navigationMode}
-            deviceSessions={listDeviceSessions}
+            session={currentSession}
           />
           <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
             {children}
@@ -70,10 +70,10 @@ export default async function DashboardLayout({
   // Header navigation mode
   return (
     <HeaderNavigationLayout
-      session={currentSession}
+      defaultInsetClassname={defaultInsetClassname}
       deviceSessions={listDeviceSessions}
       navigationMode={navigationMode}
-      defaultInsetClassname={defaultInsetClassname}
+      session={currentSession}
     >
       {children}
     </HeaderNavigationLayout>

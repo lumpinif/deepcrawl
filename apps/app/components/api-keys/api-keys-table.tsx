@@ -160,7 +160,7 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
+                    <Button className="h-8 w-8 p-0" variant="ghost">
                       <span className="sr-only">Open menu</span>
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
@@ -176,8 +176,8 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => handleDelete(apiKey.id)}
                       className="text-red-500"
+                      onClick={() => handleDelete(apiKey.id)}
                     >
                       Delete
                     </DropdownMenuItem>
@@ -192,7 +192,7 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
       {/* Mobile Card View */}
       <div className="space-y-4 md:hidden">
         {apiKeys.map((apiKey) => (
-          <Card key={apiKey.id} className="bg-background">
+          <Card className="bg-background" key={apiKey.id}>
             <CardContent>
               <div className="space-y-3">
                 {/* Header with name and actions */}
@@ -202,7 +202,7 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
                   </h3>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button className="h-8 w-8 p-0" variant="ghost">
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -218,8 +218,8 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        onClick={() => handleDelete(apiKey.id)}
                         className="text-red-500"
+                        onClick={() => handleDelete(apiKey.id)}
                       >
                         Delete
                       </DropdownMenuItem>
@@ -243,8 +243,8 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
                     Status
                   </p>
                   <Badge
-                    variant={apiKey.enabled ? 'default' : 'secondary'}
                     className="text-xs"
+                    variant={apiKey.enabled ? 'default' : 'secondary'}
                   >
                     {apiKey.enabled ? 'Active' : 'Disabled'}
                   </Badge>
@@ -287,7 +287,6 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
       </div>
 
       <AlertDialog
-        open={deleteDialogOpen}
         onOpenChange={(open) => {
           // Prevent closing dialog if deletion is in progress
           if (!open && deleteApiKey.isPending) {
@@ -298,6 +297,7 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
             setSelectedKeyId(null);
           }
         }}
+        open={deleteDialogOpen}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -310,21 +310,21 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
           </AlertDialogHeader>
           <AlertDialogFooter className="max-sm:flex-col max-sm:gap-2">
             <Button
-              variant="outline"
+              className="max-sm:w-full"
+              disabled={deleteApiKey.isPending}
               onClick={() => {
                 setDeleteDialogOpen(false);
                 setSelectedKeyId(null);
               }}
-              disabled={deleteApiKey.isPending}
-              className="max-sm:w-full"
+              variant="outline"
             >
               Cancel
             </Button>
             <SpinnerButton
-              variant="destructive"
               className="w-full sm:w-32"
-              onClick={confirmDelete}
               isLoading={deleteApiKey.isPending}
+              onClick={confirmDelete}
+              variant="destructive"
             >
               Delete API Key
             </SpinnerButton>
@@ -334,13 +334,13 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
 
       {selectedKey && (
         <EditApiKeyDialog
-          open={editDialogOpen}
-          onOpenChange={setEditDialogOpen}
           apiKey={selectedKey}
           onClose={() => {
             setEditDialogOpen(false);
             setSelectedKeyId(null);
           }}
+          onOpenChange={setEditDialogOpen}
+          open={editDialogOpen}
         />
       )}
     </>

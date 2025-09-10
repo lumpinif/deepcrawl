@@ -65,13 +65,13 @@ export function PasskeyButton({
 
   return (
     <Button
-      value="true"
-      name="passkey"
-      formNoValidate
-      variant="authButton"
-      disabled={isSubmitting}
-      onClick={signInPassKey}
       className="group relative w-full"
+      disabled={isSubmitting}
+      formNoValidate
+      name="passkey"
+      onClick={signInPassKey}
+      value="true"
+      variant="authButton"
     >
       <div className="flex items-center gap-2">
         <KeyIcon />
@@ -79,8 +79,8 @@ export function PasskeyButton({
       </div>
       {isLastUsed && (
         <Badge
-          variant="secondary"
           className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
+          variant="secondary"
         >
           Last used
         </Badge>

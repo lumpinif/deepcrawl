@@ -34,11 +34,11 @@ export function NavMain({ items }: { items: NavigationItem[] }) {
               <SidebarMenuItem
                 key={item.title}
                 onFocus={() => handleHoverToPrefetch(item.url)}
-                onMouseOver={() => handleHoverToPrefetch(item.url)}
                 onMouseEnter={() => handleHoverToPrefetch(item.url)}
+                onMouseOver={() => handleHoverToPrefetch(item.url)}
                 onPointerEnter={() => handleHoverToPrefetch(item.url)}
               >
-                <SidebarMenuButton tooltip={item.title} asChild>
+                <SidebarMenuButton asChild tooltip={item.title}>
                   <Link href={item.url}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>

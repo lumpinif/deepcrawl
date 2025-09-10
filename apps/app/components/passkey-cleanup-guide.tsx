@@ -16,7 +16,7 @@ export function PasskeyCleanupGuide() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-auto p-1">
+        <Button className="h-auto p-1" size="sm" variant="ghost">
           <span className="flex cursor-pointer items-center gap-x-1 text-muted-foreground text-xs transition-colors duration-200 ease-out hover:text-foreground hover:underline">
             <HelpCircle className="h-4 w-4" />
             Passkeys Cleaning Guide

@@ -23,8 +23,8 @@ export function ApiKeysPageSkeleton() {
   return (
     <>
       <PageHeader
-        title="Your API Keys"
         description="Manage your API keys for accessing DeepCrawl services."
+        title="Your API Keys"
       />
       <PageContainer>
         {/* <div className="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4">
@@ -90,13 +90,13 @@ export function ApiKeysPageClient() {
   return (
     <>
       <PageHeader
-        title="Your API Keys"
-        description="Manage your API keys for accessing DeepCrawl services."
         containerClassName="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4"
+        description="Manage your API keys for accessing DeepCrawl services."
+        title="Your API Keys"
       >
         <Button
-          onClick={() => setShowCreateDialog(true)}
           className="max-sm:w-full"
+          onClick={() => setShowCreateDialog(true)}
         >
           New API Key
         </Button>
@@ -116,8 +116,8 @@ export function ApiKeysPageClient() {
         </Card>
 
         <CreateApiKeyDialog
-          open={showCreateDialog}
           onOpenChange={setShowCreateDialog}
+          open={showCreateDialog}
         />
       </PageContainer>
     </>

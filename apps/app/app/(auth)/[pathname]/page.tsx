@@ -24,19 +24,19 @@ export default async function AuthPage({
       <AuthCard pathname={pathname} />
       <div className="block py-12 text-center text-muted-foreground text-sm sm:fixed sm:right-0 sm:bottom-0 sm:left-0 dark:text-muted-foreground/80">
         <a
-          target="_blank"
-          href="/terms-of-service"
           className="hover:underline"
+          href="/terms-of-service"
           rel="noopener noreferrer"
+          target="_blank"
         >
           Terms of Service
         </a>
         <span className="mx-2">|</span>
         <a
-          target="_blank"
-          href="/privacy"
           className="hover:underline"
+          href="/privacy"
           rel="noopener noreferrer"
+          target="_blank"
         >
           Privacy Policy
         </a>

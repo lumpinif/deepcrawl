@@ -77,9 +77,9 @@ export function MagicLinkForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        noValidate={isHydrated}
         className={cn('grid w-full gap-6', className)}
+        noValidate={isHydrated}
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
           control={form.control}
@@ -90,9 +90,9 @@ export function MagicLinkForm({
 
               <FormControl>
                 <Input
-                  type="email"
-                  placeholder="Email"
                   disabled={isSubmitting}
+                  placeholder="Email"
+                  type="email"
                   {...field}
                 />
               </FormControl>
@@ -103,11 +103,11 @@ export function MagicLinkForm({
         />
 
         <SpinnerButton
-          type="submit"
+          buttonState={isSubmitting ? 'loading' : 'idle'}
+          className="w-full text-md"
           disabled={isSubmitting}
           isLoading={isSubmitting}
-          className="w-full text-md"
-          buttonState={isSubmitting ? 'loading' : 'idle'}
+          type="submit"
         >
           Send Magic Link
         </SpinnerButton>

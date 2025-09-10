@@ -35,10 +35,10 @@ export function LayoutToggle({ currentMode }: LayoutToggleProps) {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
+          className="h-9 w-9 text-muted-foreground"
+          onClick={toggleMode}
           size="icon"
           variant="ghost"
-          onClick={toggleMode}
-          className="h-9 w-9 text-muted-foreground"
         >
           {currentMode === 'sidebar' ? (
             <LayoutPanelTopIcon className="h-4 w-4" />
@@ -82,9 +82,9 @@ export function LayoutViewToggle({ currentMode }: LayoutToggleProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            type="button"
             className={buttonCN}
             onClick={(e) => handleClick(e, 'header')}
+            type="button"
           >
             <LayoutPanelTopIcon svgClassName="size-7 text-muted-foreground/70 stroke-[1.2px]" />
             <span className="text-xs">Vercel Tabs</span>
@@ -97,9 +97,9 @@ export function LayoutViewToggle({ currentMode }: LayoutToggleProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            type="button"
             className={buttonCN}
             onClick={(e) => handleClick(e, 'sidebar')}
+            type="button"
           >
             <LayoutPanelLeftIcon svgClassName="size-7 text-muted-foreground/70 stroke-[1.2px]" />
             <span className="text-xs">Sidebar</span>

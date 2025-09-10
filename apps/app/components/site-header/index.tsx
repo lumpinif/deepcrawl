@@ -50,19 +50,19 @@ export function SiteHeader({
           <>
             <SidebarTrigger className="-ml-1" />
             <Separator
-              orientation="vertical"
               className="mr-1 data-[orientation=vertical]:h-4 md:hidden"
+              orientation="vertical"
             />
             <Link
-              href="/"
               className="font-semibold text-base tracking-tight md:hidden"
+              href="/"
             >
               Deepcrawl
             </Link>
           </>
         )}
         {navigationMode === 'header' && enableTitle && (
-          <Link href="/" className="font-semibold text-base tracking-tight">
+          <Link className="font-semibold text-base tracking-tight" href="/">
             Deepcrawl
           </Link>
         )}
@@ -71,8 +71,8 @@ export function SiteHeader({
 
           {enableThemeToggle && enableLayoutToggle && (
             <Separator
-              orientation="vertical"
               className="data-[orientation=vertical]:h-4"
+              orientation="vertical"
             />
           )}
 
@@ -80,8 +80,8 @@ export function SiteHeader({
 
           {enableDocsLink && enableLayoutToggle && (
             <Separator
-              orientation="vertical"
               className="data-[orientation=vertical]:h-4"
+              orientation="vertical"
             />
           )}
 
@@ -90,13 +90,13 @@ export function SiteHeader({
               <TooltipTrigger asChild>
                 <Button
                   asChild
+                  className="text-muted-foreground"
                   size="icon"
                   variant="ghost"
-                  className="text-muted-foreground"
                 >
                   <Link
-                    href="/docs"
                     className="font-medium text-muted-foreground text-sm hover:text-foreground"
+                    href="/docs"
                   >
                     <IconBook />
                     <span className="sr-only">Docs</span>
@@ -111,16 +111,16 @@ export function SiteHeader({
 
           {(enableThemeToggle || enableLayoutToggle || enableDocsLink) && (
             <Separator
-              orientation="vertical"
               className="mr-1 data-[orientation=vertical]:h-4"
+              orientation="vertical"
             />
           )}
           {session ? (
             <UserDropdown
-              session={session}
               deviceSessions={deviceSessions}
-              navigationMode={navigationMode}
               enableLayoutViewToggle={enableLayoutViewToggle}
+              navigationMode={navigationMode}
+              session={session}
             />
           ) : (
             <Button asChild variant="outline">

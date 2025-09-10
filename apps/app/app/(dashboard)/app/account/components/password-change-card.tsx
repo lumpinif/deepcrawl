@@ -139,12 +139,12 @@ export function PasswordChangeCard() {
 
   return (
     <Card
-      id="password-card"
       className={cn(
         'transition-all duration-300',
         'target:shadow-lg target:ring-2 target:ring-primary',
         isHighlighted && 'animate-pulse shadow-lg ring-2 ring-primary',
       )}
+      id="password-card"
     >
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -181,10 +181,8 @@ export function PasswordChangeCard() {
           </div>
           {!isChangingPassword && !isSettingPassword && (
             <Button
-              size="sm"
-              variant="outline"
-              disabled={isPending}
               className="max-sm:w-full"
+              disabled={isPending}
               onClick={() => {
                 if (hasPassword) {
                   setIsChangingPassword(true);
@@ -192,6 +190,8 @@ export function PasswordChangeCard() {
                   setIsSettingPassword(true);
                 }
               }}
+              size="sm"
+              variant="outline"
             >
               {hasPassword ? 'Change Password' : 'Set Password'}
             </Button>
@@ -205,9 +205,9 @@ export function PasswordChangeCard() {
               <Label htmlFor="current-password">Current Password</Label>
               <div className="relative">
                 <Input
+                  className="!bg-background"
+                  disabled={isPending}
                   id="current-password"
-                  type={showCurrentPassword ? 'text' : 'password'}
-                  value={passwords.current}
                   onChange={(e) =>
                     setPasswords((prev) => ({
                       ...prev,
@@ -215,16 +215,16 @@ export function PasswordChangeCard() {
                     }))
                   }
                   placeholder="Enter your current password"
-                  disabled={isPending}
-                  className="!bg-background"
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={passwords.current}
                 />
                 <Button
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                  disabled={isPending}
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  size="sm"
                   type="button"
                   variant="ghost"
-                  size="sm"
-                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  disabled={isPending}
                 >
                   {showCurrentPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -239,23 +239,23 @@ export function PasswordChangeCard() {
               <Label htmlFor="new-password">New Password</Label>
               <div className="relative">
                 <Input
+                  className="!bg-background"
+                  disabled={isPending}
                   id="new-password"
-                  type={showNewPassword ? 'text' : 'password'}
-                  value={passwords.new}
                   onChange={(e) =>
                     setPasswords((prev) => ({ ...prev, new: e.target.value }))
                   }
                   placeholder="Enter your new password"
-                  disabled={isPending}
-                  className="!bg-background"
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={passwords.new}
                 />
                 <Button
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                  disabled={isPending}
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  size="sm"
                   type="button"
                   variant="ghost"
-                  size="sm"
-                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  disabled={isPending}
                 >
                   {showNewPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -270,9 +270,9 @@ export function PasswordChangeCard() {
               <Label htmlFor="confirm-password">Confirm New Password</Label>
               <div className="relative">
                 <Input
+                  className="!bg-background"
+                  disabled={isPending}
                   id="confirm-password"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={passwords.confirm}
                   onChange={(e) =>
                     setPasswords((prev) => ({
                       ...prev,
@@ -280,16 +280,16 @@ export function PasswordChangeCard() {
                     }))
                   }
                   placeholder="Confirm your new password"
-                  disabled={isPending}
-                  className="!bg-background"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={passwords.confirm}
                 />
                 <Button
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                  disabled={isPending}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  size="sm"
                   type="button"
                   variant="ghost"
-                  size="sm"
-                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  disabled={isPending}
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -307,19 +307,19 @@ export function PasswordChangeCard() {
 
             <div className="flex justify-end gap-2 max-sm:w-full">
               <SpinnerButton
-                size="sm"
                 className="min-w-32 max-sm:flex-1"
+                disabled={!isFormValid || isPending}
                 isLoading={isPending}
                 onClick={handlePasswordChange}
-                disabled={!isFormValid || isPending}
+                size="sm"
               >
                 Change Password
               </SpinnerButton>
               <Button
+                disabled={isPending}
+                onClick={handleCancel}
                 size="sm"
                 variant="outline"
-                onClick={handleCancel}
-                disabled={isPending}
               >
                 Cancel
               </Button>
@@ -341,23 +341,23 @@ export function PasswordChangeCard() {
               <Label htmlFor="set-new-password">New Password</Label>
               <div className="relative">
                 <Input
+                  className="!bg-background"
+                  disabled={isPending}
                   id="set-new-password"
-                  type={showNewPassword ? 'text' : 'password'}
-                  value={passwords.new}
                   onChange={(e) =>
                     setPasswords((prev) => ({ ...prev, new: e.target.value }))
                   }
                   placeholder="Enter your new password"
-                  disabled={isPending}
-                  className="!bg-background"
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={passwords.new}
                 />
                 <Button
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                  disabled={isPending}
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  size="sm"
                   type="button"
                   variant="ghost"
-                  size="sm"
-                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  disabled={isPending}
                 >
                   {showNewPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -372,9 +372,9 @@ export function PasswordChangeCard() {
               <Label htmlFor="set-confirm-password">Confirm Password</Label>
               <div className="relative">
                 <Input
+                  className="!bg-background"
+                  disabled={isPending}
                   id="set-confirm-password"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={passwords.confirm}
                   onChange={(e) =>
                     setPasswords((prev) => ({
                       ...prev,
@@ -382,16 +382,16 @@ export function PasswordChangeCard() {
                     }))
                   }
                   placeholder="Confirm your new password"
-                  disabled={isPending}
-                  className="!bg-background"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={passwords.confirm}
                 />
                 <Button
+                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                  disabled={isPending}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  size="sm"
                   type="button"
                   variant="ghost"
-                  size="sm"
-                  className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  disabled={isPending}
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -409,19 +409,19 @@ export function PasswordChangeCard() {
 
             <div className="flex justify-end gap-2 max-sm:w-full">
               <SpinnerButton
-                size="sm"
                 className="min-w-32 max-sm:flex-1"
+                disabled={!isSetPasswordFormValid || isPending}
                 isLoading={isPending}
                 onClick={handleSetPassword}
-                disabled={!isSetPasswordFormValid || isPending}
+                size="sm"
               >
                 Set Password
               </SpinnerButton>
               <Button
+                disabled={isPending}
+                onClick={handleCancel}
                 size="sm"
                 variant="outline"
-                onClick={handleCancel}
-                disabled={isPending}
               >
                 Cancel
               </Button>

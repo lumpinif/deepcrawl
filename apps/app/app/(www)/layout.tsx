@@ -20,9 +20,6 @@ export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <HomeLayout
       {...baseOptions}
-      themeSwitch={{
-        enabled: false,
-      }}
       links={[
         {
           text: 'Dashboard',
@@ -38,10 +35,10 @@ export default async function Layout({ children }: { children: ReactNode }) {
           children: user ? (
             <div className="ml-2 flex items-center">
               <UserDropdown
+                deviceSessions={listDeviceSessions}
+                enableLayoutViewToggle={false}
                 redirectLogout="/"
                 session={currentSession}
-                enableLayoutViewToggle={false}
-                deviceSessions={listDeviceSessions}
               />
             </div>
           ) : (
@@ -56,6 +53,9 @@ export default async function Layout({ children }: { children: ReactNode }) {
           ),
         },
       ]}
+      themeSwitch={{
+        enabled: false,
+      }}
     >
       {children}
     </HomeLayout>

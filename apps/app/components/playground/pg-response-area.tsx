@@ -67,41 +67,39 @@ export function PGResponseArea({
       {/* Response Header */}
       <div className="flex items-center justify-between overflow-x-auto max-sm:flex-col max-sm:items-start max-sm:gap-3">
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs">
+          <Badge className="text-xs" variant="outline">
             {operationMethod}
           </Badge>
           <span className="font-medium text-sm">Response</span>
           <Badge
-            variant={response.error ? 'destructive' : 'default'}
             className="text-xs"
+            variant={response.error ? 'destructive' : 'default'}
           >
             {response.status || 'Unknown'}
           </Badge>
           {response.errorType && (
             <Badge
-              variant="outline"
               className="flex items-center gap-1 text-xs"
+              variant="outline"
             >
               {getErrorIcon(response.errorType)}
               {response.errorType}
             </Badge>
           )}
           {response.executionTime && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge className="text-xs" variant="secondary">
               {formatTime(response.executionTime)}
             </Badge>
           )}
           {response.retryable && (
-            <Badge variant="outline" className="text-xs">
+            <Badge className="text-xs" variant="outline">
               Retryable
             </Badge>
           )}
         </div>
         <div className="flex items-center gap-2 max-sm:w-full max-sm:flex-row-reverse max-sm:justify-between">
           <SpinnerButton
-            size="sm"
             className="max-sm:flex-1"
-            variant="outline"
             onClick={() =>
               handleCopy(
                 response.error
@@ -109,16 +107,18 @@ export function PGResponseArea({
                   : formatResponseData(response.data),
               )
             }
+            size="sm"
+            variant="outline"
           >
             <Copy className="h-4 w-4" />
             Copy
           </SpinnerButton>
           {response.retryable && (
             <SpinnerButton
-              size="sm"
-              variant="outline"
               className="max-sm:flex-1"
               onClick={onRetry}
+              size="sm"
+              variant="outline"
             >
               <RefreshCw className="h-4 w-4" />
               Retry

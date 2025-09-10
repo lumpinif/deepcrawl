@@ -10,7 +10,7 @@ export default function HistoryPage() {
     <>
       <PageHeader title="Activity Logs" />
       <PageContainer>
-        <PageTitle titleSize="2xl" title="Overview" />
+        <PageTitle title="Overview" titleSize="2xl" />
         <ChartAreaInteractive />
       </PageContainer>
     </>

@@ -86,9 +86,9 @@ export function ForgotPasswordForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(forgotPassword)}
-        noValidate={isHydrated}
         className={cn('grid w-full gap-6', className)}
+        noValidate={isHydrated}
+        onSubmit={form.handleSubmit(forgotPassword)}
       >
         <FormField
           control={form.control}
@@ -99,9 +99,9 @@ export function ForgotPasswordForm({
 
               <FormControl>
                 <Input
-                  type="email"
-                  placeholder="Email"
                   disabled={isSubmitting}
+                  placeholder="Email"
+                  type="email"
                   {...field}
                 />
               </FormControl>
@@ -112,11 +112,11 @@ export function ForgotPasswordForm({
         />
 
         <SpinnerButton
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full text-md"
-          isLoading={isSubmitting}
           buttonState={isSubmitting ? 'loading' : 'idle'}
+          className="w-full text-md"
+          disabled={isSubmitting}
+          isLoading={isSubmitting}
+          type="submit"
         >
           Send Reset Email
         </SpinnerButton>

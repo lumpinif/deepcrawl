@@ -58,8 +58,8 @@ export function AuthForm({
       return (
         <SignInForm
           className={className}
-          redirectTo={redirectTo}
           isSubmitting={isSubmitting}
+          redirectTo={redirectTo}
           setIsSubmitting={setIsSubmitting}
         />
       );
@@ -67,8 +67,8 @@ export function AuthForm({
       return (
         <SignUpForm
           className={className}
-          redirectTo={redirectTo}
           isSubmitting={isSubmitting}
+          redirectTo={redirectTo}
           setIsSubmitting={setIsSubmitting}
         />
       );
@@ -81,8 +81,8 @@ export function AuthForm({
       return (
         <MagicLinkForm
           className={className}
-          redirectTo={redirectTo}
           isSubmitting={isSubmitting}
+          redirectTo={redirectTo}
           setIsSubmitting={setIsSubmitting}
         />
       );

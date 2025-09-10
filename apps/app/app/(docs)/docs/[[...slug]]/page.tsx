@@ -19,8 +19,6 @@ export default async function Page(props: {
 
   return (
     <DocsPage
-      toc={page.data.toc}
-      full={page.data.full}
       breadcrumb={{ enabled: true }}
       editOnGithub={{
         owner: 'lumpinif',
@@ -28,10 +26,12 @@ export default async function Page(props: {
         sha: 'main',
         path: `/apps/app/content/docs/${page.path}`,
       }}
+      full={page.data.full}
       tableOfContent={{
         style: 'clerk',
         header: <div className="h-4 w-10" />,
       }}
+      toc={page.data.toc}
       // lastUpdate={page.data.lastUpdated}
     >
       <DocsTitle>{page.data.title}</DocsTitle>

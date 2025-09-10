@@ -159,9 +159,9 @@ export function SignUpForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(signUp)}
-        noValidate={isHydrated}
         className={cn('grid w-full gap-6', className)}
+        noValidate={isHydrated}
+        onSubmit={form.handleSubmit(signUp)}
       >
         {nameRequired && (
           <FormField
@@ -173,8 +173,8 @@ export function SignUpForm({
 
                 <FormControl>
                   <Input
-                    placeholder="Name"
                     disabled={isSubmitting}
+                    placeholder="Name"
                     {...field}
                   />
                 </FormControl>
@@ -193,9 +193,9 @@ export function SignUpForm({
 
               <FormControl>
                 <Input
-                  type="email"
-                  placeholder="your@email.com"
                   disabled={isSubmitting}
+                  placeholder="your@email.com"
+                  type="email"
                   {...field}
                 />
               </FormControl>
@@ -251,11 +251,11 @@ export function SignUpForm({
           action="/sign-up/email"
         /> */}
         <SpinnerButton
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full text-md"
-          isLoading={isSubmitting}
           buttonState={isSubmitting ? 'loading' : 'idle'}
+          className="w-full text-md"
+          disabled={isSubmitting}
+          isLoading={isSubmitting}
+          type="submit"
         >
           Sign up
         </SpinnerButton>

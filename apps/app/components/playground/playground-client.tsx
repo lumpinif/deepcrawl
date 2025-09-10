@@ -285,26 +285,26 @@ export function PlaygroundClient() {
 
   return (
     <div className="min-h-[calc(100svh-theme(spacing.80))] space-y-6 pb-10">
-      <Label htmlFor="url" className="text-muted-foreground">
+      <Label className="text-muted-foreground" htmlFor="url">
         Choose a feature
       </Label>
 
       <div className="grid gap-3 lg:grid-cols-3">
         {DeepcrawlFeatures.map((feat) => (
           <Card
-            key={feat.operation}
-            onClick={() => setSelectedOperation(feat.operation)}
-            onMouseEnter={() => setHoveredOption(feat.operation)}
-            onMouseLeave={() => setHoveredOption(null)}
             className={cn(
               'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-muted/50 hover:shadow-md',
               selectedOP?.operation === feat.operation && 'bg-muted/50',
             )}
+            key={feat.operation}
+            onClick={() => setSelectedOperation(feat.operation)}
+            onMouseEnter={() => setHoveredOption(feat.operation)}
+            onMouseLeave={() => setHoveredOption(null)}
           >
             <div className="absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100">
               <Badge
-                variant="outline"
                 className="text-muted-foreground text-xs"
+                variant="outline"
               >
                 {feat.method} {feat.endpoint}
               </Badge>
@@ -312,11 +312,11 @@ export function PlaygroundClient() {
 
             <div className="flex items-center justify-center">
               <feat.icon
-                cellClassName="size-[3px]"
                 animate={
                   hoveredOption === feat.operation ||
                   Boolean(isLoading[feat.operation])
                 }
+                cellClassName="size-[3px]"
               />
             </div>
             <CardContent className="space-y-2 text-center">
@@ -332,23 +332,13 @@ export function PlaygroundClient() {
       </div>
 
       {/* Options Panel */}
-      <Accordion type="single" collapsible>
+      <Accordion collapsible type="single">
         <AccordionItem value="options">
           <AccordionTrigger className="text-muted-foreground">
             Options for {selectedOP?.label}
           </AccordionTrigger>
           <AccordionContent>
             <OptionsPanel
-              selectedOperation={selectedOperation}
-              options={
-                selectedOperation === 'readUrl'
-                  ? { ...readOptions, url: requestUrl }
-                  : selectedOperation === 'extractLinks'
-                    ? { ...linksOptions, url: requestUrl }
-                    : selectedOperation === 'getMarkdown'
-                      ? { ...getMarkdownOptions, url: requestUrl }
-                      : { url: requestUrl }
-              }
               onOptionsChange={(newOptions) => {
                 if (selectedOperation === 'readUrl') {
                   setReadOptions(newOptions as ReadUrlOptions);
@@ -358,12 +348,22 @@ export function PlaygroundClient() {
                   setGetMarkdownOptions(newOptions as GetMarkdownOptions);
                 }
               }}
+              options={
+                selectedOperation === 'readUrl'
+                  ? { ...readOptions, url: requestUrl }
+                  : selectedOperation === 'extractLinks'
+                    ? { ...linksOptions, url: requestUrl }
+                    : selectedOperation === 'getMarkdown'
+                      ? { ...getMarkdownOptions, url: requestUrl }
+                      : { url: requestUrl }
+              }
+              selectedOperation={selectedOperation}
             />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
-      <Label htmlFor="url" className="text-muted-foreground">
+      <Label className="text-muted-foreground" htmlFor="url">
         Enter target URL
       </Label>
       <div className="flex w-full items-center justify-between gap-4 rounded-xl border bg-card p-4 shadow-sm">
@@ -374,14 +374,13 @@ export function PlaygroundClient() {
             onMouseLeave={() => linkIconRef.current?.stopAnimation()}
           >
             <LinkIcon
+              className="-translate-y-1/2 absolute top-1/2 left-3 text-muted-foreground"
               ref={linkIconRef}
               size={16}
-              className="-translate-y-1/2 absolute top-1/2 left-3 text-muted-foreground"
             />
             <Input
+              className="!bg-transparent border-none pl-10 font-mono shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent"
               id="url"
-              value={requestUrl}
-              placeholder="https://hono.dev"
               onChange={(e) => setRequestUrl(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -392,7 +391,8 @@ export function PlaygroundClient() {
                   );
                 }
               }}
-              className="!bg-transparent border-none pl-10 font-mono shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent"
+              placeholder="https://hono.dev"
+              value={requestUrl}
             />
           </div>
         </div>
@@ -400,13 +400,13 @@ export function PlaygroundClient() {
         <SpinnerButton
           className="w-32"
           disabled={!requestUrl}
+          isLoading={isLoading[selectedOP?.operation || '']}
           onClick={() =>
             executeApiCall(
               selectedOP?.operation as DeepcrawlOperations,
               selectedOP?.label || '',
             )
           }
-          isLoading={isLoading[selectedOP?.operation || '']}
         >
           {selectedOP?.label}
         </SpinnerButton>
@@ -415,7 +415,7 @@ export function PlaygroundClient() {
       {/* Results Section */}
       {responses[selectedOP?.operation || ''] && (
         <>
-          <Label htmlFor="url" className="text-muted-foreground">
+          <Label className="text-muted-foreground" htmlFor="url">
             Results
           </Label>
           <div>
@@ -425,16 +425,16 @@ export function PlaygroundClient() {
 
               return (
                 <PGResponseArea
-                  response={response}
-                  operation={selectedOP?.operation as DeepcrawlOperations}
-                  operationLabel={selectedOP?.label || ''}
-                  operationMethod={selectedOP?.method || ''}
+                  formatTime={formatTime}
                   onRetry={() => {
                     const operation =
                       selectedOP?.operation as DeepcrawlOperations;
                     handleRetry(operation, selectedOP?.label || '');
                   }}
-                  formatTime={formatTime}
+                  operation={selectedOP?.operation as DeepcrawlOperations}
+                  operationLabel={selectedOP?.label || ''}
+                  operationMethod={selectedOP?.method || ''}
+                  response={response}
                 />
               );
             })()}

@@ -17,9 +17,9 @@ export function QueryProviders({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       {children}
       <Toaster
+        className="flex items-center justify-center"
         offset={{ top: -7 }}
         position="top-center"
-        className="flex items-center justify-center"
       />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
