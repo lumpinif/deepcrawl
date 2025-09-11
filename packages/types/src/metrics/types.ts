@@ -31,3 +31,5 @@ export const MetricsSchema = z
       },
     ],
   });
+
+export type Metrics = z.infer<typeof MetricsSchema>;
