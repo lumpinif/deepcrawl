@@ -20,6 +20,8 @@ export const MetricsOptionsSchema = z
     examples: [DEFAULT_METRICS_OPTIONS],
   });
 
+export type MetricsOptions = z.infer<typeof MetricsOptionsSchema>;
+
 export const MetricsSchema = z
   .object({
     readableDuration: z.string().meta({
