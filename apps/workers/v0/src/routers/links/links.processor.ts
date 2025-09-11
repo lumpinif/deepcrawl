@@ -20,11 +20,11 @@ import type { ExtractedLinks } from '@deepcrawl/types/services/link';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 import type { ORPCContext } from '@/lib/context';
 import { type _linksSets, LinkService } from '@/services/link/link.service';
-import { formatDuration } from '@/utils/formater';
 import { getLinksNonTreeCacheKey } from '@/utils/kv/links-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
+import { getMetrics } from '@/utils/metrics';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
 
@@ -113,6 +113,7 @@ async function processNonTreeRequest({
     cacheOptions,
     isPlatformUrl: isPlatformUrlProp,
     subdomainAsRootUrl,
+    metricsOptions,
   } = params;
 
   // Use app-level scrape service from context
@@ -217,10 +218,6 @@ async function processNonTreeRequest({
       };
     }
 
-    // Calculate execution time
-    const executionTimeMs = performance.now() - startTime;
-    const executionTime = formatDuration(executionTimeMs);
-
     // Build response for non-tree case - content fields are at response root level
     const response: LinksSuccessResponseWithoutTree = {
       success: true,
@@ -244,6 +241,11 @@ async function processNonTreeRequest({
     }
     if (isCleanedHtml && targetScrapeResult?.cleanedHtml) {
       response.cleanedHtml = targetScrapeResult.cleanedHtml;
+    }
+
+    if (metricsOptions?.enable) {
+      const metrics = getMetrics(startTime, performance.now());
+      response.metrics = metrics;
     }
 
     const finalResponse = cleanEmptyValues(
@@ -339,6 +341,7 @@ export async function processLinksRequest(
     cacheOptions,
     linkExtractionOptions,
     isPlatformUrl: isPlatformUrlProp,
+    metricsOptions,
   } = params;
 
   logDebug(
@@ -919,15 +922,6 @@ export async function processLinksRequest(
       finalTree.skippedUrls = categorizedSkippedUrls;
     }
 
-    // Calculate execution time
-    const executionTimeMs = performance.now() - startTime;
-    const executionTime = formatDuration(executionTimeMs);
-
-    // add executionTime to finalTree's root node
-    // if (finalTree) {
-    //   finalTree.executionTime = executionTime;
-    // }
-
     // Build response using discriminated union pattern
     if (withTree && finalTree) {
       // Response with tree - content fields are in tree root, not response root
@@ -977,6 +971,11 @@ export async function processLinksRequest(
 
     if (!linksPostResponse) {
       throw new Error('Failed to process links request');
+    }
+
+    if (metricsOptions?.enable) {
+      const metrics = getMetrics(startTime, performance.now());
+      linksPostResponse.metrics = metrics;
     }
 
     return linksPostResponse as LinksSuccessResponse;
