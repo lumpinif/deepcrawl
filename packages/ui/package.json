@@ -60,7 +60,7 @@
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19",
     "eslint": "^9.31.0",
-    "eslint-config-next": "^15.3.5",
+    "eslint-config-next": "^15.5.3",
     "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.1.7"
   },

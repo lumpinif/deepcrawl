@@ -207,7 +207,7 @@ importers:
         specifier: ^12.23.3
         version: 12.23.12(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       next:
-        specifier: ^15.5.2
+        specifier: ^15.5.3
         version: 15.5.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       next-themes:
         specifier: ^0.4.6
@@ -286,7 +286,7 @@ importers:
         specifier: ^9.31.0
         version: 9.35.0(jiti@2.5.1)
       eslint-config-next:
-        specifier: ^15.3.5
+        specifier: ^15.5.3
         version: 15.5.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2)
       prettier:
         specifier: ^3.6.2
@@ -746,7 +746,7 @@ importers:
         specifier: ^9.31.0
         version: 9.35.0(jiti@2.5.1)
       eslint-config-next:
-        specifier: ^15.3.5
+        specifier: ^15.5.3
         version: 15.5.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2)
       tailwind-scrollbar:
         specifier: ^4.0.2
