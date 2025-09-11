@@ -9,10 +9,10 @@ export async function getReadCacheKey(
   params: ReadOptions,
   isStringResponse: boolean,
 ): Promise<string> {
-  const { url } = params;
+  const { url, metricsOptions: _mO, ...rest } = params;
 
-  // Generate hash of all options
-  const optionsHash = await sha256Hash(stableStringify(params));
+  // Generate hash of all options except for metricsOptions
+  const optionsHash = await sha256Hash(stableStringify({ url, ...rest }));
 
   // Prefix includes handler type
   const handlerType = isStringResponse ? 'GET' : 'POST';

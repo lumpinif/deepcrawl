@@ -197,6 +197,9 @@ export async function processReadRequest(
           if (metricsOptions?.enable) {
             const metrics = getMetrics(startTime, performance.now());
             parsedResponse.metrics = metrics;
+          } else {
+            // set metrics to undefined if metrics are not enabled
+            parsedResponse.metrics = undefined;
           }
 
           return parsedResponse;
@@ -269,8 +272,6 @@ export async function processReadRequest(
     //     cleanedHtml || undefined
     //   : undefined;
 
-    const endRequestTime = performance.now();
-
     readResponse = cleanEmptyValues<ReadSuccessResponse>({
       success: true,
       cached: isReadCacheFresh,
@@ -278,9 +279,6 @@ export async function processReadRequest(
       title,
       description,
       metadata,
-      metrics: metricsOptions?.enable
-        ? getMetrics(startTime, endRequestTime)
-        : undefined,
       markdown,
       cleanedHtml: isCleanedHtml ? cleanedHtml : undefined,
       rawHtml: isRawHtml ? rawHtml : undefined,
@@ -340,6 +338,13 @@ export async function processReadRequest(
 
       // Generate informative default markdown when no content is extracted
       return getDefaultMarkdown(title, targetUrl, description);
+    }
+
+    if (metricsOptions?.enable) {
+      readResponse.metrics = getMetrics(startTime, performance.now());
+    } else {
+      // set metrics to undefined if metrics are not enabled
+      readResponse.metrics = undefined;
     }
 
     return readResponse as ReadSuccessResponse;
