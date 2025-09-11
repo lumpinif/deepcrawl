@@ -16,7 +16,37 @@ const {
 } = DEFAULT_MARKDOWN_CONVERTER_OPTIONS;
 
 /**
- * Schema for markdown converter options that control HTML to Markdown conversion
+ * Schema for markdown converter options that control HTML to Markdown conversion.
+ * Defines validation rules for configuring how HTML is converted to Markdown format.
+ *
+ * @property {boolean} [preferNativeParser] - Use native window DOMParser when available
+ * @property {string} [codeFence] - Characters used to wrap code blocks
+ * @property {string} [bulletMarker] - Character used for unordered list items
+ * @property {'indented' | 'fenced'} [codeBlockStyle] - Style for code blocks
+ * @property {string} [emDelimiter] - Characters used to wrap emphasized text
+ * @property {string} [strongDelimiter] - Characters used to wrap strong text
+ * @property {string} [strikeDelimiter] - Characters used to wrap strikethrough text
+ * @property {string[]} [ignore] - HTML elements to completely ignore
+ * @property {string[]} [blockElements] - HTML elements to treat as block elements
+ * @property {number} [maxConsecutiveNewlines] - Maximum consecutive newlines to preserve
+ * @property {[RegExp, string]} [lineStartEscape] - Pattern for escaping special characters at line start
+ * @property {[RegExp, string]} [globalEscape] - Pattern for escaping special characters globally
+ * @property {Array<[RegExp, string]>} [textReplace] - Custom text transformation patterns
+ * @property {boolean} [keepDataImages] - Whether to preserve data URI images
+ * @property {boolean} [useLinkReferenceDefinitions] - Use reference definitions for links
+ * @property {boolean} [useInlineLinks] - Wrap URL text in angle brackets
+ *
+ * @example
+ * ```typescript
+ * const options: MarkdownConverterOptions = {
+ *   preferNativeParser: false,
+ *   codeFence: '```',
+ *   bulletMarker: '*',
+ *   codeBlockStyle: 'fenced',
+ *   maxConsecutiveNewlines: 3,
+ *   keepDataImages: false
+ * };
+ * ```
  */
 export const MarkdownConverterOptionsSchema = z
   .object({
@@ -281,19 +311,37 @@ export const MarkdownConverterOptionsSchema = z
   });
 
 /**
- * Options for controlling HTML to Markdown conversion.
+ * Type representing options for controlling HTML to Markdown conversion.
+ * Configuration for how HTML elements are converted to their Markdown equivalents.
  *
- * @property preferNativeParser - Use native window DOMParser when available instead of fallback parser.
- * @property codeFence - Characters used to wrap code blocks (e.g., "```" or "~~~").
- * @property bulletMarker - Character used for unordered list items (e.g., "*", "-", "+").
- * @property codeBlockStyle - Style for code blocks: "indented" or "fenced".
- * @property emDelimiter - Delimiter for emphasis (e.g., "*", "_").
- * @property strongDelimiter - Delimiter for strong emphasis (e.g., "**", "__").
- * @property strikeDelimiter - Delimiter for strikethrough (e.g., "~~").
- * @property maxConsecutiveNewlines - Maximum number of consecutive newlines allowed.
- * @property keepDataImages - Whether to preserve images with data: URIs.
- * @property useLinkReferenceDefinitions - Format links using reference definitions at the bottom instead of inline.
- * @property useInlineLinks - Wrap URL text in "<>" instead of "[]()" syntax when text matches URL.
+ * @property {boolean} [preferNativeParser] - Use native window DOMParser when available
+ * @property {string} [codeFence] - Characters used to wrap code blocks
+ * @property {string} [bulletMarker] - Character used for unordered list items
+ * @property {'indented' | 'fenced'} [codeBlockStyle] - Style for code blocks
+ * @property {string} [emDelimiter] - Characters used to wrap emphasized text
+ * @property {string} [strongDelimiter] - Characters used to wrap strong text
+ * @property {string} [strikeDelimiter] - Characters used to wrap strikethrough text
+ * @property {string[]} [ignore] - HTML elements to completely ignore
+ * @property {string[]} [blockElements] - HTML elements to treat as block elements
+ * @property {number} [maxConsecutiveNewlines] - Maximum consecutive newlines to preserve
+ * @property {[RegExp, string]} [lineStartEscape] - Pattern for escaping special characters at line start
+ * @property {[RegExp, string]} [globalEscape] - Pattern for escaping special characters globally
+ * @property {Array<[RegExp, string]>} [textReplace] - Custom text transformation patterns
+ * @property {boolean} [keepDataImages] - Whether to preserve data URI images
+ * @property {boolean} [useLinkReferenceDefinitions] - Use reference definitions for links
+ * @property {boolean} [useInlineLinks] - Wrap URL text in angle brackets
+ *
+ * @example
+ * ```typescript
+ * const options: MarkdownConverterOptions = {
+ *   preferNativeParser: false,
+ *   codeFence: '```',
+ *   bulletMarker: '*',
+ *   codeBlockStyle: 'fenced',
+ *   maxConsecutiveNewlines: 3,
+ *   keepDataImages: false
+ * };
+ * ```
  */
 export type MarkdownConverterOptions = z.infer<
   typeof MarkdownConverterOptionsSchema

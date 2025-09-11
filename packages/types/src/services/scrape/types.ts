@@ -17,6 +17,21 @@ import {
 } from '@deepcrawl/types/services/metadata/types';
 import { z } from 'zod/v4';
 
+/**
+ * Schema for meta files (robots.txt, sitemap.xml) extracted from a website.
+ * Contains the raw content of these important SEO and crawling directive files.
+ *
+ * @property {string} [robots] - Content of the robots.txt file
+ * @property {string} [sitemapXML] - Content of the sitemap.xml file
+ *
+ * @example
+ * ```typescript
+ * const metaFiles: MetaFiles = {
+ *   robots: "User-agent: *\nDisallow: /private/",
+ *   sitemapXML: "<?xml version=\"1.0\"?><urlset>...</urlset>"
+ * };
+ * ```
+ */
 export const MetaFilesSchema = z
   .object({
     robots: z
@@ -50,10 +65,11 @@ export const MetaFilesSchema = z
   });
 
 /**
- * Contains robots.txt and sitemap.xml content.
+ * Type representing meta files (robots.txt, sitemap.xml) extracted from a website.
+ * Contains the raw content of these important SEO and crawling directive files.
  *
- * @property robots - Content of the robots.txt file
- * @property sitemapXML - Content of the sitemap.xml file
+ * @property {string} [robots] - Content of the robots.txt file
+ * @property {string} [sitemapXML] - Content of the sitemap.xml file
  *
  * @example
  * ```typescript
@@ -68,6 +84,30 @@ export type MetaFiles = z.infer<typeof MetaFilesSchema>;
 /**
  * Schema for scraped data from a webpage.
  * Defines the structure for all content extracted from a webpage.
+ *
+ * @property {string} title - Title of the webpage
+ * @property {string} rawHtml - Original unmodified HTML content
+ * @property {string} [description] - Meta description of the webpage
+ * @property {PageMetadata} [metadata] - Extracted metadata from the page
+ * @property {string} [cleanedHtml] - Sanitized HTML with unnecessary elements removed
+ * @property {MetaFiles} [metaFiles] - Meta files like robots.txt and sitemap.xml
+ *
+ * @example
+ * ```typescript
+ * const scrapedData: ScrapedData = {
+ *   title: "Example Website - Home Page",
+ *   rawHtml: "<html><head><title>Example Website</title></head></html>",
+ *   description: "This is an example website",
+ *   metadata: {
+ *     title: "Example Website",
+ *     description: "Example description"
+ *   },
+ *   cleanedHtml: "<div><h1>Example Website</h1></div>",
+ *   metaFiles: {
+ *     robots: "User-agent: *\nAllow: /"
+ *   }
+ * };
+ * ```
  */
 export const ScrapedDataSchema = z
   .object({
@@ -136,34 +176,29 @@ export const ScrapedDataSchema = z
   });
 
 /**
- * Represents data scraped from a webpage.
+ * Type representing data scraped from a webpage.
  * Contains various extracted elements and metadata from the target page.
  *
- * @interface ScrapedData
- *
- * @property title - The title of the webpage extracted from the title tag
- * @property rawHTML - The original unmodified HTML content of the webpage
- * @property description - The meta description of the webpage
- * @property metadata - Optional structured metadata extracted from the page (OpenGraph, Twitter Cards, etc.)
- * @property cleanedHtml - Optional sanitized version of the HTML with unnecessary elements removed
- * @property metaFiles - Optional metadata files like robots.txt and sitemap.xml
+ * @property {string} title - Title of the webpage extracted from the title tag
+ * @property {string} rawHtml - Original unmodified HTML content of the webpage
+ * @property {string} [description] - Meta description of the webpage
+ * @property {PageMetadata} [metadata] - Optional structured metadata extracted from the page
+ * @property {string} [cleanedHtml] - Optional sanitized HTML with unnecessary elements removed
+ * @property {MetaFiles} [metaFiles] - Optional meta files like robots.txt and sitemap.xml
  *
  * @example
  * ```typescript
  * const scrapedData: ScrapedData = {
  *   title: "Example Website - Home Page",
- *   rawHTML: "<html><head><title>Example Website - Home Page</title></head><body>...</body></html>",
- *   description: "This is an example website demonstrating web scraping capabilities.",
+ *   rawHtml: "<html><head><title>Example Website</title></head></html>",
+ *   description: "This is an example website",
  *   metadata: {
- *     title: "Example Website - Home Page",
- *     description: "This is an example website demonstrating web scraping capabilities.",
- *     ogTitle: "Example Website",
- *     // other metadata properties
+ *     title: "Example Website",
+ *     description: "Example description"
  *   },
- *   cleanedHtml: "<div><h1>Example Website</h1><p>Main content...</p></div>",
+ *   cleanedHtml: "<div><h1>Example Website</h1></div>",
  *   metaFiles: {
- *     robots: "User-agent: *\nDisallow: /admin/",
- *     sitemap: "<?xml version=\"1.0\"?><urlset>...</urlset>"
+ *     robots: "User-agent: *\nDisallow: /admin/"
  *   }
  * };
  * ```
@@ -171,90 +206,60 @@ export const ScrapedDataSchema = z
 export type ScrapedData = z.infer<typeof ScrapedDataSchema>;
 
 /**
- * Simple schema for safe HTTP headers.
- * Just explicitly define what's allowed - no complex validation.
+ * Schema for safe HTTP headers used in web scraping requests.
+ * Defines only secure and relevant headers for scraping operations.
+ *
+ * @property {string} [User-Agent] - User agent string for the request
+ * @property {string} [Accept] - Media types acceptable for the response
+ * @property {string} [Accept-Language] - Preferred languages for the response
+ * @property {string} [Accept-Encoding] - Acceptable encodings for the response
+ * @property {string} [Referer] - Previous page URL
+ * @property {string} [Cookie] - Cookies to send with the request
+ * @property {string} [DNT] - Do Not Track preference
+ * @property {string} [Upgrade-Insecure-Requests] - Request for secure connection upgrade
+ * @property {string} [Cache-Control] - Caching directives
+ * @property {string} [Pragma] - Implementation-specific header for caching
+ * @property {string} [If-Modified-Since] - Conditional request based on modification date
+ * @property {string} [If-None-Match] - Conditional request based on ETag
+ * @property {string} [Priority] - Request priority indication
+ * @property {string} [Sec-CH-UA] - Client hints about user agent capabilities
+ * @property {string} [Sec-CH-UA-Mobile] - Mobile device indication
+ * @property {string} [Sec-CH-UA-Platform] - Platform/OS indication
+ * @property {string} [Sec-Fetch-Site] - Request origin security context
+ * @property {string} [Sec-Fetch-Mode] - Request mode indication
+ * @property {string} [Sec-Fetch-Dest] - Request destination indication
+ * @property {string} [Sec-Fetch-User] - User-initiated request indication
+ *
+ * @example
+ * ```typescript
+ * const headers: SafeHeaders = {
+ *   'User-Agent': 'MyBot/1.0',
+ *   'Accept': 'text/html,application/xhtml+xml',
+ *   'Accept-Language': 'en-US,en;q=0.9'
+ * };
+ * ```
  */
 export const SafeHeadersSchema = z
   .object({
-    /**
-     * The user agent string to send with the request.
-     */
     'User-Agent': z.string().optional(),
-    /**
-     * The media types that are acceptable for the response.
-     */
     Accept: z.string().optional(),
-    /**
-     * Preferred languages for the response.
-     */
     'Accept-Language': z.string().optional(),
-    /**
-     * List of acceptable encodings for the response.
-     */
     'Accept-Encoding': z.string().optional(),
-    /**
-     * The address of the previous web page from which a link to the currently requested page was followed.
-     */
     Referer: z.string().optional(),
-    /**
-     * Cookies to send with the request.
-     */
     Cookie: z.string().optional(),
-    /**
-     * Do Not Track preference.
-     */
     DNT: z.string().optional(),
-    /**
-     * Requests a secure connection upgrade.
-     */
     'Upgrade-Insecure-Requests': z.string().optional(),
-    /**
-     * Directives for caching mechanisms in both requests and responses.
-     */
     'Cache-Control': z.string().optional(),
-    /**
-     * Implementation-specific header that may have various effects on caching.
-     */
     Pragma: z.string().optional(),
-    /**
-     * Makes the request conditional: only send the response if the resource has been modified since the given date.
-     */
     'If-Modified-Since': z.string().optional(),
-    /**
-     * Makes the request conditional: only send the response if the resource's ETag does not match any listed.
-     */
     'If-None-Match': z.string().optional(),
-    /**
-     * Indicates the priority for the request.
-     */
     Priority: z.string().optional(),
-    /**
-     * Contains client hints about device and user agent capabilities.
-     */
     'Sec-CH-UA': z.string().optional(),
-    /**
-     * Indicates whether the user agent is a mobile device.
-     */
     'Sec-CH-UA-Mobile': z.string().optional(),
-    /**
-     * Indicates the platform/operating system.
-     */
     'Sec-CH-UA-Platform': z.string().optional(),
-    /**
-     * Indicates the request is from a browser in a secure context.
-     */
     'Sec-Fetch-Site': z.string().optional(),
-    /**
-     * Indicates the request's mode.
-     */
     'Sec-Fetch-Mode': z.string().optional(),
-    /**
-     * Indicates the request's destination.
-     */
     'Sec-Fetch-Dest': z.string().optional(),
-    /**
-     * Indicates whether the request is a user-initiated request.
-     */
     'Sec-Fetch-User': z.string().optional(),
   })
   .partial()
@@ -271,17 +276,64 @@ export const SafeHeadersSchema = z
   });
 
 /**
- * Type for safe HTTP headers in scraping requests.
+ * Type representing safe HTTP headers for web scraping requests.
+ * Contains only secure and relevant headers for scraping operations.
+ *
+ * @property {string} [User-Agent] - User agent string for the request
+ * @property {string} [Accept] - Media types acceptable for the response
+ * @property {string} [Accept-Language] - Preferred languages for the response
+ * @property {string} [Accept-Encoding] - Acceptable encodings for the response
+ * @property {string} [Referer] - Previous page URL
+ * @property {string} [Cookie] - Cookies to send with the request
+ * @property {string} [DNT] - Do Not Track preference
+ * @property {string} [Upgrade-Insecure-Requests] - Request for secure connection upgrade
+ * @property {string} [Cache-Control] - Caching directives
+ * @property {string} [Pragma] - Implementation-specific header for caching
+ * @property {string} [If-Modified-Since] - Conditional request based on modification date
+ * @property {string} [If-None-Match] - Conditional request based on ETag
+ * @property {string} [Priority] - Request priority indication
+ * @property {string} [Sec-CH-UA] - Client hints about user agent capabilities
+ * @property {string} [Sec-CH-UA-Mobile] - Mobile device indication
+ * @property {string} [Sec-CH-UA-Platform] - Platform/OS indication
+ * @property {string} [Sec-Fetch-Site] - Request origin security context
+ * @property {string} [Sec-Fetch-Mode] - Request mode indication
+ * @property {string} [Sec-Fetch-Dest] - Request destination indication
+ * @property {string} [Sec-Fetch-User] - User-initiated request indication
+ *
+ * @example
+ * ```typescript
+ * const headers: SafeHeaders = {
+ *   'User-Agent': 'MyBot/1.0',
+ *   'Accept': 'text/html,application/xhtml+xml',
+ *   'Accept-Language': 'en-US,en;q=0.9'
+ * };
+ * ```
  */
 export type SafeHeaders = z.infer<typeof SafeHeadersSchema>;
 
 /**
- * Safe schema for fetch request options specifically designed for web scraping.
+ * Schema for fetch request options specifically designed for web scraping.
  * Only includes options that are secure and relevant for scraping operations.
+ *
+ * @property {'GET' | 'HEAD'} [method] - HTTP request method (restricted to safe methods)
+ * @property {SafeHeaders} [headers] - HTTP headers for the request (filtered for security)
+ * @property {'follow' | 'error' | 'manual'} [redirect] - How to handle redirects
+ * @property {AbortSignal} [signal] - Signal for aborting the request (useful for timeouts)
+ *
+ * @example
+ * ```typescript
+ * const options: FetchOptions = {
+ *   method: 'GET',
+ *   headers: {
+ *     'User-Agent': 'MyBot/1.0',
+ *     'Accept': 'text/html'
+ *   },
+ *   redirect: 'follow'
+ * };
+ * ```
  */
 export const FetchOptionsSchema = z
   .object({
-    /** HTTP request method - restricted to safe methods for scraping */
     method: z
       .enum(['GET', 'HEAD'])
       .optional()
@@ -290,13 +342,9 @@ export const FetchOptionsSchema = z
           'HTTP request method (only GET and HEAD allowed for scraping)',
         examples: ['GET', 'HEAD'],
       }),
-
-    /** Safe request headers for scraping */
     headers: SafeHeadersSchema.optional().meta({
       description: 'HTTP headers for the request (filtered for security)',
     }),
-
-    /** The redirect mode to use: follow, error, or manual. The default for a new Request object is follow. Note, however, that the incoming Request property of a FetchEvent will have redirect mode manual. */
     redirect: z
       .enum(['follow', 'error', 'manual'])
       .optional()
@@ -304,8 +352,6 @@ export const FetchOptionsSchema = z
         description: 'How to handle redirects',
         examples: ['follow', 'error', 'manual'],
       }),
-
-    /** AbortSignal for request cancellation */
     signal: z.instanceof(AbortSignal).nullable().optional().meta({
       description: 'Signal for aborting the request (useful for timeouts)',
     }),
@@ -329,75 +375,86 @@ export const FetchOptionsSchema = z
   });
 
 /**
- * Type for safe fetch request options specifically designed for web scraping.
- * Only includes options that are secure and relevant for scraping operations.
+ * Type representing fetch request options for web scraping operations.
+ * Only includes options that are secure and relevant for scraping.
+ *
+ * @property {'GET' | 'HEAD'} [method] - HTTP request method (restricted to safe methods)
+ * @property {SafeHeaders} [headers] - HTTP headers for the request (filtered for security)
+ * @property {'follow' | 'error' | 'manual'} [redirect] - How to handle redirects
+ * @property {AbortSignal} [signal] - Signal for aborting the request (useful for timeouts)
+ *
+ * @example
+ * ```typescript
+ * const options: FetchOptions = {
+ *   method: 'GET',
+ *   headers: {
+ *     'User-Agent': 'MyBot/1.0',
+ *     'Accept': 'text/html'
+ *   },
+ *   redirect: 'follow'
+ * };
+ * ```
  */
 export type FetchOptions = z.infer<typeof FetchOptionsSchema>;
 
 const { metadata, cleanedHtml, robots, sitemapXML, cleaningProcessor } =
   DEFAULT_SCRAPE_OPTIONS;
 /**
- * Options for scraping operation.
- * Controls how the scraping operation is performed.
+ * Schema for scraping operation configuration options.
+ * Controls how the scraping operation is performed and what data is extracted.
+ *
+ * @property {boolean} [metadata] - Whether to extract metadata from the page
+ * @property {boolean} [cleanedHtml] - Whether to return cleaned HTML
+ * @property {boolean} [robots] - Whether to fetch and parse robots.txt
+ * @property {boolean} [sitemapXML] - Whether to fetch and parse sitemap.xml (experimental)
+ * @property {MetadataOptions} [metadataOptions] - Options for metadata extraction
+ * @property {'cheerio-reader' | 'html-rewriter'} [cleaningProcessor] - The cleaning processor to use
+ * @property {HTMLRewriterOptions} [htmlRewriterOptions] - Options for HTML cleaning with html-rewriter
+ * @property {ReaderCleaningOptions} [readerCleaningOptions] - Options for HTML cleaning with cheerio-reader
+ * @property {FetchOptions} [fetchOptions] - Options for the fetch request
+ *
+ * @example
+ * ```typescript
+ * const options: ScrapeOptions = {
+ *   metadata: true,
+ *   cleanedHtml: true,
+ *   robots: false,
+ *   cleaningProcessor: 'cheerio-reader',
+ *   fetchOptions: {
+ *     method: 'GET',
+ *     headers: { 'User-Agent': 'MyBot/1.0' }
+ *   }
+ * };
+ * ```
  */
 export const ScrapeOptionsSchema = z
   .object({
-    /**
-     * Whether to extract metadata from the page.
-     * Default: true
-     */
     metadata: smartboolOptionalWithDefault(metadata).meta({
       description: 'Whether to extract metadata from the page.',
       default: metadata,
       examples: [metadata, !metadata],
     }),
-
-    /**
-     * Whether to return cleaned HTML.
-     * Default: false
-     */
     cleanedHtml: smartboolOptionalWithDefault(cleanedHtml).meta({
       description: 'Whether to return cleaned HTML.',
       default: cleanedHtml,
       examples: [cleanedHtml, !cleanedHtml],
     }),
-
-    /**
-     * Whether to fetch and parse robots.txt.
-     * Default: false
-     */
     robots: smartboolOptionalWithDefault(robots).meta({
       description: 'Whether to fetch and parse robots.txt.',
       default: robots,
       examples: [robots, !robots],
     }),
-
-    /**
-     * Whether to fetch and parse sitemap.xml.
-     * Default: false
-     */
     sitemapXML: smartboolOptionalWithDefault(sitemapXML).meta({
       description:
         '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
       default: sitemapXML,
       examples: [sitemapXML, !sitemapXML],
     }),
-
-    /**
-     * Options for metadata extraction.
-     * Controls how metadata like title, description, etc. are extracted.
-     */
     metadataOptions: MetadataOptionsSchema.optional().meta({
       description: 'Options for metadata extraction.',
       default: DEFAULT_METADATA_OPTIONS,
       examples: [DEFAULT_METADATA_OPTIONS],
     }),
-
-    /**
-     * The cleaning processor to use.
-     * @note cheerio-reader is the default in `scrape.service.ts` and recommended cleaning processor, but html-rewriter is used for github.com urls.
-     * Default: 'cheerio-reader'
-     */
     cleaningProcessor: z
       .enum(['cheerio-reader', 'html-rewriter'])
       .default(cleaningProcessor)
@@ -407,23 +464,11 @@ export const ScrapeOptionsSchema = z
         description: 'The cleaning processor to use.',
         examples: ['cheerio-reader', 'html-rewriter'],
       }),
-
-    /**
-     * @note only applied when cleaning processor is 'html-rewriter'
-     * Options for HTML cleaning with html-rewriter.
-     * Controls how HTML is sanitized and cleaned.
-     */
     htmlRewriterOptions: HTMLRewriterOptionsSchema.optional().meta({
       description: 'Options for HTML cleaning with html-rewriter.',
       default: DEFAULT_HTML_REWRITER_OPTIONS,
       examples: [DEFAULT_HTML_REWRITER_OPTIONS],
     }),
-
-    /**
-     * @note only applied when cleaning processor is 'cheerio-reader'
-     * Options for HTML cleaning with cheerio-reader.
-     * Controls how HTML is sanitized and cleaned.
-     */
     readerCleaningOptions: ReaderCleaningOptionsSchema.optional().meta({
       description: 'Options for HTML cleaning with cheerio-reader.',
       default: DEFAULT_READER_CLEANING_OPTIONS,
@@ -437,10 +482,6 @@ export const ScrapeOptionsSchema = z
         },
       ],
     }),
-
-    /**
-     * Options for the fetch request.
-     */
     fetchOptions: FetchOptionsSchema.optional().meta({
       description: 'Options for the fetch request.',
       default: DEFAULT_FETCH_OPTIONS,
@@ -484,13 +525,58 @@ export const ScrapeOptionsSchema = z
   });
 
 /**
- * @note types from `ScrapeOptions` are partial for convenience.
- * Options for scraping operation.
- * Controls how the scraping operation is performed.
+ * Type representing scraping operation configuration options.
+ * Controls how the scraping operation is performed and what data is extracted.
+ * All options are optional and have sensible defaults.
+ *
+ * @property {boolean} [metadata] - Whether to extract metadata from the page
+ * @property {boolean} [cleanedHtml] - Whether to return cleaned HTML
+ * @property {boolean} [robots] - Whether to fetch and parse robots.txt
+ * @property {boolean} [sitemapXML] - Whether to fetch and parse sitemap.xml (experimental)
+ * @property {MetadataOptions} [metadataOptions] - Options for metadata extraction
+ * @property {'cheerio-reader' | 'html-rewriter'} [cleaningProcessor] - The cleaning processor to use
+ * @property {HTMLRewriterOptions} [htmlRewriterOptions] - Options for HTML cleaning with html-rewriter
+ * @property {ReaderCleaningOptions} [readerCleaningOptions] - Options for HTML cleaning with cheerio-reader
+ * @property {FetchOptions} [fetchOptions] - Options for the fetch request
+ *
+ * @example
+ * ```typescript
+ * const options: ScrapeOptions = {
+ *   metadata: true,
+ *   cleanedHtml: true,
+ *   robots: false,
+ *   cleaningProcessor: 'cheerio-reader',
+ *   fetchOptions: {
+ *     method: 'GET',
+ *     headers: { 'User-Agent': 'MyBot/1.0' }
+ *   }
+ * };
+ * ```
  */
 export type ScrapeOptions = z.infer<typeof ScrapeOptionsSchema>;
 
 /**
- * Input type for ScrapeOptions - accepts both string and boolean for metadata, cleanedHtml, robots, sitemapXML fields
+ * Input type for ScrapeOptions that accepts both string and boolean values for smart boolean fields.
+ * This type allows for flexible input where boolean options can be provided as strings ('true'/'false') or booleans.
+ *
+ * @property {boolean | string} [metadata] - Whether to extract metadata (accepts 'true'/'false' or boolean)
+ * @property {boolean | string} [cleanedHtml] - Whether to return cleaned HTML (accepts 'true'/'false' or boolean)
+ * @property {boolean | string} [robots] - Whether to fetch robots.txt (accepts 'true'/'false' or boolean)
+ * @property {boolean | string} [sitemapXML] - Whether to fetch sitemap.xml (accepts 'true'/'false' or boolean)
+ * @property {MetadataOptions} [metadataOptions] - Options for metadata extraction
+ * @property {'cheerio-reader' | 'html-rewriter'} [cleaningProcessor] - The cleaning processor to use
+ * @property {HTMLRewriterOptions} [htmlRewriterOptions] - Options for HTML cleaning with html-rewriter
+ * @property {ReaderCleaningOptions} [readerCleaningOptions] - Options for HTML cleaning with cheerio-reader
+ * @property {FetchOptions} [fetchOptions] - Options for the fetch request
+ *
+ * @example
+ * ```typescript
+ * const options: ScrapeOptionsInput = {
+ *   metadata: 'true',     // String boolean
+ *   cleanedHtml: true,    // Regular boolean
+ *   robots: 'false',      // String boolean
+ *   cleaningProcessor: 'cheerio-reader'
+ * };
+ * ```
  */
 export type ScrapeOptionsInput = z.input<typeof ScrapeOptionsSchema>;

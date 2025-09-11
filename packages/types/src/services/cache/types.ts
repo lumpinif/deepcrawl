@@ -5,9 +5,23 @@ import { z } from 'zod/v4';
 const { enabled } = DEFAULT_CACHE_OPTIONS;
 
 /**
- * Cache configuration for read operation based on KV put options except for `metadata`.
- * An object containing the `expiration` (optional) and `expirationTtl` (optional) attributes
+ * Cache configuration schema for Cloudflare KV storage operations.
+ * Based on KV put options except for `metadata` field.
+ * Controls how long responses should be cached and whether caching is enabled.
+ *
+ * @property {boolean} [enabled] - Whether to enable caching
+ * @property {number} [expiration] - Unix timestamp when key-value pair should expire
+ * @property {number} [expirationTtl] - TTL in seconds from now (minimum 60 seconds)
+ *
  * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
+ *
+ * @example
+ * ```typescript
+ * const cacheConfig = {
+ *   enabled: true,
+ *   expirationTtl: 3600  // Cache for 1 hour
+ * };
+ * ```
  */
 export const CacheOptionsSchema = z
   .object({

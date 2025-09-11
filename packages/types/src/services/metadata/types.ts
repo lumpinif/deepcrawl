@@ -15,10 +15,32 @@ const {
   twitter,
 } = DEFAULT_METADATA_OPTIONS;
 
-/** For `PageMetadata`
+/**
  * Schema for configuring metadata extraction options.
  * Controls which metadata fields should be extracted from a webpage.
- * */
+ *
+ * @property {boolean} [title] - Extract page title from title tag or meta title
+ * @property {boolean} [description] - Extract meta description content
+ * @property {boolean} [language] - Extract page language from html lang attribute
+ * @property {boolean} [canonical] - Extract canonical URL from link rel="canonical"
+ * @property {boolean} [robots] - Extract robots directives from meta robots
+ * @property {boolean} [author] - Extract author information from meta author
+ * @property {boolean} [keywords] - Extract meta keywords and convert to array
+ * @property {boolean} [favicon] - Extract favicon URL from link rel="icon" or similar
+ * @property {boolean} [openGraph] - Extract Open Graph metadata (og:* properties)
+ * @property {boolean} [twitter] - Extract Twitter Card metadata (twitter:* properties)
+ *
+ * @example
+ * ```typescript
+ * const options: MetadataOptions = {
+ *   title: true,
+ *   description: true,
+ *   openGraph: true,
+ *   twitter: false,
+ *   keywords: true
+ * };
+ * ```
+ */
 export const MetadataOptionsSchema = z
   .object({
     title: smartboolOptionalWithDefault(title).meta({
@@ -94,34 +116,29 @@ export const MetadataOptionsSchema = z
   });
 
 /**
- * Options for controlling which metadata fields should be extracted.
- * Each property is a boolean flag that enables or disables extraction of specific metadata.
+ * Type representing options for controlling metadata extraction.
+ * Each property is a boolean flag that enables or disables extraction of specific metadata fields.
  * All fields default to true if not specified.
  *
- * @property title - Extract page title from title tag or meta title
- * @property description - Extract meta description content
- * @property language - Extract page language from html lang attribute
- * @property canonical - Extract canonical URL from link rel="canonical"
- * @property robots - Extract robots directives from meta robots
- * @property author - Extract author information from meta author
- * @property keywords - Extract meta keywords and convert to array
- * @property favicon - Extract favicon URL from link rel="icon" or similar
- * @property openGraph - Extract Open Graph metadata (og:* properties)
- * @property twitter - Extract Twitter Card metadata (twitter:* properties)
+ * @property {boolean} [title] - Extract page title from title tag or meta title
+ * @property {boolean} [description] - Extract meta description content
+ * @property {boolean} [language] - Extract page language from html lang attribute
+ * @property {boolean} [canonical] - Extract canonical URL from link rel="canonical"
+ * @property {boolean} [robots] - Extract robots directives from meta robots
+ * @property {boolean} [author] - Extract author information from meta author
+ * @property {boolean} [keywords] - Extract meta keywords and convert to array
+ * @property {boolean} [favicon] - Extract favicon URL from link rel="icon" or similar
+ * @property {boolean} [openGraph] - Extract Open Graph metadata (og:* properties)
+ * @property {boolean} [twitter] - Extract Twitter Card metadata (twitter:* properties)
  *
  * @example
  * ```typescript
  * const options: MetadataOptions = {
  *   title: true,
  *   description: true,
- *   language: true,
- *   canonical: true,
- *   robots: false,
- *   author: true,
- *   keywords: true,
- *   favicon: true,
  *   openGraph: true,
- *   twitter: false
+ *   twitter: false,
+ *   keywords: true
  * };
  * ```
  *
@@ -133,6 +150,42 @@ export type MetadataOptions = z.infer<typeof MetadataOptionsSchema>;
 /**
  * Schema for page metadata extracted from a webpage.
  * Defines the structure and validation rules for all possible metadata fields.
+ *
+ * @property {string} [title] - Page title from title tag or meta title
+ * @property {string} [description] - Page description from meta description
+ * @property {string} [language] - Page language from html lang attribute
+ * @property {string} [canonical] - Canonical URL from link rel="canonical"
+ * @property {string} [robots] - Robots directives from meta robots
+ * @property {string} [author] - Author information from meta author
+ * @property {string[]} [keywords] - Keywords array from meta keywords
+ * @property {string} [lastModified] - Last modified date from HTTP headers
+ * @property {string} [favicon] - Favicon URL from link rel="icon"
+ * @property {string} [ogTitle] - OpenGraph title
+ * @property {string} [ogDescription] - OpenGraph description
+ * @property {string} [ogImage] - OpenGraph image URL
+ * @property {string} [ogUrl] - OpenGraph URL
+ * @property {string} [ogType] - OpenGraph type
+ * @property {string} [ogSiteName] - OpenGraph site name
+ * @property {string} [twitterCard] - Twitter card type
+ * @property {string} [twitterSite] - Twitter site username
+ * @property {string} [twitterCreator] - Twitter creator username
+ * @property {string} [twitterTitle] - Twitter title
+ * @property {string} [twitterDescription] - Twitter description
+ * @property {string} [twitterImage] - Twitter image URL
+ * @property {boolean} [isIframeAllowed] - Whether iframe embedding is allowed
+ *
+ * @example
+ * ```typescript
+ * const metadata: PageMetadata = {
+ *   title: "Example Website - Home Page",
+ *   description: "This is an example website",
+ *   language: "en",
+ *   canonical: "https://example.com/",
+ *   keywords: ["example", "metadata"],
+ *   ogTitle: "Example Website",
+ *   twitterCard: "summary_large_image"
+ * };
+ * ```
  */
 export const PageMetadataSchema = z
   .object({
@@ -336,56 +389,43 @@ export const PageMetadataSchema = z
   });
 
 /**
- * Represents all metadata that can be extracted from a webpage.
+ * Type representing all metadata that can be extracted from a webpage.
  * All fields are optional as they may not be present in every webpage.
  * The structure combines standard HTML metadata with social media metadata.
  *
- * @property title - Page title from title tag or meta title
- * @property description - Page description from meta description
- * @property language - Page language from html lang attribute
- * @property canonical - Canonical URL from link rel="canonical"
- * @property robots - Robots directives from meta robots
- * @property author - Author information from meta author
- * @property keywords - Keywords array from meta keywords
- * @property lastModified - Last modified date from HTTP headers
- * @property favicon - Favicon URL from link rel="icon" or similar
- * @property ogTitle - OpenGraph title from meta property="og:title"
- * @property ogDescription - OpenGraph description from meta property="og:description"
- * @property ogImage - OpenGraph image URL from meta property="og:image"
- * @property ogUrl - OpenGraph URL from meta property="og:url"
- * @property ogType - OpenGraph type from meta property="og:type"
- * @property ogSiteName - OpenGraph site name from meta property="og:site_name"
- * @property twitterCard - Twitter card type from meta name="twitter:card"
- * @property twitterSite - Twitter site username from meta name="twitter:site"
- * @property twitterCreator - Twitter creator username from meta name="twitter:creator"
- * @property twitterTitle - Twitter title from meta name="twitter:title"
- * @property twitterDescription - Twitter description from meta name="twitter:description"
- * @property twitterImage - Twitter image URL from meta name="twitter:image"
+ * @property {string} [title] - Page title from title tag or meta title
+ * @property {string} [description] - Page description from meta description
+ * @property {string} [language] - Page language from html lang attribute
+ * @property {string} [canonical] - Canonical URL from link rel="canonical"
+ * @property {string} [robots] - Robots directives from meta robots
+ * @property {string} [author] - Author information from meta author
+ * @property {string[]} [keywords] - Keywords array from meta keywords
+ * @property {string} [lastModified] - Last modified date from HTTP headers
+ * @property {string} [favicon] - Favicon URL from link rel="icon"
+ * @property {string} [ogTitle] - OpenGraph title
+ * @property {string} [ogDescription] - OpenGraph description
+ * @property {string} [ogImage] - OpenGraph image URL
+ * @property {string} [ogUrl] - OpenGraph URL
+ * @property {string} [ogType] - OpenGraph type
+ * @property {string} [ogSiteName] - OpenGraph site name
+ * @property {string} [twitterCard] - Twitter card type
+ * @property {string} [twitterSite] - Twitter site username
+ * @property {string} [twitterCreator] - Twitter creator username
+ * @property {string} [twitterTitle] - Twitter title
+ * @property {string} [twitterDescription] - Twitter description
+ * @property {string} [twitterImage] - Twitter image URL
+ * @property {boolean} [isIframeAllowed] - Whether iframe embedding is allowed
  *
  * @example
  * ```typescript
  * const metadata: PageMetadata = {
  *   title: "Example Website - Home Page",
- *   description: "This is an example website demonstrating metadata extraction.",
+ *   description: "This is an example website",
  *   language: "en",
  *   canonical: "https://example.com/",
- *   robots: "index, follow",
- *   author: "John Doe",
- *   keywords: ["example", "metadata", "extraction"],
- *   lastModified: "2023-04-15T14:32:21Z",
- *   favicon: "https://example.com/favicon.ico",
+ *   keywords: ["example", "metadata"],
  *   ogTitle: "Example Website",
- *   ogDescription: "Learn about our services",
- *   ogImage: "https://example.com/images/og-image.jpg",
- *   ogUrl: "https://example.com/",
- *   ogType: "website",
- *   ogSiteName: "Example Website",
- *   twitterCard: "summary_large_image",
- *   twitterSite: "@examplesite",
- *   twitterCreator: "@johndoe",
- *   twitterTitle: "Example Website - Official Site",
- *   twitterDescription: "The best example website on the internet",
- *   twitterImage: "https://example.com/images/twitter-card.jpg"
+ *   twitterCard: "summary_large_image"
  * };
  * ```
  */

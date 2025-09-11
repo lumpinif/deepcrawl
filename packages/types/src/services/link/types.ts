@@ -7,6 +7,21 @@ const { includeExternal, includeMedia, removeQueryParams } =
 /**
  * Schema for configuring link extraction behavior.
  * Defines validation rules for controlling how links are extracted from HTML.
+ *
+ * @property {boolean} [includeExternal] - Whether to include links from other domains
+ * @property {boolean} [includeMedia] - Whether to include media files (images, videos, docs)
+ * @property {string[]} [excludePatterns] - Array of regex patterns to exclude URLs
+ * @property {boolean} [removeQueryParams] - Whether to remove query parameters from URLs
+ *
+ * @example
+ * ```typescript
+ * const options: LinkExtractionOptions = {
+ *   includeExternal: false,
+ *   includeMedia: true,
+ *   excludePatterns: ['^/admin/', '\\.pdf$'],
+ *   removeQueryParams: true
+ * };
+ * ```
  */
 export const LinkExtractionOptionsSchema = z
   .object({
@@ -47,8 +62,34 @@ export const LinkExtractionOptionsSchema = z
   });
 
 /**
- * Schema for storing extracted links by category.
+ * Schema for storing extracted links categorized by type.
  * Defines the structure for organizing links extracted from a webpage.
+ *
+ * @property {string[]} [internal] - Array of internal links from the same domain
+ * @property {string[]} [external] - Array of external links from other domains
+ * @property {object} [media] - Media files categorized by type
+ * @property {string[]} [media.images] - Array of image file URLs
+ * @property {string[]} [media.videos] - Array of video file URLs
+ * @property {string[]} [media.documents] - Array of document file URLs
+ *
+ * @example
+ * ```typescript
+ * const links: ExtractedLinks = {
+ *   internal: [
+ *     'https://example.com/about',
+ *     'https://example.com/contact'
+ *   ],
+ *   external: [
+ *     'https://github.com/example/repo',
+ *     'https://twitter.com/example'
+ *   ],
+ *   media: {
+ *     images: ['https://example.com/images/logo.png'],
+ *     videos: ['https://example.com/videos/intro.mp4'],
+ *     documents: ['https://example.com/docs/whitepaper.pdf']
+ *   }
+ * };
+ * ```
  */
 export const ExtractedLinksSchema = z
   .object({
@@ -146,19 +187,19 @@ export const ExtractedLinksSchema = z
   });
 
 /**
- * Configuration options for link extraction behavior.
+ * Type representing configuration options for link extraction behavior.
  * Controls which types of links are extracted and how they are processed.
  *
- * @property includeExternal - Whether to include links from other domains
- * @property includeMedia - Whether to include media files (images, videos, docs)
- * @property excludePatterns - List of regex patterns to exclude URLs
- * @property removeQueryParams - Whether to remove query parameters from URLs
+ * @property {boolean} [includeExternal] - Whether to include links from other domains
+ * @property {boolean} [includeMedia] - Whether to include media files (images, videos, docs)
+ * @property {string[]} [excludePatterns] - List of regex patterns to exclude URLs
+ * @property {boolean} [removeQueryParams] - Whether to remove query parameters from URLs
  *
  * @example
  * ```typescript
  * const options: LinkExtractionOptions = {
  *   includeExternal: false,
- *   includeMedia: false,
+ *   includeMedia: true,
  *   excludePatterns: ['^/admin/', '\\.pdf$'],
  *   removeQueryParams: true
  * };
@@ -167,15 +208,15 @@ export const ExtractedLinksSchema = z
 export type LinkExtractionOptions = z.infer<typeof LinkExtractionOptionsSchema>;
 
 /**
- * Structure containing extracted links categorized by type.
+ * Type representing extracted links categorized by type.
  * Organizes links extracted from a webpage into logical groups.
  *
- * @property internal - Array of links from the same domain
- * @property external - Array of links from other domains
- * @property media - Object containing arrays of media links categorized by type
- * @property media.images - Array of image file URLs
- * @property media.videos - Array of video file URLs
- * @property media.documents - Array of document file URLs
+ * @property {string[]} [internal] - Array of internal links from the same domain
+ * @property {string[]} [external] - Array of external links from other domains
+ * @property {object} [media] - Object containing arrays of media links categorized by type
+ * @property {string[]} [media.images] - Array of image file URLs
+ * @property {string[]} [media.videos] - Array of video file URLs
+ * @property {string[]} [media.documents] - Array of document file URLs
  *
  * @example
  * ```typescript
@@ -185,20 +226,13 @@ export type LinkExtractionOptions = z.infer<typeof LinkExtractionOptionsSchema>;
  *     'https://example.com/contact'
  *   ],
  *   external: [
- *     'https://othersite.com/reference',
- *     'https://api.example.org/data'
+ *     'https://github.com/example/repo',
+ *     'https://twitter.com/example'
  *   ],
  *   media: {
- *     images: [
- *       'https://example.com/images/logo.png',
- *       'https://example.com/images/banner.jpg'
- *     ],
- *     videos: [
- *       'https://example.com/videos/intro.mp4'
- *     ],
- *     documents: [
- *       'https://example.com/docs/whitepaper.pdf'
- *     ]
+ *     images: ['https://example.com/images/logo.png'],
+ *     videos: ['https://example.com/videos/intro.mp4'],
+ *     documents: ['https://example.com/docs/whitepaper.pdf']
  *   }
  * };
  * ```

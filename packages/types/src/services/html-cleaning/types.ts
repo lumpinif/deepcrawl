@@ -6,9 +6,33 @@ import {
 import { z } from 'zod/v4';
 
 /**
- * @note only applied when cleaning processor is 'cheerio-reader'
- * Options for HTML cleaning with cheerio-reader.
- * Controls how HTML is sanitized and cleaned.
+ * Configuration schema for HTML cleaning with the cheerio-reader processor.
+ * Only applied when the cleaning processor is set to 'cheerio-reader'.
+ * Controls how HTML is sanitized and cleaned using the Readability library.
+ *
+ * @property {boolean} [debug] - Whether to enable logging
+ * @property {number} [maxElemsToParse] - Maximum number of elements to parse (0 = no limit)
+ * @property {number} [nbTopCandidates] - Number of top candidates to consider when analyzing competition among candidates
+ * @property {number} [charThreshold] - Minimum number of characters an article must have to return a result
+ * @property {boolean} [keepClasses] - Whether to preserve all classes on HTML elements
+ * @property {string[]} [classesToPreserve] - Classes to preserve when keepClasses is false
+ * @property {boolean} [disableJSONLD] - Whether to skip JSON-LD parsing when extracting page metadata
+ * @property {RegExp} [allowedVideoRegex] - Regular expression for video URLs allowed in article content
+ * @property {number} [linkDensityModifier] - Number added to base link density threshold during shadiness checks
+ * @property {boolean} [extraction] - Whether to perform full extraction
+ * @property {string} [baseURI] - Base URI for resolving relative URLs
+ *
+ * @example
+ * ```typescript
+ * const options: ReaderOptions = {
+ *   debug: false,
+ *   maxElemsToParse: 0,
+ *   nbTopCandidates: 5,
+ *   charThreshold: 500,
+ *   keepClasses: false,
+ *   extraction: true
+ * };
+ * ```
  */
 export const ReaderOptionsSchema = z
   .object({
@@ -173,16 +197,56 @@ export const ReaderOptionsSchema = z
   });
 
 /**
- * Options for HTML cleaning with cheerio-reader.
- * Controls how HTML is sanitized and cleaned.
+ * Type representing configuration options for HTML cleaning with the cheerio-reader processor.
+ * Only applied when the cleaning processor is set to 'cheerio-reader'.
+ *
+ * @property {boolean} [debug] - Whether to enable logging
+ * @property {number} [maxElemsToParse] - Maximum number of elements to parse (0 = no limit)
+ * @property {number} [nbTopCandidates] - Number of top candidates to consider when analyzing competition among candidates
+ * @property {number} [charThreshold] - Minimum number of characters an article must have to return a result
+ * @property {boolean} [keepClasses] - Whether to preserve all classes on HTML elements
+ * @property {string[]} [classesToPreserve] - Classes to preserve when keepClasses is false
+ * @property {boolean} [disableJSONLD] - Whether to skip JSON-LD parsing when extracting page metadata
+ * @property {RegExp} [allowedVideoRegex] - Regular expression for video URLs allowed in article content
+ * @property {number} [linkDensityModifier] - Number added to base link density threshold during shadiness checks
+ * @property {boolean} [extraction] - Whether to perform full extraction
+ * @property {string} [baseURI] - Base URI for resolving relative URLs
+ *
+ * @example
+ * ```typescript
+ * const options: ReaderOptions = {
+ *   debug: false,
+ *   maxElemsToParse: 0,
+ *   nbTopCandidates: 5,
+ *   charThreshold: 500,
+ *   keepClasses: false,
+ *   extraction: true
+ * };
+ * ```
  */
 export type ReaderOptions = z.infer<typeof ReaderOptionsSchema>;
 
 /**
- * Options accepted by Cheerio.
+ * Configuration schema for Cheerio parser options.
+ * Parser-specific options are only recognized if the relevant parser is used.
  *
- * Please note that parser-specific options are _only recognized_ if the
- * relevant parser is used.
+ * @property {string | URL} [baseURI] - Base URI for resolving href and src properties
+ * @property {function | null} [onParseError] - Callback for handling parse errors
+ * @property {Record<string, string | function>} [pseudos] - Extension point for pseudo-classes
+ * @property {boolean} [quirksMode] - Whether document is in quirks mode (affects case sensitivity)
+ * @property {boolean} [scriptingEnabled] - Whether to parse noscript element content as text
+ * @property {boolean} [sourceCodeLocationInfo] - Whether to enable source code location information
+ * @property {any} [treeAdapter] - Specifies the resulting tree format
+ * @property {boolean | Record<string, any>} [xml] - XML parsing configuration
+ *
+ * @example
+ * ```typescript
+ * const options: CheerioOptions = {
+ *   baseURI: 'https://example.com',
+ *   quirksMode: false,
+ *   scriptingEnabled: true
+ * };
+ * ```
  */
 export const CheerioOptionsSchema = z
   .object({
@@ -302,8 +366,26 @@ export const CheerioOptionsSchema = z
   });
 
 /**
- * Options for HTML cleaning with cheerio-reader.
- * Controls how HTML is sanitized and cleaned.
+ * Type representing Cheerio parser configuration options.
+ * Parser-specific options are only recognized if the relevant parser is used.
+ *
+ * @property {string | URL} [baseURI] - Base URI for resolving href and src properties
+ * @property {function | null} [onParseError] - Callback for handling parse errors
+ * @property {Record<string, string | function>} [pseudos] - Extension point for pseudo-classes
+ * @property {boolean} [quirksMode] - Whether document is in quirks mode (affects case sensitivity)
+ * @property {boolean} [scriptingEnabled] - Whether to parse noscript element content as text
+ * @property {boolean} [sourceCodeLocationInfo] - Whether to enable source code location information
+ * @property {any} [treeAdapter] - Specifies the resulting tree format
+ * @property {boolean | Record<string, any>} [xml] - XML parsing configuration
+ *
+ * @example
+ * ```typescript
+ * const options: CheerioOptions = {
+ *   baseURI: 'https://example.com',
+ *   quirksMode: false,
+ *   scriptingEnabled: true
+ * };
+ * ```
  */
 export type CheerioOptions = z.infer<typeof CheerioOptionsSchema>;
 
@@ -312,23 +394,33 @@ const {
   readerOptions: defaultReaderOptions,
 } = DEFAULT_READER_CLEANING_OPTIONS;
 /**
- * Options for HTML cleaning with cheerio-reader.
- * Controls how HTML is sanitized and cleaned.
+ * Configuration schema combining Cheerio and Readability options for HTML cleaning.
+ * Provides comprehensive control over HTML sanitization and cleaning using the cheerio-reader processor.
+ *
+ * @property {CheerioOptions} [cheerioOptions] - Cheerio parser configuration options
+ * @property {ReaderOptions} [readerOptions] - Readability library configuration options
+ *
+ * @example
+ * ```typescript
+ * const options: ReaderCleaningOptions = {
+ *   cheerioOptions: {
+ *     baseURI: 'https://example.com',
+ *     quirksMode: false,
+ *     scriptingEnabled: true
+ *   },
+ *   readerOptions: {
+ *     debug: false,
+ *     charThreshold: 500,
+ *     extraction: true
+ *   }
+ * };
+ * ```
  */
 export const ReaderCleaningOptionsSchema = z
   .object({
-    /**
-     * Options for HTML cleaning with cheerio-reader.
-     * Controls how HTML is sanitized and cleaned.
-     */
     cheerioOptions: CheerioOptionsSchema.default(
       defaultCheerioOptions,
     ).optional(),
-
-    /**
-     * Options for HTML cleaning with cheerio-reader.
-     * Controls how HTML is sanitized and cleaned.
-     */
     readerOptions: ReaderOptionsSchema.default(defaultReaderOptions).optional(),
   })
   .default(DEFAULT_READER_CLEANING_OPTIONS)
@@ -338,8 +430,27 @@ export const ReaderCleaningOptionsSchema = z
   });
 
 /**
- * Options for HTML cleaning with cheerio-reader.
- * Controls how HTML is sanitized and cleaned.
+ * Type representing combined Cheerio and Readability configuration options for HTML cleaning.
+ * Provides comprehensive control over HTML sanitization and cleaning using the cheerio-reader processor.
+ *
+ * @property {CheerioOptions} [cheerioOptions] - Cheerio parser configuration options
+ * @property {ReaderOptions} [readerOptions] - Readability library configuration options
+ *
+ * @example
+ * ```typescript
+ * const options: ReaderCleaningOptions = {
+ *   cheerioOptions: {
+ *     baseURI: 'https://example.com',
+ *     quirksMode: false,
+ *     scriptingEnabled: true
+ *   },
+ *   readerOptions: {
+ *     debug: false,
+ *     charThreshold: 500,
+ *     extraction: true
+ *   }
+ * };
+ * ```
  */
 export type ReaderCleaningOptions = z.infer<typeof ReaderCleaningOptionsSchema>;
 
@@ -347,15 +458,27 @@ const { extractMainContent, removeBase64Images } =
   DEFAULT_HTML_REWRITER_OPTIONS;
 
 /**
- * @note used only for 'html-rewriter' cleaning processor
- * Schema for HTML rewriter cleaning configuration options.
- * Defines the validation rules for HTML sanitization parameters.
+ * Configuration schema for HTML rewriter cleaning options.
+ * Used only with the 'html-rewriter' cleaning processor.
+ * Defines validation rules for HTML sanitization parameters.
+ *
+ * @property {string[]} [allowedHTMLTags] - HTML tags to preserve (whitelist approach)
+ * @property {string[]} [disallowedHTMLTags] - HTML tags to remove (blacklist approach)
+ * @property {boolean} [extractMainContent] - Whether to extract only the main content area
+ * @property {boolean} [removeBase64Images] - Whether to remove base64 encoded images
+ *
+ * @example
+ * ```typescript
+ * const options: HTMLRewriterOptions = {
+ *   allowedHTMLTags: ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'strong', 'em'],
+ *   disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
+ *   extractMainContent: true,
+ *   removeBase64Images: true
+ * };
+ * ```
  */
 export const HTMLRewriterOptionsSchema = z
   .object({
-    /**
-     * @note If allowedHTMLTags is specified, remove everything not in the list
-     * */
     allowedHTMLTags: z
       .array(z.string())
       .optional()
@@ -375,9 +498,6 @@ export const HTMLRewriterOptionsSchema = z
           'em',
         ],
       }),
-    /**
-     * @note If disallowedHTMLTags is specified, remove matching tags
-     * */
     disallowedHTMLTags: z
       .array(z.string())
       .optional()
@@ -385,18 +505,12 @@ export const HTMLRewriterOptionsSchema = z
         description: 'If disallowedHTMLTags is specified, remove matching tags',
         examples: ['script', 'style', 'iframe', 'form', 'button'],
       }),
-    /**
-     * @note Whether to extract only the main content area, removing navigation, footers, etc.
-     * */
     extractMainContent: smartboolTrue().meta({
       description:
         'Whether to extract only the main content area, removing navigation, footers, etc. Default: true',
       default: extractMainContent,
       examples: [extractMainContent],
     }),
-    /**
-     * @note Whether to remove base64 encoded images to reduce payload size
-     * */
     removeBase64Images: smartboolTrue().meta({
       description:
         'Whether to remove base64 encoded images to reduce payload size. Default: true',
@@ -430,22 +544,21 @@ export const HTMLRewriterOptionsSchema = z
   });
 
 /**
- * Configuration options for HTML content cleaning and sanitization.
+ * Type representing HTML rewriter cleaning configuration options.
+ * Used only with the 'html-rewriter' cleaning processor.
  * Controls which elements are preserved or removed during processing.
  *
- * @property allowedHTMLTags - HTML tags to preserve in the output (whitelist)
- * @property disallowedHTMLTags - HTML tags to remove from the output (blacklist)
- * @property extractMainContent - Whether to extract only the main content area, removing navigation, footers, etc.
- * @property documentBaseUrl - Base URL for resolving relative URLs (deprecated, use baseUrl parameter instead)
- * @property removeBase64Images - Whether to remove base64 encoded images to reduce payload size
+ * @property {string[]} [allowedHTMLTags] - HTML tags to preserve (whitelist approach)
+ * @property {string[]} [disallowedHTMLTags] - HTML tags to remove (blacklist approach)
+ * @property {boolean} [extractMainContent] - Whether to extract only the main content area
+ * @property {boolean} [removeBase64Images] - Whether to remove base64 encoded images
  *
  * @example
  * ```typescript
- * const cleaningOptions: HTMLRewriterOptions = {
+ * const options: HTMLRewriterOptions = {
  *   allowedHTMLTags: ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'strong', 'em'],
  *   disallowedHTMLTags: ['script', 'style', 'iframe', 'form', 'button'],
  *   extractMainContent: true,
- *   documentBaseUrl: 'https://example.com',
  *   removeBase64Images: true
  * };
  * ```
@@ -453,8 +566,23 @@ export const HTMLRewriterOptionsSchema = z
 export type HTMLRewriterOptions = z.infer<typeof HTMLRewriterOptionsSchema>;
 
 /**
- * Schema for defining patterns to match DOM elements.
- * Used to create selectors for targeting specific elements during HTML processing.
+ * Schema for defining patterns to match DOM elements during HTML processing.
+ * Used to create selectors for targeting specific elements.
+ *
+ * @property {string | RegExp} [tag] - HTML tag name or pattern to match
+ * @property {Array<{name: string | RegExp, value?: string | RegExp}>} [attributes] - Element attributes to match
+ * @property {Array<string | RegExp>} [classNames] - CSS class names or patterns to match
+ * @property {Array<string | RegExp>} [ids] - Element IDs or patterns to match
+ *
+ * @example
+ * ```typescript
+ * const pattern: ElementPattern = {
+ *   tag: 'div',
+ *   attributes: [{ name: 'data-role', value: 'content' }],
+ *   classNames: ['main-content', /^content-/],
+ *   ids: ['main', 'article-body']
+ * };
+ * ```
  */
 export const ElementPatternSchema = z
   .strictObject({
@@ -484,8 +612,42 @@ export const ElementPatternSchema = z
   });
 
 /**
+ * Type representing patterns for matching DOM elements during HTML processing.
+ * Used to create selectors for targeting specific elements.
+ *
+ * @property {string | RegExp} [tag] - HTML tag name or pattern to match
+ * @property {Array<{name: string | RegExp, value?: string | RegExp}>} [attributes] - Element attributes to match
+ * @property {Array<string | RegExp>} [classNames] - CSS class names or patterns to match
+ * @property {Array<string | RegExp>} [ids] - Element IDs or patterns to match
+ *
+ * @example
+ * ```typescript
+ * const pattern: ElementPattern = {
+ *   tag: 'div',
+ *   attributes: [{ name: 'data-role', value: 'content' }],
+ *   classNames: ['main-content', /^content-/],
+ *   ids: ['main', 'article-body']
+ * };
+ * ```
+ */
+export type ElementPattern = z.infer<typeof ElementPatternSchema>;
+
+/**
  * Schema for HTML cleaning performance metrics.
  * Tracks the size changes during HTML cleaning operations.
+ *
+ * @property {number} inputSize - Original HTML size in bytes before cleaning
+ * @property {number} outputSize - Cleaned HTML size in bytes after processing
+ * @property {number} compressionRatio - Compression ratio (output/input size)
+ *
+ * @example
+ * ```typescript
+ * const metrics: HTMLCleaningMetrics = {
+ *   inputSize: 125000,
+ *   outputSize: 42000,
+ *   compressionRatio: 0.336
+ * };
+ * ```
  */
 export const HTMLCleaningMetricsSchema = z
   .object({
@@ -536,6 +698,21 @@ export type HTMLCleaningMetrics = z.infer<typeof HTMLCleaningMetricsSchema>;
 /**
  * Schema for HTML cleaning operation result.
  * Contains the cleaned HTML content along with metadata about the cleaning process.
+ *
+ * @property {string} cleanedHtml - The cleaned and sanitized HTML content
+ * @property {HTMLCleaningMetrics} [metrics] - Optional performance metrics for the cleaning operation
+ *
+ * @example
+ * ```typescript
+ * const result: HTMLCleaningResult = {
+ *   cleanedHtml: "<div><h1>Article Title</h1><p>Clean content...</p></div>",
+ *   metrics: {
+ *     inputSize: 125000,
+ *     outputSize: 42000,
+ *     compressionRatio: 0.336
+ *   }
+ * };
+ * ```
  */
 export const HTMLCleaningResultSchema = z
   .object({

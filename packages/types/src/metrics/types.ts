@@ -4,6 +4,19 @@ import { DEFAULT_METRICS_OPTIONS } from '../configs/default';
 
 const { enable } = DEFAULT_METRICS_OPTIONS;
 
+/**
+ * Configuration schema for metrics collection settings.
+ * Controls whether performance timing data should be collected and included in responses.
+ *
+ * @property {boolean} [enable] - Whether to collect and include metrics in responses
+ *
+ * @example
+ * ```typescript
+ * const metricsConfig = {
+ *   enable: true  // Include timing metrics
+ * };
+ * ```
+ */
 export const MetricsOptionsSchema = z
   .object({
     enable: smartboolOptionalWithDefault(enable).meta({
@@ -20,8 +33,37 @@ export const MetricsOptionsSchema = z
     examples: [DEFAULT_METRICS_OPTIONS],
   });
 
+/**
+ * Type representing metrics collection configuration options.
+ * 
+ * @property {boolean} [enable] - Whether to collect and include metrics in responses
+ * 
+ * @example
+ * ```typescript
+ * const options: MetricsOptions = { enable: true };
+ * ```
+ */
 export type MetricsOptions = z.infer<typeof MetricsOptionsSchema>;
 
+/**
+ * Performance metrics schema for tracking operation timing data.
+ * Provides detailed timing information including human-readable duration and precise timestamps.
+ *
+ * @property {string} readableDuration - Human-readable duration (e.g., "0.2s", "1.5s")
+ * @property {number} durationMs - Total operation duration in milliseconds
+ * @property {number} startTimeMs - Unix timestamp in milliseconds when operation started
+ * @property {number} endTimeMs - Unix timestamp in milliseconds when operation finished
+ *
+ * @example
+ * ```typescript
+ * const metrics = {
+ *   readableDuration: '0.2s',
+ *   durationMs: 200,
+ *   startTimeMs: 1704067800000,
+ *   endTimeMs: 1704067800200
+ * };
+ * ```
+ */
 export const MetricsSchema = z
   .object({
     readableDuration: z.string().meta({
@@ -54,4 +96,23 @@ export const MetricsSchema = z
     ],
   });
 
+/**
+ * Type representing performance metrics data.
+ * Contains timing information for operations including readable duration and precise timestamps.
+ *
+ * @property {string} readableDuration - Human-readable duration (e.g., "0.2s", "1.5s") 
+ * @property {number} durationMs - Total operation duration in milliseconds
+ * @property {number} startTimeMs - Unix timestamp in milliseconds when operation started
+ * @property {number} endTimeMs - Unix timestamp in milliseconds when operation finished
+ *
+ * @example
+ * ```typescript
+ * const metrics: Metrics = {
+ *   readableDuration: '1.2s',
+ *   durationMs: 1200,
+ *   startTimeMs: 1704067800000,
+ *   endTimeMs: 1704067801200
+ * };
+ * ```
+ */
 export type Metrics = z.infer<typeof MetricsSchema>;

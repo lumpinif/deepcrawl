@@ -3,6 +3,19 @@ import * as z from 'zod/v4';
 /**
  * Common error response schema used across all endpoints.
  * Provides a standardized error response structure.
+ *
+ * @property {false} success - Always false for error responses
+ * @property {string} targetUrl - URL that was being processed when error occurred
+ * @property {string} error - Error message describing what went wrong
+ *
+ * @example
+ * ```typescript
+ * const errorResponse = {
+ *   success: false,
+ *   targetUrl: 'https://example.com',
+ *   error: 'Failed to fetch: 404 Not Found'
+ * };
+ * ```
  */
 export const BaseErrorResponseSchema = z
   .object({
@@ -34,6 +47,21 @@ export const BaseErrorResponseSchema = z
 /**
  * Common base response schema for successful operations.
  * Contains standard fields that appear in most success responses.
+ *
+ * @property {true} success - Always true for successful responses
+ * @property {string} targetUrl - URL that was processed
+ * @property {string} timestamp - ISO timestamp when operation was completed
+ * @property {boolean} cached - Whether response was served from cache
+ *
+ * @example
+ * ```typescript
+ * const successResponse = {
+ *   success: true,
+ *   targetUrl: 'https://example.com',
+ *   timestamp: '2024-01-15T10:30:00.000Z',
+ *   cached: false
+ * };
+ * ```
  */
 export const BaseSuccessResponseSchema = z
   .object({
