@@ -13,7 +13,7 @@ This is a monorepo containing a web scraping and crawling service with the follo
   - `@deepcrawl/auth`: Authentication configuration and email templates
   - `@deepcrawl/db-auth`: Auth Database schema and Drizzle ORM setup
   - `@deepcrawl/db-d1`: D1 Database schema and Drizzle ORM setup for Cloudflare D1
-  - `@deepcrawl/types`: Shared TypeScript types and schemas
+  - `@deepcrawl/types`: Shared TypeScript types and schemas (includes metrics types)
   - `@deepcrawl/contracts`: API contract definitions for oRPC
   - `@deepcrawl/ui`: shadcn/ui component library
   - `deepcrawl`: TypeScript SDK for Deepcrawl API
@@ -197,6 +197,7 @@ tsx src/test.ts
   - `LinkService`: Link extraction and normalization
 - **Storage**: Cloudflare KV for caching (DEEPCRAWL_V0_READ_STORE, DEEPCRAWL_V0_LINKS_STORE)
 - **AI**: Cloudflare AI binding for content processing
+- **Metrics**: Performance tracking with configurable reporting for all endpoints
 
 ### Key Service Patterns
 
@@ -250,6 +251,7 @@ tsx src/test.ts
 - `apps/workers/v0/src/orpc.ts`: oRPC server configuration
 - `apps/workers/v0/src/contract/`: API contract definitions
 - `apps/workers/v0/src/services/`: Core business logic
+- `apps/workers/v0/src/utils/metrics.ts`: Performance metrics utilities
 - `apps/workers/v0/wrangler.jsonc`: Cloudflare Worker configuration
 - `apps/app/app/actions/`: Next.js server actions
 - `turbo.json`: Monorepo build pipeline configuration
@@ -264,6 +266,43 @@ Key environment variables are defined in `turbo.json` globalEnv section:
 - OAuth provider credentials (GitHub, Google)
 - `NEXT_PUBLIC_USE_AUTH_WORKER`: Enable auth worker for dashboard
 - `FROM_EMAIL`: Email sender address
+
+## Metrics and Performance Tracking
+
+The service includes comprehensive metrics tracking for performance monitoring:
+
+### Metrics Configuration
+
+- **Default Behavior**: Metrics are enabled by default (`DEFAULT_METRICS_OPTIONS.enable: true`)
+- **Configurable**: Can be disabled per request via `metricsOptions.enable: false`
+- **Endpoints**: Available on `/read` and `/links` endpoints
+- **Schema**: Defined in `packages/types/src/metrics/types.ts`
+
+### Metrics Data Structure
+
+```typescript
+// MetricsSchema provides:
+{
+  readableDuration: string,    // Human-readable duration (e.g., "0.2s")
+  durationMs: number,          // Duration in milliseconds
+  startTimeMs: number,         // Start timestamp (Unix ms)
+  endTimeMs: number           // End timestamp (Unix ms)
+}
+```
+
+### Implementation Details
+
+- **Utilities**: `getMetrics()` and `formatDuration()` functions in `apps/workers/v0/src/utils/metrics.ts`
+- **Integration**: Conditionally added to response objects based on `metricsOptions.enable`
+- **Performance**: Uses `performance.now()` for high-precision timing
+- **Response Integration**: Metrics are included in response objects when enabled
+
+### Usage in Processors
+
+Both read and links processors follow the same pattern:
+- Check `metricsOptions?.enable` before adding metrics
+- Use `getMetrics(startTime, performance.now())` to calculate metrics
+- Add metrics to response object: `response.metrics = metrics`
 
 ## Code Quality and Formatting
 
