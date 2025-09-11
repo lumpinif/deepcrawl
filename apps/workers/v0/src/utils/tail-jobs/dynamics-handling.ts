@@ -20,7 +20,7 @@ type ReadSuccessResponseWithoutMetrics = Omit<ReadSuccessResponse, 'metrics'>;
 
 type LinksSuccessResponseWithoutRootDynamics = Omit<
   LinksSuccessResponse,
-  'timestamp'
+  'timestamp' | 'metrics'
 >;
 type LinksStableWithoutTree = Omit<
   LinksSuccessResponseWithoutRootDynamics,
@@ -29,6 +29,7 @@ type LinksStableWithoutTree = Omit<
 
 interface LinksDynamics {
   timestamp: string;
+  metrics?: LinksSuccessResponse['metrics'];
   treeDynamics?: {
     root: {
       lastUpdated: string;
@@ -39,11 +40,11 @@ interface LinksDynamics {
   };
 }
 
-type Dynamics =
-  | { metrics?: ReadSuccessResponse['metrics'] }
-  | { timestamp?: string }
-  | LinksDynamics
-  | null;
+interface ReadDynamics {
+  metrics?: ReadSuccessResponse['metrics'];
+}
+
+type Dynamics = ReadDynamics | LinksDynamics | null;
 
 export type AnyResponseTypes =
   | ReadStringResponse
@@ -117,6 +118,7 @@ export function extractDynamicsForHash(
         dynamics: { metrics },
       };
     }
+
     // links endpoints, getLinks and extractLinks
     case 'links': {
       // gracfully handle other links paths if exists
@@ -128,10 +130,10 @@ export function extractDynamicsForHash(
       const r = params.response as LinksSuccessResponse;
       if (isLinksResponseWithoutTree(r)) {
         // links without tree: simple timestamp stripping
-        const { timestamp, ...rest } = r;
+        const { timestamp, metrics, ...rest } = r;
         return {
           responseForHash: rest as LinksStableWithoutTree,
-          dynamics: { timestamp },
+          dynamics: { timestamp, metrics },
         };
       }
 
@@ -144,7 +146,11 @@ export function extractDynamicsForHash(
 
         return {
           responseForHash: strippedResponse as LinksStableWithTree,
-          dynamics: { timestamp: r.timestamp, treeDynamics },
+          dynamics: {
+            timestamp: r.timestamp,
+            metrics: r.metrics,
+            treeDynamics,
+          },
         };
       }
 
@@ -225,7 +231,7 @@ type LinksTreeWithoutDynamics = Omit<
 
 type LinksStableWithTree = Omit<
   LinksSuccessResponseWithTree,
-  'timestamp' | 'tree'
+  'timestamp' | 'metrics' | 'tree'
 > & {
   tree?: LinksTreeWithoutDynamics;
 };
@@ -249,7 +255,7 @@ function stripLinksTreeDynamics(
     return sanitized;
   }
 
-  const { timestamp: _ts, ...rootRest } = response; // top-level timestamp is not needed for hashing
+  const { timestamp: _ts, metrics: _metrics, ...rootRest } = response; // top-level timestamp and metrics are not needed for hashing
 
   const sanitizedTree = response.tree ? sanitizeNode(response.tree) : undefined;
 

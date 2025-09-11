@@ -118,9 +118,7 @@ export function schedulePostProcessing(
           executionTimeMs: performance.now() - startedAt,
           responseHash: success ? responseHash : null, // null if success is false
           /* dynamic response data fields such as metrics or full error response if success is false */
-          responseMetadata: success
-            ? ((dynamics as unknown) ?? null)
-            : response,
+          responseMetadata: success ? (dynamics ?? null) : response,
           error: success ? undefined : response,
         });
       } catch (err) {
