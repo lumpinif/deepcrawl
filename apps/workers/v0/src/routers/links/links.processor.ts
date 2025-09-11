@@ -10,8 +10,10 @@ import type {
   LinksOptions,
   LinksResponse,
   LinksSuccessResponse,
+  LinksSuccessResponseWithoutTree,
+  LinksSuccessResponseWithTree,
+  LinksTree,
   SkippedUrl,
-  Tree,
   VisitedUrl,
 } from '@deepcrawl/types/routers/links';
 import type { ExtractedLinks } from '@deepcrawl/types/services/link';
@@ -25,6 +27,21 @@ import * as helpers from '@/utils/links/helpers';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
+
+/**
+ * Type guards for LinksSuccessResponse discriminated union
+ */
+export function isLinksResponseWithTree(
+  response: LinksSuccessResponse,
+): response is LinksSuccessResponseWithTree {
+  return 'tree' in response && response.tree !== undefined;
+}
+
+export function isLinksResponseWithoutTree(
+  response: LinksSuccessResponse,
+): response is LinksSuccessResponseWithoutTree {
+  return !('tree' in response) || response.tree === undefined;
+}
 
 // Helper function to check if a URL exists in the Set of visited URLs
 function isUrlInVisitedSet(
@@ -204,15 +221,15 @@ async function processNonTreeRequest({
     const executionTimeMs = performance.now() - startTime;
     const executionTime = formatDuration(executionTimeMs);
 
-    // Build minimal response - only include fields that have values
-    const response: Partial<LinksSuccessResponse> = {
+    // Build response for non-tree case - content fields are at response root level
+    const response: LinksSuccessResponseWithoutTree = {
       success: true,
       cached: false, // Always false for non-tree requests (no cache operations)
       targetUrl,
       timestamp,
     };
 
-    // Add optional fields only if they have values
+    // Add optional content fields only if they have values (at response root level for non-tree)
     if (targetScrapeResult?.title) {
       response.title = targetScrapeResult.title;
     }
@@ -229,7 +246,9 @@ async function processNonTreeRequest({
       response.cleanedHtml = targetScrapeResult.cleanedHtml;
     }
 
-    const finalResponse = cleanEmptyValues(response) as LinksSuccessResponse;
+    const finalResponse = cleanEmptyValues(
+      response,
+    ) as LinksSuccessResponseWithoutTree;
 
     // Store non-tree response in cache with separate key
     if (_ENABLE_LINKS_CACHE && cacheOptions?.enabled && !cacheHit) {
@@ -287,8 +306,8 @@ export function createLinksErrorResponse({
   targetUrl: string;
   withTree: boolean;
   error?: string;
-  existingTree: Tree | undefined;
-  tree: Tree | undefined;
+  existingTree: LinksTree | undefined;
+  tree: LinksTree | undefined;
 }): LinksErrorResponse {
   return {
     success: false,
@@ -389,8 +408,8 @@ export async function processLinksRequest(
   };
 
   // KV Caches
-  let existingTree: Tree | undefined;
-  let finalTree: Tree | undefined;
+  let existingTree: LinksTree | undefined;
+  let finalTree: LinksTree | undefined;
   let lastVisitedUrlsInCache = new Set<VisitedUrl>();
   let linksCacheIsFresh = false;
 
@@ -485,7 +504,7 @@ export async function processLinksRequest(
 
       // If scraping failed, handle the error properly
       if (!targetScrapeResult?.rawHtml) {
-        const tree: Tree | undefined = existingTree;
+        const tree: LinksTree | undefined = existingTree;
 
         // create a links post error response and return it
         const linksPostErrorResponse: LinksErrorResponse =
@@ -659,7 +678,7 @@ export async function processLinksRequest(
 
           c.cacheHit = true; // set cache hit flag in context for activity logging
 
-          const parsedValue = JSON.parse(value) as Tree;
+          const parsedValue = JSON.parse(value) as LinksTree;
           existingTree = parsedValue ?? undefined;
           // Extract visited URLs from the tree structure if available
           if (existingTree) {
@@ -905,39 +924,56 @@ export async function processLinksRequest(
     const executionTime = formatDuration(executionTimeMs);
 
     // add executionTime to finalTree's root node
-    if (finalTree) {
-      finalTree.executionTime = executionTime;
+    // if (finalTree) {
+    //   finalTree.executionTime = executionTime;
+    // }
+
+    // Build response using discriminated union pattern
+    if (withTree && finalTree) {
+      // Response with tree - content fields are in tree root, not response root
+      const responseWithTree: LinksSuccessResponseWithTree = {
+        success: true,
+        cached: linksCacheIsFresh,
+        targetUrl,
+        timestamp,
+        ancestors,
+        tree: finalTree,
+      };
+      linksPostResponse = cleanEmptyValues(responseWithTree);
+    } else {
+      // Response without tree - content fields are at response root level
+      const responseWithoutTree: LinksSuccessResponseWithoutTree = {
+        success: true,
+        cached: linksCacheIsFresh,
+        targetUrl,
+        timestamp,
+        ancestors,
+      };
+
+      // Add optional content fields only if they have values
+      if (targetScrapeResult?.title) {
+        responseWithoutTree.title = targetScrapeResult.title;
+      }
+      if (targetScrapeResult?.description) {
+        responseWithoutTree.description = targetScrapeResult.description;
+      }
+      if (isMetadata && targetScrapeResult?.metadata) {
+        responseWithoutTree.metadata = targetScrapeResult.metadata;
+      }
+      if (includeExtractedLinks && linksFromTarget) {
+        responseWithoutTree.extractedLinks = linksFromTarget;
+      }
+      if (isCleanedHtml && targetScrapeResult?.cleanedHtml) {
+        responseWithoutTree.cleanedHtml = targetScrapeResult.cleanedHtml;
+      }
+      if (categorizedSkippedUrls) {
+        responseWithoutTree.skippedUrls = categorizedSkippedUrls;
+      }
+
+      linksPostResponse = cleanEmptyValues(
+        responseWithoutTree,
+      ) as LinksSuccessResponseWithoutTree;
     }
-
-    linksPostResponse = cleanEmptyValues<LinksSuccessResponse>({
-      success: true,
-      cached: linksCacheIsFresh,
-      targetUrl,
-      timestamp,
-      ancestors,
-
-      /* root-level fields that are only included if there is no tree */
-      executionTime: withTree && finalTree ? undefined : executionTime,
-      title: withTree && finalTree ? undefined : targetScrapeResult?.title,
-      description:
-        withTree && finalTree ? undefined : targetScrapeResult?.description,
-      metadata:
-        isMetadata && !(withTree && finalTree)
-          ? targetScrapeResult?.metadata
-          : undefined,
-      extractedLinks:
-        includeExtractedLinks && !(withTree && finalTree)
-          ? linksFromTarget
-          : undefined,
-      cleanedHtml:
-        isCleanedHtml && !(withTree && finalTree)
-          ? targetScrapeResult?.cleanedHtml
-          : undefined,
-      skippedUrls: withTree && finalTree ? undefined : categorizedSkippedUrls,
-
-      /* tree data including root-level fields */
-      tree: withTree && finalTree ? finalTree : undefined,
-    });
 
     if (!linksPostResponse) {
       throw new Error('Failed to process links request');

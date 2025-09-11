@@ -2,6 +2,10 @@ import { eq, type NewResponseRecord, responseRecord } from '@deepcrawl/db-d1';
 import type { LinksSuccessResponse } from '@deepcrawl/types/routers/links/types';
 
 import type { AppVariables, ORPCContext } from '@/lib/context';
+import {
+  isLinksResponseWithoutTree,
+  isLinksResponseWithTree,
+} from '@/routers/links/links.processor';
 import { sha256Hash, stableStringify } from '@/utils/hash/hash-tools';
 import {
   calculateResponseSize,
@@ -65,7 +69,7 @@ export class ResponseRecordService {
         response !== null &&
         'success' in response &&
         (response as LinksSuccessResponse).success === true &&
-        !(response as LinksSuccessResponse).tree
+        isLinksResponseWithoutTree(response as LinksSuccessResponse)
       ) {
         const canonical = JSON.stringify(response);
         return await sha256Hash(
@@ -78,7 +82,8 @@ export class ResponseRecordService {
         typeof response === 'object' &&
         response !== null &&
         'success' in response &&
-        (response as LinksSuccessResponse).success === true
+        (response as LinksSuccessResponse).success === true &&
+        isLinksResponseWithTree(response as LinksSuccessResponse)
       ) {
         const canonical = JSON.stringify(response);
         return await sha256Hash(

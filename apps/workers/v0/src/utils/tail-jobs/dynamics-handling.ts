@@ -2,6 +2,8 @@ import type {
   LinksErrorResponse,
   LinksResponse,
   LinksSuccessResponse,
+  LinksSuccessResponseWithTree,
+  LinksTree,
 } from '@deepcrawl/types/routers/links/types';
 import type {
   ReadErrorResponse,
@@ -9,6 +11,10 @@ import type {
   ReadStringResponse,
   ReadSuccessResponse,
 } from '@deepcrawl/types/routers/read/types';
+import {
+  isLinksResponseWithoutTree,
+  isLinksResponseWithTree,
+} from '@/routers/links/links.processor';
 
 type ReadSuccessResponseWithoutMetrics = Omit<ReadSuccessResponse, 'metrics'>;
 
@@ -129,16 +135,23 @@ export function extractDynamicsForHash(
         };
       }
 
-      // links with tree: use stripped response content for consistent hashing
-      const strippedResponse = stripLinksTreeDynamics(r);
+      if (isLinksResponseWithTree(r)) {
+        // links with tree: use stripped response content for consistent hashing
+        const strippedResponse = stripLinksTreeDynamics(r);
 
-      // extract tree dynamics
-      const treeDynamics = extractTreeDynamics(r.tree);
+        // extract tree dynamics
+        const treeDynamics = extractTreeDynamics(r.tree);
 
-      return {
-        responseForHash: strippedResponse as LinksStableWithTree,
-        dynamics: { timestamp: r.timestamp, treeDynamics },
-      };
+        return {
+          responseForHash: strippedResponse as LinksStableWithTree,
+          dynamics: { timestamp: r.timestamp, treeDynamics },
+        };
+      }
+
+      // Fallback case (should not happen with proper discriminated union)
+      throw new Error(
+        'Invalid LinksSuccessResponse: neither tree nor non-tree variant',
+      );
     }
     default: {
       const fallback = params.response;
@@ -148,9 +161,7 @@ export function extractDynamicsForHash(
 }
 
 // Helpers mirrored from post-processing to avoid import cycles
-function extractTreeDynamics(
-  tree: NonNullable<LinksSuccessResponse['tree']>,
-): LinksDynamics['treeDynamics'] {
+function extractTreeDynamics(tree: LinksTree): LinksDynamics['treeDynamics'] {
   const treeDynamics: LinksDynamics['treeDynamics'] = {
     root: {
       lastUpdated: tree.lastUpdated,
@@ -163,7 +174,7 @@ function extractTreeDynamics(
   let mostCommonTimestamp: string | undefined;
   let timestampCount = 0;
 
-  const queue: NonNullable<LinksSuccessResponse['tree']>[] = [];
+  const queue: LinksTree[] = [];
   if (tree.children) {
     queue.push(...tree.children);
   }
@@ -220,7 +231,7 @@ type LinksStableWithTree = Omit<
 };
 
 function stripLinksTreeDynamics(
-  response: LinksSuccessResponse,
+  response: LinksSuccessResponseWithTree,
 ): LinksStableWithTree {
   // remove dynamics from each tree node if present; always drop root-level timestamp
   function sanitizeNode(node: LinksTree): LinksTree {
