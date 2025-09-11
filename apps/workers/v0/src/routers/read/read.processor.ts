@@ -9,7 +9,6 @@ import {
 } from '@deepcrawl/types';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import type { ORPCContext } from '@/lib/context';
-import { formatDuration } from '@/utils/formater';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import { logDebug, logError } from '@/utils/loggers';
@@ -20,27 +19,9 @@ import {
   processMultiLineLinks,
   removeNavigationAidLinks,
 } from '@/utils/markdown';
+import { getMetrics } from '@/utils/metrics';
 import { cleanEmptyValues } from '@/utils/response/clean-empty-values';
 import { targetUrlHelper } from '@/utils/url/target-url-helper';
-
-/**
- * Calculates performance metrics for the read operation.
- * @param startTime - Timestamp in milliseconds when the operation started.
- * @param endTime - Timestamp in milliseconds when the operation finished.
- * @returns An object with duration metrics.
- * @property readableDuration - Human-readable representation of the duration.
- * @property duration - Duration of the operation in milliseconds.
- * @property startTime - Timestamp in milliseconds when the operation started.
- * @property endTime - Timestamp in milliseconds when the operation finished.
- */
-function getMetrics(startTime: number, endTime: number) {
-  return {
-    readableDuration: formatDuration(endTime - startTime),
-    duration: endTime - startTime,
-    startTime,
-    endTime,
-  };
-}
 
 /**
  * Generate default markdown content when no content can be extracted
