@@ -21,7 +21,6 @@
     "@deepcrawl/db-auth": "workspace:*",
     "@neondatabase/serverless": "^1.0.0",
     "drizzle-orm": "^0.44.2",
-    "hono": "^4.7.10",
     "stoker": "^1.4.2"
   },
   "devDependencies": {
