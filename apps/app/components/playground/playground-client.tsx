@@ -108,7 +108,8 @@ const operations: readonly DeepcrawlOperations[] = [
   'extractLinks',
 ] as const;
 
-// Get API key from environment or use a demo key
+// TODO: NOTE: IMPORTANT: This is a special API key for playground, remove it before production
+// Get API key from environment
 const API_KEY =
   process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY || 'demo-key-for-playground';
 

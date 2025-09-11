@@ -12,6 +12,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
     const apiKey = xApiKey ?? authHeader?.split(' ')[1];
 
+    // TODO: NOTE: IMPORTANT: This is a special API key for playground, remove it before production
     if (apiKey === 'demo-key-for-playground') {
       logDebug('🏗️  skipping API key auth, using cookie auth instead');
       return next();
