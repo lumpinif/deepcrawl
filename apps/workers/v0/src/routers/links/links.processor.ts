@@ -230,10 +230,10 @@ async function processNonTreeRequest({
     };
 
     // Add optional content fields only if they have values (at response root level for non-tree)
-    if (targetScrapeResult?.title) {
+    if (targetScrapeResult?.title && !isMetadata) {
       response.title = targetScrapeResult.title;
     }
-    if (targetScrapeResult?.description) {
+    if (targetScrapeResult?.description && !isMetadata) {
       response.description = targetScrapeResult.description;
     }
     if (isMetadata && targetScrapeResult?.metadata) {
@@ -941,7 +941,7 @@ export async function processLinksRequest(
       };
       linksPostResponse = cleanEmptyValues(responseWithTree);
     } else {
-      // Response without tree - content fields are at response root level
+      // Response without finalTree - content fields are at response root level
       const responseWithoutTree: LinksSuccessResponseWithoutTree = {
         success: true,
         cached: linksCacheIsFresh,
@@ -951,10 +951,10 @@ export async function processLinksRequest(
       };
 
       // Add optional content fields only if they have values
-      if (targetScrapeResult?.title) {
+      if (targetScrapeResult?.title && !isMetadata) {
         responseWithoutTree.title = targetScrapeResult.title;
       }
-      if (targetScrapeResult?.description) {
+      if (targetScrapeResult?.description && !isMetadata) {
         responseWithoutTree.description = targetScrapeResult.description;
       }
       if (isMetadata && targetScrapeResult?.metadata) {
