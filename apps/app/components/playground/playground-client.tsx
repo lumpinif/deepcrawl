@@ -1,5 +1,6 @@
 'use client';
 
+import { DEFAULT_METRICS_OPTIONS } from '@deepcrawl/types/configs';
 import type { LinkIconHandle } from '@deepcrawl/ui/components/icons/link';
 import { LinkIcon } from '@deepcrawl/ui/components/icons/link';
 import {
@@ -140,9 +141,13 @@ export function PlaygroundClient() {
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
 
   // Options state management - separate state for each operation
-  const [readOptions, setReadOptions] = useState<ReadUrlOptions>({ url: '' });
+  const [readOptions, setReadOptions] = useState<ReadUrlOptions>({
+    url: '',
+    metricsOptions: DEFAULT_METRICS_OPTIONS,
+  });
   const [linksOptions, setLinksOptions] = useState<ExtractLinksOptions>({
     url: '',
+    metricsOptions: DEFAULT_METRICS_OPTIONS,
   });
   const [getMarkdownOptions, setGetMarkdownOptions] =
     useState<GetMarkdownOptions>({

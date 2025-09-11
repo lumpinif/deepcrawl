@@ -6,10 +6,12 @@ import {
   DEFAULT_LINKS_OPTIONS,
   DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
   DEFAULT_METADATA_OPTIONS,
+  DEFAULT_METRICS_OPTIONS,
   DEFAULT_READ_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
   DEFAULT_TREE_OPTIONS,
 } from '@deepcrawl/types/configs';
+import type { MetricsOptions } from '@deepcrawl/types/metrics';
 import type { LinksOrder } from '@deepcrawl/types/routers/links/types';
 import type { MetadataOptions } from '@deepcrawl/types/services/metadata/types';
 
@@ -66,6 +68,9 @@ type MetadataOptionsInput =
 type MarkdownOptionsInput =
   | ReadUrlOptions['markdownConverterOptions']
   | GetMarkdownOptions['markdownConverterOptions'];
+type MetricsOptionsInput =
+  | ReadUrlOptions['metricsOptions']
+  | ExtractLinksOptions['metricsOptions'];
 
 interface OptionSwitchProps {
   id: string;
@@ -449,6 +454,32 @@ function MarkdownOptionsComponent({
   );
 }
 
+interface MetricsOptionsComponentProps {
+  idPrefix: string;
+  metricsOptions: MetricsOptionsInput | undefined;
+  onMetricsOptionChange: (key: keyof MetricsOptions, value: boolean) => void;
+}
+
+function MetricsOptionsComponent({
+  idPrefix,
+  metricsOptions,
+  onMetricsOptionChange,
+}: MetricsOptionsComponentProps) {
+  return (
+    <div className="space-y-3">
+      <OptionSwitch
+        checked={Boolean(
+          metricsOptions?.enable ?? DEFAULT_METRICS_OPTIONS.enable,
+        )}
+        id={`${idPrefix}-metrics-enable`}
+        label="Enable Performance Metrics"
+        onCheckedChange={(checked) => onMetricsOptionChange('enable', checked)}
+        tooltip="Include performance timing metrics in the response (duration, start/end times)"
+      />
+    </div>
+  );
+}
+
 interface CollapsibleSectionProps {
   id: string;
   title: string;
@@ -559,13 +590,16 @@ export function OptionsPanel({
       ? keyof NonNullable<ExtractLinksOptions['linkExtractionOptions']>
       : T extends 'markdownConverterOptions'
         ? keyof NonNullable<MarkdownConverterOptions>
-        : never;
+        : T extends 'metricsOptions'
+          ? keyof NonNullable<MetricsOptions>
+          : never;
 
   const updateNestedOptionValue = <
     P extends
       | 'metadataOptions'
       | 'linkExtractionOptions'
-      | 'markdownConverterOptions',
+      | 'markdownConverterOptions'
+      | 'metricsOptions',
   >(
     parentKey: P,
     childKey: NestedOptionKeys<P>,
@@ -820,6 +854,28 @@ export function OptionsPanel({
                 updateNestedOptionValue(
                   'markdownConverterOptions',
                   key as NestedOptionKeys<'markdownConverterOptions'>,
+                  value,
+                )
+              }
+            />
+          </CollapsibleSection>
+
+          <Separator />
+
+          {/* Metrics Options for ReadUrl */}
+          <CollapsibleSection
+            id="readMetricsOptions"
+            isOpen={expandedSections.has('readMetricsOptions')}
+            onToggle={() => toggleSection('readMetricsOptions')}
+            title="Metrics Options"
+          >
+            <MetricsOptionsComponent
+              idPrefix="readUrl"
+              metricsOptions={readOptions.metricsOptions}
+              onMetricsOptionChange={(key, value) =>
+                updateNestedOptionValue(
+                  'metricsOptions',
+                  key as NestedOptionKeys<'metricsOptions'>,
                   value,
                 )
               }
@@ -1109,6 +1165,28 @@ export function OptionsPanel({
                   cacheOptions,
                 });
               }}
+            />
+          </CollapsibleSection>
+
+          <Separator />
+
+          {/* Metrics Options for Extract Links */}
+          <CollapsibleSection
+            id="linksMetricsOptions"
+            isOpen={expandedSections.has('linksMetricsOptions')}
+            onToggle={() => toggleSection('linksMetricsOptions')}
+            title="Metrics Options"
+          >
+            <MetricsOptionsComponent
+              idPrefix="extractLinks"
+              metricsOptions={linksOptions.metricsOptions}
+              onMetricsOptionChange={(key, value) =>
+                updateNestedOptionValue(
+                  'metricsOptions',
+                  key as NestedOptionKeys<'metricsOptions'>,
+                  value,
+                )
+              }
             />
           </CollapsibleSection>
         </CardContent>
