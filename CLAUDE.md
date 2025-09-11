@@ -379,7 +379,7 @@ Based on `.claude/CLAUDE.md` (Ultracite/Biome rules):
 ## Important Notes
 
 - **Node.js**: Requires Node.js >= 20
-- **Package Manager**: Uses pnpm@10.15.0 with workspaces (NEVER use npm - this project uses pnpm)
+- **Package Manager**: Uses pnpm@10.15.1 with workspaces (NEVER use npm - this project uses pnpm)
 - **Deployment**: Cloudflare Workers for backend services
 - **Database**: Dual database setup - Neon PostgreSQL for auth, Cloudflare D1 for data preservation (both with Drizzle ORM)
 - **Authentication**: Better Auth with multiple providers (GitHub, Google, passkeys, magic links)
