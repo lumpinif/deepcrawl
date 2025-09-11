@@ -49,6 +49,12 @@ export class ResponseRecordService {
   async createRequestOptionsHash({
     requestOptions,
   }: CreateRequestOptionsHashParams): Promise<string> {
+    // metricsOptions are not needed for hashing
+    if ('metricsOptions' in requestOptions) {
+      const { metricsOptions: _mO, ...rest } = requestOptions;
+      return await sha256Hash(stableStringify(rest));
+    }
+
     return await sha256Hash(stableStringify(requestOptions));
   }
 
