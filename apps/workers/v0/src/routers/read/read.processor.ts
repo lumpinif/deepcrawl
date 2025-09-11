@@ -144,6 +144,7 @@ export async function processReadRequest(
     cacheOptions,
     markdownConverterOptions,
     cleaningProcessor,
+    metricsOptions,
   } = params;
 
   logDebug(
@@ -192,8 +193,12 @@ export async function processReadRequest(
             cachedResult,
           ) as ReadSuccessResponse;
           parsedResponse.cached = true;
-          const metrics = getMetrics(startTime, performance.now());
-          parsedResponse.metrics = metrics;
+
+          if (metricsOptions?.enable) {
+            const metrics = getMetrics(startTime, performance.now());
+            parsedResponse.metrics = metrics;
+          }
+
           return parsedResponse;
         }
       } catch (error) {
@@ -265,7 +270,6 @@ export async function processReadRequest(
     //   : undefined;
 
     const endRequestTime = performance.now();
-    const metrics = getMetrics(startTime, endRequestTime);
 
     readResponse = cleanEmptyValues<ReadSuccessResponse>({
       success: true,
@@ -274,7 +278,9 @@ export async function processReadRequest(
       title,
       description,
       metadata,
-      metrics,
+      metrics: metricsOptions?.enable
+        ? getMetrics(startTime, endRequestTime)
+        : undefined,
       markdown,
       cleanedHtml: isCleanedHtml ? cleanedHtml : undefined,
       rawHtml: isRawHtml ? rawHtml : undefined,
