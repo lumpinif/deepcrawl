@@ -601,25 +601,38 @@ const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
   rawHtml: true,
 });
 
-export const LinksSuccessResponseSchema = LinksResponseBaseSchema.extend(
-  PartialScrapedDataSchema.shape,
-)
-  .extend({
-    success: z.literal(true).meta({
-      description: 'Indicates that the operation was successful',
-      examples: [true],
+// Base success response fields that are always present
+const LinksSuccessResponseBaseSchema = LinksResponseBaseSchema.extend({
+  success: z.literal(true).meta({
+    description: 'Indicates that the operation was successful',
+    examples: [true],
+  }),
+  cached: z.boolean().meta({
+    description: 'Whether the result was returned from cache',
+    examples: [false],
+  }),
+  ancestors: z
+    .array(z.string())
+    .optional()
+    .meta({
+      description: 'Array of parent URLs leading to this URL',
+      examples: ['https://example.com'],
     }),
-    cached: z.boolean().meta({
-      description: 'Whether the result was returned from cache',
-      examples: [false],
+});
+
+// Response when tree is included - content fields are in tree root, not response root
+const LinksSuccessResponseWithTreeSchema =
+  LinksSuccessResponseBaseSchema.extend({
+    tree: LinksTreeSchema.meta({
+      title: 'LinksTree',
+      description:
+        'Site map tree starting from the root URL (required when tree generation is enabled)',
     }),
-    ancestors: z
-      .array(z.string())
-      .optional()
-      .meta({
-        description: 'Array of parent URLs leading to this URL',
-        examples: ['https://example.com'],
-      }),
+  });
+
+// Response when tree is not included - content fields are in response root
+const LinksSuccessResponseWithoutTreeSchema =
+  LinksSuccessResponseBaseSchema.extend(PartialScrapedDataSchema.shape).extend({
     skippedUrls: SkippedLinksSchema.optional().meta({
       title: 'SkippedLinks',
       description: 'URLs that were skipped during processing with reasons',
@@ -628,24 +641,80 @@ export const LinksSuccessResponseSchema = LinksResponseBaseSchema.extend(
       title: 'ExtractedLinks',
       description: 'Links found on this page, categorized by type',
     }),
-    tree: LinksTreeSchema.optional().meta({
-      title: 'LinksTree',
-      description:
-        'LinksTree - Site map tree starting from the root URL, or undefined if tree generation was disabled',
-    }),
-  })
+  });
+
+// Export individual schemas for direct use
+export {
+  LinksSuccessResponseWithTreeSchema,
+  LinksSuccessResponseWithoutTreeSchema,
+};
+
+// Discriminated union schema
+export const LinksSuccessResponseSchema = z
+  .union([
+    LinksSuccessResponseWithTreeSchema,
+    LinksSuccessResponseWithoutTreeSchema,
+  ])
   .meta({
     title: 'LinksSuccessResponse',
-    description: 'Successful response from the links extraction operation',
+    description:
+      'Successful response from the links extraction operation. Response structure varies based on whether tree generation is enabled.',
     examples: [
+      // Example with tree (content in tree root)
       {
         success: true,
         cached: false,
         targetUrl: 'https://example.com',
         timestamp: '2024-01-15T10:30:00.000Z',
+        ancestors: ['https://example.com'],
+        tree: {
+          url: 'https://example.com',
+          rootUrl: 'https://example.com',
+          name: 'Home',
+          totalUrls: 25,
+          lastUpdated: '2024-01-15T10:30:00.000Z',
+          metadata: {
+            title: 'Example Website',
+            description: 'Welcome to our example website',
+          },
+          extractedLinks: {
+            internal: [
+              'https://example.com/about',
+              'https://example.com/contact',
+            ],
+            external: ['https://external-site.com/reference'],
+            media: {
+              images: ['https://example.com/logo.png'],
+              videos: [],
+              documents: ['https://example.com/brochure.pdf'],
+            },
+          },
+          skippedUrls: {
+            internal: [
+              {
+                url: 'https://example.com/admin',
+                reason: 'Blocked by robots.txt',
+              },
+            ],
+          },
+          children: [
+            {
+              url: 'https://example.com/about',
+              name: 'About',
+              lastUpdated: '2024-01-15T10:30:05.000Z',
+            },
+          ],
+        },
+      },
+      // Example without tree (content in response root)
+      {
+        success: true,
+        cached: false,
+        targetUrl: 'https://example.com',
+        timestamp: '2024-01-15T10:30:00.000Z',
+        ancestors: ['https://example.com'],
         title: 'Example Website',
         description: 'Welcome to our example website',
-        ancestors: ['https://example.com'],
         extractedLinks: {
           internal: [
             'https://example.com/about',
@@ -663,20 +732,6 @@ export const LinksSuccessResponseSchema = LinksResponseBaseSchema.extend(
             {
               url: 'https://example.com/admin',
               reason: 'Blocked by robots.txt',
-            },
-          ],
-        },
-        tree: {
-          url: 'https://example.com',
-          rootUrl: 'https://example.com',
-          name: 'Home',
-          totalUrls: 25,
-          lastUpdated: '2024-01-15T10:30:00.000Z',
-          children: [
-            {
-              url: 'https://example.com/about',
-              name: 'About',
-              lastUpdated: '2024-01-15T10:30:05.000Z',
             },
           ],
         },
@@ -867,94 +922,83 @@ export type SkippedLinks = z.infer<typeof SkippedLinksSchema>;
 export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
 
 /**
- * Represents a successful links POST route response.
- * Contains the scraped data and related information.
+ * Successful links response when tree generation is enabled.
+ * Content fields (title, description, metadata, etc.) are included in the tree root node, not at response root level.
  *
- * @note some root-level fields that are only included if there is no tree (title, description, metadata, extractedLinks, cleanedHtml, skippedUrls), otherwise they are included in the tree data
- *
- * @property success - Whether the operation was successful
- * @property cached - Whether the result is returned from cache
- * @property targetUrl - The URL that was requested to be scraped
- * @property timestamp - ISO timestamp when the request was processed
- * @property ancestors - Array of parent URLs leading to this URL
- * @property skippedUrls - URLs that were skipped during processing
- * @property tree - Site map tree starting from the root URL
- *
- * @example
+ * @example With tree (content in tree root):
  * ```typescript
- * const successResponse: LinksSuccessResponse = {
+ * const responseWithTree: LinksSuccessResponseWithTree = {
  *   success: true,
+ *   cached: false,
  *   targetUrl: "https://example.com",
- *   timestamp: "2025-04-02T14:28:23.000Z",
- *   ancestors: ["https://example.com", "https://example.com/about"],
- *
- *   // optional root-level fields that are only included if there is tree (title, description, metadata, extractedLinks, cleanedHtml, skippedUrls)
- *    title: "Example Website",
- *   description: "Welcome to our example website",
- *   metadata: {
- *     title: "Example Website",
- *     description: "This is an example website"
- *   },
- *   extractedLinks: {
- *     internal: [
- *       'https://example.com/about',
- *       'https://example.com/contact'
- *     ],
- *     external: ['https://external-site.com/reference'],
- *     media: {
- *       images: ['https://example.com/logo.png'],
- *       videos: [],
- *       documents: ['https://example.com/brochure.pdf']
- *     }
- *   },
- *   cleanedHtml: '<div><h1>Example Website</h1><p>Main content...</p></div>',
- *   skippedUrls: {
- *     internal: ["https://example.com/private"],
- *     external: ["https://othersite.com/reference"],
- *     media: {
- *       images: ["https://example.com/images/logo.png"],
- *       videos: ["https://example.com/videos/intro.mp4"],
- *       documents: ["https://example.com/docs/whitepaper.pdf"]
- *     }
- *   },
- *
- *   // tree data including root-level fields
+ *   timestamp: "2024-01-15T10:30:00.000Z",
+ *   ancestors: ["https://example.com"],
  *   tree: {
- *     data: {
- *       url: "https://example.com",
- *       title: "Example Website",
- *       description: "Welcome to our example website",
- *       metadata: {
- *         title: "Example Website",
- *         description: "This is an example website"
- *       },
- *       extractedLinks: {
- *         internal: [
- *           'https://example.com/about',
- *           'https://example.com/contact'
- *         ],
- *         external: ['https://external-site.com/reference'],
- *         media: {
- *           images: ['https://example.com/logo.png'],
- *           videos: [],
- *           documents: ['https://example.com/brochure.pdf']
- *         }
- *       },
- *       cleanedHtml: '<div><h1>Example Website</h1><p>Main content...</p></div>',
- *       skippedUrls: {
- *         internal: ["https://example.com/private"],
- *         external: ["https://othersite.com/reference"],
- *         media: {
- *           images: ["https://example.com/images/logo.png"],
- *           videos: ["https://example.com/videos/intro.mp4"],
- *           documents: ["https://example.com/docs/whitepaper.pdf"]
- *         }
- *       },
- *       lastUpdated: "2025-04-02T14:28:23.000Z",
- *       children: [...]
- *     }
+ *     url: "https://example.com",
+ *     name: "Home",
+ *     lastUpdated: "2024-01-15T10:30:00.000Z",
+ *     metadata: { title: "Example", description: "..." },
+ *     extractedLinks: { internal: [...], external: [...] },
+ *     children: [...]
  *   }
  * };
+ *
+ * if ('tree' in responseWithTree) {
+ *   // TypeScript knows this has tree and no root-level content
+ *   console.log(responseWithTree.tree.metadata?.title);
+ * }
+ * ```
+ */
+export type LinksSuccessResponseWithTree = z.infer<
+  typeof LinksSuccessResponseWithTreeSchema
+>;
+
+/**
+ * Successful links response when tree generation is disabled.
+ * Content fields (title, description, metadata, etc.) are included at response root level.
+ *
+ * @example Without tree (content in response root):
+ * ```typescript
+ * const responseWithoutTree: LinksSuccessResponseWithoutTree = {
+ *   success: true,
+ *   cached: false,
+ *   targetUrl: "https://example.com",
+ *   timestamp: "2024-01-15T10:30:00.000Z",
+ *   title: "Example Website",
+ *   description: "Welcome to our site",
+ *   metadata: { title: "Example", description: "..." },
+ *   extractedLinks: { internal: [...], external: [...] }
+ * };
+ *
+ * if (!('tree' in responseWithoutTree) || !responseWithoutTree.tree) {
+ *   // TypeScript knows this has root-level content and no tree
+ *   console.log(responseWithoutTree.title);
+ * }
+ * ```
+ */
+export type LinksSuccessResponseWithoutTree = z.infer<
+  typeof LinksSuccessResponseWithoutTreeSchema
+>;
+
+/**
+ * Discriminated union representing a successful links extraction response.
+ * The structure varies based on whether tree generation is enabled.
+ *
+ * Use type guards to narrow the type:
+ * - `'tree' in response && response.tree` - response with tree
+ * - `!('tree' in response) || !response.tree` - response without tree
+ *
+ * @example Type narrowing:
+ * ```typescript
+ * function handleResponse(response: LinksSuccessResponse) {
+ *   if ('tree' in response && response.tree) {
+ *     // TypeScript infers LinksSuccessResponseWithTree
+ *     console.log(response.tree.metadata?.title);
+ *   } else {
+ *     // TypeScript infers LinksSuccessResponseWithoutTree
+ *     console.log(response.title);
+ *   }
+ * }
  * ```
  */
 export type LinksSuccessResponse = z.infer<typeof LinksSuccessResponseSchema>;
