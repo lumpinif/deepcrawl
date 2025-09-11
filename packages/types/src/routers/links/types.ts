@@ -58,8 +58,11 @@ export type LinksOrder = z.infer<typeof LinksOrderSchema>;
  * Schema for tree options.
  * Defines options for building a site map tree.
  *
- * @property folderFirst - Whether to place folders before leaf nodes in the tree
- * @property linksOrder - How to order links within each folder
+ * @property {boolean} [folderFirst] - Whether to place folders before leaf nodes in the tree
+ * @property {'page'|'alphabetical'} [linksOrder] - How to order links within each folder
+ * @property {boolean} [extractedLinks] - Whether to include extracted links for each node in the tree
+ * @property {boolean} [subdomainAsRootUrl] - Whether to treat subdomain as root URL
+ * @property {boolean} [isPlatformUrl] - Whether the URL is a platform URL
  */
 export const TreeOptionsSchema = z
   .object({
@@ -148,20 +151,25 @@ const { tree, metricsOptions } = DEFAULT_LINKS_OPTIONS;
  * Schema for links route options.
  * Defines the configuration for a links operation.
  *
- * @property url - The URL to scrape
- * @property tree - Whether to build a site map tree
- * @property metadata - Whether to extract metadata from the page
- * @property cleanedHtml - Whether to return cleaned HTML
- * @property robots - Whether to fetch and parse robots.txt
- * @property sitemapXML - Whether to fetch and parse sitemap.xml
- * @property linksFromTarget - Whether to extract links from the target page
- * @property metadataOptions - Options for metadata extraction
- * @property linkExtractionOptions - Options for link extraction
- * @property htmlRewriterOptions - Options for HTML cleaning
- * @property subdomainAsRootUrl - Whether to exclude subdomain as root URL
- * @property isPlatformUrl - Whether the URL is a platform URL
- * @property cacheOptions - Cache configuration for links operation based on KV put options except for `metadata`
- * @property metricsOptions - Options for metrics for links operation
+ * @property {string} url - The URL to extract links from
+ * @property {boolean} [tree] - Whether to build a site map tree
+ * @property {Object} [linkExtractionOptions] - Options for link extraction
+ * @property {Object} [cacheOptions] - Cache configuration for links operation
+ * @property {Object} [metricsOptions] - Options for metrics for links operation
+ * @property {boolean} [folderFirst] - Whether to place folders before leaf nodes in the tree
+ * @property {'page'|'alphabetical'} [linksOrder] - How to order links within each folder
+ * @property {boolean} [extractedLinks] - Whether to include extracted links for each node in the tree
+ * @property {boolean} [subdomainAsRootUrl] - Whether to treat subdomain as root URL
+ * @property {boolean} [isPlatformUrl] - Whether the URL is a platform URL
+ * @property {boolean} [metadata] - Whether to extract metadata from the page
+ * @property {boolean} [cleanedHtml] - Whether to return cleaned HTML
+ * @property {boolean} [robots] - Whether to fetch and parse robots.txt
+ * @property {boolean} [sitemapXML] - Whether to fetch and parse sitemap.xml
+ * @property {Object} [metadataOptions] - Options for metadata extraction
+ * @property {'cheerio-reader'|'html-rewriter'} [cleaningProcessor] - The cleaning processor to use
+ * @property {Object} [htmlRewriterOptions] - Options for HTML cleaning with html-rewriter
+ * @property {Object} [readerCleaningOptions] - Options for HTML cleaning with cheerio-reader
+ * @property {Object} [fetchOptions] - Options for the fetch request
  *
  *
  * @example
@@ -419,6 +427,78 @@ export const SkippedLinksSchema = z
     ],
   });
 
+/**
+ * @name  LinksTree  can be imported as `LinksTree` or `Tree`
+ * @description Represents a node in the site map tree.
+ * Each node contains information about a URL and its child pages.
+ *
+ * @property {string} url - The URL of this node
+ * @property {string} [rootUrl] - The root URL of the website
+ * @property {string} [name] - The name of this node
+ * @property {number} [totalUrls] - Total number of URLs in the tree
+ * @property {string} lastUpdated - ISO timestamp when this node was last updated
+ * @property {string|null} [lastVisited] - ISO timestamp when this URL was last visited
+ * @property {LinksTree[]} [children] - Child pages of this URL
+ * @property {string} [error] - Error message if there was an issue processing this URL
+ * @property {Object} [metadata] - Metadata extracted from the page
+ * @property {string} [cleanedHtml] - Cleaned HTML content of the page
+ * @property {Object} [extractedLinks] - Extracted links from the page
+ * @property {Object} [skippedUrls] - URLs that were skipped during processing
+ *
+ * @example
+ * ```typescript
+ * const treeNode: LinksTree = {
+ *   url: "https://example.com",
+ *   rootUrl: "https://example.com",
+ *   name: "example",
+ *   totalUrls: 10,
+ *   lastUpdated: "2025-04-02T14:28:23.000Z",
+ *   lastVisited: "2025-04-02T14:28:23.000Z",
+ *   children: [
+ *     {
+ *       url: "https://example.com/about",
+ *       name: "about",
+ *       lastUpdated: "2025-04-01T10:15:30.000Z",
+ *       lastVisited: "2025-04-02T14:28:25.000Z"
+ *     }
+ *   ],
+ *   metadata: {
+ *     title: "Example Website",
+ *     description: "This is an example website"
+ *   },
+ *   extractedLinks: {
+ *     internal: [
+ *       'https://example.com/about',
+ *       'https://example.com/contact'
+ *     ],
+ *     external: [
+ *       'https://othersite.com/reference',
+ *       'https://api.example.org/data'
+ *     ],
+ *     media: {
+ *       images: [
+ *         'https://example.com/images/logo.png',
+ *         'https://example.com/images/banner.jpg'
+ *       ],
+ *       videos: [
+ *         'https://example.com/videos/intro.mp4'
+ *       ],
+ *       documents: [
+ *         'https://example.com/docs/whitepaper.pdf'
+ *       ]
+ *     }
+ *   },
+ *   skippedUrls: {
+ *     internal: [
+ *       { url: "https://example.com/private", reason: "Blocked by robots.txt" }
+ *     ],
+ *     external: [
+ *       { url: "https://othersite.com", reason: "External domain" }
+ *     ]
+ *   }
+ * };
+ * ```
+ */
 export type LinksTree = z.infer<typeof LinksTreeSchema>;
 
 export const LinksTreeSchema = z
@@ -785,79 +865,6 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
   ],
 });
 
-/**
- * @name    can be imported as LinksTree or Tree
- * @description Represents a node in the site map tree.
- * Each node contains information about a URL and its child pages.
- *
- * @property url - The URL of this node
- * @property rootUrl - The root URL of the website
- * @property name - The name of this node
- * @property totalUrls - Total number of URLs in the tree
- * @property lastUpdated - ISO timestamp when this node was last updated
- * @property lastVisited - ISO timestamp when this URL was last visited
- * @property children - Child pages of this URL
- * @property error - Error message if there was an issue processing this URL
- * @property metadata - Metadata extracted from the page
- * @property cleanedHtml - Cleaned HTML content of the page
- * @property extractedLinks - Extracted links from the page
- * @property skippedUrls - URLs that were skipped during processing
- *
- * @example
- * ```typescript
- * const treeNode: LinksTree = {
- *   url: "https://example.com",
- *   rootUrl: "https://example.com",
- *   name: "example",
- *   totalUrls: 10,
- *   lastUpdated: "2025-04-02T14:28:23.000Z",
- *   lastVisited: "2025-04-02T14:28:23.000Z",
- *   children: [
- *     {
- *       url: "https://example.com/about",
- *       name: "about",
- *       lastUpdated: "2025-04-01T10:15:30.000Z",
- *       lastVisited: "2025-04-02T14:28:25.000Z"
- *     }
- *   ],
- *   metadata: {
- *     title: "Example Website",
- *     description: "This is an example website"
- *   },
- *   extractedLinks: {
- *     internal: [
- *       'https://example.com/about',
- *       'https://example.com/contact'
- *     ],
- *     external: [
- *       'https://othersite.com/reference',
- *       'https://api.example.org/data'
- *     ],
- *     media: {
- *       images: [
- *         'https://example.com/images/logo.png',
- *         'https://example.com/images/banner.jpg'
- *       ],
- *       videos: [
- *         'https://example.com/videos/intro.mp4'
- *       ],
- *       documents: [
- *         'https://example.com/docs/whitepaper.pdf'
- *       ]
- *     },
- *     skippedUrls: {
- *       internal: [
- *         { url: "https://example.com/private", reason: "Blocked by robots.txt" }
- *       ],
- *       external: [
- *         { url: "https://othersite.com", reason: "External domain" }
- *       ]
- *     }
- *   }
- * };
- * ```
- */
-
 // type PartialExceptUrl<T extends z.infer<typeof LinksOptionsSchema>> = {
 //   url: T['url'];
 // } & Partial<Omit<T, 'url'>>;
@@ -868,20 +875,25 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
  *
  * @see {@link LinksOptionsSchema}
  *
- * @property url - The URL to scrape
- * @property tree - Whether to build a site map tree
- * @property metadata - Whether to extract metadata from the page
- * @property cleanedHtml - Whether to return cleaned HTML
- * @property robots - Whether to fetch and parse robots.txt
- * @property sitemapXML - Whether to fetch and parse sitemap.xml
- * @property linksFromTarget - Whether to extract links from the target page
- * @property metadataOptions - Options for metadata extraction
- * @property linkExtractionOptions - Options for link extraction
- * @property htmlRewriterOptions - Options for HTML cleaning
- * @property subdomainAsRootUrl - Whether to exclude subdomain as root URL
- * @property isPlatformUrl - Whether the URL is a platform URL
- * @property cacheOptions - Cache configuration for links operation based on KV put options except for `metadata`
- * @property metricsOptions - Options for metrics for links operation
+ * @property {string} url - The URL to extract links from
+ * @property {boolean} [tree] - Whether to build a site map tree
+ * @property {Object} [linkExtractionOptions] - Options for link extraction
+ * @property {Object} [cacheOptions] - Cache configuration for links operation
+ * @property {Object} [metricsOptions] - Options for metrics for links operation
+ * @property {boolean} [folderFirst] - Whether to place folders before leaf nodes in the tree
+ * @property {'page'|'alphabetical'} [linksOrder] - How to order links within each folder
+ * @property {boolean} [extractedLinks] - Whether to include extracted links for each node in the tree
+ * @property {boolean} [subdomainAsRootUrl] - Whether to treat subdomain as root URL
+ * @property {boolean} [isPlatformUrl] - Whether the URL is a platform URL
+ * @property {boolean} [metadata] - Whether to extract metadata from the page
+ * @property {boolean} [cleanedHtml] - Whether to return cleaned HTML
+ * @property {boolean} [robots] - Whether to fetch and parse robots.txt
+ * @property {boolean} [sitemapXML] - Whether to fetch and parse sitemap.xml
+ * @property {Object} [metadataOptions] - Options for metadata extraction
+ * @property {'cheerio-reader'|'html-rewriter'} [cleaningProcessor] - The cleaning processor to use
+ * @property {Object} [htmlRewriterOptions] - Options for HTML cleaning with html-rewriter
+ * @property {Object} [readerCleaningOptions] - Options for HTML cleaning with cheerio-reader
+ * @property {Object} [fetchOptions] - Options for the fetch request
  *
  * @example
  * ```typescript
