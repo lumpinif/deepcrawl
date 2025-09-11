@@ -438,13 +438,6 @@ export const LinksTreeSchema = z
         description: 'Total number of URLs discovered in the entire tree',
         examples: [150],
       }),
-    executionTime: z
-      .string()
-      .optional()
-      .meta({
-        description: 'Time taken to process this page',
-        examples: ['0.2s'],
-      }),
     lastUpdated: z.string().meta({
       description: 'ISO timestamp when this page was last crawled',
       examples: ['2024-01-15T10:30:00.000Z'],
@@ -523,7 +516,6 @@ export const LinksTreeSchema = z
         rootUrl: 'https://example.com',
         name: 'About Us',
         totalUrls: 150,
-        executionTime: '1.2s',
         lastUpdated: '2024-01-15T10:30:00.000Z',
         lastVisited: '2024-01-15T10:30:00.000Z',
         metadata: {
@@ -621,13 +613,6 @@ export const LinksSuccessResponseSchema = LinksResponseBaseSchema.extend(
       description: 'Whether the result was returned from cache',
       examples: [false],
     }),
-    executionTime: z
-      .string()
-      .optional()
-      .meta({
-        description: 'Time taken to execute the request',
-        examples: ['0.2s'],
-      }),
     ancestors: z
       .array(z.string())
       .optional()
@@ -655,10 +640,9 @@ export const LinksSuccessResponseSchema = LinksResponseBaseSchema.extend(
     examples: [
       {
         success: true,
+        cached: false,
         targetUrl: 'https://example.com',
         timestamp: '2024-01-15T10:30:00.000Z',
-        cached: false,
-        executionTime: '0.2s',
         title: 'Example Website',
         description: 'Welcome to our example website',
         ancestors: ['https://example.com'],
@@ -687,7 +671,6 @@ export const LinksSuccessResponseSchema = LinksResponseBaseSchema.extend(
           rootUrl: 'https://example.com',
           name: 'Home',
           totalUrls: 25,
-          executionTime: '0.2s',
           lastUpdated: '2024-01-15T10:30:00.000Z',
           children: [
             {
@@ -733,7 +716,6 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
  * @property rootUrl - The root URL of the website
  * @property name - The name of this node
  * @property totalUrls - Total number of URLs in the tree
- * @property executionTime - Execution time of the request in milliseconds
  * @property lastUpdated - ISO timestamp when this node was last updated
  * @property lastVisited - ISO timestamp when this URL was last visited
  * @property children - Child pages of this URL
@@ -750,7 +732,6 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
  *   rootUrl: "https://example.com",
  *   name: "example",
  *   totalUrls: 10,
- *   executionTime: "1234ms",
  *   lastUpdated: "2025-04-02T14:28:23.000Z",
  *   lastVisited: "2025-04-02T14:28:23.000Z",
  *   children: [
@@ -889,13 +870,12 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  * Represents a successful links POST route response.
  * Contains the scraped data and related information.
  *
- * @note some root-level fields that are only included if there is no tree (executionTime, title, description, metadata, extractedLinks, cleanedHtml, skippedUrls), otherwise they are included in the tree data
+ * @note some root-level fields that are only included if there is no tree (title, description, metadata, extractedLinks, cleanedHtml, skippedUrls), otherwise they are included in the tree data
  *
  * @property success - Whether the operation was successful
  * @property cached - Whether the result is returned from cache
  * @property targetUrl - The URL that was requested to be scraped
  * @property timestamp - ISO timestamp when the request was processed
- * @property executionTime - Execution time of the request in milliseconds
  * @property ancestors - Array of parent URLs leading to this URL
  * @property skippedUrls - URLs that were skipped during processing
  * @property tree - Site map tree starting from the root URL
@@ -909,7 +889,25 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  *   ancestors: ["https://example.com", "https://example.com/about"],
  *
  *   // optional root-level fields that are only included if there is tree (title, description, metadata, extractedLinks, cleanedHtml, skippedUrls)
- *   executionTime: "1234ms",
+ *    title: "Example Website",
+ *   description: "Welcome to our example website",
+ *   metadata: {
+ *     title: "Example Website",
+ *     description: "This is an example website"
+ *   },
+ *   extractedLinks: {
+ *     internal: [
+ *       'https://example.com/about',
+ *       'https://example.com/contact'
+ *     ],
+ *     external: ['https://external-site.com/reference'],
+ *     media: {
+ *       images: ['https://example.com/logo.png'],
+ *       videos: [],
+ *       documents: ['https://example.com/brochure.pdf']
+ *     }
+ *   },
+ *   cleanedHtml: '<div><h1>Example Website</h1><p>Main content...</p></div>',
  *   skippedUrls: {
  *     internal: ["https://example.com/private"],
  *     external: ["https://othersite.com/reference"],
@@ -924,6 +922,34 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  *   tree: {
  *     data: {
  *       url: "https://example.com",
+ *       title: "Example Website",
+ *       description: "Welcome to our example website",
+ *       metadata: {
+ *         title: "Example Website",
+ *         description: "This is an example website"
+ *       },
+ *       extractedLinks: {
+ *         internal: [
+ *           'https://example.com/about',
+ *           'https://example.com/contact'
+ *         ],
+ *         external: ['https://external-site.com/reference'],
+ *         media: {
+ *           images: ['https://example.com/logo.png'],
+ *           videos: [],
+ *           documents: ['https://example.com/brochure.pdf']
+ *         }
+ *       },
+ *       cleanedHtml: '<div><h1>Example Website</h1><p>Main content...</p></div>',
+ *       skippedUrls: {
+ *         internal: ["https://example.com/private"],
+ *         external: ["https://othersite.com/reference"],
+ *         media: {
+ *           images: ["https://example.com/images/logo.png"],
+ *           videos: ["https://example.com/videos/intro.mp4"],
+ *           documents: ["https://example.com/docs/whitepaper.pdf"]
+ *         }
+ *       },
  *       lastUpdated: "2025-04-02T14:28:23.000Z",
  *       children: [...]
  *     }
