@@ -35,9 +35,9 @@ export const MetricsOptionsSchema = z
 
 /**
  * Type representing metrics collection configuration options.
- * 
+ *
  * @property {boolean} [enable] - Whether to collect and include metrics in responses
- * 
+ *
  * @example
  * ```typescript
  * const options: MetricsOptions = { enable: true };
@@ -100,7 +100,7 @@ export const MetricsSchema = z
  * Type representing performance metrics data.
  * Contains timing information for operations including readable duration and precise timestamps.
  *
- * @property {string} readableDuration - Human-readable duration (e.g., "0.2s", "1.5s") 
+ * @property {string} readableDuration - Human-readable duration (e.g., "0.2s", "1.5s")
  * @property {number} durationMs - Total operation duration in milliseconds
  * @property {number} startTimeMs - Unix timestamp in milliseconds when operation started
  * @property {number} endTimeMs - Unix timestamp in milliseconds when operation finished
