@@ -190,7 +190,6 @@ export function buildLinksTree({
 
   const rootNode: Tree = {
     totalUrls: 1, // Start with 1 to count the root node itself
-    executionTime: undefined,
     name: getTreeNameForUrl(normalizedRootUrl, isPlatformUrl),
     url: normalizedRootUrl,
     rootUrl: normalizedRootUrl,
@@ -462,7 +461,6 @@ export async function mergeNewLinksIntoTree({
   // Create a new tree object with properties in the desired order
   const updatedTree: Tree = {
     totalUrls: existingTree.totalUrls || 1, // Start with 1 to count the root node itself
-    executionTime: existingTree.executionTime || undefined,
     name:
       existingTree.name ||
       (existingTree.url

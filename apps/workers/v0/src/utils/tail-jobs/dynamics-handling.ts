@@ -14,7 +14,7 @@ type ReadSuccessResponseWithoutMetrics = Omit<ReadSuccessResponse, 'metrics'>;
 
 type LinksSuccessResponseWithoutRootDynamics = Omit<
   LinksSuccessResponse,
-  'timestamp' | 'executionTime'
+  'timestamp'
 >;
 type LinksStableWithoutTree = Omit<
   LinksSuccessResponseWithoutRootDynamics,
@@ -27,7 +27,6 @@ interface LinksDynamics {
     root: {
       lastUpdated: string;
       lastVisited?: string | null;
-      executionTime?: string;
     };
     childrenLastUpdated?: string;
     visitedNodes?: { [url: string]: string | null };
@@ -36,7 +35,7 @@ interface LinksDynamics {
 
 type Dynamics =
   | { metrics?: ReadSuccessResponse['metrics'] }
-  | { timestamp?: string; executionTime?: string }
+  | { timestamp?: string }
   | LinksDynamics
   | null;
 
@@ -121,12 +120,12 @@ export function extractDynamicsForHash(
       }
 
       const r = params.response as LinksSuccessResponse;
-      if (!r.tree) {
-        // links without tree: simple timestamp/executionTime stripping
-        const { timestamp, executionTime, ...rest } = r;
+      if (isLinksResponseWithoutTree(r)) {
+        // links without tree: simple timestamp stripping
+        const { timestamp, ...rest } = r;
         return {
           responseForHash: rest as LinksStableWithoutTree,
-          dynamics: { timestamp, executionTime },
+          dynamics: { timestamp },
         };
       }
 
@@ -156,7 +155,6 @@ function extractTreeDynamics(
     root: {
       lastUpdated: tree.lastUpdated,
       lastVisited: tree.lastVisited,
-      executionTime: tree.executionTime,
     },
   };
 
@@ -209,38 +207,29 @@ function extractTreeDynamics(
   return treeDynamics;
 }
 
-type LinksTreeNode = NonNullable<LinksSuccessResponse['tree']>;
-
 type LinksTreeWithoutDynamics = Omit<
-  LinksTreeNode,
-  'lastVisited' | 'lastUpdated' | 'executionTime' | 'children'
+  LinksTree,
+  'lastVisited' | 'lastUpdated' | 'children'
 > & { children?: LinksTreeWithoutDynamics[] };
 
 type LinksStableWithTree = Omit<
-  LinksSuccessResponse,
-  'timestamp' | 'executionTime' | 'tree'
-> & { tree?: LinksTreeWithoutDynamics };
+  LinksSuccessResponseWithTree,
+  'timestamp' | 'tree'
+> & {
+  tree?: LinksTreeWithoutDynamics;
+};
 
 function stripLinksTreeDynamics(
   response: LinksSuccessResponse,
 ): LinksStableWithTree {
-  // remove dynamics from each tree node if present; always drop root-level timestamp/executionTime
-  function sanitizeNode(
-    node: NonNullable<LinksSuccessResponse['tree']>,
-  ): NonNullable<LinksSuccessResponse['tree']> {
+  // remove dynamics from each tree node if present; always drop root-level timestamp
+  function sanitizeNode(node: LinksTree): LinksTree {
     const { children, ...rest } = node;
     const sanitized = {
       ...rest,
-      lastVisited: undefined as unknown as NonNullable<
-        LinksSuccessResponse['tree']
-      >['lastVisited'],
-      lastUpdated: undefined as unknown as NonNullable<
-        LinksSuccessResponse['tree']
-      >['lastUpdated'],
-      executionTime: undefined as unknown as NonNullable<
-        LinksSuccessResponse['tree']
-      >['executionTime'],
-    } as NonNullable<LinksSuccessResponse['tree']>;
+      lastVisited: undefined as unknown as LinksTree['lastVisited'],
+      lastUpdated: undefined as unknown as LinksTree['lastUpdated'],
+    } as LinksTree;
 
     if (children && Array.isArray(children)) {
       sanitized.children = children.map(sanitizeNode);
@@ -249,7 +238,7 @@ function stripLinksTreeDynamics(
     return sanitized;
   }
 
-  const { timestamp: _ts, executionTime: _et, ...rootRest } = response; // top-level timestamp and executionTime are not needed for hashing
+  const { timestamp: _ts, ...rootRest } = response; // top-level timestamp is not needed for hashing
 
   const sanitizedTree = response.tree ? sanitizeNode(response.tree) : undefined;
 

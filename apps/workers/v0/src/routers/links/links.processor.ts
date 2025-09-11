@@ -150,7 +150,6 @@ async function processNonTreeRequest({
           ...cachedResponse,
           cached: true,
           timestamp: new Date().toISOString(),
-          executionTime: formatDuration(performance.now() - startTime),
         };
       }
     } catch (error) {
@@ -211,7 +210,6 @@ async function processNonTreeRequest({
       cached: false, // Always false for non-tree requests (no cache operations)
       targetUrl,
       timestamp,
-      executionTime,
     };
 
     // Add optional fields only if they have values
