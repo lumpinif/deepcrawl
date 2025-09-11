@@ -1,6 +1,6 @@
 import type HCaptcha from '@hcaptcha/react-hcaptcha';
 import type { TurnstileInstance } from '@marsidev/react-turnstile';
-import { type RefObject, useRef } from 'react';
+import { useRef } from 'react';
 
 // Default captcha endpoints
 const DEFAULT_CAPTCHA_ENDPOINTS = ['/sign-up', '/login', '/forget-password'];
@@ -45,8 +45,8 @@ export function useCaptcha() {
     recaptchaNet: false,
     enterprise: false,
   };
-  // biome-ignore lint/suspicious/noExplicitAny: false positive
-  const captchaRef = useRef<any>(null);
+
+  const captchaRef = useRef<TurnstileInstance | HCaptcha | null>(null);
 
   const executeCaptcha = async (action: string) => {
     if (!captcha) {
@@ -58,13 +58,13 @@ export function useCaptcha() {
 
     switch (captcha.provider) {
       case 'cloudflare-turnstile': {
-        const turnstileRef = captchaRef as RefObject<TurnstileInstance>;
-        response = turnstileRef.current.getResponse();
+        const ref = captchaRef.current as TurnstileInstance | null;
+        response = ref?.getResponse();
         break;
       }
       case 'hcaptcha': {
-        const hcaptchaRef = captchaRef as RefObject<HCaptcha>;
-        response = hcaptchaRef.current.getResponse();
+        const ref = captchaRef.current as HCaptcha | null;
+        response = ref?.getResponse();
         break;
       }
     }
