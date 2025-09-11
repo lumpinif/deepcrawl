@@ -22,15 +22,39 @@ const { markdown, rawHtml, metricsOptions } = DEFAULT_READ_OPTIONS;
 const { enabled: defaultCacheEnabled } = DEFAULT_CACHE_OPTIONS;
 
 /**
- * Extends `ScrapeOptionsSchema`.
- * Options for read operation.
- * Controls how the read operation is performed.
+ * Configuration schema for read operations that extract content from web pages.
+ * Extends ScrapeOptionsSchema with additional read-specific options.
+ *
+ * @property {string} url - Target URL to read and extract content from
+ * @property {boolean} [markdown] - Whether to extract markdown content from the page
+ * @property {boolean} [rawHtml] - Whether to include raw HTML content in response
+ * @property {Object} [cacheOptions] - Caching configuration for Cloudflare KV storage
+ * @property {Object} [markdownConverterOptions] - Configuration for markdown conversion process
+ * @property {Object} [metricsOptions] - Performance metrics collection settings
+ *
+ * @see {@link ScrapeOptionsSchema} for inherited scraping options
+ * @see {@link CacheOptionsSchema} for cacheOptions structure
+ * @see {@link MarkdownConverterOptionsSchema} for markdownConverterOptions structure
+ * @see {@link MetricsOptionsSchema} for metricsOptions structure
+ *
+ * @example
+ * ```typescript
+ * const options = {
+ *   url: 'https://example.com',
+ *   markdown: true,
+ *   rawHtml: false,
+ *   cacheOptions: { expirationTtl: 3600 }
+ * };
+ * ```
  */
 export const ReadOptionsSchema = z
   .object({
     /**
-     * The URL to scrape.
-     * Must be a valid URL string.
+     * The target URL to read and extract content from.
+     * Accepts both full URLs and domain names (protocol will be inferred).
+     *
+     * @example 'https://example.com/article'
+     * @example 'example.com'
      */
     url: z.string().meta({
       description: 'The URL to read and extract content from',
@@ -38,8 +62,12 @@ export const ReadOptionsSchema = z
     }),
 
     /**
-     * Whether to extract markdown from the page.
-     * Default: true
+     * Whether to extract and return markdown content from the page.
+     * When enabled, HTML is converted to clean, readable markdown format.
+     *
+     * @default true
+     * @example true // Returns markdown content
+     * @example false // Skips markdown extraction
      */
     markdown: smartboolOptionalWithDefault(markdown).meta({
       description: 'Whether to extract markdown from the page.',
@@ -47,8 +75,12 @@ export const ReadOptionsSchema = z
     }),
 
     /**
-     * Whether to return raw HTML.
-     * Default: false
+     * Whether to include raw HTML content in the response.
+     * Useful when you need the original HTML structure preserved.
+     *
+     * @default false
+     * @example true // Includes raw HTML in response
+     * @example false // Excludes raw HTML
      */
     rawHtml: smartboolOptionalWithDefault(rawHtml).meta({
       description: 'Whether to return raw HTML.',
@@ -56,9 +88,13 @@ export const ReadOptionsSchema = z
     }),
 
     /**
-     * Cache configuration for read operation based on KV put options except for `metadata`
-     * An object containing the `expiration` (optional) and `expirationTtl` (optional) attributes
+     * Caching configuration for the read operation.
+     * Controls how long the response should be cached in Cloudflare KV storage.
+     * Based on KV put options excluding metadata.
+     *
      * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
+     * @example { expirationTtl: 3600 } // Cache for 1 hour
+     * @example { expiration: 1640995200 } // Cache until specific timestamp
      */
     cacheOptions: CacheOptionsSchema.optional().meta({
       description:
@@ -67,9 +103,11 @@ export const ReadOptionsSchema = z
     }),
 
     /**
-     * Options for markdown conversion.
-     * Controls how markdown is converted.
+     * Configuration options for markdown conversion process.
+     * Controls how HTML is transformed into markdown format.
+     *
      * @see {@link MarkdownConverterOptionsSchema}
+     * @example { preserveImages: true, stripScripts: false }
      */
     markdownConverterOptions: MarkdownConverterOptionsSchema.optional().meta({
       title: 'MarkdownConverterOptions',
@@ -78,7 +116,14 @@ export const ReadOptionsSchema = z
       examples: [DEFAULT_MARKDOWN_CONVERTER_OPTIONS],
     }),
 
-    /* Options for metrics */
+    /**
+     * Performance metrics collection settings.
+     * Controls whether timing and performance data should be included in the response.
+     *
+     * @default { enable: true }
+     * @example { enable: true } // Include timing metrics
+     * @example { enable: false } // Skip metrics collection
+     */
     metricsOptions: MetricsOptionsSchema.optional().meta({
       description: 'Options for metrics.',
       default: metricsOptions,
@@ -98,10 +143,42 @@ export const ReadOptionsSchema = z
     ],
   });
 
+/**
+ * Base response schema containing common fields for all read operation responses.
+ * Provides fundamental information about the operation status and target.
+ *
+ * @property {boolean} success - Whether the read operation completed successfully
+ * @property {boolean} [cached] - Whether response was served from cache
+ * @property {string} targetUrl - Final URL processed after redirects
+ *
+ * @example
+ * ```typescript
+ * {
+ *   success: true,
+ *   cached: false,
+ *   targetUrl: 'https://example.com'
+ * }
+ * ```
+ */
 export const ReadResponseBaseSchema = z.object({
+  /**
+   * Indicates whether the read operation completed successfully.
+   *
+   * @example true // Operation succeeded
+   * @example false // Operation failed
+   */
   success: z.boolean().meta({
     description: 'Indicates whether the operation was successful',
   }),
+
+  /**
+   * Indicates if the response was served from cache.
+   * Currently always false as responses are not cached for privacy reasons.
+   * Caching should be implemented by the consuming application.
+   *
+   * @default false
+   * @example false // Response was not cached
+   */
   cached: z
     .boolean()
     .default(defaultCacheEnabled)
@@ -111,15 +188,76 @@ export const ReadResponseBaseSchema = z.object({
         'The flag to indicate whether the response was cached. This is always false since we are not caching the response for privacy reasons. You need to cache it yourself in your application.',
       examples: [defaultCacheEnabled],
     }),
+
+  /**
+   * The final URL that was processed after any redirects.
+   * May differ from the original requested URL due to redirects or canonicalization.
+   *
+   * @example 'https://example.com/final-page'
+   * @example 'https://www.example.com' // After redirect from example.com
+   */
   targetUrl: z.string().meta({
     description: 'The URL that was requested to be processed',
     examples: ['https://example.com'],
   }),
 });
 
+/**
+ * Schema for error responses from read operations.
+ * Inherits from BaseErrorResponseSchema with error details and status codes.
+ *
+ * @property {false} success - Always false for error responses
+ * @property {string} error - Error message describing what went wrong
+ * @property {string} targetUrl - URL that was being processed when error occurred
+ *
+ * @see {@link BaseErrorResponseSchema} for base error response structure
+ *
+ * @example
+ * ```typescript
+ * {
+ *   success: false,
+ *   error: 'Failed to fetch URL',
+ *   targetUrl: 'https://example.com'
+ * }
+ * ```
+ */
 export const ReadErrorResponseSchema = BaseErrorResponseSchema;
 
+/**
+ * Schema for successful read operation responses.
+ * Contains extracted content, metadata, and optional performance metrics.
+ * Extends ReadResponseBaseSchema with scraped data and content fields.
+ *
+ * @property {true} success - Always true for successful responses
+ * @property {boolean} [cached] - Whether response was served from cache
+ * @property {string} targetUrl - Final URL processed after redirects
+ * @property {string} [markdown] - Extracted markdown content when enabled
+ * @property {string} [rawHtml] - Raw HTML content when enabled
+ * @property {Object} [metrics] - Performance timing data when enabled
+ *
+ * @see {@link ScrapedDataSchema} for inherited scraped data properties
+ * @see {@link MetricsSchema} for metrics structure
+ *
+ * @example
+ * ```typescript
+ * {
+ *   success: true,
+ *   cached: false,
+ *   targetUrl: 'https://example.com/article',
+ *   title: 'Example Article',
+ *   markdown: '# Example Article\n\nContent here...',
+ *   metadata: { title: 'Example', description: '...' },
+ *   metrics: { durationMs: 200, readableDuration: '0.2s' }
+ * }
+ * ```
+ */
 export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
+  /**
+   * Always true for successful responses.
+   * Used for discriminating between success and error response types.
+   *
+   * @example true
+   */
   success: z.literal(true).meta({
     description: 'Indicates that the operation was successful',
     examples: [true],
@@ -127,6 +265,14 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
 })
   .extend(ScrapedDataSchema.omit({ rawHtml: true }).shape)
   .extend({
+    /**
+     * Extracted markdown content from the web page.
+     * Clean, readable text format converted from HTML.
+     * Only included when markdown option is enabled.
+     *
+     * @example '# Article Title\n\nThis is the main content...'
+     * @example undefined // When markdown extraction is disabled
+     */
     markdown: z
       .string()
       .optional()
@@ -136,6 +282,15 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
           '# Example Article\n\nThis is the main content of the article.',
         ],
       }),
+
+    /**
+     * Raw HTML content of the web page.
+     * Original HTML structure preserved as-is.
+     * Only included when rawHtml option is enabled.
+     *
+     * @example '<html><head><title>Example</title></head><body>...</body></html>'
+     * @example undefined // When rawHtml extraction is disabled
+     */
     rawHtml: z
       .string()
       .optional()
@@ -145,6 +300,15 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
           '<html><head><title>Example</title></head><body><h1>Example Article</h1></body></html>',
         ],
       }),
+
+    /**
+     * Performance metrics for the read operation.
+     * Includes timing data and operation duration.
+     * Only included when metricsOptions.enable is true.
+     *
+     * @example { readableDuration: '0.2s', durationMs: 200, startTimeMs: 1704067800000 }
+     * @example undefined // When metrics are disabled
+     */
     metrics: MetricsSchema.optional().meta({
       description: 'Metrics for the read operation.',
       examples: [
@@ -205,40 +369,151 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
 // } & Partial<Omit<T, 'url'>>;
 
 /**
- * @note `ReadOptions` extends `ScrapeOptions`
- * The types from `ReadOptions` are overridden to be partial except for `url` for convenience.
- * Type representing options for read operations.
- * Derived from the readOptionsSchema.
+ * Configuration options for read operations.
+ * Extends ScrapeOptions with read-specific settings like markdown extraction and caching.
+ * All fields are optional except for `url` which is required.
+ *
+ * @property {string} url - Target URL to read and extract content from
+ * @property {boolean} [markdown] - Whether to extract markdown content from the page
+ * @property {boolean} [rawHtml] - Whether to include raw HTML content in response
+ * @property {Object} [cacheOptions] - Caching configuration for Cloudflare KV storage
+ * @property {Object} [markdownConverterOptions] - Configuration for markdown conversion process
+ * @property {Object} [metricsOptions] - Performance metrics collection settings
+ *
+ * @property {boolean} [metadata] - Whether to extract metadata from the page
+ * @property {boolean} [cleanedHtml] - Whether to return cleaned HTML
+ * @property {boolean} [robots] - Whether to fetch and parse robots.txt
+ * @property {boolean} [sitemapXML] - Whether to fetch and parse sitemap.xml
+ * @property {Object} [metadataOptions] - Options for metadata extraction
+ * @property {'cheerio-reader'|'html-rewriter'} [cleaningProcessor] - The cleaning processor to use
+ * @property {Object} [htmlRewriterOptions] - Options for HTML cleaning with html-rewriter
+ * @property {Object} [readerCleaningOptions] - Options for HTML cleaning with cheerio-reader
+ * @property {Object} [fetchOptions] - Options for the fetch request
+ *
+ * @see {@link CacheOptionsSchema} for cacheOptions structure
+ * @see {@link MarkdownConverterOptionsSchema} for markdownConverterOptions structure
+ * @see {@link MetricsOptionsSchema} for metricsOptions structure
+ * @see {@link MetadataOptionsSchema} for metadataOptions structure
+ * @see {@link HTMLRewriterOptionsSchema} for htmlRewriterOptions structure
+ * @see {@link ReaderCleaningOptionsSchema} for readerCleaningOptions structure
+ * @see {@link FetchOptionsSchema} for fetchOptions structure
+ *
+ * @example
+ * ```typescript
+ * const options: ReadOptions = {
+ *   url: 'https://example.com',
+ *   markdown: true,
+ *   rawHtml: false,
+ *   metadata: true,
+ *   cleanedHtml: false,
+ *   cleaningProcessor: 'cheerio-reader',
+ *   cacheOptions: { expirationTtl: 3600 }
+ * };
+ * ```
  */
 export type ReadOptions = z.infer<typeof ReadOptionsSchema>;
 
 /**
- * Base type for read responses.
- * Contains common properties for both success and error responses.
+ * Base type for all read operation responses.
+ * Contains common properties shared by both successful and error responses.
+ *
+ * @property {boolean} success - Whether the read operation completed successfully
+ * @property {boolean} [cached] - Whether response was served from cache
+ * @property {string} targetUrl - Final URL processed after redirects
+ *
+ * @example
+ * ```typescript
+ * const baseResponse: ReadResponseBase = {
+ *   success: true,
+ *   cached: false,
+ *   targetUrl: 'https://example.com'
+ * };
+ * ```
  */
 export type ReadResponseBase = z.infer<typeof ReadResponseBaseSchema>;
 
 /**
- * Type representing an error response.
+ * Type for error responses from read operations.
+ * Includes error details and status information when operations fail.
+ *
+ * @property {false} success - Always false for error responses
+ * @property {string} error - Error message describing what went wrong
+ * @property {string} targetUrl - URL that was being processed when error occurred
+ *
+ * @example
+ * ```typescript
+ * const errorResponse: ReadErrorResponse = {
+ *   success: false,
+ *   error: 'Failed to fetch URL',
+ *   targetUrl: 'https://example.com'
+ * };
+ * ```
  */
 export type ReadErrorResponse = z.infer<typeof ReadErrorResponseSchema>;
 
 /**
- * Type representing a success response.
+ * Type for successful read operation responses.
+ * Contains extracted content, metadata, and optional performance metrics.
+ *
+ * @property {true} success - Always true for successful responses
+ * @property {boolean} [cached] - Whether response was served from cache
+ * @property {string} targetUrl - Final URL processed after redirects
+ * @property {string} title - Extracted page title
+ * @property {string} [description] - Extracted page description
+ * @property {Object} [metadata] - Extracted page metadata (SEO, social, etc.)
+ * @property {string} [cleanedHtml] - Sanitized HTML with unnecessary elements removed
+ * @property {Object} [metaFiles] - Meta files like robots.txt and sitemap.xml
+ * @property {string} [markdown] - Extracted markdown content when enabled
+ * @property {string} [rawHtml] - Raw HTML content when enabled
+ * @property {Object} [metrics] - Performance timing data when enabled
+ *
+ * @example
+ * ```typescript
+ * const successResponse: ReadSuccessResponse = {
+ *   success: true,
+ *   cached: false,
+ *   targetUrl: 'https://example.com/article',
+ *   title: 'Example Article',
+ *   markdown: '# Example Article\n\nContent...',
+ *   metadata: { title: 'Example', description: 'Description' },
+ *   metrics: { durationMs: 200, readableDuration: '0.2s' }
+ * };
+ * ```
  */
 export type ReadSuccessResponse = z.infer<typeof ReadSuccessResponseSchema>;
 
 /**
- * Type representing a string response.
+ * Simple string response type for lightweight read operations.
+ * Returns only the extracted content as a plain string.
+ *
+ * @example 'This is the extracted text content from the webpage.'
  */
 export type ReadStringResponse = string;
 
 /**
- * Type representing a POST response.
+ * Union type for POST endpoint responses.
+ * Can be either a successful response with data or an error response.
+ *
+ * @typedef {ReadSuccessResponse | ReadErrorResponse} ReadPostResponse
+ * @property {ReadSuccessResponse} - Successful response with extracted content and metadata
+ * @property {ReadErrorResponse} - Error response with failure details
+ *
+ * @example ReadSuccessResponse // When operation succeeds
+ * @example ReadErrorResponse // When operation fails
  */
 export type ReadPostResponse = ReadSuccessResponse | ReadErrorResponse;
 
 /**
- * Type representing a response.
+ * Complete union type for all possible read operation responses.
+ * Covers both simple string responses and structured POST responses.
+ *
+ * @typedef {ReadStringResponse | ReadPostResponse} ReadResponse
+ * @property {string} - Simple string response with extracted text content
+ * @property {ReadSuccessResponse} - Structured success response with full data
+ * @property {ReadErrorResponse} - Structured error response with failure details
+ *
+ * @example string // Simple text response
+ * @example ReadSuccessResponse // Structured success response
+ * @example ReadErrorResponse // Structured error response
  */
 export type ReadResponse = ReadStringResponse | ReadPostResponse;
