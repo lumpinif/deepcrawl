@@ -1,4 +1,24 @@
 import { z } from 'zod/v4';
+import { smartboolOptionalWithDefault } from '../common/smart-schemas';
+import { DEFAULT_METRICS_OPTIONS } from '../configs/default';
+
+const { enable } = DEFAULT_METRICS_OPTIONS;
+
+export const MetricsOptionsSchema = z
+  .object({
+    enable: smartboolOptionalWithDefault(enable).meta({
+      description: 'Whether to enable metrics.',
+      default: enable,
+      examples: [enable, !enable],
+    }),
+  })
+  .default(DEFAULT_METRICS_OPTIONS)
+  .meta({
+    title: 'MetricsOptions',
+    description: 'Options for metrics.',
+    default: DEFAULT_METRICS_OPTIONS,
+    examples: [DEFAULT_METRICS_OPTIONS],
+  });
 
 export const MetricsSchema = z
   .object({

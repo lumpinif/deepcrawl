@@ -140,6 +140,10 @@ export const DEFAULT_READER_CLEANING_OPTIONS = {
 
 export const DEFAULT_FETCH_OPTIONS = {} as const;
 
+export const DEFAULT_METRICS_OPTIONS = {
+  enable: true,
+} as const;
+
 /** Markdown Converter */
 
 export const DEFAULT_MARKDOWN_CONVERTER_OPTIONS = {
@@ -180,6 +184,7 @@ export const DEFAULT_READ_OPTIONS = {
   markdown: true,
   rawHtml: false,
   cacheOptions: DEFAULT_CACHE_OPTIONS,
+  metricsOptions: DEFAULT_METRICS_OPTIONS,
   ...DEFAULT_SCRAPE_OPTIONS,
 } as const;
 

@@ -6,7 +6,7 @@ import {
   DEFAULT_READ_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
 } from '@deepcrawl/types/configs';
-import { MetricsSchema } from '@deepcrawl/types/metrics';
+import { MetricsOptionsSchema, MetricsSchema } from '@deepcrawl/types/metrics';
 import { CacheOptionsSchema } from '@deepcrawl/types/services/cache/types';
 import { MarkdownConverterOptionsSchema } from '@deepcrawl/types/services/markdown/types';
 
@@ -18,7 +18,7 @@ import { z } from 'zod/v4';
 
 /* NOTE: IN ZOD V4: The input type of all z.coerce schemas is now unknown. THIS MIGHT BREAKES CURRENT TYPES */
 
-const { markdown, rawHtml } = DEFAULT_READ_OPTIONS;
+const { markdown, rawHtml, metricsOptions } = DEFAULT_READ_OPTIONS;
 const { enabled: defaultCacheEnabled } = DEFAULT_CACHE_OPTIONS;
 
 /**
@@ -76,6 +76,13 @@ export const ReadOptionsSchema = z
       description: 'Options for markdown conversion.',
       default: DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
       examples: [DEFAULT_MARKDOWN_CONVERTER_OPTIONS],
+    }),
+
+    /* Options for metrics */
+    metricsOptions: MetricsOptionsSchema.optional().meta({
+      description: 'Options for metrics.',
+      default: metricsOptions,
+      examples: [metricsOptions, !metricsOptions],
     }),
   })
   .extend(ScrapeOptionsSchema.shape)
