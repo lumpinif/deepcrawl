@@ -44,6 +44,9 @@
     },
     "./configs": {
       "types": "./src/configs/index.ts"
+    },
+    "./metrics": {
+      "types": "./src/metrics/index.ts"
     }
   },
   "scripts": {

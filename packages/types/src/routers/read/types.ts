@@ -6,6 +6,7 @@ import {
   DEFAULT_READ_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
 } from '@deepcrawl/types/configs';
+import { MetricsSchema } from '@deepcrawl/types/metrics';
 import { CacheOptionsSchema } from '@deepcrawl/types/services/cache/types';
 import { MarkdownConverterOptionsSchema } from '@deepcrawl/types/services/markdown/types';
 
@@ -111,38 +112,6 @@ export const ReadResponseBaseSchema = z.object({
 
 export const ReadErrorResponseSchema = BaseErrorResponseSchema;
 
-export const MetricsSchema = z
-  .object({
-    readableDuration: z.string().meta({
-      description: 'Human-readable representation of the operation duration',
-      examples: ['0.2s'],
-    }),
-    duration: z.number().meta({
-      description: 'Duration of the operation in milliseconds',
-      examples: [200],
-    }),
-    startTime: z.number().meta({
-      description: 'Timestamp in milliseconds when the operation started',
-      examples: [1704067800000],
-    }),
-    endTime: z.number().meta({
-      description: 'Timestamp in milliseconds when the operation finished',
-      examples: [1704067800200],
-    }),
-  })
-  .meta({
-    title: 'Metrics',
-    description: 'Performance metrics for the read operation',
-    examples: [
-      {
-        readableDuration: '0.2s',
-        duration: 200,
-        startTime: 1704067800000,
-        endTime: 1704067800200,
-      },
-    ],
-  });
-
 export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
   success: z.literal(true).meta({
     description: 'Indicates that the operation was successful',
@@ -174,9 +143,9 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
       examples: [
         {
           readableDuration: '0.2s',
-          duration: 200,
-          startTime: 1704067800000,
-          endTime: 1704067800200,
+          durationMs: 200,
+          startTimeMs: 1704067800000,
+          endTimeMs: 1704067800200,
         },
       ],
     }),
@@ -216,9 +185,9 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
         },
         metrics: {
           readableDuration: '0.2s',
-          duration: 200,
-          startTime: 1704067800000,
-          endTime: 1704067800200,
+          durationMs: 200,
+          startTimeMs: 1704067800000,
+          endTimeMs: 1704067800200,
         },
       },
     ],
