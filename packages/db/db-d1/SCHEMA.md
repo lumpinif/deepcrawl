@@ -87,7 +87,6 @@ Stores activity logs for both `/links` endpoint methods (`getLinks` and `extract
 
 **Success Response Fields (null for errors):**
 - `cached`: Whether response was cached (integer with boolean mode)
-- `executionTime`: Execution time string (text)
 - `title`: Page title (text)
 - `description`: Page description (text)
 - `cleanedHtml`: Cleaned HTML content (text)
