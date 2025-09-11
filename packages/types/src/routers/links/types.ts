@@ -6,6 +6,7 @@ import {
   DEFAULT_LINKS_OPTIONS,
   DEFAULT_TREE_OPTIONS,
 } from '@deepcrawl/types/configs';
+import { MetricsOptionsSchema, MetricsSchema } from '@deepcrawl/types/metrics';
 import { CacheOptionsSchema } from '@deepcrawl/types/services/cache/types';
 
 import {
@@ -141,7 +142,7 @@ export const TreeOptionsSchema = z
  */
 export type TreeOptions = z.infer<typeof TreeOptionsSchema>;
 
-const { tree } = DEFAULT_LINKS_OPTIONS;
+const { tree, metricsOptions } = DEFAULT_LINKS_OPTIONS;
 
 /**
  * Schema for links route options.
@@ -159,6 +160,9 @@ const { tree } = DEFAULT_LINKS_OPTIONS;
  * @property htmlRewriterOptions - Options for HTML cleaning
  * @property subdomainAsRootUrl - Whether to exclude subdomain as root URL
  * @property isPlatformUrl - Whether the URL is a platform URL
+ * @property cacheOptions - Cache configuration for links operation based on KV put options except for `metadata`
+ * @property metricsOptions - Options for metrics for links operation
+ *
  *
  * @example
  * ```typescript
@@ -217,6 +221,13 @@ export const LinksOptionsSchema = z
         'Cache configuration for links operation based on KV put options except for `metadata`',
       default: DEFAULT_CACHE_OPTIONS,
       examples: [DEFAULT_CACHE_OPTIONS],
+    }),
+
+    /* Options for metrics */
+    metricsOptions: MetricsOptionsSchema.optional().meta({
+      description: 'Options for metrics for links operation.',
+      default: metricsOptions,
+      examples: [metricsOptions, !metricsOptions],
     }),
   })
   .extend(TreeOptionsSchema.shape)
@@ -618,6 +629,18 @@ const LinksSuccessResponseBaseSchema = LinksResponseBaseSchema.extend({
       description: 'Array of parent URLs leading to this URL',
       examples: ['https://example.com'],
     }),
+  metrics: MetricsSchema.optional().meta({
+    title: 'Metrics',
+    description: 'Metrics for the links extraction operation',
+    examples: [
+      {
+        readableDuration: '0.2s',
+        durationMs: 200,
+        startTimeMs: 1704067800000,
+        endTimeMs: 1704067800200,
+      },
+    ],
+  }),
 });
 
 // Response when tree is included - content fields are in tree root, not response root
@@ -857,6 +880,8 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
  * @property htmlRewriterOptions - Options for HTML cleaning
  * @property subdomainAsRootUrl - Whether to exclude subdomain as root URL
  * @property isPlatformUrl - Whether the URL is a platform URL
+ * @property cacheOptions - Cache configuration for links operation based on KV put options except for `metadata`
+ * @property metricsOptions - Options for metrics for links operation
  *
  * @example
  * ```typescript

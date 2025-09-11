@@ -209,5 +209,6 @@ export const DEFAULT_LINKS_OPTIONS = {
   linkExtractionOptions: DEFAULT_LINK_EXTRACTION_OPTIONS,
   cacheOptions: DEFAULT_CACHE_OPTIONS,
   treeOptions: DEFAULT_TREE_OPTIONS,
+  metricsOptions: DEFAULT_METRICS_OPTIONS,
   ...DEFAULT_SCRAPE_OPTIONS,
 } as const;
