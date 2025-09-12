@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { authClient } from '@/lib/auth.client';
 import { authViewRoutes } from '@/routes/auth';
@@ -31,6 +31,7 @@ function cleanupMultiSessionCookies() {
 export function Logout() {
   const signingOut = useRef(false);
   const queryClient = useQueryClient();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect');
 
@@ -52,6 +53,9 @@ export function Logout() {
 
           // This may not be needed if using the multi-session plugin
           cleanupMultiSessionCookies();
+
+          // Force refresh server-rendered components to clear stale session data
+          router.refresh();
 
           onSuccess();
         },
