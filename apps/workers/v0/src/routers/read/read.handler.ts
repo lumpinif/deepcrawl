@@ -43,6 +43,7 @@ export const readGETHandler = authed
       const readErrorResponse: ReadErrorResponse = {
         success: false,
         targetUrl: url, // url here is actually the request url which might be different from the target url in the request processor TODO: consider making it consistent in the future from the ReadErrorResponseSchema
+        timestamp: requestTimestamp,
         error: errorMessage,
       };
 
@@ -98,6 +99,7 @@ export const readPOSTHandler = authed
       const readErrorResponse: ReadErrorResponse = {
         success: false,
         targetUrl: url,
+        timestamp: requestTimestamp,
         error: errorMessage,
       };
 
