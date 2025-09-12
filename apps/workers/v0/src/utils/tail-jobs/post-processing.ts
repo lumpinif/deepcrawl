@@ -112,7 +112,7 @@ export function schedulePostProcessing(
           requestId: c.var.requestId,
           success,
           cached: c.cacheHit,
-          requestTimestamp,
+          requestTimestamp: dynamics?.timestamp ?? requestTimestamp,
           requestUrl,
           requestOptions,
           executionTimeMs: performance.now() - startedAt,
