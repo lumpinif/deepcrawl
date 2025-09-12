@@ -16,17 +16,6 @@ import {
   isLinksResponseWithTree,
 } from '@/routers/links/links.processor';
 
-type ReadSuccessResponseWithoutMetrics = Omit<ReadSuccessResponse, 'metrics'>;
-
-type LinksSuccessResponseWithoutRootDynamics = Omit<
-  LinksSuccessResponse,
-  'timestamp' | 'metrics'
->;
-type LinksStableWithoutTree = Omit<
-  LinksSuccessResponseWithoutRootDynamics,
-  'tree'
->;
-
 interface LinksDynamics {
   timestamp: string;
   metrics?: LinksSuccessResponse['metrics'];
@@ -41,10 +30,25 @@ interface LinksDynamics {
 }
 
 interface ReadDynamics {
+  timestamp: string;
   metrics?: ReadSuccessResponse['metrics'];
 }
 
 type Dynamics = ReadDynamics | LinksDynamics | null;
+
+type ReadSuccessResponseWithoutDynamics = Omit<
+  ReadSuccessResponse,
+  'metrics' | 'timestamp'
+>;
+
+type LinksSuccessResponseWithoutRootDynamics = Omit<
+  LinksSuccessResponse,
+  'timestamp' | 'metrics'
+>;
+type LinksStableWithoutTree = Omit<
+  LinksSuccessResponseWithoutRootDynamics,
+  'tree'
+>;
 
 export type AnyResponseTypes =
   | ReadStringResponse
@@ -54,7 +58,7 @@ export type AnyResponseTypes =
 export interface ExtractedDynamicsForHashResult {
   responseForHash:
     | AnyResponseTypes
-    | ReadSuccessResponseWithoutMetrics
+    | ReadSuccessResponseWithoutDynamics
     | LinksStableWithoutTree
     | LinksStableWithTree;
   dynamics: Dynamics;
@@ -112,10 +116,11 @@ export function extractDynamicsForHash(
       }
 
       // Only 'read/readUrl' is handled
-      const { metrics, ...rest } = params.response as ReadSuccessResponse;
+      const { metrics, timestamp, ...rest } =
+        params.response as ReadSuccessResponse;
       return {
-        responseForHash: rest as ReadSuccessResponseWithoutMetrics,
-        dynamics: { metrics },
+        responseForHash: rest as ReadSuccessResponseWithoutDynamics,
+        dynamics: { metrics, timestamp },
       };
     }
 

@@ -153,6 +153,8 @@ export async function processReadRequest(
     // `params: ${JSON.stringify(params, null, 2)}`,
   );
 
+  const timestamp = new Date().toISOString();
+
   // Initialize activity logging
   const targetUrl = targetUrlHelper(url, true);
 
@@ -201,6 +203,8 @@ export async function processReadRequest(
             // set metrics to undefined if metrics are not enabled
             parsedResponse.metrics = undefined;
           }
+
+          parsedResponse.timestamp = timestamp;
 
           return parsedResponse;
         }
@@ -275,6 +279,7 @@ export async function processReadRequest(
     readResponse = cleanEmptyValues<ReadSuccessResponse>({
       success: true,
       cached: isReadCacheFresh,
+      timestamp,
       targetUrl,
       title,
       description,
