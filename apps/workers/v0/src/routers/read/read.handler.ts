@@ -2,6 +2,7 @@ import type { ReadErrorResponse, ReadSuccessResponse } from '@deepcrawl/types';
 import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
 import { schedulePostProcessing } from '@/utils/tail-jobs/post-processing';
+import { targetUrlHelper } from '@/utils/url/target-url-helper';
 import { processReadRequest } from './read.processor';
 
 export const readGETHandler = authed
@@ -40,9 +41,12 @@ export const readGETHandler = authed
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
 
+      const targetUrl = targetUrlHelper(url, true); // normalized target url for the `targetUrl` and response hash
+
       const readErrorResponse: ReadErrorResponse = {
         success: false,
-        targetUrl: url, // url here is actually the request url which might be different from the target url in the request processor TODO: consider making it consistent in the future from the ReadErrorResponseSchema
+        requestUrl: url,
+        targetUrl: targetUrl,
         timestamp: requestTimestamp,
         error: errorMessage,
       };
@@ -96,9 +100,12 @@ export const readPOSTHandler = authed
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
 
+      const targetUrl = targetUrlHelper(url, true); // normalized target url for the `targetUrl` and response hash
+
       const readErrorResponse: ReadErrorResponse = {
         success: false,
-        targetUrl: url,
+        requestUrl: url,
+        targetUrl: targetUrl,
         timestamp: requestTimestamp,
         error: errorMessage,
       };
