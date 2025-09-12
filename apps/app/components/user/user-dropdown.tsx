@@ -27,6 +27,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@deepcrawl/ui/components/ui/popover';
+import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
 import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
 import { IconBook } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
@@ -43,13 +44,15 @@ import {
 } from '@/query/query-options.client';
 import { LayoutViewToggle } from '../layout-toggle';
 
-function UserAvatar({ user }: { user: Session['user'] | LDSUser }) {
+function UserAvatar({ user }: { user: Session['user'] | LDSUser | undefined }) {
   return (
     <Avatar className="size-6 cursor-pointer rounded-full ring-0 ring-transparent">
-      <AvatarImage alt={user.name} src={user.image || ''} />
+      <AvatarImage alt={user?.name} src={user?.image || ''} />
       <AvatarFallback className="rounded-full">
-        {user.name?.charAt(0).toUpperCase() ||
-          user.email?.charAt(0).toUpperCase()}
+        {user?.name?.charAt(0).toUpperCase() ||
+          user?.email?.charAt(0).toUpperCase() || (
+            <Skeleton className="size-6 rounded-full" />
+          )}
       </AvatarFallback>
     </Avatar>
   );
@@ -84,8 +87,8 @@ export function UserDropdown({
   // Use React Query data if available (fresh), fallback to server props (SSR/initial load)
   const deviceSessions = deviceSessionsQuery ?? deviceSessionsProps;
 
-  // Determine current user: prioritize React Query session, fallback to server props
-  const user = currentSession?.user ?? session.user;
+  // Determine current user: prioritize React Query session
+  const user = currentSession?.user;
 
   // Filter to show only other accounts (not current user) - following Better Auth demo pattern
   const otherSessions = deviceSessions
@@ -124,9 +127,11 @@ export function UserDropdown({
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <UserAvatar user={user} />
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user.name}</span>
+                    <span className="truncate font-semibold">
+                      {user?.name || <Skeleton className="h-3 w-1/2" />}
+                    </span>
                     <span className="truncate font-medium text-xs">
-                      {user.email}
+                      {user?.email || <Skeleton className="h-3 w-full" />}
                     </span>
                   </div>
                 </div>
