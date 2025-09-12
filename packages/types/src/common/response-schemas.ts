@@ -19,17 +19,25 @@ import * as z from 'zod/v4';
  */
 export const BaseErrorResponseSchema = z
   .object({
+    /* Indicates that the operation failed */
     success: z.literal(false).meta({
       description: 'Indicates that the operation failed',
       examples: [false],
     }),
+    /* The URL that was being processed when the error occurred */
     targetUrl: z.string().meta({
       description: 'The URL that was being processed when the error occurred',
       examples: ['https://example.com/article'],
     }),
+    /* Error message describing what went wrong */
     error: z.string().meta({
       description: 'Error message describing what went wrong',
       examples: ['Failed to fetch: 404 Not Found'],
+    }),
+    /* ISO timestamp when the error occurred */
+    timestamp: z.string().meta({
+      description: 'ISO timestamp when the error occurred',
+      examples: ['2024-01-15T10:30:00.000Z'],
     }),
   })
   .meta({

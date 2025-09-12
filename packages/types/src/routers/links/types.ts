@@ -508,6 +508,7 @@ export const LinksTreeSchema = z
       description: 'The URL of this page',
       examples: ['https://example.com/about'],
     }),
+    /* The root URL of the website being crawled */
     rootUrl: z
       .string()
       .optional()
@@ -515,6 +516,7 @@ export const LinksTreeSchema = z
         description: 'The root URL of the website being crawled',
         examples: ['https://example.com'],
       }),
+    /* The display name or title of this page */
     name: z
       .string()
       .optional()
@@ -522,6 +524,7 @@ export const LinksTreeSchema = z
         description: 'The display name or title of this page',
         examples: ['About Us'],
       }),
+    /* Total number of URLs discovered in the entire tree */
     totalUrls: z
       .number()
       .optional()
@@ -529,10 +532,12 @@ export const LinksTreeSchema = z
         description: 'Total number of URLs discovered in the entire tree',
         examples: [150],
       }),
+    /* ISO timestamp when this page was last crawled */
     lastUpdated: z.string().meta({
       description: 'ISO timestamp when this page was last crawled',
       examples: ['2024-01-15T10:30:00.000Z'],
     }),
+    /* ISO timestamp when this page was last visited */
     lastVisited: z
       .string()
       .nullable()
@@ -542,6 +547,7 @@ export const LinksTreeSchema = z
           'ISO timestamp when this page was last visited (null if never visited)',
         examples: ['2024-01-15T10:30:00.000Z'],
       }),
+    /* Error message if there was an issue processing this page */
     error: z
       .string()
       .optional()
@@ -549,23 +555,27 @@ export const LinksTreeSchema = z
         description: 'Error message if there was an issue processing this page',
         examples: ['Failed to fetch: 404 Not Found'],
       }),
+    /* Extracted metadata from the page (title, description, etc.) */
     metadata: PageMetadataSchema.optional().meta({
       title: 'PageMetadata',
       description:
         'Extracted metadata from the page (title, description, etc.)',
     }),
+    /* Cleaned HTML content of the page */
     cleanedHtml: z.string().optional().meta({
       description: 'Cleaned HTML content of the page',
     }),
+    /* Links found on this page, categorized by type */
     extractedLinks: ExtractedLinksSchema.optional().meta({
       title: 'ExtractedLinks',
       description: 'Links found on this page, categorized by type',
     }),
+    /* URLs that were skipped during processing with reasons */
     skippedUrls: SkippedLinksSchema.optional().meta({
       title: 'SkippedLinks',
       description: 'URLs that were skipped during processing with reasons',
     }),
-    // Add the recursive children property using getter
+    /* Array of child LinksTree nodes, each representing a page found under this URL. This creates a recursive tree structure for the entire website hierarchy. */
     get children(): z.ZodOptional<z.ZodArray<typeof LinksTreeSchema>> {
       return z
         .array(LinksTreeSchema)
@@ -674,13 +684,16 @@ export const LinksTreeSchema = z
   });
 
 const LinksResponseBaseSchema = z.object({
+  /* Indicates whether the operation was successful */
   success: z.boolean().meta({
     description: 'Indicates whether the operation was successful',
   }),
+  /* The URL that was requested to be processed */
   targetUrl: z.string().meta({
     description: 'The URL that was requested to be processed',
     examples: ['https://example.com'],
   }),
+  /* ISO timestamp when the request was processed */
   timestamp: z.string().meta({
     description: 'ISO timestamp when the request was processed',
     examples: ['2024-01-15T10:30:00.000Z'],
@@ -694,14 +707,17 @@ const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
 
 // Base success response fields that are always present
 const LinksSuccessResponseBaseSchema = LinksResponseBaseSchema.extend({
+  /* Indicates that the operation was successful */
   success: z.literal(true).meta({
     description: 'Indicates that the operation was successful',
     examples: [true],
   }),
+  /* Whether the result was returned from cache */
   cached: z.boolean().meta({
     description: 'Whether the result was returned from cache',
     examples: [false],
   }),
+  /* Array of parent URLs leading to this URL */
   ancestors: z
     .array(z.string())
     .optional()
@@ -709,6 +725,7 @@ const LinksSuccessResponseBaseSchema = LinksResponseBaseSchema.extend({
       description: 'Array of parent URLs leading to this URL',
       examples: ['https://example.com'],
     }),
+  /* Metrics for the links extraction operation */
   metrics: MetricsSchema.optional().meta({
     title: 'Metrics',
     description: 'Metrics for the links extraction operation',
@@ -726,6 +743,7 @@ const LinksSuccessResponseBaseSchema = LinksResponseBaseSchema.extend({
 // Response when tree is included - content fields are in tree root, not response root
 const LinksSuccessResponseWithTreeSchema =
   LinksSuccessResponseBaseSchema.extend({
+    /* Site map tree starting from the root URL (required when tree generation is enabled) */
     tree: LinksTreeSchema.meta({
       title: 'LinksTree',
       description:
@@ -736,10 +754,12 @@ const LinksSuccessResponseWithTreeSchema =
 // Response when tree is not included - content fields are in response root
 const LinksSuccessResponseWithoutTreeSchema =
   LinksSuccessResponseBaseSchema.extend(PartialScrapedDataSchema.shape).extend({
+    /* URLs that were skipped during processing with reasons */
     skippedUrls: SkippedLinksSchema.optional().meta({
       title: 'SkippedLinks',
       description: 'URLs that were skipped during processing with reasons',
     }),
+    /* Links found on this page, categorized by type */
     extractedLinks: ExtractedLinksSchema.optional().meta({
       title: 'ExtractedLinks',
       description: 'Links found on this page, categorized by type',
@@ -843,10 +863,7 @@ export const LinksSuccessResponseSchema = z
   });
 
 export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
-  timestamp: z.string().meta({
-    description: 'ISO timestamp when the error occurred',
-    examples: ['2024-01-15T10:30:00.000Z'],
-  }),
+  /* LinksTree - Partial site map tree if available, or undefined if no tree could be generated */
   tree: LinksTreeSchema.optional().meta({
     title: 'LinksTree',
     description:
