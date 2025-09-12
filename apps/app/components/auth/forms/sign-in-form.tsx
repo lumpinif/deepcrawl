@@ -157,7 +157,7 @@ export function SignInForm({
 
                 <Link
                   className="text-muted-foreground text-sm hover:text-foreground hover:underline"
-                  href={`${authViewRoutes.forgotPassword}${isHydrated ? window.location.search : ''}`}
+                  href={`/${authViewRoutes.forgotPassword}${isHydrated ? window.location.search : ''}`}
                 >
                   Forgot password?
                 </Link>

@@ -39,8 +39,7 @@ export function AuthForm({
 
   useEffect(() => {
     if (path && !getAuthViewByPath(authViewRoutes, path)) {
-      console.error(`Invalid auth view: ${path}`);
-      router.replace(`${authViewRoutes.login}${window.location.search}`);
+      router.replace(`/${authViewRoutes.login}${window.location.search}`);
     }
   }, [path, router]);
 

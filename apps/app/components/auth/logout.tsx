@@ -36,7 +36,11 @@ export function Logout() {
   const redirectTo = searchParams.get('redirect');
 
   const { onSuccess, isPending } = useOnSuccessTransition({
-    redirectTo: redirectTo ? `/${redirectTo}` : `/${authViewRoutes.login}`,
+    redirectTo: redirectTo 
+      ? redirectTo.startsWith('/') 
+        ? redirectTo 
+        : `/${redirectTo}`
+      : `/${authViewRoutes.login}`,
   });
 
   useEffect(() => {

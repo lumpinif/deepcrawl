@@ -147,7 +147,7 @@ export function SignUpForm({
       if ('token' in data && data.token) {
         await onSuccess();
       } else {
-        router.push(`${authViewRoutes.login}${window.location.search}`);
+        router.push(`/${authViewRoutes.login}${window.location.search}`);
         toast.success('Please check your email to verify your account.');
       }
     } catch (error) {
