@@ -362,6 +362,7 @@ export function createAuthConfig(env: Env) {
       crossSubDomainCookies: {
         enabled: !isDevelopment,
         domain: isDevelopment ? undefined : 'deepcrawl.dev',
+        additionalCookies: [LAST_USED_LOGIN_METHOD_COOKIE_NAME],
       },
     },
     rateLimit: {
