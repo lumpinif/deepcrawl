@@ -1,6 +1,7 @@
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import '@deepcrawl/ui/globals.css';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Providers } from '@/components/providers';
 
 export default function RootLayout({
@@ -32,6 +33,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>{children}</Providers>
+        <SpeedInsights />
       </body>
     </html>
   );
