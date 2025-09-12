@@ -200,6 +200,16 @@ export const ReadResponseBaseSchema = z.object({
     description: 'The URL that was requested to be processed',
     examples: ['https://example.com'],
   }),
+
+  /**
+   * ISO timestamp when the request was processed.
+   *
+   * @example '2025-09-12T10:30:00.000Z'
+   */
+  timestamp: z.string().meta({
+    description: 'ISO timestamp when the request was processed',
+    examples: ['2025-09-12T10:30:00.000Z'],
+  }),
 });
 
 /**
@@ -209,6 +219,7 @@ export const ReadResponseBaseSchema = z.object({
  * @property {false} success - Always false for error responses
  * @property {string} error - Error message describing what went wrong
  * @property {string} targetUrl - URL that was being processed when error occurred
+ * @property {string} timestamp - ISO timestamp when the error occurred
  *
  * @see {@link BaseErrorResponseSchema} for base error response structure
  *
@@ -217,7 +228,8 @@ export const ReadResponseBaseSchema = z.object({
  * {
  *   success: false,
  *   error: 'Failed to fetch URL',
- *   targetUrl: 'https://example.com'
+ *   targetUrl: 'https://example.com',
+ *   timestamp: '2025-09-12T10:30:00.000Z'
  * }
  * ```
  */
