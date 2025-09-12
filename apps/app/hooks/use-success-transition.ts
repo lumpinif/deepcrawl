@@ -30,6 +30,7 @@ export function useOnSuccessTransition({
 
     startTransition(() => {
       const redirectPath = getRedirectTo();
+      console.log('🚀 ~ useOnSuccessTransition ~ redirectPath:', redirectPath);
 
       // Validate redirectPath before URL construction
       if (!redirectPath || typeof redirectPath !== 'string') {

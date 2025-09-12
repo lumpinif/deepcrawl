@@ -34,6 +34,11 @@ export function PasskeyButton({
           credentials: 'include',
           onSuccess: async (context) => {
             if (context?.data) {
+              console.log(
+                '⚡ calling onSuccess passkey',
+                '⚡ redirectTo in passkey button',
+                redirectTo,
+              );
               await onSuccess();
             }
           },
