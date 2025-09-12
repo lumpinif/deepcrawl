@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { BASE_APP_PATH } from '@/config';
 import { useAuthRedirect, useAuthSession } from '@/hooks/auth.hooks';
@@ -20,13 +20,16 @@ export function useOnSuccessTransition({
 
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
+  const hasExecuted = useRef(false);
 
   const { refetch: refetchSession } = useAuthSession();
 
   useEffect(() => {
-    if (!success || isPending) {
+    if (!success || isPending || hasExecuted.current) {
       return;
     }
+
+    hasExecuted.current = true;
 
     startTransition(() => {
       const redirectPath = getRedirectTo();
@@ -64,7 +67,7 @@ export function useOnSuccessTransition({
         cleanPath = cleanPath.replace(/[?&]$/, '');
 
         // Ensure the path starts with a slash and is not empty
-        if (!cleanPath?.startsWith('/')) {
+        if (!(cleanPath?.startsWith('/') && cleanPath)) {
           cleanPath = getAppRoute(BASE_APP_PATH);
         }
 
@@ -74,6 +77,9 @@ export function useOnSuccessTransition({
   }, [success, isPending, router, getRedirectTo]);
 
   const onSuccess = useCallback(async () => {
+    // Reset execution flag for fresh authentication attempts
+    hasExecuted.current = false;
+
     await refetchSession();
 
     // Check if this was a social provider linking flow
@@ -88,7 +94,7 @@ export function useOnSuccessTransition({
     }
 
     setSuccess(true);
-  }, [refetchSession, queryClient]);
+  }, [queryClient]); // Removed refetchSession from dependencies to prevent infinite loops
 
   return { onSuccess, isPending };
 }
