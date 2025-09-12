@@ -26,7 +26,7 @@ export default function RootLayout({
         />
         {/* Status bar style for iOS */}
         <meta content="default" name="apple-mobile-web-app-status-bar-style" />
-        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="yes" name="mobile-web-app-capable" />
       </head>
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col antialiased`}
