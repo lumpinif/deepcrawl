@@ -6,14 +6,16 @@ import * as z from 'zod/v4';
  *
  * @property {false} success - Always false for error responses
  * @property {string} targetUrl - URL that was being processed when error occurred
- * @property {string} error - Error message describing what went wrong
+ * @property {string} [requestUrl] - URL, raw url, that was requested to be processed and might be different from the target url
  * @property {string} timestamp - ISO timestamp when the error occurred
+ * @property {string} error - Error message describing what went wrong
  *
  * @example
  * ```typescript
  * const errorResponse = {
  *   success: false,
- *   targetUrl: 'https://example.com',
+ *   targetUrl: 'https://example.com/article',
+ *   requestUrl: 'https://example.com/article#fragment',
  *   timestamp: '2024-01-15T10:30:00.000Z'
  *   error: 'Failed to fetch: 404 Not Found',
  * };
@@ -31,6 +33,15 @@ export const BaseErrorResponseSchema = z
       description: 'The URL that was being processed when the error occurred',
       examples: ['https://example.com/article'],
     }),
+    /* The URL, raw url, that was requested to be processed and might be different from the target url */
+    requestUrl: z
+      .string()
+      .optional()
+      .meta({
+        description:
+          'The URL, raw url, that was requested to be processed and might be different from the target url',
+        examples: ['https://example.com/article#fragment'],
+      }),
     /* ISO timestamp when the error occurred */
     timestamp: z.string().meta({
       description: 'ISO timestamp when the error occurred',
@@ -49,6 +60,7 @@ export const BaseErrorResponseSchema = z
       {
         success: false,
         targetUrl: 'https://example.com/article',
+        requestUrl: 'https://example.com/article#fragment', // optional
         timestamp: '2024-01-15T10:30:00.000Z',
         error: 'Failed to fetch: 404 Not Found',
       },
