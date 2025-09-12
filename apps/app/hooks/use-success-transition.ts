@@ -31,6 +31,12 @@ export function useOnSuccessTransition({
     startTransition(() => {
       const redirectPath = getRedirectTo();
 
+      // Validate redirectPath before URL construction
+      if (!redirectPath || typeof redirectPath !== 'string') {
+        router.push(getAppRoute(BASE_APP_PATH));
+        return;
+      }
+
       // Clean up OAuth-specific parameters when redirecting
       // This ensures clean URLs after OAuth flows complete
       try {
@@ -47,13 +53,21 @@ export function useOnSuccessTransition({
         router.push(cleanPath);
       } catch (error) {
         console.warn('URL construction failed, using fallback:', error);
+        console.warn('Problematic redirectPath:', redirectPath);
+
         // Fallback: simple string replacement for parameter cleanup
-        let cleanPath = redirectPath.replace(/[?&]linking=true/g, '');
+        let cleanPath = String(redirectPath).replace(/[?&]linking=true/g, '');
         cleanPath = cleanPath.replace(/[?&]code=[^&]*/g, '');
         cleanPath = cleanPath.replace(/[?&]state=[^&]*/g, '');
         // Clean up any trailing ? or & characters
         cleanPath = cleanPath.replace(/[?&]$/, '');
-        router.push(cleanPath || getAppRoute(BASE_APP_PATH));
+
+        // Ensure the path starts with a slash and is not empty
+        if (!cleanPath?.startsWith('/')) {
+          cleanPath = getAppRoute(BASE_APP_PATH);
+        }
+
+        router.push(cleanPath);
       }
     });
   }, [success, isPending, router, getRedirectTo]);
