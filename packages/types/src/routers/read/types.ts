@@ -218,8 +218,8 @@ export const ReadResponseBaseSchema = z.object({
  *
  * @property {false} success - Always false for error responses
  * @property {string} error - Error message describing what went wrong
- * @property {string} targetUrl - URL that was being processed when error occurred
  * @property {string} [requestUrl] - URL, raw url, that was requested to be processed and might be different from the target url
+ * @property {string} targetUrl - URL that was being processed when error occurred
  * @property {string} timestamp - ISO timestamp when the error occurred
  *
  * @see {@link BaseErrorResponseSchema} for base error response structure
@@ -229,8 +229,8 @@ export const ReadResponseBaseSchema = z.object({
  * {
  *   success: false,
  *   error: 'Failed to fetch URL',
- *   targetUrl: 'https://example.com/article',
  *   requestUrl: 'https://example.com/article#fragment', // optional
+ *   targetUrl: 'https://example.com/article',
  *   timestamp: '2025-09-12T10:30:00.000Z'
  * }
  * ```
@@ -452,8 +452,8 @@ export type ReadResponseBase = z.infer<typeof ReadResponseBaseSchema>;
  *
  * @property {false} success - Always false for error responses
  * @property {string} error - Error message describing what went wrong
- * @property {string} targetUrl - URL that was being processed when error occurred
  * @property {string} [requestUrl] - URL, raw url, that was requested to be processed and might be different from the target url
+ * @property {string} targetUrl - URL that was being processed when error occurred
  * @property {string} timestamp - ISO timestamp when the error occurred
  *
  * @example
@@ -461,8 +461,8 @@ export type ReadResponseBase = z.infer<typeof ReadResponseBaseSchema>;
  * const errorResponse: ReadErrorResponse = {
  *   success: false,
  *   error: 'Failed to fetch URL',
- *   targetUrl: 'https://example.com/article',
  *   requestUrl: 'https://example.com/article#fragment', // optional
+ *   targetUrl: 'https://example.com/article',
  *   timestamp: '2025-09-12T10:30:00.000Z'
  * };
  * ```

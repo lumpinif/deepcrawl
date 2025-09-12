@@ -14,8 +14,8 @@ import * as z from 'zod/v4';
  * ```typescript
  * const errorResponse = {
  *   success: false,
- *   targetUrl: 'https://example.com/article',
  *   requestUrl: 'https://example.com/article#fragment',
+ *   targetUrl: 'https://example.com/article',
  *   timestamp: '2024-01-15T10:30:00.000Z'
  *   error: 'Failed to fetch: 404 Not Found',
  * };
@@ -28,11 +28,6 @@ export const BaseErrorResponseSchema = z
       description: 'Indicates that the operation failed',
       examples: [false],
     }),
-    /* The URL that was being processed when the error occurred */
-    targetUrl: z.string().meta({
-      description: 'The URL that was being processed when the error occurred',
-      examples: ['https://example.com/article'],
-    }),
     /* The URL, raw url, that was requested to be processed and might be different from the target url */
     requestUrl: z
       .string()
@@ -42,6 +37,11 @@ export const BaseErrorResponseSchema = z
           'The URL, raw url, that was requested to be processed and might be different from the target url',
         examples: ['https://example.com/article#fragment'],
       }),
+    /* The URL that was being processed when the error occurred */
+    targetUrl: z.string().meta({
+      description: 'The URL that was being processed when the error occurred',
+      examples: ['https://example.com/article'],
+    }),
     /* ISO timestamp when the error occurred */
     timestamp: z.string().meta({
       description: 'ISO timestamp when the error occurred',

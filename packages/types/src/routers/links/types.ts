@@ -875,6 +875,7 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
   examples: [
     {
       success: false,
+      requestUrl: 'https://example.com/article#fragment',
       targetUrl: 'https://example.com',
       timestamp: '2024-01-15T10:30:00.000Z',
       error: 'Failed to fetch: 404 Not Found',
@@ -1062,8 +1063,8 @@ export type LinksSuccessResponse = z.infer<typeof LinksSuccessResponseSchema>;
  * Contains information about what went wrong.
  *
  * @property success - Whether the operation was successful
- * @property targetUrl - The URL that was requested to be scraped
  * @property [requestUrl] - URL, raw url, that was requested to be processed and might be different from the target url
+ * @property targetUrl - The URL that was requested to be scraped
  * @property timestamp - ISO timestamp when the request was processed
  * @property error - Error message describing what went wrong
  * @property tree - Partial site map tree if available
@@ -1072,8 +1073,8 @@ export type LinksSuccessResponse = z.infer<typeof LinksSuccessResponseSchema>;
  * ```typescript
  * const errorResponse: LinksErrorResponse = {
  *   success: false,
- *   targetUrl: "https://example.com",
  *   requestUrl: "https://example.com/article#fragment",
+ *   targetUrl: "https://example.com",
  *   timestamp: "2025-04-02T14:28:23.000Z",
  *   error: "Failed to connect to the server"
  * };
