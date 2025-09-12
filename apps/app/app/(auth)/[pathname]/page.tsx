@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { AuthCard } from '@/components/auth/auth-card';
+import { BackButton } from '@/components/auth/back-button';
 import { authViewRoutes } from '@/routes/auth';
 import { isValidAuthRoute } from '@/utils';
 
@@ -22,6 +23,7 @@ export default async function AuthPage({
   return (
     <>
       <AuthCard pathname={pathname} />
+      <BackButton />
       <div className="block py-12 text-center text-muted-foreground text-sm sm:fixed sm:right-0 sm:bottom-0 sm:left-0 dark:text-muted-foreground/80">
         <a
           className="hover:underline"
