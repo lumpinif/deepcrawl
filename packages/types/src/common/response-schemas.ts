@@ -7,13 +7,15 @@ import * as z from 'zod/v4';
  * @property {false} success - Always false for error responses
  * @property {string} targetUrl - URL that was being processed when error occurred
  * @property {string} error - Error message describing what went wrong
+ * @property {string} timestamp - ISO timestamp when the error occurred
  *
  * @example
  * ```typescript
  * const errorResponse = {
  *   success: false,
  *   targetUrl: 'https://example.com',
- *   error: 'Failed to fetch: 404 Not Found'
+ *   timestamp: '2024-01-15T10:30:00.000Z'
+ *   error: 'Failed to fetch: 404 Not Found',
  * };
  * ```
  */
@@ -29,15 +31,15 @@ export const BaseErrorResponseSchema = z
       description: 'The URL that was being processed when the error occurred',
       examples: ['https://example.com/article'],
     }),
-    /* Error message describing what went wrong */
-    error: z.string().meta({
-      description: 'Error message describing what went wrong',
-      examples: ['Failed to fetch: 404 Not Found'],
-    }),
     /* ISO timestamp when the error occurred */
     timestamp: z.string().meta({
       description: 'ISO timestamp when the error occurred',
       examples: ['2024-01-15T10:30:00.000Z'],
+    }),
+    /* Error message describing what went wrong */
+    error: z.string().meta({
+      description: 'Error message describing what went wrong',
+      examples: ['Failed to fetch: 404 Not Found'],
     }),
   })
   .meta({
@@ -47,6 +49,7 @@ export const BaseErrorResponseSchema = z
       {
         success: false,
         targetUrl: 'https://example.com/article',
+        timestamp: '2024-01-15T10:30:00.000Z',
         error: 'Failed to fetch: 404 Not Found',
       },
     ],
@@ -65,9 +68,9 @@ export const BaseErrorResponseSchema = z
  * ```typescript
  * const successResponse = {
  *   success: true,
+ *   cached: false,
  *   targetUrl: 'https://example.com',
- *   timestamp: '2024-01-15T10:30:00.000Z',
- *   cached: false
+ *   timestamp: '2024-01-15T10:30:00.000Z'
  * };
  * ```
  */
@@ -77,6 +80,10 @@ export const BaseSuccessResponseSchema = z
       description: 'Indicates that the operation succeeded',
       examples: [true],
     }),
+    cached: z.boolean().meta({
+      description: 'Whether the response was served from cache',
+      examples: [false],
+    }),
     targetUrl: z.string().meta({
       description: 'The URL that was processed',
       examples: ['https://example.com/article'],
@@ -85,10 +92,6 @@ export const BaseSuccessResponseSchema = z
       description: 'ISO timestamp when the operation was completed',
       examples: ['2024-01-15T10:30:00.000Z'],
     }),
-    cached: z.boolean().meta({
-      description: 'Whether the response was served from cache',
-      examples: [false],
-    }),
   })
   .meta({
     title: 'BaseSuccessResponse',
@@ -96,9 +99,9 @@ export const BaseSuccessResponseSchema = z
     examples: [
       {
         success: true,
+        cached: false,
         targetUrl: 'https://example.com/article',
         timestamp: '2024-01-15T10:30:00.000Z',
-        cached: false,
       },
     ],
   });
