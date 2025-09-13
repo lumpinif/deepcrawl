@@ -25,18 +25,48 @@ export function useOnSuccessTransition({
   const { refetch: refetchSession } = useAuthSession();
 
   useEffect(() => {
+    console.log('[useOnSuccessTransition] Effect triggered', {
+      success,
+      isPending,
+      hasExecuted: hasExecuted.current,
+      timestamp: new Date().toISOString(),
+    });
+
     if (!success || isPending || hasExecuted.current) {
+      console.log('[useOnSuccessTransition] Effect early return', {
+        success,
+        isPending,
+        hasExecuted: hasExecuted.current,
+      });
       return;
     }
 
+    console.log('[useOnSuccessTransition] Starting redirect transition');
     hasExecuted.current = true;
 
     startTransition(() => {
       const redirectPath = getRedirectTo();
 
+      console.log('[useOnSuccessTransition] Redirect details', {
+        redirectPath,
+        redirectTo,
+        currentPathname: window.location.pathname,
+        currentOrigin: window.location.origin,
+        baseAppPath: BASE_APP_PATH,
+        timestamp: new Date().toISOString(),
+      });
+
       // Validate redirectPath before URL construction
       if (!redirectPath || typeof redirectPath !== 'string') {
-        router.push(getAppRoute(BASE_APP_PATH));
+        const fallbackPath = getAppRoute(BASE_APP_PATH);
+        console.log(
+          '[useOnSuccessTransition] Invalid redirect path, using fallback',
+          {
+            redirectPath,
+            fallbackPath,
+          },
+        );
+        router.push(fallbackPath);
         return;
       }
 
@@ -46,6 +76,13 @@ export function useOnSuccessTransition({
         // Always construct URL relative to current frontend origin
         const targetUrl = new URL(redirectPath, window.location.origin);
 
+        console.log('[useOnSuccessTransition] Target URL constructed', {
+          originalRedirectPath: redirectPath,
+          targetUrl: targetUrl.toString(),
+          pathname: targetUrl.pathname,
+          search: targetUrl.search,
+        });
+
         // Remove OAuth flow parameters
         targetUrl.searchParams.delete('linking');
         targetUrl.searchParams.delete('code');
@@ -53,10 +90,25 @@ export function useOnSuccessTransition({
 
         // Construct clean path for navigation
         const cleanPath = targetUrl.pathname + (targetUrl.search || '');
+
+        console.log('[useOnSuccessTransition] Navigating to clean path', {
+          cleanPath,
+          isProduction: process.env.NODE_ENV === 'production',
+          timestamp: new Date().toISOString(),
+        });
+
         router.push(cleanPath);
+
+        console.log('[useOnSuccessTransition] router.push called successfully');
       } catch (error) {
-        console.warn('URL construction failed, using fallback:', error);
-        console.warn('Problematic redirectPath:', redirectPath);
+        console.error(
+          '[useOnSuccessTransition] URL construction failed, using fallback',
+          {
+            error,
+            redirectPath,
+            timestamp: new Date().toISOString(),
+          },
+        );
 
         // Fallback: simple string replacement for parameter cleanup
         let cleanPath = String(redirectPath).replace(/[?&]linking=true/g, '');
@@ -70,19 +122,34 @@ export function useOnSuccessTransition({
           cleanPath = getAppRoute(BASE_APP_PATH);
         }
 
+        console.log('[useOnSuccessTransition] Using fallback clean path', {
+          fallbackCleanPath: cleanPath,
+        });
+
         router.push(cleanPath);
       }
     });
   }, [success, isPending, router, getRedirectTo]);
 
   const onSuccess = useCallback(async () => {
+    console.log('[useOnSuccessTransition] onSuccess called', {
+      timestamp: new Date().toISOString(),
+      hasExecuted: hasExecuted.current,
+    });
+
     // Reset execution flag for fresh authentication attempts
     hasExecuted.current = false;
 
+    console.log('[useOnSuccessTransition] Refetching session...');
     await refetchSession();
+    console.log('[useOnSuccessTransition] Session refetch completed');
 
     // Check if this was a social provider linking flow
     const isLinking = getSearchParam('linking') === 'true';
+    console.log('[useOnSuccessTransition] Checking if linking flow', {
+      isLinking,
+    });
+
     if (isLinking) {
       toast.success('Social provider linked successfully');
 
@@ -92,7 +159,9 @@ export function useOnSuccessTransition({
       });
     }
 
+    console.log('[useOnSuccessTransition] Setting success to true');
     setSuccess(true);
+    console.log('[useOnSuccessTransition] onSuccess completed');
   }, [queryClient]); // Removed refetchSession from dependencies to prevent infinite loops
 
   return { onSuccess, isPending };

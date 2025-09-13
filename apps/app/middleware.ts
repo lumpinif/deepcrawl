@@ -10,6 +10,13 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  console.log('[Middleware] Request processed', {
+    pathname,
+    hasSessionCookie: !!sessionCookie,
+    userAgent: request.headers.get('user-agent')?.slice(0, 50),
+    timestamp: new Date().toISOString(),
+  });
+
   // const publicAuthRoutes = Object.values(authViewRoutes).map(
   //   (path) => `/${path}`,
   // );
@@ -17,6 +24,7 @@ export async function middleware(request: NextRequest) {
   // Handle logout route - requires session
   if (pathname === '/logout') {
     if (!sessionCookie) {
+      console.log('[Middleware] Logout without session, redirecting to login');
       return NextResponse.redirect(new URL('/login', request.url));
     }
     return NextResponse.next();
@@ -34,6 +42,13 @@ export async function middleware(request: NextRequest) {
 
     // Redirect to login for all app routes
     if (pathname.startsWith(getAppRoute())) {
+      console.log(
+        '[Middleware] No session for app route, redirecting to login',
+        {
+          pathname,
+          appRoute: getAppRoute(),
+        },
+      );
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
