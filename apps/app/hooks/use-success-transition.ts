@@ -66,7 +66,16 @@ export function useOnSuccessTransition({
             fallbackPath,
           },
         );
-        router.push(fallbackPath);
+        
+        // Production fix: Add delay for invalid path fallback too
+        setTimeout(() => {
+          console.log('[useOnSuccessTransition] Navigating to fallback after cookie delay');
+          if (typeof window !== 'undefined') {
+            window.location.href = fallbackPath;
+          } else {
+            router.push(fallbackPath);
+          }
+        }, 100);
         return;
       }
 
@@ -97,9 +106,20 @@ export function useOnSuccessTransition({
           timestamp: new Date().toISOString(),
         });
 
-        router.push(cleanPath);
+        // Production fix: Add delay to allow cookies to propagate before navigation
+        // Middleware can intercept navigation before cookies are available
+        console.log('[useOnSuccessTransition] Adding delay for cookie propagation...');
+        
+        setTimeout(() => {
+          console.log('[useOnSuccessTransition] Navigating after cookie delay');
+          if (typeof window !== 'undefined') {
+            window.location.href = cleanPath;
+          } else {
+            router.push(cleanPath);
+          }
+        }, 100); // 100ms delay to allow cookie propagation
 
-        console.log('[useOnSuccessTransition] router.push called successfully');
+        console.log('[useOnSuccessTransition] Navigation scheduled');
       } catch (error) {
         console.error(
           '[useOnSuccessTransition] URL construction failed, using fallback',
@@ -126,7 +146,15 @@ export function useOnSuccessTransition({
           fallbackCleanPath: cleanPath,
         });
 
-        router.push(cleanPath);
+        // Production fix: Add delay for fallback navigation too
+        setTimeout(() => {
+          console.log('[useOnSuccessTransition] Navigating to fallback after cookie delay');
+          if (typeof window !== 'undefined') {
+            window.location.href = cleanPath;
+          } else {
+            router.push(cleanPath);
+          }
+        }, 100);
       }
     });
   }, [success, isPending, router, getRedirectTo]);
