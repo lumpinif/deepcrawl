@@ -26,6 +26,7 @@ import {
 } from '../utils/email';
 import {
   ALLOWED_ORIGINS,
+  APP_COOKIE_PREFIX,
   BA_API_KEY_RATE_LIMIT,
   COOKIE_CACHE_CONFIG,
   DEVELOPMENT_ORIGINS,
@@ -352,7 +353,7 @@ export function createAuthConfig(env: Env) {
       },
     },
     advanced: {
-      cookiePrefix: 'deepcrawl',
+      cookiePrefix: APP_COOKIE_PREFIX,
       // IP address tracking for rate limiting and session security
       ipAddress: {
         ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for', 'x-real-ip'],

@@ -33,6 +33,8 @@ export const DEVELOPMENT_ORIGINS = [
   'http://127.0.0.1:8080', // V0 worker alternative
 ];
 
+export const APP_COOKIE_PREFIX = 'deepcrawl';
+
 export const MAX_SESSIONS = 2;
 
 export const API_KEY_CACHE_CONFIG = {

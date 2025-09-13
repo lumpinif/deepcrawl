@@ -1,11 +1,12 @@
+import { APP_COOKIE_PREFIX } from '@deepcrawl/auth/configs/constants';
 import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
 import { getAppRoute } from './lib/navigation-config';
-// import { authViewRoutes } from './routes/auth';
+import { authViewSegments } from './routes/auth';
 
 export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request, {
-    cookiePrefix: 'deepcrawl',
+    cookiePrefix: APP_COOKIE_PREFIX,
   });
 
   const { pathname } = request.nextUrl;
