@@ -14,10 +14,6 @@ import type { ActiveOrganization } from '@/lib/auth.client-types';
  * the current authenticated session
  */
 export async function getSession(): Promise<Session | null> {
-  console.log('[Auth Query Client] Getting session...', {
-    timestamp: new Date().toISOString(),
-  });
-
   const { data: session, error } = await authClient.getSession();
 
   if (error) {
@@ -27,13 +23,6 @@ export async function getSession(): Promise<Session | null> {
     );
     throw new Error(error.message);
   }
-
-  console.log('[Auth Query Client] Session retrieved', {
-    hasSession: !!session,
-    hasUser: !!session?.user,
-    sessionId: session?.session?.id,
-    timestamp: new Date().toISOString(),
-  });
 
   return session;
 }

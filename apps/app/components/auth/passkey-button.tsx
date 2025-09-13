@@ -25,12 +25,6 @@ export function PasskeyButton({
   const isLastUsed = lastUsedMethod === 'passkey';
 
   const signInPassKey = async () => {
-    console.log('[PasskeyButton] Sign in started', {
-      redirectTo,
-      isProduction: process.env.NODE_ENV === 'production',
-      timestamp: new Date().toISOString(),
-    });
-
     setIsSubmitting?.(true);
 
     try {
@@ -39,37 +33,17 @@ export function PasskeyButton({
         fetchOptions: {
           credentials: 'include',
           onSuccess: async (context) => {
-            console.log('[PasskeyButton] Passkey auth success', {
-              hasData: !!context?.data,
-              redirectTo,
-              timestamp: new Date().toISOString(),
-            });
-
             if (context?.data) {
-              console.log('[PasskeyButton] Calling onSuccess...');
               await onSuccess();
-              console.log('[PasskeyButton] onSuccess completed');
-            } else {
-              console.warn('[PasskeyButton] No data in success context');
             }
           },
           onError: async (context) => {
-            console.error('[PasskeyButton] Passkey auth error', {
-              error: context.error,
-              timestamp: new Date().toISOString(),
-            });
             const errorMessage = getAuthErrorMessage(context.error);
             toast.error(errorMessage);
           },
         },
       });
     } catch (error) {
-      console.error('[PasskeyButton] Caught exception during passkey auth', {
-        error,
-        isWebAuthnCancellation: isWebAuthnCancellationError(error),
-        timestamp: new Date().toISOString(),
-      });
-
       // Only show error toast for actual errors, not cancellations
       if (!isWebAuthnCancellationError(error)) {
         // Handle unexpected errors that still throw despite throw: false
@@ -85,9 +59,6 @@ export function PasskeyButton({
         toast.error(errorMessage);
       }
     } finally {
-      console.log('[PasskeyButton] Sign in finished', {
-        timestamp: new Date().toISOString(),
-      });
       setIsSubmitting?.(false);
     }
   };

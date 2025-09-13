@@ -858,74 +858,40 @@ export const useDeleteApiKey = () => {
  */
 export function useAuthRedirect(redirectTo?: string) {
   const getRedirectTo = useCallback(() => {
-    console.log('[useAuthRedirect] getRedirectTo called', {
-      redirectToProp: redirectTo,
-      baseAppPath: BASE_APP_PATH,
-      currentURL:
-        typeof window !== 'undefined' ? window.location.href : 'server',
-      timestamp: new Date().toISOString(),
-    });
-
     // Priority order for determining redirect destination:
     // 1. Explicit prop passed to the hook
     // 2. URL parameter from current page (for client-server separated architecture)
     // 3. Default to app index page
 
     if (redirectTo && redirectTo !== getAppRoute(BASE_APP_PATH)) {
-      console.log('[useAuthRedirect] Using explicit redirectTo prop', {
-        redirectTo,
-      });
       return redirectTo;
     }
 
     // In client-server separated architecture, we need to be careful about URL parameters
     // The redirectTo parameter should be a path relative to the frontend domain
     const redirectParam = getSearchParam('redirectTo');
-    console.log('[useAuthRedirect] Checking redirectTo URL param', {
-      redirectParam,
-    });
-
+    
     if (redirectParam) {
       // Ensure the redirect path is safe and relative to frontend
       try {
         // If it's a full URL, extract just the pathname and search
         if (redirectParam.startsWith('http')) {
           const url = new URL(redirectParam);
-          const result = url.pathname + url.search;
-          console.log('[useAuthRedirect] Extracted path from full URL', {
-            original: redirectParam,
-            extracted: result,
-          });
-          return result;
+          return url.pathname + url.search;
         }
         // If it's already a path, use it as-is
-        const result = redirectParam.startsWith('/')
+        return redirectParam.startsWith('/')
           ? redirectParam
           : `/${redirectParam}`;
-        console.log('[useAuthRedirect] Using path param as-is', {
-          original: redirectParam,
-          result,
-        });
-        return result;
       } catch {
         // If URL parsing fails, treat as a simple path
-        const result = redirectParam.startsWith('/')
+        return redirectParam.startsWith('/')
           ? redirectParam
           : `/${redirectParam}`;
-        console.log(
-          '[useAuthRedirect] URL parsing failed, treating as simple path',
-          {
-            original: redirectParam,
-            result,
-          },
-        );
-        return result;
       }
     }
 
-    const defaultPath = getAppRoute(BASE_APP_PATH);
-    console.log('[useAuthRedirect] Using default app route', { defaultPath });
-    return defaultPath;
+    return getAppRoute(BASE_APP_PATH);
   }, [redirectTo]);
 
   const getFrontendCallbackURL = useCallback(
