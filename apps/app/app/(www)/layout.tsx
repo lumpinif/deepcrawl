@@ -37,6 +37,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
               <UserDropdown
                 deviceSessions={listDeviceSessions}
                 enableLayoutViewToggle={false}
+                redirectLogout="/"
                 session={currentSession}
               />
             </div>
