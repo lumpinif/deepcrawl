@@ -29,9 +29,9 @@ function cleanupMultiSessionCookies() {
 }
 
 export function Logout() {
+  const router = useRouter();
   const signingOut = useRef(false);
   const queryClient = useQueryClient();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect');
 
@@ -47,6 +47,7 @@ export function Logout() {
     if (signingOut.current) {
       return;
     }
+
     signingOut.current = true;
 
     authClient.signOut({
@@ -65,7 +66,7 @@ export function Logout() {
         },
       },
     });
-  }, [onSuccess, queryClient]);
+  }, [onSuccess, queryClient, router]);
 
   return (
     <div className="flex items-center justify-center max-sm:h-[calc(100svh-(--spacing(32)))] sm:min-h-svh">
