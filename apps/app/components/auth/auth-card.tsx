@@ -19,7 +19,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useIsHydrated } from '@/hooks/use-hydrated';
 import { authClient } from '@/lib/auth.client';
-import { type AuthView, authViewRoutes } from '@/routes/auth';
+import { type AuthView, authViewSegments } from '@/routes/auth';
 import {
   getAuthViewByPath,
   getAuthViewDetailedDescription,
@@ -50,7 +50,7 @@ export function AuthCard({
 }: AuthCardProps) {
   const isHydrated = useIsHydrated();
   const path = pathname?.split('/').pop();
-  const view = viewProp || getAuthViewByPath(authViewRoutes, path) || 'login';
+  const view = viewProp || getAuthViewByPath(authViewSegments, path) || 'login';
   const searchParams = useSearchParams();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -246,7 +246,7 @@ export function AuthCard({
                     Don&apos;t have an account?
                     <Link
                       className="text-foreground underline"
-                      href={`/${authViewRoutes.signUp}${isHydrated ? window.location.search : ''}`}
+                      href={`/${authViewSegments.signUp}${isHydrated ? window.location.search : ''}`}
                     >
                       <Button
                         className="px-1 text-foreground hover:underline"
@@ -264,7 +264,7 @@ export function AuthCard({
                     Already have an account?
                     <Link
                       className="text-foreground underline"
-                      href={`/${authViewRoutes.login}${isHydrated ? window.location.search : ''}`}
+                      href={`/${authViewSegments.login}${isHydrated ? window.location.search : ''}`}
                     >
                       <Button
                         className="px-1 text-foreground hover:underline"

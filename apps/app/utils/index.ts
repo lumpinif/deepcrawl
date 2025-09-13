@@ -1,11 +1,11 @@
 import * as z from 'zod/v4';
-import type { AuthView, AuthViewRoutes } from '@/routes/auth';
+import type { AuthView, AuthViewSegments } from '@/routes/auth';
 
 // Re-export utilities
 export { copyToClipboard } from './clipboard';
 
 export function getAuthViewByPath(
-  authViewPaths: AuthViewRoutes,
+  authViewPaths: AuthViewSegments,
   path?: string,
 ) {
   for (const authViewPathsKey in authViewPaths) {
@@ -19,7 +19,7 @@ export function getAuthViewByPath(
  * Check if a pathname is a valid auth route
  */
 export function isValidAuthRoute(
-  authViewRoutes: AuthViewRoutes,
+  authViewRoutes: AuthViewSegments,
   pathname?: string,
 ): boolean {
   if (!pathname) {
@@ -35,7 +35,7 @@ export function isValidAuthRoute(
 /**
  * Get all valid auth route paths as an array
  */
-export function getValidAuthPaths(authViewRoutes: AuthViewRoutes): string[] {
+export function getValidAuthPaths(authViewRoutes: AuthViewSegments): string[] {
   return Object.values(authViewRoutes);
 }
 
@@ -44,7 +44,7 @@ export function getValidAuthPaths(authViewRoutes: AuthViewRoutes): string[] {
  * Returns the normalized path if valid, or null if invalid
  */
 export function validateAuthPathname(
-  authViewRoutes: AuthViewRoutes,
+  authViewRoutes: AuthViewSegments,
   pathname?: string,
 ): string | null {
   if (!pathname) {
@@ -141,7 +141,7 @@ export function getAuthViewDetailedDescription(authView: AuthView): string {
  * Get normalized title from pathname
  */
 export function getAuthTitleFromPath(
-  authViewRoutes: AuthViewRoutes,
+  authViewRoutes: AuthViewSegments,
   pathname?: string,
 ): string {
   if (!pathname) {

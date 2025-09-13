@@ -18,7 +18,7 @@ import * as z from 'zod/v4';
 import { SpinnerButton } from '@/components/spinner-button';
 import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 import { getPasswordSchema, type PasswordValidation } from '@/utils';
 import { PasswordInput } from '../password-input';
 
@@ -75,7 +75,7 @@ export function ResetPasswordForm({
 
     if (!token || token === 'INVALID_TOKEN') {
       // Redirect to login without carrying over the invalid token
-      router.push(`/${authViewRoutes.login}`);
+      router.push(`/${authViewSegments.login}`);
       toast.error('Invalid token');
     }
   }, [router]);
@@ -98,7 +98,7 @@ export function ResetPasswordForm({
       toast.success('Password reset successfully');
 
       // Clean up URL and redirect to login without the token for security
-      router.push(`/${authViewRoutes.login}`);
+      router.push(`/${authViewSegments.login}`);
     } catch (error) {
       toast.error('Error resetting password');
 

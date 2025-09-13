@@ -23,7 +23,7 @@ import {
   listSessionsQueryOptionsClient,
   sessionQueryOptionsClient,
 } from '@/query/query-options.client';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 import { SessionsManagementCardSkeleton } from './account-skeletons';
 
 export function SessionsManagementCard() {
@@ -85,8 +85,8 @@ export function SessionsManagementCard() {
       setSigningOutCurrentSession(true);
 
       // Check if we're already on the logout page to prevent double navigation
-      if (window.location.pathname !== `/${authViewRoutes.logout}`) {
-        router.push(`/${authViewRoutes.logout}`);
+      if (window.location.pathname !== `/${authViewSegments.logout}`) {
+        router.push(`/${authViewSegments.logout}`);
       }
       return;
     }

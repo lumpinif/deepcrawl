@@ -22,7 +22,7 @@ import { useIsHydrated } from '@/hooks/use-hydrated';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
 import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 import { getPasswordSchema, type PasswordValidation } from '@/utils';
 import { PasswordInput } from '../password-input';
 
@@ -147,7 +147,7 @@ export function SignUpForm({
       if ('token' in data && data.token) {
         await onSuccess();
       } else {
-        router.push(`/${authViewRoutes.login}${window.location.search}`);
+        router.push(`/${authViewSegments.login}${window.location.search}`);
         toast.success('Please check your email to verify your account.');
       }
     } catch (error) {

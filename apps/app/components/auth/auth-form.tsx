@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { type AuthView, authViewRoutes } from '@/routes/auth';
+import { type AuthView, authViewSegments } from '@/routes/auth';
 import { getAuthViewByPath } from '@/utils';
 import { AuthCallback } from './auth-callback';
 import { ForgotPasswordForm } from './forms/forgot-password-form';
@@ -38,12 +38,12 @@ export function AuthForm({
   const path = pathname?.split('/').pop();
 
   useEffect(() => {
-    if (path && !getAuthViewByPath(authViewRoutes, path)) {
-      router.replace(`/${authViewRoutes.login}${window.location.search}`);
+    if (path && !getAuthViewByPath(authViewSegments, path)) {
+      router.replace(`/${authViewSegments.login}${window.location.search}`);
     }
   }, [path, router]);
 
-  const view = viewProp || getAuthViewByPath(authViewRoutes, path) || 'login';
+  const view = viewProp || getAuthViewByPath(authViewSegments, path) || 'login';
 
   // Check if we're in a verification flow (has token parameter)
   const hasToken = searchParams.has('token');

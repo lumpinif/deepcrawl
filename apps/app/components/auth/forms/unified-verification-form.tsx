@@ -19,7 +19,7 @@ import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { getAppRoute } from '@/lib/navigation-config';
 import { userQueryKeys } from '@/query/query-keys';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 
 export interface UnifiedVerificationFormProps {
   className?: string;
@@ -282,7 +282,7 @@ export function UnifiedVerificationForm({
           break;
 
         case 'magic-link':
-          router.push(`/${authViewRoutes.magicLink}`);
+          router.push(`/${authViewSegments.magicLink}`);
           toast.info('Redirecting to request a new magic link...');
           break;
 
@@ -350,7 +350,7 @@ export function UnifiedVerificationForm({
             {!showResend && (
               <Button
                 className="w-full"
-                onClick={() => router.push(`/${authViewRoutes.login}`)}
+                onClick={() => router.push(`/${authViewSegments.login}`)}
               >
                 Back to Login
               </Button>
@@ -379,7 +379,7 @@ export function UnifiedVerificationForm({
             {!showResend && (
               <Button
                 className="w-full"
-                onClick={() => router.push(`/${authViewRoutes.login}`)}
+                onClick={() => router.push(`/${authViewSegments.login}`)}
               >
                 Back to Login
               </Button>
@@ -399,7 +399,7 @@ export function UnifiedVerificationForm({
             </div>
             <Button
               className="w-full"
-              onClick={() => router.push(`/${authViewRoutes.login}`)}
+              onClick={() => router.push(`/${authViewSegments.login}`)}
             >
               Sign In
             </Button>
@@ -465,7 +465,7 @@ export function UnifiedVerificationForm({
             </div>
             <Button
               className="w-full"
-              onClick={() => router.push(`/${authViewRoutes.login}`)}
+              onClick={() => router.push(`/${authViewSegments.login}`)}
             >
               Back to Login
             </Button>

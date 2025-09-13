@@ -36,7 +36,7 @@ import {
   sessionQueryOptionsClient,
   userPasskeysQueryOptionsClient,
 } from '@/query/query-options.client';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 import { getSearchParam } from '@/utils';
 import { copyToClipboard } from '@/utils/clipboard';
 
@@ -170,8 +170,8 @@ export const useRevokeDeviceSession = () => {
         );
 
         // Check if we're already on the logout page to prevent double navigation
-        if (window.location.pathname !== `/${authViewRoutes.logout}`) {
-          router.push(`/${authViewRoutes.logout}`);
+        if (window.location.pathname !== `/${authViewSegments.logout}`) {
+          router.push(`/${authViewSegments.logout}`);
         }
         return;
       }
@@ -420,8 +420,8 @@ export const useRevokeSession = () => {
         );
 
         // Check if we're already on the logout page to prevent double navigation
-        if (window.location.pathname !== `/${authViewRoutes.logout}`) {
-          router.push(`/${authViewRoutes.logout}`);
+        if (window.location.pathname !== `/${authViewSegments.logout}`) {
+          router.push(`/${authViewSegments.logout}`);
         }
         return;
       }
@@ -870,7 +870,7 @@ export function useAuthRedirect(redirectTo?: string) {
     // In client-server separated architecture, we need to be careful about URL parameters
     // The redirectTo parameter should be a path relative to the frontend domain
     const redirectParam = getSearchParam('redirectTo');
-    
+
     if (redirectParam) {
       // Ensure the redirect path is safe and relative to frontend
       try {

@@ -3,7 +3,7 @@ import { Button } from '@deepcrawl/ui/components/ui/button';
 import { LockIcon, MailIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth.client';
-import { type AuthView, authViewRoutes } from '@/routes/auth';
+import { type AuthView, authViewSegments } from '@/routes/auth';
 
 interface MagicLinkButtonProps {
   isSubmitting?: boolean;
@@ -22,7 +22,7 @@ export function MagicLinkButton({ isSubmitting, view }: MagicLinkButtonProps) {
       disabled={isSubmitting}
       onClick={() =>
         router.push(
-          `/${view === 'magicLink' ? authViewRoutes.login : authViewRoutes.magicLink}${window.location.search}`,
+          `/${view === 'magicLink' ? authViewSegments.login : authViewSegments.magicLink}${window.location.search}`,
         )
       }
       type="button"

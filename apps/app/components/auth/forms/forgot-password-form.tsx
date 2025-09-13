@@ -20,7 +20,7 @@ import { SpinnerButton } from '@/components/spinner-button';
 import { useAuthRedirect } from '@/hooks/auth.hooks';
 import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 import { useIsHydrated } from '../../../hooks/use-hydrated';
 
 export interface ForgotPasswordFormProps {
@@ -66,7 +66,7 @@ export function ForgotPasswordForm({
     try {
       const { error } = await authClient.forgetPassword({
         email,
-        redirectTo: getFrontendCallbackURL(authViewRoutes.resetPassword),
+        redirectTo: getFrontendCallbackURL(authViewSegments.resetPassword),
       });
 
       if (error) {
@@ -77,7 +77,7 @@ export function ForgotPasswordForm({
       toast.success('Password reset email sent');
 
       // Redirect to clean login page after sending reset email
-      router.push(`/${authViewRoutes.login}`);
+      router.push(`/${authViewSegments.login}`);
     } catch (error) {
       toast.error('Error sending password reset email');
     }

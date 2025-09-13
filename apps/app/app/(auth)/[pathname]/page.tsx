@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import { AuthCard } from '@/components/auth/auth-card';
 import { BackButton } from '@/components/auth/back-button';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 import { isValidAuthRoute } from '@/utils';
 
 export function generateStaticParams() {
-  return Object.values(authViewRoutes).map((pathname) => ({ pathname }));
+  return Object.values(authViewSegments).map((pathname) => ({ pathname }));
 }
 
 export default async function AuthPage({
@@ -16,7 +16,7 @@ export default async function AuthPage({
   const { pathname } = await params;
 
   // Validate the pathname before rendering
-  if (!isValidAuthRoute(authViewRoutes, pathname)) {
+  if (!isValidAuthRoute(authViewSegments, pathname)) {
     notFound();
   }
 

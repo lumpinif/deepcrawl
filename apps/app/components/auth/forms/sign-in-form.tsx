@@ -23,7 +23,7 @@ import { useIsHydrated } from '@/hooks/use-hydrated';
 import { useOnSuccessTransition } from '@/hooks/use-success-transition';
 import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 import { getPasswordSchema, type PasswordValidation } from '@/utils';
 import { PasswordInput } from '../password-input';
 
@@ -157,7 +157,7 @@ export function SignInForm({
 
                 <Link
                   className="text-muted-foreground text-sm hover:text-foreground hover:underline"
-                  href={`/${authViewRoutes.forgotPassword}${isHydrated ? window.location.search : ''}`}
+                  href={`/${authViewSegments.forgotPassword}${isHydrated ? window.location.search : ''}`}
                 >
                   Forgot password?
                 </Link>

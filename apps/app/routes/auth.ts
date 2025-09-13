@@ -1,4 +1,4 @@
-export const authViewRoutes = {
+export const authViewSegments = {
   login: 'login',
   signUp: 'sign-up',
   logout: 'logout',
@@ -13,5 +13,5 @@ export const authViewRoutes = {
   // recoverAccount: 'recover-account',
 };
 
-export type AuthViewRoutes = typeof authViewRoutes;
-export type AuthView = keyof AuthViewRoutes;
+export type AuthViewSegments = typeof authViewSegments;
+export type AuthView = keyof AuthViewSegments;

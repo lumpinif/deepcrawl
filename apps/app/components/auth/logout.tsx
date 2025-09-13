@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { authClient } from '@/lib/auth.client';
-import { authViewRoutes } from '@/routes/auth';
+import { authViewSegments } from '@/routes/auth';
 import { useOnSuccessTransition } from '../../hooks/use-success-transition';
 
 function cleanupMultiSessionCookies() {
@@ -40,7 +40,7 @@ export function Logout() {
       ? redirectTo.startsWith('/')
         ? redirectTo
         : `/${redirectTo}`
-      : `/${authViewRoutes.login}`, // default to login
+      : `/${authViewSegments.login}`, // default to login
   });
 
   useEffect(() => {
