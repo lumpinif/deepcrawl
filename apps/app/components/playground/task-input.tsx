@@ -77,8 +77,9 @@ export const TaskInput = ({
 
         <PromptInputBody>
           <UrlInput
+            autoFocus={true}
             onChange={(e) => setRequestUrl(e.target.value)}
-            placeholder="Enter URL..."
+            placeholder="Enter URL here..."
             type="text"
             value={requestUrl}
           />

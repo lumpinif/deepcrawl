@@ -1,7 +1,11 @@
+'use client';
+
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { ComponentProps, KeyboardEventHandler } from 'react';
+import { useEffect } from 'react';
+import { useIsHydrated } from '@/hooks/use-hydrated';
 
 export type UrlInputProps = ComponentProps<typeof Input> & {
   onSubmit?: () => void;
@@ -14,8 +18,31 @@ export function UrlInput({
   validationError,
   className,
   placeholder = 'example.com',
+  autoFocus,
   ...props
 }: UrlInputProps) {
+  const isHydrated = useIsHydrated();
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+    if (!autoFocus) {
+      return;
+    }
+    // Focus after hydration without rendering the autoFocus attribute
+    const el = document.getElementById('url-input') as HTMLInputElement | null;
+    if (!el) {
+      return;
+    }
+    // Two RAFs to ensure paint after hydration on some browsers/extensions
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.focus({ preventScroll: true });
+      });
+    });
+  }, [isHydrated, autoFocus]);
+
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === 'Enter') {
       // Don't submit if IME composition is in progress
@@ -80,6 +107,7 @@ export function UrlInput({
         }}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        // Never pass autoFocus to DOM to avoid hydration mismatch
         {...props}
       />
       {hasError && (
