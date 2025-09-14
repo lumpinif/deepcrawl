@@ -38,7 +38,7 @@
     "fumadocs-core": "^15.6.7",
     "fumadocs-ui": "^15.6.7",
     "lucide-react": "^0.475.0",
-    "motion": "^12.23.3",
+    "motion": "^12.23.12",
     "nanoid": "^5.1.5",
     "next-themes": "^0.4.6",
     "postcss": "^8.5.4",
@@ -71,7 +71,8 @@
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
-    "./hooks/*": "./src/hooks/*.ts"
+    "./hooks/*": "./src/hooks/*.ts",
+    "./icons/*": "./src/components/icons/*.tsx"
   },
   "overrides": {
     "react-is": "^19.1.0"
