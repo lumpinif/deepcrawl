@@ -115,7 +115,7 @@ export function useOnSuccessTransition({
     }
 
     setSuccess(true);
-  }, [queryClient]); // Removed refetchSession from dependencies to prevent infinite loops
+  }, [queryClient, refetchSession]);
 
   return { onSuccess, isPending };
 }
