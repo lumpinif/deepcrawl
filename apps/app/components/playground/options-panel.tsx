@@ -21,6 +21,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  type CardFooter,
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
@@ -47,6 +48,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import type {
   ExtractLinksOptions,
   GetMarkdownOptions,
@@ -54,7 +56,7 @@ import type {
   ReadUrlOptions,
 } from 'deepcrawl';
 import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { type ComponentProps, useState } from 'react';
 import type { DeepcrawlOperations } from './playground-client';
 
 // Type aliases for component props using indexed types from input types
@@ -549,7 +551,15 @@ function CleaningProcessorSelect({
   );
 }
 
+interface CardProps {
+  card?: ComponentProps<typeof Card>;
+  header?: ComponentProps<typeof CardHeader>;
+  content?: ComponentProps<typeof CardContent>;
+  footer?: ComponentProps<typeof CardFooter>;
+}
+
 interface OptionsPanelProps {
+  cardProps?: CardProps;
   selectedOperation: DeepcrawlOperations;
   options: ReadUrlOptions | ExtractLinksOptions | GetMarkdownOptions;
   onOptionsChange: (
@@ -561,6 +571,7 @@ export function OptionsPanel({
   selectedOperation,
   options,
   onOptionsChange,
+  cardProps,
 }: OptionsPanelProps) {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(),
@@ -632,8 +643,8 @@ export function OptionsPanel({
   if (selectedOperation === 'getMarkdown') {
     const markdownOptions = options as GetMarkdownOptions;
     return (
-      <Card>
-        <CardHeader>
+      <Card {...cardProps?.card}>
+        <CardHeader {...cardProps?.header}>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
@@ -657,7 +668,10 @@ export function OptionsPanel({
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent
+          {...cardProps?.content}
+          className={cn('space-y-4', cardProps?.content?.className)}
+        >
           <CleaningProcessorSelect
             id="markdown-cleaningProcessor"
             label="HTML Cleaning Processor"
@@ -714,8 +728,8 @@ export function OptionsPanel({
   if (selectedOperation === 'readUrl') {
     const readOptions = options as ReadUrlOptions;
     return (
-      <Card>
-        <CardHeader>
+      <Card {...cardProps?.card}>
+        <CardHeader {...cardProps?.header}>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
@@ -738,7 +752,10 @@ export function OptionsPanel({
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent
+          {...cardProps?.content}
+          className={cn('space-y-4', cardProps?.content?.className)}
+        >
           {/* Basic Options */}
           <CleaningProcessorSelect
             id="cleaningProcessor"
@@ -889,8 +906,8 @@ export function OptionsPanel({
   if (selectedOperation === 'extractLinks') {
     const linksOptions = options as ExtractLinksOptions;
     return (
-      <Card>
-        <CardHeader>
+      <Card {...cardProps?.card}>
+        <CardHeader {...cardProps?.header}>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
@@ -913,7 +930,10 @@ export function OptionsPanel({
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent
+          {...cardProps?.content}
+          className={cn('space-y-4', cardProps?.content?.className)}
+        >
           <CleaningProcessorSelect
             id="links-cleaningProcessor"
             label="HTML Cleaning Processor"

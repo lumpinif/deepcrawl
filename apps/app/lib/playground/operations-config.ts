@@ -1,0 +1,52 @@
+import {
+  ExtractLinksGridIcon,
+  GetMarkdownGridIcon,
+  ReadUrlGridIcon,
+} from '@/components/animate-ui/components/grid-icons';
+import type { DeepcrawlOperations } from '@/hooks/playground/use-task-input-state';
+
+interface OperationConfig {
+  operation: DeepcrawlOperations;
+  label: string;
+  icon: React.ElementType;
+  endpoint: string;
+  method: string;
+  description: string;
+}
+
+// Operations configuration - matches playground-client pattern
+export const DeepcrawlFeatures: OperationConfig[] = [
+  {
+    label: 'Get Markdown',
+    operation: 'getMarkdown',
+    icon: GetMarkdownGridIcon,
+    endpoint: '/read',
+    method: 'GET',
+    description: 'Extract markdown content from the URL',
+  },
+  {
+    label: 'Read URL',
+    operation: 'readUrl',
+    icon: ReadUrlGridIcon,
+    endpoint: '/read',
+    method: 'POST',
+    description: 'Get full result object with metadata',
+  },
+  {
+    label: 'Extract Links',
+    operation: 'extractLinks',
+    icon: ExtractLinksGridIcon,
+    endpoint: '/links',
+    method: 'POST',
+    description: 'Extract all links and sitemap data',
+  },
+] as const;
+
+export function getOperationConfig(
+  operation: DeepcrawlOperations,
+): OperationConfig {
+  return (
+    DeepcrawlFeatures.find((feat) => feat.operation === operation) ||
+    (DeepcrawlFeatures[0] as OperationConfig)
+  );
+}

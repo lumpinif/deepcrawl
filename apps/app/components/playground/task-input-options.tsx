@@ -1,0 +1,56 @@
+import {
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
+} from '@deepcrawl/ui/components/ai-elements/prompt-input';
+import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
+import { SettingsIcon } from '@deepcrawl/ui/icons/settings';
+import type {
+  ExtractLinksOptions,
+  GetMarkdownOptions,
+  ReadUrlOptions,
+} from 'deepcrawl';
+import type { DeepcrawlOperations } from '@/hooks/playground/use-task-input-state';
+import { OptionsPanel } from './options-panel';
+
+interface TaskInputOptionsProps {
+  selectedOperation: DeepcrawlOperations;
+  options: ReadUrlOptions | ExtractLinksOptions | GetMarkdownOptions;
+  onOptionsChange: (
+    options: ReadUrlOptions | ExtractLinksOptions | GetMarkdownOptions,
+  ) => void;
+}
+
+export function TaskInputOptions({
+  selectedOperation,
+  options,
+  onOptionsChange,
+}: TaskInputOptionsProps) {
+  return (
+    <PromptInputActionMenu>
+      <PromptInputActionMenuTrigger>
+        <SettingsIcon />
+      </PromptInputActionMenuTrigger>
+      <PromptInputActionMenuContent className="w-fit overflow-hidden p-1 sm:min-w-xl">
+        <ScrollArea className="h-96">
+          <OptionsPanel
+            cardProps={{
+              card: {
+                className: 'bg-background border-none',
+              },
+              header: {
+                className: 'bg-background',
+              },
+              content: {
+                className: 'bg-background',
+              },
+            }}
+            onOptionsChange={onOptionsChange}
+            options={options}
+            selectedOperation={selectedOperation}
+          />
+        </ScrollArea>
+      </PromptInputActionMenuContent>
+    </PromptInputActionMenu>
+  );
+}
