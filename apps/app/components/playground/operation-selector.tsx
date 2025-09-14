@@ -33,8 +33,9 @@ export function OperationSelector({
       {DeepcrawlFeatures.map((feat) => (
         <Card
           className={cn(
-            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-muted/50 hover:shadow-md',
-            selectedOperation === feat.operation && 'bg-muted/50',
+            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-primary hover:shadow-md hover:dark:bg-background/80',
+            selectedOperation === feat.operation &&
+              'border-border bg-primary shadow-md dark:bg-background/80',
           )}
           key={feat.operation}
           onClick={() => onOperationChange(feat.operation)}
@@ -42,7 +43,15 @@ export function OperationSelector({
           onMouseLeave={() => setHoveredOperation(null)}
         >
           <div className="absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100">
-            <Badge className="text-muted-foreground text-xs" variant="outline">
+            <Badge
+              className={cn(
+                'text-muted-foreground text-xs',
+                'group-hover:text-primary-foreground dark:group-hover:text-muted-foreground',
+                selectedOperation === feat.operation &&
+                  'text-primary-foreground dark:text-primary',
+              )}
+              variant="outline"
+            >
               {feat.method} {feat.endpoint}
             </Badge>
           </div>
@@ -56,7 +65,14 @@ export function OperationSelector({
               cellClassName="size-[3px]"
             />
           </div>
-          <CardContent className="space-y-2 text-center">
+          <CardContent
+            className={cn(
+              'space-y-2 text-center',
+              'group-hover:text-primary-foreground dark:group-hover:text-primary',
+              selectedOperation === feat.operation &&
+                'text-primary-foreground dark:text-primary',
+            )}
+          >
             <div className="flex items-center justify-center">
               <CardTitle className="flex items-center gap-2">
                 {feat.label}
