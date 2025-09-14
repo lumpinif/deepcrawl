@@ -37,7 +37,7 @@ export function useOnSuccessTransition({
       // Validate redirectPath before URL construction
       if (!redirectPath || typeof redirectPath !== 'string') {
         const fallbackPath = getAppRoute(BASE_APP_PATH);
-        
+
         // Production fix: Add delay for cookie propagation
         setTimeout(() => {
           if (typeof window !== 'undefined') {
@@ -104,7 +104,7 @@ export function useOnSuccessTransition({
 
     // Check if this was a social provider linking flow
     const isLinking = getSearchParam('linking') === 'true';
-    
+
     if (isLinking) {
       toast.success('Social provider linked successfully');
 
