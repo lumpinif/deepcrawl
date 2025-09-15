@@ -1,9 +1,9 @@
 'use client';
 
+import { Toaster } from '@deepcrawl/ui/components/ui/sonner';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { ReactNode } from 'react';
-import { Toaster } from 'sonner';
 import { getQueryClient } from '@/query/query.client';
 
 export function QueryProviders({ children }: { children: ReactNode }) {
@@ -17,8 +17,8 @@ export function QueryProviders({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       {children}
       <Toaster
-        className="flex items-center justify-center"
-        offset={{ top: -7 }}
+        className="custom-toaster flex items-center justify-center"
+        offset={{ top: 0 }}
         position="top-center"
       />
       <ReactQueryDevtools initialIsOpen={false} />
