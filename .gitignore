@@ -79,3 +79,4 @@ tsconfig.tsbuildinfo
 .cursor
 .claude
 .serena
+.spec-workflow
