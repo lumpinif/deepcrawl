@@ -7,6 +7,7 @@ import {
   PromptInputActionMenuTrigger,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
 import { CpuIcon } from '@deepcrawl/ui/components/icons/cpu';
+import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import {
   Tooltip,
   TooltipContent,
@@ -39,6 +40,8 @@ export function CleaningProcessorMenu({
   const currentProcessor =
     processor || DEFAULT_SCRAPE_OPTIONS.cleaningProcessor;
 
+  const defaultProcessor = DEFAULT_SCRAPE_OPTIONS.cleaningProcessor;
+
   return (
     <Tooltip>
       <PromptInputActionMenu>
@@ -62,7 +65,17 @@ export function CleaningProcessorMenu({
                 type="button"
               >
                 <div className="space-y-0.5">
-                  <div className="font-medium">{option.label}</div>
+                  <div className="flex items-center gap-2 font-medium">
+                    {option.label}
+                    {option.value === defaultProcessor ? (
+                      <Badge
+                        className="text-muted-foreground text-xs uppercase"
+                        variant="outline"
+                      >
+                        Default
+                      </Badge>
+                    ) : null}
+                  </div>
                   <div className="text-muted-foreground text-xs">
                     {option.description}
                   </div>
