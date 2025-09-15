@@ -508,7 +508,6 @@ function CollapsibleSection({
   );
 }
 
-
 interface CardProps {
   card?: ComponentProps<typeof Card>;
   header?: ComponentProps<typeof CardHeader>;
