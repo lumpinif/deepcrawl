@@ -7,12 +7,15 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
+import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
 import {
   type DeepcrawlOperations,
   useTaskInputState,
 } from '@/hooks/playground/use-task-input-state';
 import { getOperationConfig } from '@/lib/playground/operations-config';
+import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
 import { TaskInputOptions } from './task-input-options';
@@ -27,6 +30,8 @@ export const TaskInput = ({
   defaultOperation = 'getMarkdown',
   defaultUrl = '',
 }: TaskInputProps) => {
+  const [isError, setIsError] = useState(false);
+
   // Use custom hooks for state management
   const {
     requestUrl,
@@ -55,14 +60,38 @@ export const TaskInput = ({
   // Get current operation config
   const selectedOP = getOperationConfig(selectedOperation);
 
+  // Memoize URL validation to prevent re-renders
+  const isUrlValid = useMemo(() => {
+    return requestUrl && isPlausibleUrl(requestUrl);
+  }, [requestUrl]);
+
+  const handleSubmit = () => {
+    if (!isUrlValid) {
+      setIsError(true);
+      toast.error('Please enter a valid URL');
+      return;
+    }
+
+    setIsError(false);
+    // Execute API call with current operation
+    executeApiCall(selectedOperation, selectedOP.label);
+  };
+
+  // Clear error when user types
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRequestUrl(e.target.value);
+    if (isError) {
+      setIsError(false);
+    }
+  };
+
   return (
     <>
       <PromptInput
         className="relative mx-auto mt-4 sm:max-w-2/3"
         onSubmit={(_, event) => {
           event.preventDefault();
-          // Execute API call with current operation
-          executeApiCall(selectedOperation, selectedOP.label);
+          handleSubmit();
         }}
       >
         <PromptInputToolbar>
@@ -78,7 +107,9 @@ export const TaskInput = ({
         <PromptInputBody>
           <UrlInput
             autoFocus={true}
-            onChange={(e) => setRequestUrl(e.target.value)}
+            isError={isError}
+            onChange={handleUrlChange}
+            onSubmit={handleSubmit}
             placeholder="Enter URL here..."
             type="text"
             value={requestUrl}
@@ -94,7 +125,7 @@ export const TaskInput = ({
             />
           </PromptInputTools>
           <PromptInputSubmit
-            disabled={!requestUrl || isLoading[selectedOperation]}
+            disabled={!isUrlValid || isLoading[selectedOperation]}
             size="default"
           >
             {selectedOP.label}

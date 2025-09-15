@@ -9,19 +9,23 @@ import { useIsHydrated } from '@/hooks/use-hydrated';
 
 export type UrlInputProps = ComponentProps<typeof Input> & {
   onSubmit?: () => void;
-  validationError?: string;
+  isError?: boolean;
 };
 
 export function UrlInput({
   onChange,
   onSubmit,
-  validationError,
   className,
   placeholder = 'example.com',
   autoFocus,
+  isError,
+  value,
   ...props
 }: UrlInputProps) {
   const isHydrated = useIsHydrated();
+
+  // Check if the value already has a protocol
+  const hasProtocol = typeof value === 'string' && /^https?:\/\//i.test(value);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -58,46 +62,35 @@ export function UrlInput({
       // Submit on Enter (without Shift)
       e.preventDefault();
 
-      // Call onSubmit if provided, otherwise fallback to form submission
+      // Delegate submit to parent handler if provided
       if (onSubmit) {
         onSubmit();
-      } else {
-        const form = e.currentTarget.form;
-        if (form) {
-          form.requestSubmit();
-        }
+        return;
+      }
+
+      // Fallback to form submission
+      const form = e.currentTarget.form;
+      if (form) {
+        form.requestSubmit();
       }
     }
   };
 
-  // Simple URL validation
-  const isValidUrl = (value: string): boolean => {
-    if (!value) {
-      return true; // Allow empty for now
-    }
-    try {
-      const url = new URL(
-        value.startsWith('http') ? value : `https://${value}`,
-      );
-      return ['http:', 'https:'].includes(url.protocol);
-    } catch {
-      return false;
-    }
-  };
-
-  const currentValue = props.value?.toString() || '';
-  const hasError =
-    validationError || (currentValue && !isValidUrl(currentValue));
-
   return (
-    <div className="relative h-16" role="textbox">
-      <Badge className="-translate-y-1/2 absolute top-1/2 left-3 cursor-default select-none border-border bg-background py-1 text-muted-foreground">
-        https://
-      </Badge>
+    <div className="relative h-16">
+      {!hasProtocol && (
+        <Badge className="-translate-y-1/2 absolute top-1/2 left-3 cursor-default select-none border-border bg-background py-1 text-muted-foreground">
+          https://
+        </Badge>
+      )}
       <Input
         className={cn(
-          '!bg-transparent h-full border-none pl-20 shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent',
-          hasError && 'border-destructive focus-visible:ring-destructive',
+          'transition-all duration-200 ease-in-out',
+          !isError && 'border-none',
+          isError &&
+            '!border-destructive animate-pulse !focus-visible:ring-destructive',
+          '!bg-transparent h-full shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent',
+          hasProtocol ? 'pl-3' : 'pl-20',
           className,
         )}
         id="url-input"
@@ -106,15 +99,11 @@ export function UrlInput({
           onChange?.(e);
         }}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
+        placeholder={hasProtocol ? 'https://example.com' : placeholder}
+        value={value}
         // Never pass autoFocus to DOM to avoid hydration mismatch
         {...props}
       />
-      {hasError && (
-        <div className="absolute top-full left-0 mt-1 text-destructive text-sm">
-          {validationError || 'Please enter a valid URL'}
-        </div>
-      )}
     </div>
   );
 }

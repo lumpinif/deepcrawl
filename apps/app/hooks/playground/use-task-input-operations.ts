@@ -7,6 +7,7 @@ import type {
 } from 'deepcrawl';
 import { toast } from 'sonner';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
+import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import { useDeepcrawlClient } from './use-deepcrawl-client';
 import { useExecutionTimer } from './use-execution-timer';
 import type {
@@ -78,6 +79,12 @@ export function useTaskInputOperations({
     operation: DeepcrawlOperations,
     label: string,
   ) => {
+    // Guard against invalid URLs (defense in depth)
+    if (!isPlausibleUrl(requestUrl)) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+
     if (!(sdkClient && isReady)) {
       toast.error('Please wait for the SDK client to be ready');
       return;
