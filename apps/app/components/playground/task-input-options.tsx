@@ -33,10 +33,11 @@ export function TaskInputOptions({
       </PromptInputActionMenuTrigger>
       <PromptInputActionMenuContent
         alignOffset={-4}
-        className="w-fit overflow-hidden p-1 sm:min-w-xl"
+        className="w-fit overflow-visible p-1 sm:min-w-xl"
         sideOffset={10}
       >
-        <ScrollArea className="h-96">
+        {/* SOCIAL: WE CAN POST THIS ON X */}
+        <ScrollArea className="[&_[data-slot=scroll-area-viewport]]:max-h-[500px] [&_[data-slot=scroll-area-viewport]]:overflow-y-auto">
           <OptionsPanel
             cardProps={{
               card: {
