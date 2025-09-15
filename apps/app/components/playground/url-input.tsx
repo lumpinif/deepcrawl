@@ -89,7 +89,7 @@ export function UrlInput({
           !isError && 'border-none',
           isError &&
             '!border-destructive animate-pulse !focus-visible:ring-destructive',
-          '!bg-transparent h-full shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent',
+          '!bg-transparent h-full rounded-none shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent',
           hasProtocol ? 'pl-3' : 'pl-20',
           className,
         )}

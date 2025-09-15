@@ -508,48 +508,6 @@ function CollapsibleSection({
   );
 }
 
-interface CleaningProcessorSelectProps {
-  id: string;
-  label: string;
-  value: string | undefined;
-  onValueChange: (value: string) => void;
-}
-
-function CleaningProcessorSelect({
-  id,
-  label,
-  value,
-  onValueChange,
-}: CleaningProcessorSelectProps) {
-  return (
-    <div className="flex w-full items-center justify-between space-x-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Label className="cursor-help text-sm" htmlFor={id}>
-            {label}
-          </Label>
-        </TooltipTrigger>
-        <TooltipContent className="max-w-md" side="right">
-          <p className="text-pretty">
-            The cleaning processor to use. Cheerio-reader is the default and
-            recommended cleaning processor, but our custom html-rewriter is used
-            for github.com urls. Try different processors for potential better
-            results.
-          </p>
-        </TooltipContent>
-      </Tooltip>
-      <Select onValueChange={onValueChange} value={value || 'cheerio-reader'}>
-        <SelectTrigger size="sm">
-          <SelectValue placeholder="Select processor" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="cheerio-reader">Cheerio Reader</SelectItem>
-          <SelectItem value="html-rewriter">HTML Rewriter</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
 
 interface CardProps {
   card?: ComponentProps<typeof Card>;
@@ -672,13 +630,6 @@ export function OptionsPanel({
           {...cardProps?.content}
           className={cn('space-y-4', cardProps?.content?.className)}
         >
-          <CleaningProcessorSelect
-            id="markdown-cleaningProcessor"
-            label="HTML Cleaning Processor"
-            onValueChange={(value) => updateOption('cleaningProcessor', value)}
-            value={markdownOptions.cleaningProcessor}
-          />
-          <Separator />
           {/* Cache Options */}
           <CollapsibleSection
             id="markdownCacheOptions"
@@ -757,13 +708,6 @@ export function OptionsPanel({
           className={cn('space-y-4', cardProps?.content?.className)}
         >
           {/* Basic Options */}
-          <CleaningProcessorSelect
-            id="cleaningProcessor"
-            label="HTML Cleaning Processor"
-            onValueChange={(value) => updateOption('cleaningProcessor', value)}
-            value={readOptions.cleaningProcessor}
-          />
-          <Separator />
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Content Options</h4>
             <div className="grid grid-cols-2 gap-4">
@@ -934,13 +878,6 @@ export function OptionsPanel({
           {...cardProps?.content}
           className={cn('space-y-4', cardProps?.content?.className)}
         >
-          <CleaningProcessorSelect
-            id="links-cleaningProcessor"
-            label="HTML Cleaning Processor"
-            onValueChange={(value) => updateOption('cleaningProcessor', value)}
-            value={linksOptions.cleaningProcessor}
-          />
-          <Separator />
           {/* Basic Options */}
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Content Options</h4>

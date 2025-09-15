@@ -1,3 +1,4 @@
+import { DEFAULT_SCRAPE_OPTIONS } from '@deepcrawl/types/configs';
 import type {
   ExtractLinksOptions,
   ExtractLinksResponse,
@@ -104,6 +105,25 @@ export function useTaskInputState({
     }));
   };
 
+  // Helper function for cleaning processor management
+  const getCurrentProcessor = () => {
+    const currentOptions = options[selectedOperation];
+    return (
+      currentOptions?.cleaningProcessor ||
+      DEFAULT_SCRAPE_OPTIONS.cleaningProcessor
+    );
+  };
+
+  const handleProcessorChange = (
+    processor: 'cheerio-reader' | 'html-rewriter',
+  ) => {
+    const currentOptions = getCurrentOptions();
+    handleOptionsChange({
+      ...currentOptions,
+      cleaningProcessor: processor,
+    });
+  };
+
   return {
     // State
     requestUrl,
@@ -123,5 +143,7 @@ export function useTaskInputState({
     // Computed
     getCurrentOptions,
     handleOptionsChange,
+    getCurrentProcessor,
+    handleProcessorChange,
   };
 }
