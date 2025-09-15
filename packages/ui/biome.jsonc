@@ -22,6 +22,9 @@
       "correctness": {
         "noUnknownProperty": "off"
       },
+      "complexity": {
+        "noImportantStyles": "off"
+      },
       "a11y": {
         "noStaticElementInteractions": "off",
         "useValidAnchor": "off",
