@@ -194,7 +194,7 @@
   }
 }
 
-.custom-toaster [data-sonner-toast][data-front="true"] {  
-  border-top-left-radius: 0 !important;  
-  border-top-right-radius: 0 !important;  
+.custom-toaster [data-sonner-toast][data-front="true"] {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
 }
