@@ -50,6 +50,7 @@ export function CleaningProcessorMenu({
         <PromptInputActionMenuContent
           alignOffset={-4}
           className="w-fit overflow-visible p-0"
+          onCloseAutoFocus={(e) => e.preventDefault()}
           sideOffset={10}
         >
           <div className="min-w-80 space-y-0.5 p-1">

@@ -34,6 +34,7 @@ export function TaskInputOptions({
       <PromptInputActionMenuContent
         alignOffset={-4}
         className="w-fit overflow-visible p-1 sm:min-w-xl"
+        onCloseAutoFocus={(e) => e.preventDefault()}
         sideOffset={10}
       >
         {/* SOCIAL: WE CAN POST THIS ON X */}
