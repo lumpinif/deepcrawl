@@ -121,7 +121,7 @@ export const TaskInput = ({
         </PromptInputBody>
 
         <PromptInputToolbar>
-          <PromptInputTools>
+          <PromptInputTools className="gap-x-0">
             <TaskInputOptions
               onOptionsChange={handleOptionsChange}
               options={getCurrentOptions()}
