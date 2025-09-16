@@ -33,20 +33,26 @@ export function OperationSelector({
       {DeepcrawlFeatures.map((feat) => (
         <Card
           className={cn(
-            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-primary hover:shadow-md hover:dark:bg-background/80',
+            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-primary hover:shadow-md hover:dark:bg-background',
             selectedOperation === feat.operation &&
-              'border-border bg-primary shadow-md dark:bg-background/80',
+              'border-ring bg-primary shadow-md dark:bg-background',
           )}
           key={feat.operation}
           onClick={() => onOperationChange(feat.operation)}
           onMouseEnter={() => setHoveredOperation(feat.operation)}
           onMouseLeave={() => setHoveredOperation(null)}
         >
-          <div className="absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100">
+          <div
+            className={cn(
+              'absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100',
+              selectedOperation === feat.operation && 'opacity-100',
+            )}
+          >
             <Badge
               className={cn(
                 'text-muted-foreground text-xs',
-                'group-hover:text-primary-foreground dark:group-hover:text-muted-foreground',
+                selectedOperation !== feat.operation &&
+                  'group-hover:text-primary-foreground dark:group-hover:text-muted-foreground',
                 selectedOperation === feat.operation &&
                   'text-primary-foreground dark:text-primary',
               )}
