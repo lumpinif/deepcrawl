@@ -37,14 +37,14 @@ export const APP_COOKIE_PREFIX = 'deepcrawl';
 
 export const MAX_SESSIONS = 2;
 
-export const API_KEY_CACHE_CONFIG = {
-  TTL_SECONDS: 86400 * 1, // 1 day in seconds
-  KEY_PREFIX: 'api_key_session:',
-} as const;
-
 export const COOKIE_CACHE_CONFIG = {
   enabled: true,
   maxAge: 86400 * 1, // 1 day in seconds
+} as const;
+
+export const API_KEY_CACHE_CONFIG = {
+  TTL_SECONDS: COOKIE_CACHE_CONFIG.maxAge, // sync with cookie cache config
+  KEY_PREFIX: 'api_key_session:',
 } as const;
 
 /**
