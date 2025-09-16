@@ -9,7 +9,8 @@
     "sherif:fix": "pnpm dlx sherif@latest --fix -i @types/node",
     "typecheck": "turbo typecheck",
     "check": "pnpm install && turbo check && turbo check && pnpm sherif:fix",
-    "clean": "cd scripts && npx tsx clean.ts"
+    "clean": "cd scripts && npx tsx clean.ts",
+    "clean:install": "cd scripts && npx tsx clean.ts && pnpm install"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",
