@@ -1,5 +1,5 @@
+import type { AppContext } from '@auth/lib/context';
 import { Hono } from 'hono';
-import type { AppContext } from '@/lib/context';
 
 export const validateAPIKeyRouter = new Hono<AppContext>();
 

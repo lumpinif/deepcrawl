@@ -1,8 +1,8 @@
 import { WorkerEntrypoint } from 'cloudflare:workers';
+import type { AppContext, Auth } from '@auth/lib/context';
+import createHonoApp from '@auth/lib/hono/create-hono-app';
+import { logDebug } from '@auth/utils/loggers';
 import { API_KEY_CACHE_CONFIG } from '@deepcrawl/auth/configs/constants';
-import type { AppContext, Auth } from '@/lib/context';
-import createHonoApp from '@/lib/hono/create-hono-app';
-import { logDebug } from '@/utils/loggers';
 import { createAuth } from './lib/better-auth';
 import { kvPutWithRetry } from './utils/kv';
 
