@@ -24,6 +24,7 @@ import type {
   ReadUrlOptions,
 } from 'deepcrawl';
 import { useState } from 'react';
+import { formatDaysFromSeconds } from '@/utils/playground/formatter';
 
 type CacheOptionsInput =
   | ReadUrlOptions['cacheOptions']
@@ -33,13 +34,11 @@ type CacheOptionsInput =
 interface CacheOptionsMenuProps {
   cacheOptions: CacheOptionsInput | undefined;
   onCacheOptionsChange: (cacheOptions: CacheOptionsInput) => void;
-  defaultTtl: number;
 }
 
 export function CacheOptionsMenu({
   cacheOptions,
   onCacheOptionsChange,
-  defaultTtl,
 }: CacheOptionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -57,15 +56,16 @@ export function CacheOptionsMenu({
     onCacheOptionsChange({
       enabled: DEFAULT_CACHE_OPTIONS.enabled,
       expiration: undefined,
-      expirationTtl: undefined,
+      expirationTtl: DEFAULT_CACHE_OPTIONS.expirationTtl,
     });
   };
 
   const hasCustomSettings =
     (cacheOptions?.enabled !== undefined &&
       cacheOptions.enabled !== DEFAULT_CACHE_OPTIONS.enabled) ||
-    cacheOptions?.expiration ||
-    cacheOptions?.expirationTtl;
+    cacheOptions?.expiration !== undefined ||
+    (cacheOptions?.expirationTtl !== undefined &&
+      cacheOptions.expirationTtl !== DEFAULT_CACHE_OPTIONS.expirationTtl);
 
   return (
     <Tooltip>
@@ -148,7 +148,15 @@ export function CacheOptionsMenu({
               {/* Expiration TTL */}
               <div className="space-y-2">
                 <Label className="text-sm" htmlFor="cache-expiration-ttl">
-                  Expiration TTL (seconds, min 60)
+                  Expiration TTL (seconds, min 60){' '}
+                  <Badge
+                    className="ml-2 text-muted-foreground text-xs uppercase"
+                    variant="outline"
+                  >
+                    Default:{' '}
+                    {formatDaysFromSeconds(DEFAULT_CACHE_OPTIONS.expirationTtl)}{' '}
+                    days
+                  </Badge>
                 </Label>
                 <Input
                   className="font-mono text-xs"
@@ -160,7 +168,7 @@ export function CacheOptionsMenu({
                       : undefined;
                     updateCacheOption('expirationTtl', newValue);
                   }}
-                  placeholder={`Default: ${defaultTtl} (4 days)`}
+                  placeholder={`Default: ${DEFAULT_CACHE_OPTIONS.expirationTtl}`}
                   type="number"
                   value={cacheOptions?.expirationTtl || ''}
                 />
