@@ -4,6 +4,7 @@ import type { AppContext, Auth } from '@/lib/context';
 import createHonoApp from '@/lib/hono/create-hono-app';
 import { logDebug } from '@/utils/loggers';
 import { createAuth } from './lib/better-auth';
+import { kvPutWithRetry } from './utils/kv';
 
 const app = createHonoApp();
 
@@ -71,7 +72,7 @@ export default class extends WorkerEntrypoint<AppContext['Bindings']> {
     logDebug('📀 API key auth CACHE MISS - querying database');
     const dbStartTime = performance.now();
 
-    // Use the cached auth instance for database validation
+    // Use the auth instance for database validation
     const auth = this.getAuthInstance();
     const sessionData = await auth.api.getSession({
       headers: new Headers({
@@ -87,10 +88,14 @@ export default class extends WorkerEntrypoint<AppContext['Bindings']> {
     // Cache successful validations
     if (sessionData?.session && sessionData?.user) {
       try {
-        await this.env.DEEPCRAWL_AUTH_KV.put(
-          cacheKey,
-          JSON.stringify(sessionData),
-          { expirationTtl: cacheTTL },
+        // kvPutWithRetry() will continue running, even after this method returns a sessionData to the caller
+        this.ctx.waitUntil(
+          kvPutWithRetry(
+            this.env.DEEPCRAWL_AUTH_KV,
+            cacheKey,
+            JSON.stringify(sessionData),
+            { expirationTtl: cacheTTL },
+          ),
         );
         logDebug('💾 Cached session for', cacheTTL, 'seconds');
       } catch (cacheError) {
