@@ -52,6 +52,12 @@ export function schedulePostProcessing(
   c: ORPCContext,
   params: PostProcessingParams,
 ): void {
+  const isDev = c.env.WORKER_NODE_ENV === 'development';
+  if (isDev) {
+    // disable post-processing in development
+    return;
+  }
+
   const {
     path, // string[] such as [ 'read', 'getMarkdown' ]
     requestUrl,
