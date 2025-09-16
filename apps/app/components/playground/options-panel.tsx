@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  DEFAULT_CACHE_OPTIONS,
   DEFAULT_LINK_EXTRACTION_OPTIONS,
   DEFAULT_LINKS_OPTIONS,
   DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
@@ -57,7 +56,6 @@ import type {
 } from 'deepcrawl';
 import { ChevronDown } from 'lucide-react';
 import { type ComponentProps, useState } from 'react';
-import { CacheOptionsMenu } from './cache-options-menu';
 import type { DeepcrawlOperations } from './playground-client';
 
 // Type aliases for component props using indexed types from input types
