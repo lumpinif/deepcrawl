@@ -1,6 +1,6 @@
 import { WorkerEntrypoint } from 'cloudflare:workers';
 import { API_KEY_CACHE_CONFIG } from '@deepcrawl/auth/configs/constants';
-import type { AppContext } from '@/lib/context';
+import type { AppContext, Auth } from '@/lib/context';
 import createHonoApp from '@/lib/hono/create-hono-app';
 import { logDebug } from '@/utils/loggers';
 import { createAuth } from './lib/better-auth';
@@ -16,7 +16,7 @@ app.route('/', validateAPIKeyRouter);
 
 export default class extends WorkerEntrypoint<AppContext['Bindings']> {
   // Cache the auth instance to avoid recreating it on every RPC call
-  private _authInstance: ReturnType<typeof createAuth> | null = null;
+  private _authInstance: Auth | null = null;
 
   private getAuthInstance() {
     if (!this._authInstance) {

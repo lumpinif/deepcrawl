@@ -1,4 +1,10 @@
-import type { Auth, Session } from '@deepcrawl/auth/types';
+import { env as envWorker } from 'cloudflare:workers';
+import { createAuth } from './better-auth';
+
+const auth = createAuth({ ...envWorker });
+
+export type Auth = typeof auth;
+export type Session = typeof auth.$Infer.Session;
 
 export interface AppVariables {
   /** Better Auth Instance */
