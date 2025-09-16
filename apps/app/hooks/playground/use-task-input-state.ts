@@ -1,4 +1,3 @@
-import { DEFAULT_CACHE_OPTIONS, DEFAULT_SCRAPE_OPTIONS } from '@deepcrawl/types/configs';
 import type {
   ExtractLinksOptions,
   ExtractLinksResponse,
@@ -17,6 +16,22 @@ export type DCResponseData =
   | GetMarkdownResponse
   | ReadUrlResponse
   | ExtractLinksResponse;
+
+type OperationOptionsMap = {
+  getMarkdown: GetMarkdownOptions;
+  readUrl: ReadUrlOptions;
+  extractLinks: ExtractLinksOptions;
+};
+
+type OperationOptionKey = {
+  [Op in DeepcrawlOperations]: keyof OperationOptionsMap[Op];
+}[DeepcrawlOperations];
+
+type OperationOptionValue<Key extends OperationOptionKey> = {
+  [Op in DeepcrawlOperations]: Key extends keyof OperationOptionsMap[Op]
+    ? OperationOptionsMap[Op][Key]
+    : never;
+}[DeepcrawlOperations];
 
 export interface PlaygroundResponseMetadata {
   executionTime?: number;
@@ -81,11 +96,11 @@ export function useTaskInputState({
   >({});
 
   // Options state management - consolidated for cleaner access
-  const [options, setOptions] = useState({
-    readUrl: { url: '' } as ReadUrlOptions,
-    extractLinks: { url: '' } as ExtractLinksOptions,
-    getMarkdown: { url: '' } as GetMarkdownOptions,
-  });
+  const [options, setOptions] = useState<OperationOptionsMap>(() => ({
+    readUrl: { url: '' },
+    extractLinks: { url: '' },
+    getMarkdown: { url: '' },
+  }));
 
   // Add deduplication ref to prevent multiple simultaneous requests
   const activeRequestsRef = useRef<Set<string>>(new Set());
@@ -105,13 +120,17 @@ export function useTaskInputState({
     }));
   };
 
-  // Helper function for cleaning processor management
-  const getCurrentProcessor = () => {
-    const currentOptions = options[selectedOperation];
-    return (
-      currentOptions?.cleaningProcessor ||
-      DEFAULT_SCRAPE_OPTIONS.cleaningProcessor
-    );
+  const getCurrentOptionValue = <Key extends OperationOptionKey>(
+    key: Key,
+    fallback?: OperationOptionValue<Key>,
+  ): OperationOptionValue<Key> => {
+    const operationOptions = options[selectedOperation];
+    const value =
+      operationOptions && key in operationOptions
+        ? operationOptions[key as keyof typeof operationOptions]
+        : undefined;
+
+    return (value ?? fallback) as OperationOptionValue<Key>;
   };
 
   const handleProcessorChange = (
@@ -124,24 +143,11 @@ export function useTaskInputState({
     });
   };
 
-  // Helper functions for cache options management
-  const getCurrentCacheOptions = () => {
-    const currentOptions = options[selectedOperation];
-    return currentOptions?.cacheOptions;
-  };
-
-  const getDefaultTtl = () => {
-    if (selectedOperation === 'readUrl') {
-      return 345600; // 4 days default for readUrl
-    }
-    if (selectedOperation === 'extractLinks') {
-      return 345600; // 4 days default for extractLinks
-    }
-    return DEFAULT_CACHE_OPTIONS.expirationTtl; // Default for getMarkdown
-  };
-
   const handleCacheOptionsChange = (
-    cacheOptions: ReadUrlOptions['cacheOptions'] | ExtractLinksOptions['cacheOptions'] | GetMarkdownOptions['cacheOptions'],
+    cacheOptions:
+      | ReadUrlOptions['cacheOptions']
+      | ExtractLinksOptions['cacheOptions']
+      | GetMarkdownOptions['cacheOptions'],
   ) => {
     const currentOptions = getCurrentOptions();
     handleOptionsChange({
@@ -166,13 +172,13 @@ export function useTaskInputState({
     setResponses,
     setOptions,
 
-    // Computed
+    // Helpers
     getCurrentOptions,
+    getCurrentOptionValue,
     handleOptionsChange,
-    getCurrentProcessor,
+
+    // Computed
     handleProcessorChange,
-    getCurrentCacheOptions,
-    getDefaultTtl,
     handleCacheOptionsChange,
   };
 }

@@ -1,6 +1,10 @@
 'use client';
 
 import {
+  DEFAULT_CACHE_OPTIONS,
+  DEFAULT_SCRAPE_OPTIONS,
+} from '@deepcrawl/types/configs/default';
+import {
   PromptInput,
   PromptInputBody,
   PromptInputSubmit,
@@ -16,7 +20,6 @@ import {
 } from '@/hooks/playground/use-task-input-state';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
-
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { OperationSelector } from './operation-selector';
@@ -49,10 +52,8 @@ export const TaskInput = ({
     setResponses,
     getCurrentOptions,
     handleOptionsChange,
-    getCurrentProcessor,
     handleProcessorChange,
-    getCurrentCacheOptions,
-    getDefaultTtl,
+    getCurrentOptionValue,
     handleCacheOptionsChange,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
@@ -133,11 +134,16 @@ export const TaskInput = ({
             />
             <CleaningProcessorMenu
               onProcessorChange={handleProcessorChange}
-              processor={getCurrentProcessor()}
+              processor={getCurrentOptionValue(
+                'cleaningProcessor',
+                DEFAULT_SCRAPE_OPTIONS.cleaningProcessor,
+              )}
             />
             <CacheOptionsMenu
-              cacheOptions={getCurrentCacheOptions()}
-              defaultTtl={getDefaultTtl()}
+              cacheOptions={getCurrentOptionValue(
+                'cacheOptions',
+                DEFAULT_CACHE_OPTIONS,
+              )}
               onCacheOptionsChange={handleCacheOptionsChange}
             />
           </PromptInputTools>
