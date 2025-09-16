@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Checkbox } from '@deepcrawl/ui/components/ui/checkbox';
 import {
   Form,
