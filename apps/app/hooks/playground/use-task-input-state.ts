@@ -1,4 +1,4 @@
-import { DEFAULT_SCRAPE_OPTIONS } from '@deepcrawl/types/configs';
+import { DEFAULT_CACHE_OPTIONS, DEFAULT_SCRAPE_OPTIONS } from '@deepcrawl/types/configs';
 import type {
   ExtractLinksOptions,
   ExtractLinksResponse,
@@ -124,6 +124,32 @@ export function useTaskInputState({
     });
   };
 
+  // Helper functions for cache options management
+  const getCurrentCacheOptions = () => {
+    const currentOptions = options[selectedOperation];
+    return currentOptions?.cacheOptions;
+  };
+
+  const getDefaultTtl = () => {
+    if (selectedOperation === 'readUrl') {
+      return 345600; // 4 days default for readUrl
+    }
+    if (selectedOperation === 'extractLinks') {
+      return 345600; // 4 days default for extractLinks
+    }
+    return DEFAULT_CACHE_OPTIONS.expirationTtl; // Default for getMarkdown
+  };
+
+  const handleCacheOptionsChange = (
+    cacheOptions: ReadUrlOptions['cacheOptions'] | ExtractLinksOptions['cacheOptions'] | GetMarkdownOptions['cacheOptions'],
+  ) => {
+    const currentOptions = getCurrentOptions();
+    handleOptionsChange({
+      ...currentOptions,
+      cacheOptions,
+    });
+  };
+
   return {
     // State
     requestUrl,
@@ -145,5 +171,8 @@ export function useTaskInputState({
     handleOptionsChange,
     getCurrentProcessor,
     handleProcessorChange,
+    getCurrentCacheOptions,
+    getDefaultTtl,
+    handleCacheOptionsChange,
   };
 }

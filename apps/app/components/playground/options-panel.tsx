@@ -57,13 +57,10 @@ import type {
 } from 'deepcrawl';
 import { ChevronDown } from 'lucide-react';
 import { type ComponentProps, useState } from 'react';
+import { CacheOptionsMenu } from './cache-options-menu';
 import type { DeepcrawlOperations } from './playground-client';
 
 // Type aliases for component props using indexed types from input types
-type CacheOptionsInput =
-  | ReadUrlOptions['cacheOptions']
-  | ExtractLinksOptions['cacheOptions']
-  | GetMarkdownOptions['cacheOptions'];
 type MetadataOptionsInput =
   | ReadUrlOptions['metadataOptions']
   | ExtractLinksOptions['metadataOptions'];
@@ -188,61 +185,6 @@ function NumberInput({
         placeholder={placeholder}
         type="number"
         value={value || ''}
-      />
-    </div>
-  );
-}
-
-interface CacheOptionsComponentProps {
-  idPrefix: string;
-  cacheOptions: CacheOptionsInput | undefined;
-  onCacheOptionsChange: (cacheOptions: CacheOptionsInput) => void;
-  defaultTtl: number;
-}
-
-function CacheOptionsComponent({
-  idPrefix,
-  cacheOptions,
-  onCacheOptionsChange,
-  defaultTtl,
-}: CacheOptionsComponentProps) {
-  const updateCacheOption = (
-    key: string,
-    value: boolean | number | undefined,
-  ) => {
-    onCacheOptionsChange({
-      ...cacheOptions,
-      [key]: value,
-    });
-  };
-
-  return (
-    <div className="grid grid-cols-1 gap-3">
-      <OptionSwitch
-        checked={Boolean(
-          cacheOptions?.enabled ?? DEFAULT_CACHE_OPTIONS.enabled,
-        )}
-        id={`${idPrefix}-cache-enabled`}
-        label="Enable Cache"
-        onCheckedChange={(checked) =>
-          updateCacheOption('enabled', Boolean(checked))
-        }
-        tooltip="Whether to enable cache. Default is true."
-      />
-      <NumberInput
-        id={`${idPrefix}-expiration`}
-        label="Expiration (epoch timestamp)"
-        onChange={(value) => updateCacheOption('expiration', value)}
-        placeholder="1717708800"
-        value={cacheOptions?.expiration || ''}
-      />
-      <NumberInput
-        id={`${idPrefix}-expirationTtl`}
-        label="Expiration TTL (seconds, min 60)"
-        min="60"
-        onChange={(value) => updateCacheOption('expirationTtl', value)}
-        placeholder={`default - ${defaultTtl} (4 days)`}
-        value={cacheOptions?.expirationTtl || ''}
       />
     </div>
   );
@@ -629,28 +571,6 @@ export function OptionsPanel({
           {...cardProps?.content}
           className={cn('space-y-4', cardProps?.content?.className)}
         >
-          {/* Cache Options */}
-          <CollapsibleSection
-            id="markdownCacheOptions"
-            isOpen={expandedSections.has('markdownCacheOptions')}
-            onToggle={() => toggleSection('markdownCacheOptions')}
-            title="Cache Options"
-          >
-            <CacheOptionsComponent
-              cacheOptions={markdownOptions.cacheOptions}
-              defaultTtl={DEFAULT_CACHE_OPTIONS.expirationTtl}
-              idPrefix="markdown"
-              onCacheOptionsChange={(cacheOptions) => {
-                onOptionsChange({
-                  ...markdownOptions,
-                  cacheOptions,
-                });
-              }}
-            />
-          </CollapsibleSection>
-
-          <Separator />
-
           {/* Markdown Converter Options */}
           <CollapsibleSection
             id="markdownConverterOptions"
@@ -773,28 +693,6 @@ export function OptionsPanel({
                   checked,
                 )
               }
-            />
-          </CollapsibleSection>
-
-          <Separator />
-
-          {/* Cache Options */}
-          <CollapsibleSection
-            id="cacheOptions"
-            isOpen={expandedSections.has('cacheOptions')}
-            onToggle={() => toggleSection('cacheOptions')}
-            title="Cache Options"
-          >
-            <CacheOptionsComponent
-              cacheOptions={readOptions.cacheOptions}
-              defaultTtl={DEFAULT_READ_OPTIONS.cacheOptions.expirationTtl}
-              idPrefix="read"
-              onCacheOptionsChange={(cacheOptions) => {
-                onOptionsChange({
-                  ...readOptions,
-                  cacheOptions,
-                });
-              }}
             />
           </CollapsibleSection>
 
@@ -1099,28 +997,6 @@ export function OptionsPanel({
                   checked,
                 )
               }
-            />
-          </CollapsibleSection>
-
-          <Separator />
-
-          {/* Cache Options for Links */}
-          <CollapsibleSection
-            id="linksCacheOptions"
-            isOpen={expandedSections.has('linksCacheOptions')}
-            onToggle={() => toggleSection('linksCacheOptions')}
-            title="Cache Options"
-          >
-            <CacheOptionsComponent
-              cacheOptions={linksOptions.cacheOptions}
-              defaultTtl={DEFAULT_LINKS_OPTIONS.cacheOptions.expirationTtl}
-              idPrefix="links"
-              onCacheOptionsChange={(cacheOptions) => {
-                onOptionsChange({
-                  ...linksOptions,
-                  cacheOptions,
-                });
-              }}
             />
           </CollapsibleSection>
 

@@ -17,6 +17,7 @@ import {
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 
+import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
@@ -50,6 +51,9 @@ export const TaskInput = ({
     handleOptionsChange,
     getCurrentProcessor,
     handleProcessorChange,
+    getCurrentCacheOptions,
+    getDefaultTtl,
+    handleCacheOptionsChange,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
@@ -130,6 +134,11 @@ export const TaskInput = ({
             <CleaningProcessorMenu
               onProcessorChange={handleProcessorChange}
               processor={getCurrentProcessor()}
+            />
+            <CacheOptionsMenu
+              cacheOptions={getCurrentCacheOptions()}
+              defaultTtl={getDefaultTtl()}
+              onCacheOptionsChange={handleCacheOptionsChange}
             />
           </PromptInputTools>
           <PromptInputSubmit
