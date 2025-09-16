@@ -21,7 +21,8 @@ declare namespace Cloudflare {
 		CLOUDFLARE_DATABASE_ID: string;
 		CLOUDFLARE_D1_TOKEN: string;
 		DB_V0: D1Database;
-		AUTH_WORKER: Fetcher /* deepcrawl-worker-auth */
+        /* NOTE: CRITICAL WORKAROUND: MANUALLY OVERRIDE THIS TO THE WORKSPACE PATH INSTEAD OF RELATIVE PATH AFTER GENERATING THE TYPES EVERYTIME*/
+		AUTH_WORKER: Service<typeof import("@deepcrawl/auth/src/index").default>;
 	}
 }
 interface CloudflareBindings extends Cloudflare.Env {}
@@ -1470,7 +1471,6 @@ interface RequestInit<Cf = CfProperties> {
 }
 type Service<T extends (new (...args: any[]) => Rpc.WorkerEntrypointBranded) | Rpc.WorkerEntrypointBranded | ExportedHandler<any, any, any> | undefined = undefined> = T extends new (...args: any[]) => Rpc.WorkerEntrypointBranded ? Fetcher<InstanceType<T>> : T extends Rpc.WorkerEntrypointBranded ? Fetcher<T> : T extends Exclude<Rpc.EntrypointBranded, Rpc.WorkerEntrypointBranded> ? never : Fetcher<undefined>;
 type Fetcher<T extends Rpc.EntrypointBranded | undefined = undefined, Reserved extends string = never> = (T extends Rpc.EntrypointBranded ? Rpc.Provider<T, Reserved | "fetch" | "connect"> : unknown) & {
-    getSessionWithAPIKey(apiKey: string): unknown;
     fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
     connect(address: SocketAddress | string, options?: SocketOptions): Socket;
 };
