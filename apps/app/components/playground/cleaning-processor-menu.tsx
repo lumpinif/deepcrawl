@@ -95,7 +95,7 @@ export function CleaningProcessorMenu({
             </div>
           </div>
         </PromptInputActionMenuContent>
-        <TooltipContent side="right">
+        <TooltipContent align="start" side="bottom">
           <p>Choose the processor for cleaning HTML content</p>
         </TooltipContent>
       </PromptInputActionMenu>

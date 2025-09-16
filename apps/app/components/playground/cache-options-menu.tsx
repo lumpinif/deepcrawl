@@ -177,7 +177,7 @@ export function CacheOptionsMenu({
             </div>
           </div>
         </PromptInputActionMenuContent>
-        <TooltipContent side="right">
+        <TooltipContent align="start" side="bottom">
           <p>Configure cache behavior for requests</p>
         </TooltipContent>
       </PromptInputActionMenu>
