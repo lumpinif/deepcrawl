@@ -1,7 +1,8 @@
 import type { auth } from '@deepcrawl/auth/lib/auth';
 
-// Infer types from the server auth instance
+/** Auth instance for Next.js Server Components */
 export type Auth = typeof auth;
+/** Session type for Next.js Server Components */
 export type Session = typeof auth.$Infer.Session;
 
 /**
