@@ -1,4 +1,3 @@
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { SocialProvider } from 'better-auth/social-providers';
@@ -6,6 +5,7 @@ import { toast } from 'sonner';
 import { useAuthRedirect } from '@/hooks/auth.hooks';
 import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
+import { LastUsedBadge } from './last-userd-badge';
 import type { Provider } from './social-providers';
 
 interface ProviderButtonProps {
@@ -64,14 +64,7 @@ export function ProviderButton({
         )}
         Continue with {provider.name}
       </div>
-      {isLastUsed && (
-        <Badge
-          className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
-          variant="secondary"
-        >
-          Last used
-        </Badge>
-      )}
+      {isLastUsed && <LastUsedBadge />}
     </Button>
   );
 }

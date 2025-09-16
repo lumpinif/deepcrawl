@@ -1,9 +1,9 @@
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { LockIcon, MailIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth.client';
 import { type AuthView, authViewSegments } from '@/routes/auth';
+import { LastUsedBadge } from './last-userd-badge';
 
 interface MagicLinkButtonProps {
   isSubmitting?: boolean;
@@ -32,22 +32,8 @@ export function MagicLinkButton({ isSubmitting, view }: MagicLinkButtonProps) {
         {view === 'magicLink' ? <LockIcon /> : <MailIcon />}
         Login with {view === 'magicLink' ? 'Password' : 'Magic Link'}
       </div>
-      {isMagicLinkLastUsed && view === 'login' && (
-        <Badge
-          className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
-          variant="secondary"
-        >
-          Last used
-        </Badge>
-      )}
-      {isEmailLastUsed && view === 'magicLink' && (
-        <Badge
-          className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
-          variant="secondary"
-        >
-          Last used
-        </Badge>
-      )}
+      {isMagicLinkLastUsed && view === 'login' && <LastUsedBadge />}
+      {isEmailLastUsed && view === 'magicLink' && <LastUsedBadge />}
     </Button>
   );
 }

@@ -1,4 +1,5 @@
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
+'use client';
+
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { KeyIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,6 +9,7 @@ import {
   getAuthErrorMessage,
   isWebAuthnCancellationError,
 } from '@/lib/auth-errors';
+import { LastUsedBadge } from './last-userd-badge';
 
 interface PasskeyButtonProps {
   isSubmitting?: boolean;
@@ -77,14 +79,7 @@ export function PasskeyButton({
         <KeyIcon />
         Continue with Passkey
       </div>
-      {isLastUsed && (
-        <Badge
-          className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
-          variant="secondary"
-        >
-          Last used
-        </Badge>
-      )}
+      {isLastUsed && <LastUsedBadge />}
     </Button>
   );
 }

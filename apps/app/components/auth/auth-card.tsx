@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -27,6 +26,7 @@ import {
 } from '@/utils';
 import { AuthCallback } from './auth-callback';
 import { AuthForm } from './auth-form';
+import { LastUsedBadge } from './last-userd-badge';
 import { Logout } from './logout';
 import { MagicLinkButton } from './magic-link-button';
 import { PasskeyButton } from './passkey-button';
@@ -171,14 +171,7 @@ export function AuthCard({
                           >
                             <RectangleEllipsis />
                             Passkey or Magic Link
-                            {isPasskeyOrMagicLinkLastUsed && (
-                              <Badge
-                                className="absolute right-3 text-muted-foreground text-xs transition-colors duration-150 group-hover:text-foreground"
-                                variant="secondary"
-                              >
-                                Last used
-                              </Badge>
-                            )}
+                            {isPasskeyOrMagicLinkLastUsed && <LastUsedBadge />}
                           </Button>
                         )}
                       </div>
@@ -244,18 +237,19 @@ export function AuthCard({
                 return (
                   <>
                     Don&apos;t have an account?
-                    <Link
-                      className="text-foreground underline"
-                      href={`/${authViewSegments.signUp}${isHydrated ? window.location.search : ''}`}
+                    <Button
+                      asChild
+                      className="px-1 text-foreground hover:underline"
+                      size="sm"
+                      variant="link"
                     >
-                      <Button
-                        className="px-1 text-foreground hover:underline"
-                        size="sm"
-                        variant="link"
+                      <Link
+                        className="text-foreground hover:underline"
+                        href={`/${authViewSegments.signUp}${isHydrated ? window.location.search : ''}`}
                       >
                         Sign up
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                   </>
                 );
               case 'signUp':

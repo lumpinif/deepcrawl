@@ -25,6 +25,7 @@ import { authClient } from '@/lib/auth.client';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 import { authViewSegments } from '@/routes/auth';
 import { getPasswordSchema, type PasswordValidation } from '@/utils';
+import { LastUsedBadge } from '../last-userd-badge';
 import { PasswordInput } from '../password-input';
 
 export interface SignInFormProps {
@@ -120,12 +121,7 @@ export function SignInForm({
               <FormLabel className="flex items-center justify-between">
                 Email
                 {isEmailLastUsed && (
-                  <Badge
-                    className="text-muted-foreground text-xs transition-colors duration-150 group-focus-within:text-foreground group-hover:text-foreground"
-                    variant="secondary"
-                  >
-                    Last used
-                  </Badge>
+                  <LastUsedBadge className="static inline-flex group-focus-within:text-foreground" />
                 )}
               </FormLabel>
 
@@ -156,7 +152,7 @@ export function SignInForm({
                 <FormLabel>Password</FormLabel>
 
                 <Link
-                  className="text-muted-foreground text-sm hover:text-foreground hover:underline"
+                  className="mr-0.5 rounded-md px-0.5 text-muted-foreground text-sm outline-none hover:text-foreground hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                   href={`/${authViewSegments.forgotPassword}${isHydrated ? window.location.search : ''}`}
                 >
                   Forgot password?
