@@ -4,7 +4,6 @@ import type { AppContext, Auth } from '@/lib/context';
 import createHonoApp from '@/lib/hono/create-hono-app';
 import { logDebug } from '@/utils/loggers';
 import { createAuth } from './lib/better-auth';
-import { validateAPIKeyRouter } from './router/auth';
 
 const app = createHonoApp();
 
@@ -12,7 +11,8 @@ app.get('/', (c) => {
   return c.text('Welcome to Deepcrawl Auth Worker');
 });
 
-app.route('/', validateAPIKeyRouter);
+/* test route */
+// app.route('/', validateAPIKeyRouter);
 
 export default class extends WorkerEntrypoint<AppContext['Bindings']> {
   // Cache the auth instance to avoid recreating it on every RPC call
