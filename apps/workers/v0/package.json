@@ -16,7 +16,7 @@
     "gen:openapi": "tsx ./src/lib/orpc/generate-openapi-yaml.ts"
   },
   "dependencies": {
-    "@cloudflare/puppeteer": "^0.0.15",
+    "@cloudflare/puppeteer": "^1.0.4",
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/contracts": "workspace:*",
     "@deepcrawl/db-auth": "workspace:*",
