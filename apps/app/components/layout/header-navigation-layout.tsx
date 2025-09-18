@@ -19,7 +19,7 @@ interface HeaderNavigationLayoutProps {
 }
 
 /** **********************************************************************************************
- * Note: A little performance overhead expected to be noticed but it's not a big deal in overall
+ * SOCIAL: Note: A little performance overhead expected to be noticed but it's not a big deal in overall
  * I am using this approach to experiment with scrolling detection from ScrollArea to animate the header instead of native `overflow-y-auto` approach which natively more performant however the scrollbar will be extended full page to block certain part of the site header which is not beautiful.
  * If you have any better approaches, PR is always welcome!!
  * **********************************************************************************************/
