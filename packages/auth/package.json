@@ -27,7 +27,7 @@
     "@types/react": "^19.1.5",
     "better-auth-harmony": "^1.2.5",
     "react": "^19.1.0",
-    "react-email": "^4.0.16",
+    "react-email": "^4.2.11",
     "resend": "^6.1.0"
   },
   "devDependencies": {
