@@ -30,6 +30,7 @@ import {
   BA_API_KEY_RATE_LIMIT,
   COOKIE_CACHE_CONFIG,
   DEVELOPMENT_ORIGINS,
+  EMAIL_CONFIG,
   LAST_USED_LOGIN_METHOD_COOKIE_NAME,
   MAX_SESSIONS,
   PROD_APP_URL,
@@ -237,7 +238,7 @@ export function createAuthConfig(env: Env) {
             console.error('❌ Failed to send magic link email:', error);
           }
         },
-        expiresIn: 300, // 5 minutes
+        expiresIn: EMAIL_CONFIG.EXpiresIn.magicLink,
       }),
       passkey({
         rpName: 'Deepcrawl Passkey',
@@ -245,6 +246,7 @@ export function createAuthConfig(env: Env) {
         rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
       }),
       organization({
+        invitationExpiresIn: EMAIL_CONFIG.EXpiresIn.invitation,
         async sendInvitationEmail(data) {
           if (!(emailEnabled && resend)) {
             return;
@@ -275,6 +277,7 @@ export function createAuthConfig(env: Env) {
       enabled: true,
       autoSignIn: false,
       requireEmailVerification: true,
+      resetPasswordTokenExpiresIn: EMAIL_CONFIG.EXpiresIn.resetPassword,
       async sendResetPassword({ user, url }) {
         if (!(emailEnabled && resend)) {
           return;
@@ -323,7 +326,7 @@ export function createAuthConfig(env: Env) {
         }
       },
       autoSignInAfterVerification: true,
-      expiresIn: 3600, // 1 hour
+      expiresIn: EMAIL_CONFIG.EXpiresIn.emailVerification,
     },
     socialProviders: {
       github: {

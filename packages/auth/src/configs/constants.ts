@@ -61,3 +61,17 @@ export const USE_OAUTH_PROXY = true;
 
 export const LAST_USED_LOGIN_METHOD_COOKIE_NAME =
   'deepcrawl.last_used_login_method';
+
+export const EMAIL_CONFIG = {
+  /**
+   * Time in seconds until the magic link expires.
+   * @default (60 * 5) // 5 minutes
+   *
+   */
+  EXpiresIn: {
+    resetPassword: 3600, // 1 hour
+    magicLink: 60 * 5, // 5 minutes
+    emailVerification: 3600, // 1 hour
+    invitation: 2 * 24 * 60 * 60, // By default, it's 48 hours (2 days)
+  },
+};
