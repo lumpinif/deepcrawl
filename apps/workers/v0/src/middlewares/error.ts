@@ -16,7 +16,6 @@ interface ErrorIssue {
   cause?: unknown;
 }
 
-// TODO: INFER TO THE SOURCE OF TYPE PACKAGE LATER
 interface ErrorResponse {
   success: boolean;
   targetUrl?: string;

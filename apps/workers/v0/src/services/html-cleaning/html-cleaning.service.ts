@@ -92,6 +92,6 @@ export async function HTMLRewriterCleaning({
 
   return {
     cleanedHtml,
-    // metrics, // TODO: CURRENTLY NOT USED, CONSIDER ADD A FLAG TO ENABLE/DISABLE METRICS BY USER
+    // metrics, // CURRENTLY NOT USED
   };
 }

@@ -228,7 +228,7 @@ export class ScrapeService {
         }
       }
 
-      // todo: allow user to add known sitemap paths
+      // TODO: allow user to add known sitemap paths
       // If no sitemap found yet, try common locations
       if (!result.sitemapXML) {
         const sitemapPaths = [
