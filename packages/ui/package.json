@@ -59,7 +59,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@turbo/gen": "^2.4.2",
     "@types/node": "^20",
-    "@types/react": "^19.1.5",
+    "@types/react": "^19.1.13",
     "@types/react-dom": "^19",
     "eslint": "^9.31.0",
     "eslint-config-next": "^15.5.3",

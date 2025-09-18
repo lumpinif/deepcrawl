@@ -91,7 +91,7 @@
     "@types/canvas-confetti": "^1.9.0",
     "@types/mdx": "^2.0.13",
     "@types/node": "^22",
-    "@types/react": "^19.1.5",
+    "@types/react": "^19.1.13",
     "@types/react-dom": "^19",
     "eslint": "^9.31.0",
     "eslint-config-next": "^15.5.3",
