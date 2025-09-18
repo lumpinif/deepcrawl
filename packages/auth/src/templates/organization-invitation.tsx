@@ -10,6 +10,21 @@ import {
   Text,
 } from '@react-email/components';
 import React from 'react';
+import { EMAIL_CONFIG } from '../configs/constants';
+import { secondsToMinutes } from '../utils/time-converter';
+import {
+  button,
+  buttonContainer,
+  container,
+  content,
+  footer,
+  h1,
+  heading,
+  hr,
+  logoContainer,
+  main,
+  text,
+} from './styles';
 
 export interface OrganizationInvitationProps {
   invitedEmail: string;
@@ -48,8 +63,8 @@ export default function OrganizationInvitation({
             </Text>
 
             <Text style={text}>
-              Deepcrawl is a powerful platform for web crawling and SEO
-              analysis. Join your team to start collaborating on projects and
+              Deepcrawl is a easy and mordern solution for web scraping and data
+              extraction. Join your team to start collaborating on projects and
               insights.
             </Text>
 
@@ -66,85 +81,17 @@ export default function OrganizationInvitation({
 
             <Hr style={hr} />
 
-            <Text style={footer}>This invitation will expire in 7 days.</Text>
+            <Text style={footer}>
+              This invitation will expire in{' '}
+              {secondsToMinutes(EMAIL_CONFIG.EXpiresIn.invitation) / 60 / 24}{' '}
+              days.
+            </Text>
           </Section>
         </Container>
       </Body>
     </Html>
   );
 }
-
-// Styles (consistent with other templates)
-const main = {
-  backgroundColor: '#f6f9fc',
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-
-const container = {
-  backgroundColor: '#ffffff',
-  margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
-};
-
-const logoContainer = {
-  padding: '32px 20px',
-  backgroundColor: '#000000',
-};
-
-const heading = {
-  color: '#ffffff',
-  fontSize: '24px',
-  fontWeight: 'bold',
-  textAlign: 'center' as const,
-  margin: '0',
-};
-
-const content = {
-  padding: '0 48px',
-};
-
-const h1 = {
-  color: '#333',
-  fontSize: '24px',
-  fontWeight: 'bold',
-  paddingTop: '32px',
-  paddingBottom: '32px',
-};
-
-const text = {
-  color: '#333',
-  fontSize: '16px',
-  lineHeight: '26px',
-};
-
-const buttonContainer = {
-  textAlign: 'center' as const,
-  padding: '27px 0',
-};
-
-const button = {
-  backgroundColor: '#000000',
-  borderRadius: '6px',
-  color: '#fff',
-  fontSize: '16px',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'block',
-  padding: '12px 20px',
-};
-
-const hr = {
-  borderColor: '#e6ebf1',
-  margin: '20px 0',
-};
-
-const footer = {
-  color: '#8898aa',
-  fontSize: '12px',
-  lineHeight: '16px',
-};
 
 // Preview props for development server
 OrganizationInvitation.PreviewProps = {
