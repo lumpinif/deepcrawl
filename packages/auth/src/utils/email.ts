@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type * as React from 'react';
 import { Resend } from 'resend';
 
 // Initialize Resend client
@@ -10,7 +10,7 @@ export function createResendClient(apiKey: string) {
 export interface SendEmailOptions {
   to: string | string[];
   subject: string;
-  template: ReactElement;
+  template: React.ReactNode;
   from?: string;
   replyTo?: string;
 }
