@@ -1,0 +1,17 @@
+# Ignore unnecessary directories for faster builds
+apps/workers/
+scripts/
+
+# Keep necessary packages
+!packages/auth/
+!packages/contracts/
+!packages/db/
+!packages/types/
+!packages/ui/
+!packages/sdks/js-ts/
+
+# Ignore common directories
+node_modules/
+.git/
+*.log
+.DS_Store
