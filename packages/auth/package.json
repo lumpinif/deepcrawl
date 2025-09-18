@@ -23,7 +23,7 @@
     "authentication"
   ],
   "dependencies": {
-    "@react-email/components": "^0.0.42",
+    "@react-email/components": "^0.5.3",
     "@types/react": "^19.1.5",
     "better-auth-harmony": "^1.2.5",
     "react": "^19.1.0",
