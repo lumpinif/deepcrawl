@@ -33,6 +33,7 @@
   "devDependencies": {
     "@deepcrawl/db-auth": "workspace:*",
     "@deepcrawl/typescript-config": "workspace:*",
+    "@react-email/preview-server": "^4.2.11",
     "@types/node": "^20"
   }
 }
