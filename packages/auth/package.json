@@ -28,7 +28,7 @@
     "better-auth-harmony": "^1.2.5",
     "react": "^19.1.0",
     "react-email": "^4.0.16",
-    "resend": "^4.6.0"
+    "resend": "^6.1.0"
   },
   "devDependencies": {
     "@deepcrawl/db-auth": "workspace:*",
