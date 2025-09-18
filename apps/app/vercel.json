@@ -2,6 +2,5 @@
   "outputDirectory": ".next",
   "regions": ["sfo1"],
   "framework": "nextjs",
-  "installCommand": "pnpm install",
-  "rootDirectory": "apps/app"
+  "installCommand": "pnpm install"
 }
