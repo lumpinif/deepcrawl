@@ -33,9 +33,9 @@ export function OperationSelector({
       {DeepcrawlFeatures.map((feat) => (
         <Card
           className={cn(
-            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-primary hover:shadow-md hover:dark:bg-background',
+            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-primary/80 hover:shadow-md hover:dark:bg-background',
             selectedOperation === feat.operation &&
-              'border-ring bg-primary shadow-md dark:bg-background',
+              'border-ring bg-primary/95 shadow-md hover:bg-primary/95 dark:bg-background',
           )}
           key={feat.operation}
           onClick={() => onOperationChange(feat.operation)}
@@ -84,7 +84,16 @@ export function OperationSelector({
                 {feat.label}
               </CardTitle>
             </div>
-            <CardDescription>{feat.description}</CardDescription>
+            <CardDescription
+              className={cn(
+                selectedOperation === feat.operation &&
+                  'text-primary-foreground dark:text-primary',
+                selectedOperation !== feat.operation &&
+                  'group-hover:text-primary-foreground dark:group-hover:text-primary',
+              )}
+            >
+              {feat.description}
+            </CardDescription>
           </CardContent>
         </Card>
       ))}
