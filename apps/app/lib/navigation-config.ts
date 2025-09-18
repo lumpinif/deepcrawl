@@ -2,7 +2,7 @@ import type { Icon } from '@tabler/icons-react';
 import {
   IconDashboard,
   IconKey,
-  IconLocation,
+  // IconLocation,
   IconLogs,
   IconUser,
 } from '@tabler/icons-react';
@@ -37,15 +37,15 @@ export interface NavigationItem {
 export const NAVGATION_ITEMS: NavigationItem[] = [
   {
     label: 'Dashboard',
-    title: 'Overview',
+    title: 'Home',
     url: getAppRoute(BASE_APP_PATH),
     icon: IconDashboard,
   },
-  {
-    title: 'Playground',
-    url: getAppRoute('/playground'),
-    icon: IconLocation,
-  },
+  // {
+  //   title: 'Playground',
+  //   url: getAppRoute('/playground'),
+  //   icon: IconLocation,
+  // },
   {
     title: 'Logs',
     url: getAppRoute('/logs'),
