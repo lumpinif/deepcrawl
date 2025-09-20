@@ -13,6 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import { Check } from 'lucide-react';
 
 interface CleaningProcessorMenuProps {
@@ -29,7 +30,7 @@ const PROCESSOR_OPTIONS = [
   {
     value: 'html-rewriter',
     label: 'HTML Rewriter',
-    description: 'Cloudflare-native processor, used for GitHub URLs',
+    description: 'Deepcrawl custom processor, used for GitHub URLs',
   },
 ] as const;
 
@@ -42,12 +43,17 @@ export function CleaningProcessorMenu({
 
   const defaultProcessor = DEFAULT_SCRAPE_OPTIONS.cleaningProcessor;
 
+  const hasCustomSettings =
+    processor !== DEFAULT_SCRAPE_OPTIONS.cleaningProcessor;
+
   return (
     <Tooltip>
       <PromptInputActionMenu>
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger className="cursor-help">
-            <CpuIcon />
+            <CpuIcon
+              className={cn('h-4 w-4', hasCustomSettings && 'text-blue-600')}
+            />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
         <PromptInputActionMenuContent

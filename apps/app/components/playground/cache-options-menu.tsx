@@ -73,7 +73,7 @@ export function CacheOptionsMenu({
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger className="cursor-help">
             <ClockIcon
-              className={cn('h-4 w-4', hasCustomSettings && 'text-green-500')}
+              className={cn('h-4 w-4', hasCustomSettings && 'text-green-600')}
             />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
