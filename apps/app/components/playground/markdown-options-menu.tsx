@@ -6,7 +6,7 @@ import {
   PromptInputActionMenuContent,
   PromptInputActionMenuTrigger,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
-import { FileTextIcon } from '@deepcrawl/ui/components/icons/file-text';
+import { MarkdownIcon } from '@deepcrawl/ui/components/icons/markdown';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Input } from '@deepcrawl/ui/components/ui/input';
@@ -95,7 +95,7 @@ export function MarkdownOptionsMenu({
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger className="cursor-help">
-            <FileTextIcon
+            <MarkdownIcon
               className={cn('h-4 w-4', hasCustomSettings && 'text-purple-600')}
             />
           </PromptInputActionMenuTrigger>
