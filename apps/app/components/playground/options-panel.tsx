@@ -435,7 +435,7 @@ export function OptionsPanel({
         <CardContent
           {...cardProps?.content}
           className={cn('space-y-4', cardProps?.content?.className)}
-        ></CardContent>
+        />
       </Card>
     );
   }
