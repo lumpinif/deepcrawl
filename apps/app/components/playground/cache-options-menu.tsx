@@ -23,7 +23,7 @@ import type {
   GetMarkdownOptions,
   ReadUrlOptions,
 } from 'deepcrawl';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { formatDaysFromSeconds } from '@/utils/playground/formatter';
 
 type CacheOptionsInput =
@@ -41,6 +41,10 @@ export function CacheOptionsMenu({
   onCacheOptionsChange,
 }: CacheOptionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const iconRef = useRef<{
+    startAnimation: () => void;
+    stopAnimation: () => void;
+  }>(null);
 
   const updateCacheOption = (
     key: string,
@@ -71,9 +75,14 @@ export function CacheOptionsMenu({
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
-          <PromptInputActionMenuTrigger className="cursor-help">
+          <PromptInputActionMenuTrigger
+            className="cursor-help"
+            onMouseEnter={() => iconRef.current?.startAnimation()}
+            onMouseLeave={() => iconRef.current?.stopAnimation()}
+          >
             <ClockIcon
               className={cn('h-4 w-4', hasCustomSettings && 'text-green-600')}
+              ref={iconRef}
             />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>

@@ -26,7 +26,7 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { GetMarkdownOptions, ReadUrlOptions } from 'deepcrawl';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 type MarkdownOptionsInput =
   | ReadUrlOptions['markdownConverterOptions']
@@ -42,6 +42,10 @@ export function MarkdownOptionsMenu({
   onMarkdownOptionsChange,
 }: MarkdownOptionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const iconRef = useRef<{
+    startAnimation: () => void;
+    stopAnimation: () => void;
+  }>(null);
 
   const updateMarkdownOption = (
     key: string,
@@ -94,9 +98,14 @@ export function MarkdownOptionsMenu({
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
-          <PromptInputActionMenuTrigger className="cursor-help">
+          <PromptInputActionMenuTrigger
+            className="cursor-help"
+            onMouseEnter={() => iconRef.current?.startAnimation()}
+            onMouseLeave={() => iconRef.current?.stopAnimation()}
+          >
             <MarkdownIcon
               className={cn('h-4 w-4', hasCustomSettings && 'text-purple-600')}
+              ref={iconRef}
             />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>

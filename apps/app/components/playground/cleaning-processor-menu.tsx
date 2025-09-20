@@ -15,6 +15,7 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Check } from 'lucide-react';
+import { useRef } from 'react';
 
 interface CleaningProcessorMenuProps {
   processor: string | undefined;
@@ -38,6 +39,10 @@ export function CleaningProcessorMenu({
   processor,
   onProcessorChange,
 }: CleaningProcessorMenuProps) {
+  const iconRef = useRef<{
+    startAnimation: () => void;
+    stopAnimation: () => void;
+  }>(null);
   const currentProcessor =
     processor || DEFAULT_SCRAPE_OPTIONS.cleaningProcessor;
 
@@ -50,9 +55,14 @@ export function CleaningProcessorMenu({
     <Tooltip>
       <PromptInputActionMenu>
         <TooltipTrigger asChild>
-          <PromptInputActionMenuTrigger className="cursor-help">
+          <PromptInputActionMenuTrigger
+            className="cursor-help"
+            onMouseEnter={() => iconRef.current?.startAnimation()}
+            onMouseLeave={() => iconRef.current?.stopAnimation()}
+          >
             <CpuIcon
               className={cn('h-4 w-4', hasCustomSettings && 'text-blue-600')}
+              ref={iconRef}
             />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
