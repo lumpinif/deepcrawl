@@ -25,10 +25,7 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type {
-  GetMarkdownOptions,
-  ReadUrlOptions,
-} from 'deepcrawl';
+import type { GetMarkdownOptions, ReadUrlOptions } from 'deepcrawl';
 import { useState } from 'react';
 
 type MarkdownOptionsInput =
@@ -61,28 +58,37 @@ export function MarkdownOptionsMenu({
       preferNativeParser: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
       bulletMarker: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker,
       codeBlockStyle: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle,
-      maxConsecutiveNewlines: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
+      maxConsecutiveNewlines:
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
       keepDataImages: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
       useInlineLinks: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
-      useLinkReferenceDefinitions: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
+      useLinkReferenceDefinitions:
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
     });
   };
 
   const hasCustomSettings =
     (markdownOptions?.preferNativeParser !== undefined &&
-      markdownOptions.preferNativeParser !== DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser) ||
+      markdownOptions.preferNativeParser !==
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser) ||
     (markdownOptions?.bulletMarker !== undefined &&
-      markdownOptions.bulletMarker !== DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker) ||
+      markdownOptions.bulletMarker !==
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker) ||
     (markdownOptions?.codeBlockStyle !== undefined &&
-      markdownOptions.codeBlockStyle !== DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle) ||
+      markdownOptions.codeBlockStyle !==
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle) ||
     (markdownOptions?.maxConsecutiveNewlines !== undefined &&
-      markdownOptions.maxConsecutiveNewlines !== DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines) ||
+      markdownOptions.maxConsecutiveNewlines !==
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines) ||
     (markdownOptions?.keepDataImages !== undefined &&
-      markdownOptions.keepDataImages !== DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages) ||
+      markdownOptions.keepDataImages !==
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages) ||
     (markdownOptions?.useInlineLinks !== undefined &&
-      markdownOptions.useInlineLinks !== DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks) ||
+      markdownOptions.useInlineLinks !==
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks) ||
     (markdownOptions?.useLinkReferenceDefinitions !== undefined &&
-      markdownOptions.useLinkReferenceDefinitions !== DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions);
+      markdownOptions.useLinkReferenceDefinitions !==
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions);
 
   return (
     <Tooltip>
@@ -118,7 +124,8 @@ export function MarkdownOptionsMenu({
               <div className="flex w-fit items-center space-x-2">
                 <Switch
                   checked={Boolean(
-                    markdownOptions?.preferNativeParser ?? DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
+                    markdownOptions?.preferNativeParser ??
+                      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
                   )}
                   id="prefer-native-parser"
                   onCheckedChange={(checked) =>
@@ -134,7 +141,10 @@ export function MarkdownOptionsMenu({
                     className="ml-2 text-muted-foreground text-xs uppercase"
                     variant="outline"
                   >
-                    Default: {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser ? 'On' : 'Off'}
+                    Default:{' '}
+                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser
+                      ? 'On'
+                      : 'Off'}
                   </Badge>
                 </Label>
               </div>
@@ -143,7 +153,8 @@ export function MarkdownOptionsMenu({
               <div className="flex w-fit items-center space-x-2">
                 <Switch
                   checked={Boolean(
-                    markdownOptions?.keepDataImages ?? DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
+                    markdownOptions?.keepDataImages ??
+                      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
                   )}
                   id="keep-data-images"
                   onCheckedChange={(checked) =>
@@ -159,7 +170,10 @@ export function MarkdownOptionsMenu({
                     className="ml-2 text-muted-foreground text-xs uppercase"
                     variant="outline"
                   >
-                    Default: {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages ? 'On' : 'Off'}
+                    Default:{' '}
+                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages
+                      ? 'On'
+                      : 'Off'}
                   </Badge>
                 </Label>
               </div>
@@ -168,7 +182,8 @@ export function MarkdownOptionsMenu({
               <div className="flex w-fit items-center space-x-2">
                 <Switch
                   checked={Boolean(
-                    markdownOptions?.useInlineLinks ?? DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
+                    markdownOptions?.useInlineLinks ??
+                      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
                   )}
                   id="use-inline-links"
                   onCheckedChange={(checked) =>
@@ -184,7 +199,10 @@ export function MarkdownOptionsMenu({
                     className="ml-2 text-muted-foreground text-xs uppercase"
                     variant="outline"
                   >
-                    Default: {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks ? 'On' : 'Off'}
+                    Default:{' '}
+                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks
+                      ? 'On'
+                      : 'Off'}
                   </Badge>
                 </Label>
               </div>
@@ -193,11 +211,15 @@ export function MarkdownOptionsMenu({
               <div className="flex w-fit items-center space-x-2">
                 <Switch
                   checked={Boolean(
-                    markdownOptions?.useLinkReferenceDefinitions ?? DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
+                    markdownOptions?.useLinkReferenceDefinitions ??
+                      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
                   )}
                   id="use-link-reference-definitions"
                   onCheckedChange={(checked) =>
-                    updateMarkdownOption('useLinkReferenceDefinitions', Boolean(checked))
+                    updateMarkdownOption(
+                      'useLinkReferenceDefinitions',
+                      Boolean(checked),
+                    )
                   }
                 />
                 <Label
@@ -209,7 +231,10 @@ export function MarkdownOptionsMenu({
                     className="ml-2 text-muted-foreground text-xs uppercase"
                     variant="outline"
                   >
-                    Default: {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions ? 'On' : 'Off'}
+                    Default:{' '}
+                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions
+                      ? 'On'
+                      : 'Off'}
                   </Badge>
                 </Label>
               </div>
@@ -229,7 +254,10 @@ export function MarkdownOptionsMenu({
                   onValueChange={(value) =>
                     updateMarkdownOption('bulletMarker', value)
                   }
-                  value={markdownOptions?.bulletMarker || DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker}
+                  value={
+                    markdownOptions?.bulletMarker ||
+                    DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select bullet marker" />
@@ -257,14 +285,19 @@ export function MarkdownOptionsMenu({
                   onValueChange={(value) =>
                     updateMarkdownOption('codeBlockStyle', value)
                   }
-                  value={markdownOptions?.codeBlockStyle || DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle}
+                  value={
+                    markdownOptions?.codeBlockStyle ||
+                    DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select code style" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="fenced">Fenced (```)</SelectItem>
-                    <SelectItem value="indented">Indented (4 spaces)</SelectItem>
+                    <SelectItem value="indented">
+                      Indented (4 spaces)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -277,7 +310,8 @@ export function MarkdownOptionsMenu({
                     className="ml-2 text-muted-foreground text-xs uppercase"
                     variant="outline"
                   >
-                    Default: {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines}
+                    Default:{' '}
+                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines}
                   </Badge>
                 </Label>
                 <Input

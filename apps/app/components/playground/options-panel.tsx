@@ -269,7 +269,6 @@ function MetadataOptionsComponent({
   );
 }
 
-
 interface MetricsOptionsComponentProps {
   idPrefix: string;
   metricsOptions: MetricsOptionsInput | undefined;
@@ -375,10 +374,7 @@ export function OptionsPanel({
         : never;
 
   const updateNestedOptionValue = <
-    P extends
-      | 'metadataOptions'
-      | 'linkExtractionOptions'
-      | 'metricsOptions',
+    P extends 'metadataOptions' | 'linkExtractionOptions' | 'metricsOptions',
   >(
     parentKey: P,
     childKey: NestedOptionKeys<P>,
@@ -439,8 +435,7 @@ export function OptionsPanel({
         <CardContent
           {...cardProps?.content}
           className={cn('space-y-4', cardProps?.content?.className)}
-        >
-        </CardContent>
+        ></CardContent>
       </Card>
     );
   }
