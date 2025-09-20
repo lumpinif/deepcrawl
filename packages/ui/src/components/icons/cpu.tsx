@@ -18,29 +18,84 @@ interface CpuIconProps extends HTMLAttributes<HTMLDivElement> {
 const transition: Transition = {
   duration: 0.5,
   ease: 'easeInOut',
-  repeat: 1,
 };
 
-const yVariants: Variants = {
+const innerRectVariants: Variants = {
   normal: {
     scale: 1,
     rotate: 0,
     opacity: 1,
   },
   animate: {
-    scaleY: [1, 1.5, 1],
-    opacity: [1, 0.8, 1],
+    rotate: [0, 180, 0],
+    scale: [1, 0, 1],
   },
 };
-const xVariants: Variants = {
+
+const outerRectVariants: Variants = {
+  normal: {
+    scale: 1,
+    rotate: 0,
+    opacity: 1,
+    filter: 'blur(0px)',
+  },
+  animate: {
+    rotate: [0, -180, 0],
+    scale: [1, 0, 1],
+    opacity: [1, 0, 1],
+    filter: ['blur(0px)', 'blur(0px)', 'blur(0px)'],
+  },
+};
+
+const yTVariants: Variants = {
   normal: {
     scale: 1,
     rotate: 0,
     opacity: 1,
   },
   animate: {
-    scaleX: [1, 1.5, 1],
-    opacity: [1, 0.8, 1],
+    y: [0, 7, 0],
+    scaleY: [1, 4, 1],
+    rotate: [0, 180, 0],
+  },
+};
+
+const yBVariants: Variants = {
+  normal: {
+    scale: 1,
+    rotate: 0,
+    opacity: 1,
+  },
+  animate: {
+    y: [0, -7, 0],
+    scaleY: [1, 4, 1],
+    rotate: [0, -180, 0],
+  },
+};
+
+const xRVariants: Variants = {
+  normal: {
+    scale: 1,
+    rotate: 0,
+    opacity: 1,
+  },
+  animate: {
+    x: [0, -7, 0],
+    scaleX: [1, 4, 1],
+    rotate: [0, 180, 0],
+  },
+};
+
+const xLVariants: Variants = {
+  normal: {
+    scale: 1,
+    rotate: 0,
+    opacity: 1,
+  },
+  animate: {
+    x: [0, 7, 0],
+    scaleX: [1, 4, 1],
+    rotate: [0, -180, 0],
   },
 };
 
@@ -97,55 +152,77 @@ const CpuIcon = forwardRef<CpuIconHandle, CpuIconProps>(
           width={size}
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect height="16" rx="2" width="16" x="4" y="4" />
-          <rect height="6" rx="1" width="6" x="9" y="9" />
+          <motion.rect
+            animate={controls}
+            height="16"
+            rx="2"
+            transition={transition}
+            variants={outerRectVariants}
+            width="16"
+            x="4"
+            y="4"
+          />
+          <motion.rect
+            animate={controls}
+            height="6"
+            rx="1"
+            transition={transition}
+            variants={innerRectVariants}
+            width="6"
+            x="9"
+            y="9"
+          />
+
           <motion.path
             animate={controls}
             d="M15 2v2"
             transition={transition}
-            variants={yVariants}
-          />
-          <motion.path
-            animate={controls}
-            d="M15 20v2"
-            transition={transition}
-            variants={yVariants}
-          />
-          <motion.path
-            animate={controls}
-            d="M2 15h2"
-            transition={transition}
-            variants={xVariants}
-          />
-          <motion.path
-            animate={controls}
-            d="M2 9h2"
-            transition={transition}
-            variants={xVariants}
-          />
-          <motion.path
-            animate={controls}
-            d="M20 15h2"
-            transition={transition}
-            variants={xVariants}
-          />
-          <motion.path
-            animate={controls}
-            d="M20 9h2"
-            transition={transition}
-            variants={xVariants}
+            variants={yTVariants}
           />
           <motion.path
             animate={controls}
             d="M9 2v2"
             transition={transition}
-            variants={yVariants}
+            variants={yTVariants}
+          />
+
+          <motion.path
+            animate={controls}
+            d="M2 15h2"
+            transition={transition}
+            variants={xLVariants}
+          />
+          <motion.path
+            animate={controls}
+            d="M2 9h2"
+            transition={transition}
+            variants={xLVariants}
+          />
+
+          <motion.path
+            animate={controls}
+            d="M20 15h2"
+            transition={transition}
+            variants={xRVariants}
+          />
+          <motion.path
+            animate={controls}
+            d="M20 9h2"
+            transition={transition}
+            variants={xRVariants}
+          />
+
+          <motion.path
+            animate={controls}
+            d="M15 20v2"
+            transition={transition}
+            variants={yBVariants}
           />
           <motion.path
             animate={controls}
             d="M9 20v2"
             transition={transition}
-            variants={yVariants}
+            variants={yBVariants}
           />
         </svg>
       </div>

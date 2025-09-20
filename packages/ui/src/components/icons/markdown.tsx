@@ -17,7 +17,7 @@ interface MarkdownIconProps extends HTMLAttributes<HTMLDivElement> {
 
 const transition: Transition = {
   duration: 0.6,
-  ease: [0.3, 0, 0.3, 0.8],
+  ease: 'easeInOut',
 };
 
 const pathVariants: Variants = {
@@ -30,6 +30,8 @@ const pathVariants: Variants = {
     opacity: [1, 0, 0, 1],
   },
 };
+
+/* SOCIAL: SHARE HOW I CREATED THIS ICON */
 
 const MarkdownIcon = forwardRef<MarkdownIconHandle, MarkdownIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
