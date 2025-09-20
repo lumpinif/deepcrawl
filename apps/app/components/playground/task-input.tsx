@@ -2,6 +2,7 @@
 
 import {
   DEFAULT_CACHE_OPTIONS,
+  DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
 } from '@deepcrawl/types/configs/default';
 import {
@@ -22,6 +23,7 @@ import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
+import { MarkdownOptionsMenu } from './markdown-options-menu';
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
 import { TaskInputOptions } from './task-input-options';
@@ -55,6 +57,7 @@ export const TaskInput = ({
     handleProcessorChange,
     getCurrentOptionValue,
     handleCacheOptionsChange,
+    handleMarkdownOptionsChange,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
@@ -145,6 +148,13 @@ export const TaskInput = ({
                 DEFAULT_CACHE_OPTIONS,
               )}
               onCacheOptionsChange={handleCacheOptionsChange}
+            />
+            <MarkdownOptionsMenu
+              markdownOptions={getCurrentOptionValue(
+                'markdownConverterOptions',
+                DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
+              )}
+              onMarkdownOptionsChange={handleMarkdownOptionsChange}
             />
           </PromptInputTools>
           <PromptInputSubmit

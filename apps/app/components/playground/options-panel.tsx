@@ -3,7 +3,6 @@
 import {
   DEFAULT_LINK_EXTRACTION_OPTIONS,
   DEFAULT_LINKS_OPTIONS,
-  DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
   DEFAULT_METADATA_OPTIONS,
   DEFAULT_METRICS_OPTIONS,
   DEFAULT_READ_OPTIONS,
@@ -51,7 +50,6 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import type {
   ExtractLinksOptions,
   GetMarkdownOptions,
-  MarkdownConverterOptions,
   ReadUrlOptions,
 } from 'deepcrawl';
 import { ChevronDown } from 'lucide-react';
@@ -62,9 +60,6 @@ import type { DeepcrawlOperations } from './playground-client';
 type MetadataOptionsInput =
   | ReadUrlOptions['metadataOptions']
   | ExtractLinksOptions['metadataOptions'];
-type MarkdownOptionsInput =
-  | ReadUrlOptions['markdownConverterOptions']
-  | GetMarkdownOptions['markdownConverterOptions'];
 type MetricsOptionsInput =
   | ReadUrlOptions['metricsOptions']
   | ExtractLinksOptions['metricsOptions'];
@@ -274,127 +269,6 @@ function MetadataOptionsComponent({
   );
 }
 
-interface MarkdownOptionsComponentProps {
-  idPrefix: string;
-  markdownOptions: MarkdownOptionsInput | undefined;
-  onMarkdownOptionChange: (
-    key: keyof MarkdownConverterOptions,
-    value: boolean | string | number,
-  ) => void;
-}
-
-function MarkdownOptionsComponent({
-  idPrefix,
-  markdownOptions,
-  onMarkdownOptionChange,
-}: MarkdownOptionsComponentProps) {
-  return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <OptionCheckbox
-          checked={
-            markdownOptions?.preferNativeParser ??
-            DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser
-          }
-          id={`${idPrefix}-markdown-preferNativeParser`}
-          label="Prefer Native Parser"
-          onCheckedChange={(checked) =>
-            onMarkdownOptionChange('preferNativeParser', checked)
-          }
-          tooltip="Use native window DOMParser when available instead of fallback parser"
-        />
-        <OptionCheckbox
-          checked={markdownOptions?.keepDataImages === true}
-          id={`${idPrefix}-markdown-keepDataImages`}
-          label="Keep Data Images"
-          onCheckedChange={(checked) =>
-            onMarkdownOptionChange('keepDataImages', checked)
-          }
-          tooltip="Whether to preserve images with data: URIs (can be up to 1MB each)"
-        />
-        <OptionCheckbox
-          checked={
-            markdownOptions?.useInlineLinks ??
-            DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks
-          }
-          id={`${idPrefix}-markdown-useInlineLinks`}
-          label="Use Inline Links"
-          onCheckedChange={(checked) =>
-            onMarkdownOptionChange('useInlineLinks', checked)
-          }
-          tooltip="Wrap URL text in <> instead of []() syntax when text matches URL"
-        />
-        <OptionCheckbox
-          checked={markdownOptions?.useLinkReferenceDefinitions === true}
-          id={`${idPrefix}-markdown-useLinkReferenceDefinitions`}
-          label="Use Link References"
-          onCheckedChange={(checked) =>
-            onMarkdownOptionChange('useLinkReferenceDefinitions', checked)
-          }
-          tooltip="Format links using reference definitions at bottom instead of inline"
-        />
-      </div>
-      <div className="grid grid-cols-1 gap-3">
-        <div className="space-y-2">
-          <Label
-            className="text-sm"
-            htmlFor={`${idPrefix}-markdown-bulletMarker`}
-          >
-            Bullet Marker
-          </Label>
-          <Select
-            onValueChange={(value) =>
-              onMarkdownOptionChange('bulletMarker', value)
-            }
-            value={markdownOptions?.bulletMarker || '*'}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select bullet marker" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="*">* (asterisk)</SelectItem>
-              <SelectItem value="-">- (dash)</SelectItem>
-              <SelectItem value="+">+ (plus)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label
-            className="text-sm"
-            htmlFor={`${idPrefix}-markdown-codeBlockStyle`}
-          >
-            Code Block Style
-          </Label>
-          <Select
-            onValueChange={(value) =>
-              onMarkdownOptionChange('codeBlockStyle', value)
-            }
-            value={markdownOptions?.codeBlockStyle || 'fenced'}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select code style" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fenced">Fenced (```)</SelectItem>
-              <SelectItem value="indented">Indented (4 spaces)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <NumberInput
-          id={`${idPrefix}-markdown-maxConsecutiveNewlines`}
-          label="Max Consecutive Newlines"
-          max="10"
-          min="1"
-          onChange={(value) =>
-            onMarkdownOptionChange('maxConsecutiveNewlines', value || 3)
-          }
-          placeholder="3"
-          value={markdownOptions?.maxConsecutiveNewlines || ''}
-        />
-      </div>
-    </div>
-  );
-}
 
 interface MetricsOptionsComponentProps {
   idPrefix: string;
@@ -496,17 +370,14 @@ export function OptionsPanel({
     ? keyof NonNullable<ReadUrlOptions['metadataOptions']>
     : T extends 'linkExtractionOptions'
       ? keyof NonNullable<ExtractLinksOptions['linkExtractionOptions']>
-      : T extends 'markdownConverterOptions'
-        ? keyof NonNullable<MarkdownConverterOptions>
-        : T extends 'metricsOptions'
-          ? keyof NonNullable<MetricsOptions>
-          : never;
+      : T extends 'metricsOptions'
+        ? keyof NonNullable<MetricsOptions>
+        : never;
 
   const updateNestedOptionValue = <
     P extends
       | 'metadataOptions'
       | 'linkExtractionOptions'
-      | 'markdownConverterOptions'
       | 'metricsOptions',
   >(
     parentKey: P,
@@ -569,25 +440,6 @@ export function OptionsPanel({
           {...cardProps?.content}
           className={cn('space-y-4', cardProps?.content?.className)}
         >
-          {/* Markdown Converter Options */}
-          <CollapsibleSection
-            id="markdownConverterOptions"
-            isOpen={expandedSections.has('markdownConverterOptions')}
-            onToggle={() => toggleSection('markdownConverterOptions')}
-            title="Markdown Options"
-          >
-            <MarkdownOptionsComponent
-              idPrefix="getMarkdown"
-              markdownOptions={markdownOptions.markdownConverterOptions}
-              onMarkdownOptionChange={(key, value) =>
-                updateNestedOptionValue(
-                  'markdownConverterOptions',
-                  key as NestedOptionKeys<'markdownConverterOptions'>,
-                  value,
-                )
-              }
-            />
-          </CollapsibleSection>
         </CardContent>
       </Card>
     );
@@ -689,28 +541,6 @@ export function OptionsPanel({
                   'metadataOptions',
                   key as NestedOptionKeys<'metadataOptions'>,
                   checked,
-                )
-              }
-            />
-          </CollapsibleSection>
-
-          <Separator />
-
-          {/* Markdown Converter Options for ReadUrl */}
-          <CollapsibleSection
-            id="readMarkdownConverterOptions"
-            isOpen={expandedSections.has('readMarkdownConverterOptions')}
-            onToggle={() => toggleSection('readMarkdownConverterOptions')}
-            title="Markdown Options"
-          >
-            <MarkdownOptionsComponent
-              idPrefix="readUrl"
-              markdownOptions={readOptions.markdownConverterOptions}
-              onMarkdownOptionChange={(key, value) =>
-                updateNestedOptionValue(
-                  'markdownConverterOptions',
-                  key as NestedOptionKeys<'markdownConverterOptions'>,
-                  value,
                 )
               }
             />
