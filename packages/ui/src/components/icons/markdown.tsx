@@ -16,8 +16,8 @@ interface MarkdownIconProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const transition: Transition = {
-  duration: 0.8,
-  ease: [0.3, 0, 0.2, 0.8],
+  duration: 0.6,
+  ease: [0.3, 0, 0.3, 0.8],
 };
 
 const pathVariants: Variants = {
