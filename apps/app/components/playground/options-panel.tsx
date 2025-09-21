@@ -404,173 +404,6 @@ export function OptionsPanel({
     }
   };
 
-  if (selectedOperation === 'getMarkdown') {
-    const markdownOptions = options as GetMarkdownOptions;
-    return (
-      <Card {...cardProps?.card}>
-        <CardHeader {...cardProps?.header}>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                Options for Get Markdown
-                <Badge className="text-xs" variant="outline">
-                  GET /read
-                </Badge>
-              </CardTitle>
-              <CardDescription>
-                Get Markdown returns only the markdown content. Configure cache
-                options below.
-              </CardDescription>
-            </div>
-            <Button
-              className="text-xs"
-              onClick={resetToDefaults}
-              size="sm"
-              variant="outline"
-            >
-              Reset to default
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent
-          {...cardProps?.content}
-          className={cn('space-y-4', cardProps?.content?.className)}
-        />
-      </Card>
-    );
-  }
-
-  if (selectedOperation === 'readUrl') {
-    const readOptions = options as ReadUrlOptions;
-    return (
-      <Card {...cardProps?.card}>
-        <CardHeader {...cardProps?.header}>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                Options for Read URL
-                <Badge className="text-xs" variant="outline">
-                  POST /read
-                </Badge>
-              </CardTitle>
-              <CardDescription>
-                Configure what data to extract from the target URL
-              </CardDescription>
-            </div>
-            <Button
-              className="text-xs"
-              onClick={resetToDefaults}
-              size="sm"
-              variant="outline"
-            >
-              Reset to default
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent
-          {...cardProps?.content}
-          className={cn('space-y-4', cardProps?.content?.className)}
-        >
-          {/* Content Options - Now available in ContentFormatOptionsMenu in task input */}
-          {/*
-          <div className="space-y-3">
-            <h4 className="font-medium text-sm">Content Options</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <OptionSwitch
-                checked={Boolean(
-                  readOptions.metadata ?? DEFAULT_READ_OPTIONS.metadata,
-                )}
-                id="metadata"
-                label="Extract Metadata"
-                onCheckedChange={(checked) => updateOption('metadata', checked)}
-                tooltip="Whether to extract metadata from the page."
-              />
-              <OptionSwitch
-                checked={Boolean(
-                  readOptions.markdown ?? DEFAULT_READ_OPTIONS.markdown,
-                )}
-                id="markdown"
-                label="Extract Markdown"
-                onCheckedChange={(checked) => updateOption('markdown', checked)}
-                tooltip="Whether to extract markdown from the page."
-              />
-              <OptionSwitch
-                checked={readOptions.cleanedHtml === true}
-                id="cleanedHtml"
-                label="Cleaned HTML"
-                onCheckedChange={(checked) =>
-                  updateOption('cleanedHtml', checked)
-                }
-                tooltip="Whether to return cleaned HTML."
-              />
-              <OptionSwitch
-                checked={readOptions.rawHtml === true}
-                id="rawHtml"
-                label="Raw HTML"
-                onCheckedChange={(checked) => updateOption('rawHtml', checked)}
-                tooltip="Whether to return raw HTML."
-              />
-              <OptionSwitch
-                checked={readOptions.robots === true}
-                id="robots"
-                label="Fetch Robots.txt"
-                onCheckedChange={(checked) => updateOption('robots', checked)}
-                tooltip="Whether to fetch and parse robots.txt."
-              />
-            </div>
-          </div>
-
-          <Separator />
-          */}
-
-          {/* Metadata Options - Now available in MetadataOptionsMenu in task input */}
-          {/*
-          <CollapsibleSection
-            id="metadataOptions"
-            isOpen={expandedSections.has('metadataOptions')}
-            onToggle={() => toggleSection('metadataOptions')}
-            title="Metadata Options"
-          >
-            <MetadataOptionsComponent
-              idPrefix="read"
-              metadataOptions={readOptions.metadataOptions}
-              onMetadataOptionChange={(key, checked) =>
-                updateNestedOptionValue(
-                  'metadataOptions',
-                  key as NestedOptionKeys<'metadataOptions'>,
-                  checked,
-                )
-              }
-            />
-          </CollapsibleSection>
-
-          <Separator />
-          */}
-
-          {/* Metrics Options for ReadUrl */}
-          <CollapsibleSection
-            id="readMetricsOptions"
-            isOpen={expandedSections.has('readMetricsOptions')}
-            onToggle={() => toggleSection('readMetricsOptions')}
-            title="Metrics Options"
-          >
-            <MetricsOptionsComponent
-              idPrefix="readUrl"
-              metricsOptions={readOptions.metricsOptions}
-              onMetricsOptionChange={(key, value) =>
-                updateNestedOptionValue(
-                  'metricsOptions',
-                  key as NestedOptionKeys<'metricsOptions'>,
-                  value,
-                )
-              }
-            />
-          </CollapsibleSection>
-        </CardContent>
-      </Card>
-    );
-  }
-
   if (selectedOperation === 'extractLinks') {
     const linksOptions = options as ExtractLinksOptions;
     return (
@@ -656,7 +489,7 @@ export function OptionsPanel({
           */}
 
           {/* Tree Options */}
-          <CollapsibleSection
+          {/* <CollapsibleSection
             id="treeOptions"
             isOpen={expandedSections.has('treeOptions')}
             onToggle={() => toggleSection('treeOptions')}
@@ -720,7 +553,7 @@ export function OptionsPanel({
             </div>
           </CollapsibleSection>
 
-          <Separator />
+          <Separator /> */}
 
           {/* Link Extraction Options */}
           <CollapsibleSection
@@ -807,7 +640,7 @@ export function OptionsPanel({
             </div>
           </CollapsibleSection>
 
-          <Separator />
+          {/* <Separator /> */}
 
           {/* Metadata Options for Links - Now available in MetadataOptionsMenu in task input */}
           {/*
@@ -834,7 +667,7 @@ export function OptionsPanel({
           */}
 
           {/* Metrics Options for Extract Links */}
-          <CollapsibleSection
+          {/* <CollapsibleSection
             id="linksMetricsOptions"
             isOpen={expandedSections.has('linksMetricsOptions')}
             onToggle={() => toggleSection('linksMetricsOptions')}
@@ -851,7 +684,7 @@ export function OptionsPanel({
                 )
               }
             />
-          </CollapsibleSection>
+          </CollapsibleSection> */}
         </CardContent>
       </Card>
     );

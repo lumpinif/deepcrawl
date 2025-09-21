@@ -219,6 +219,20 @@ export function useTaskInputState({
     });
   };
 
+  const handleTreeOptionsChange = (treeOptions: {
+    folderFirst?: boolean;
+    linksOrder?: 'page' | 'alphabetical';
+    extractedLinks?: boolean;
+    subdomainAsRootUrl?: boolean;
+    isPlatformUrl?: boolean;
+  }) => {
+    const currentOptions = getCurrentOptions();
+    handleOptionsChange({
+      ...currentOptions,
+      ...treeOptions,
+    });
+  };
+
   return {
     // State
     requestUrl,
@@ -247,5 +261,6 @@ export function useTaskInputState({
     handleContentFormatOptionsChange,
     handleMetadataOptionsChange,
     handleMetricsOptionsChange,
+    handleTreeOptionsChange,
   };
 }

@@ -27,6 +27,7 @@ import { MetricsOptionsMenu } from './metrics-options-menu';
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
 import { TaskInputOptions } from './task-input-options';
+import { TreeOptionsMenu } from './tree-options-menu';
 import { UrlInput } from './url-input';
 
 export interface TaskInputProps {
@@ -61,6 +62,7 @@ export const TaskInput = ({
     handleContentFormatOptionsChange,
     handleMetadataOptionsChange,
     handleMetricsOptionsChange,
+    handleTreeOptionsChange,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
@@ -195,6 +197,28 @@ export const TaskInput = ({
               options={getCurrentOptions()}
               selectedOperation={selectedOperation}
             />
+            {/* Tree options - only available for extractLinks */}
+            {selectedOperation === 'extractLinks' && (
+              <TreeOptionsMenu
+                isTreeEnabled={getCurrentOptionValue('tree') as boolean}
+                onTreeOptionsChange={handleTreeOptionsChange}
+                treeOptions={{
+                  folderFirst: getCurrentOptionValue('folderFirst') as boolean,
+                  linksOrder: getCurrentOptionValue('linksOrder') as
+                    | 'page'
+                    | 'alphabetical',
+                  extractedLinks: getCurrentOptionValue(
+                    'extractedLinks',
+                  ) as boolean,
+                  subdomainAsRootUrl: getCurrentOptionValue(
+                    'subdomainAsRootUrl',
+                  ) as boolean,
+                  isPlatformUrl: getCurrentOptionValue(
+                    'isPlatformUrl',
+                  ) as boolean,
+                }}
+              />
+            )}
             <ContentFormatOptionsMenu
               contentFormatOptions={{
                 // ReadUrl options
