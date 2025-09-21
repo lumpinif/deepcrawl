@@ -12,6 +12,7 @@ import {
   PromptInputActionMenuTrigger,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
 import { FilePenLineIcon } from '@deepcrawl/ui/components/icons/file-pen-line';
+import { MarkdownIcon } from '@deepcrawl/ui/components/icons/markdown';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Label } from '@deepcrawl/ui/components/ui/label';
@@ -22,7 +23,16 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { useRef, useState } from 'react';
+import {
+  Bot,
+  FileCheck2,
+  FileCode2,
+  FileCog,
+  ListTree,
+  Network,
+} from 'lucide-react';
+import type { ElementType, ReactElement } from 'react';
+import { cloneElement, isValidElement, useRef, useState } from 'react';
 import type { DeepcrawlOperations } from '@/hooks/playground/use-task-input-state';
 
 // Union type for all possible content format options
@@ -54,8 +64,8 @@ interface ContentFormatOptionsMenuProps {
 const OPERATION_CONFIGS = {
   readUrl: {
     availableOptions: [
-      'metadata',
       'markdown',
+      'metadata',
       'cleanedHtml',
       'rawHtml',
       'robots',
@@ -88,36 +98,63 @@ const OPERATION_CONFIGS = {
 
 // Option definitions with metadata
 const OPTION_DEFINITIONS = {
-  metadata: {
-    label: 'Extract Metadata',
-    tooltip: 'Whether to extract metadata from the page.',
-  },
   markdown: {
     label: 'Extract Markdown',
     tooltip: 'Whether to extract markdown from the page.',
+    icon: <MarkdownIcon disableAnimation size={18} />,
+  },
+  metadata: {
+    label: 'Extract Metadata',
+    tooltip: 'Whether to extract metadata from the page.',
+    icon: <FileCog />,
   },
   cleanedHtml: {
     label: 'Cleaned HTML',
     tooltip: 'Whether to return cleaned HTML.',
+    icon: <FileCheck2 />,
   },
   rawHtml: {
     label: 'Raw HTML',
     tooltip: 'Whether to return raw HTML.',
+    icon: <FileCode2 />,
   },
   robots: {
     label: 'Fetch Robots.txt',
     tooltip: 'Whether to fetch and parse robots.txt.',
+    icon: <Bot />,
   },
   tree: {
     label: 'Build Site Tree',
     tooltip: 'Whether to build a site map tree.',
+    icon: <ListTree />,
   },
   sitemapXML: {
     label: 'Sitemap XML',
     tooltip: 'Parse and include sitemap.xml data',
     badge: <Badge variant="secondary">Beta</Badge>,
+    icon: <Network />,
   },
 } as const;
+
+interface IconProps {
+  className?: string;
+  'aria-hidden'?: boolean;
+}
+
+function renderIcon(
+  icon: ReactElement | ElementType<IconProps>,
+  extraClass: string,
+) {
+  if (isValidElement(icon)) {
+    const el = icon as ReactElement<IconProps>;
+    return cloneElement<IconProps>(el, {
+      className: cn(el.props?.className, extraClass),
+      'aria-hidden': true,
+    });
+  }
+  const C = icon as ElementType<IconProps>;
+  return <C aria-hidden className={extraClass} />;
+}
 
 export function ContentFormatOptionsMenu({
   operation,
@@ -216,7 +253,7 @@ export function ContentFormatOptionsMenu({
 
                 const content = (
                   <div
-                    className="flex w-fit items-center space-x-2"
+                    className="flex w-full items-center space-x-2"
                     key={optionKey}
                   >
                     <Switch
@@ -230,13 +267,14 @@ export function ContentFormatOptionsMenu({
                       }
                     />
                     <Label
-                      className="cursor-pointer text-sm"
+                      className="flex-1 cursor-pointer text-sm"
                       htmlFor={`content-format-${optionKey}`}
                     >
+                      {renderIcon(optionDef.icon, 'h-4 w-4')}
                       {optionDef.label}
                       {'badge' in optionDef && optionDef.badge}
                       <Badge
-                        className="ml-2 text-muted-foreground text-xs uppercase"
+                        className="ml-auto text-muted-foreground text-xs uppercase"
                         variant="outline"
                       >
                         Default: {defaultValue ? 'On' : 'Off'}
@@ -248,7 +286,7 @@ export function ContentFormatOptionsMenu({
                 return (
                   <Tooltip key={optionKey}>
                     <TooltipTrigger asChild>{content}</TooltipTrigger>
-                    <TooltipContent side="right">
+                    <TooltipContent align="end" side="bottom">
                       <p>{optionDef.tooltip}</p>
                     </TooltipContent>
                   </Tooltip>
