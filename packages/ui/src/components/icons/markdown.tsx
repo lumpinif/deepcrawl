@@ -13,6 +13,7 @@ export interface MarkdownIconHandle {
 
 interface MarkdownIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
+  disableAnimation?: boolean;
 }
 
 const transition: Transition = {
@@ -34,7 +35,17 @@ const pathVariants: Variants = {
 /* SOCIAL: SHARE HOW I CREATED THIS ICON */
 
 const MarkdownIcon = forwardRef<MarkdownIconHandle, MarkdownIconProps>(
-  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+  (
+    {
+      onMouseEnter,
+      onMouseLeave,
+      className,
+      size = 28,
+      disableAnimation = false,
+      ...props
+    },
+    ref,
+  ) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -49,24 +60,24 @@ const MarkdownIcon = forwardRef<MarkdownIconHandle, MarkdownIconProps>(
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
-        if (isControlledRef.current) {
+        if (isControlledRef.current || disableAnimation) {
           onMouseEnter?.(e);
         } else {
           controls.start('animate');
         }
       },
-      [controls, onMouseEnter],
+      [controls, onMouseEnter, disableAnimation],
     );
 
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
-        if (isControlledRef.current) {
+        if (isControlledRef.current || disableAnimation) {
           onMouseLeave?.(e);
         } else {
           controls.start('normal');
         }
       },
-      [controls, onMouseLeave],
+      [controls, onMouseLeave, disableAnimation],
     );
 
     return (
