@@ -168,6 +168,19 @@ export function useTaskInputState({
     });
   };
 
+  const handleContentFormatOptionsChange = (
+    contentFormatOptions: Pick<
+      ReadUrlOptions,
+      'metadata' | 'markdown' | 'cleanedHtml' | 'rawHtml' | 'robots'
+    >,
+  ) => {
+    const currentOptions = getCurrentOptions();
+    handleOptionsChange({
+      ...currentOptions,
+      ...contentFormatOptions,
+    });
+  };
+
   return {
     // State
     requestUrl,
@@ -193,5 +206,6 @@ export function useTaskInputState({
     handleProcessorChange,
     handleCacheOptionsChange,
     handleMarkdownOptionsChange,
+    handleContentFormatOptionsChange,
   };
 }

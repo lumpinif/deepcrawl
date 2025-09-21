@@ -2,11 +2,8 @@
 
 import {
   DEFAULT_LINK_EXTRACTION_OPTIONS,
-  DEFAULT_LINKS_OPTIONS,
   DEFAULT_METADATA_OPTIONS,
   DEFAULT_METRICS_OPTIONS,
-  DEFAULT_READ_OPTIONS,
-  DEFAULT_SCRAPE_OPTIONS,
   DEFAULT_TREE_OPTIONS,
 } from '@deepcrawl/types/configs';
 import type { MetricsOptions } from '@deepcrawl/types/metrics';
@@ -471,7 +468,8 @@ export function OptionsPanel({
           {...cardProps?.content}
           className={cn('space-y-4', cardProps?.content?.className)}
         >
-          {/* Basic Options */}
+          {/* Content Options - Now available in ContentFormatOptionsMenu in task input */}
+          {/*
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Content Options</h4>
             <div className="grid grid-cols-2 gap-4">
@@ -520,6 +518,7 @@ export function OptionsPanel({
           </div>
 
           <Separator />
+          */}
 
           {/* Metadata Options */}
           <CollapsibleSection
@@ -598,7 +597,8 @@ export function OptionsPanel({
           {...cardProps?.content}
           className={cn('space-y-4', cardProps?.content?.className)}
         >
-          {/* Basic Options */}
+          {/* Content Options - Now available in ContentFormatOptionsMenu in task input */}
+          {/*
           <div className="space-y-3">
             <h4 className="font-medium text-sm">Content Options</h4>
             <div className="grid grid-cols-2 gap-4">
@@ -648,6 +648,7 @@ export function OptionsPanel({
           </div>
 
           <Separator />
+          */}
 
           {/* Tree Options */}
           <CollapsibleSection

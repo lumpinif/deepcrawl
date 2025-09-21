@@ -26,6 +26,7 @@ import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import { SpinnerButton } from '../spinner-button';
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
+import { ContentFormatOptionsMenu } from './content-format-options-menu';
 import { MarkdownOptionsMenu } from './markdown-options-menu';
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
@@ -61,6 +62,7 @@ export const TaskInput = ({
     getCurrentOptionValue,
     handleCacheOptionsChange,
     handleMarkdownOptionsChange,
+    handleContentFormatOptionsChange,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
@@ -146,13 +148,13 @@ export const TaskInput = ({
             }
             buttonVariant="default"
             className="group/spinner-button mr-2 w-32"
-            data-isLoading={isLoading[selectedOperation]}
+            data-loading={isLoading[selectedOperation]}
             disabled={isError || !isUrlValid || isLoading[selectedOperation]}
             errorElement={<span>Try again</span>}
             isLoading={isLoading[selectedOperation]}
             loadingElement={
               <NumberFlow
-                className="text-primary-foreground transition-all duration-200 ease-out group-data-[isLoading=true]/spinner-button:scale-110 group-data-[isLoading=true]/spinner-button:animate-pulse"
+                className="text-primary-foreground transition-all duration-200 ease-out group-data-[loading=true]/spinner-button:scale-110 group-data-[loading=true]/spinner-button:animate-pulse"
                 format={{
                   style: 'decimal',
                   signDisplay: 'auto',
@@ -194,6 +196,21 @@ export const TaskInput = ({
               onOptionsChange={handleOptionsChange}
               options={getCurrentOptions()}
               selectedOperation={selectedOperation}
+            />
+            <ContentFormatOptionsMenu
+              contentFormatOptions={{
+                // ReadUrl options
+                metadata: getCurrentOptionValue('metadata') as boolean,
+                markdown: getCurrentOptionValue('markdown') as boolean,
+                cleanedHtml: getCurrentOptionValue('cleanedHtml') as boolean,
+                rawHtml: getCurrentOptionValue('rawHtml') as boolean,
+                robots: getCurrentOptionValue('robots') as boolean,
+                // ExtractLinks options
+                tree: getCurrentOptionValue('tree') as boolean,
+                sitemapXML: getCurrentOptionValue('sitemapXML') as boolean,
+              }}
+              onContentFormatOptionsChange={handleContentFormatOptionsChange}
+              operation={selectedOperation}
             />
             <CleaningProcessorMenu
               onProcessorChange={handleProcessorChange}
