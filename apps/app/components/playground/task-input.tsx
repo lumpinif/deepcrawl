@@ -1,11 +1,6 @@
 'use client';
 
 import {
-  DEFAULT_CACHE_OPTIONS,
-  DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
-  DEFAULT_SCRAPE_OPTIONS,
-} from '@deepcrawl/types/configs/default';
-import {
   PromptInput,
   PromptInputBody,
   PromptInputToolbar,
@@ -219,22 +214,15 @@ export const TaskInput = ({
             />
             <CleaningProcessorMenu
               onProcessorChange={handleProcessorChange}
-              processor={getCurrentOptionValue(
-                'cleaningProcessor',
-                DEFAULT_SCRAPE_OPTIONS.cleaningProcessor,
-              )}
+              processor={getCurrentOptionValue('cleaningProcessor')}
             />
             <CacheOptionsMenu
-              cacheOptions={getCurrentOptionValue(
-                'cacheOptions',
-                DEFAULT_CACHE_OPTIONS,
-              )}
+              cacheOptions={getCurrentOptionValue('cacheOptions')}
               onCacheOptionsChange={handleCacheOptionsChange}
             />
             <MarkdownOptionsMenu
               markdownOptions={getCurrentOptionValue(
                 'markdownConverterOptions',
-                DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
               )}
               onMarkdownOptionsChange={handleMarkdownOptionsChange}
             />
