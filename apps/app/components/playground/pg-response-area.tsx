@@ -5,11 +5,11 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
 import { SpinnerButton } from '@/components/spinner-button';
-import { copyToClipboard } from '@/utils/clipboard';
 import type {
   DeepcrawlOperations,
   PlaygroundResponse,
-} from './playground-client';
+} from '@/hooks/playground/use-task-input-state';
+import { copyToClipboard } from '@/utils/clipboard';
 
 interface PGResponseArea {
   response: PlaygroundResponse;
