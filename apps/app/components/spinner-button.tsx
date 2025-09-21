@@ -3,7 +3,7 @@
 import { Button, type ButtonProps } from '@deepcrawl/ui/components/ui/button';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { AnimatePresence, motion } from 'motion/react';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { LoadingSpinner } from './loading-spinner';
 
 type ButtonState = 'idle' | 'loading' | 'success' | 'error';
@@ -11,7 +11,6 @@ type ButtonState = 'idle' | 'loading' | 'success' | 'error';
 type SpinnerButtonProps = ButtonProps & {
   className?: string;
   isLoading?: boolean;
-  withSuccess?: boolean;
   motionClassName?: string;
   children?: React.ReactNode;
   loadingElement?: React.ReactNode;
@@ -20,6 +19,7 @@ type SpinnerButtonProps = ButtonProps & {
   buttonState?: ButtonState;
   setButtonState?: React.Dispatch<React.SetStateAction<ButtonState>>;
   errorElement?: React.ReactNode;
+  successDuration?: number;
 };
 
 const MOTION_CONFIG = {
@@ -27,6 +27,8 @@ const MOTION_CONFIG = {
   duration: 0.48,
   bounce: 0,
 };
+
+const DEFAULT_SUCCESS_DURATION = 1600;
 
 const MOTION_VARIANTS = {
   initial: { opacity: 0, y: 45 },
@@ -38,64 +40,127 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
   children,
   isLoading = false,
   className,
-  withSuccess = false,
   buttonState,
   errorElement,
   buttonVariant = 'default',
   loadingElement,
   successElement,
   motionClassName,
+  setButtonState,
+  successDuration = DEFAULT_SUCCESS_DURATION,
   ...props
 }) => {
-  //TODO: INFERING THE STATE FROM ISLOADING AND WITHSUCCESS
-  // Determine the current state based on props
+  const withSuccess = Boolean(successElement);
+
+  const [internalState, setInternalState] = useState<ButtonState>('idle');
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevIsLoadingRef = useRef(isLoading);
+
+  const clearSuccessTimer = useCallback(() => {
+    if (successTimerRef.current) {
+      clearTimeout(successTimerRef.current);
+      successTimerRef.current = null;
+    }
+  }, []);
+
+  const updateState = useCallback(
+    (next: ButtonState) => {
+      setInternalState((prev) => {
+        if (prev === next) {
+          return prev;
+        }
+        setButtonState?.(next);
+        return next;
+      });
+    },
+    [setButtonState],
+  );
+
+  useEffect(() => () => clearSuccessTimer(), [clearSuccessTimer]);
+
+  useEffect(() => {
+    if (buttonState === 'success' || buttonState === 'error') {
+      clearSuccessTimer();
+      updateState(buttonState);
+    }
+  }, [buttonState, clearSuccessTimer, updateState]);
+
+  useEffect(() => {
+    if (buttonState === 'success' || buttonState === 'error') {
+      prevIsLoadingRef.current = isLoading;
+      return;
+    }
+
+    if (isLoading) {
+      clearSuccessTimer();
+      updateState('loading');
+    } else if (withSuccess && prevIsLoadingRef.current) {
+      clearSuccessTimer();
+      updateState('success');
+
+      if (successDuration > 0) {
+        successTimerRef.current = setTimeout(() => {
+          updateState('idle');
+          successTimerRef.current = null;
+        }, successDuration);
+      }
+    } else {
+      updateState('idle');
+    }
+
+    prevIsLoadingRef.current = isLoading;
+  }, [
+    buttonState,
+    clearSuccessTimer,
+    isLoading,
+    successDuration,
+    updateState,
+    withSuccess,
+  ]);
+
   const currentState: ButtonState = useMemo(() => {
-    if (withSuccess && buttonState) {
+    if (buttonState && buttonState !== 'idle') {
       return buttonState;
     }
-    return isLoading ? 'loading' : 'idle';
-  }, [withSuccess, buttonState, isLoading]);
 
-  // Memoize button content to prevent unnecessary re-renders
+    return internalState;
+  }, [buttonState, internalState]);
+
   const buttonContent = useMemo(() => {
     const contentMap: Record<ButtonState, React.ReactNode> = {
       idle: children,
       loading: loadingElement ?? <LoadingSpinner size={16} />,
-      success: successElement,
-      error: errorElement,
+      success: successElement ?? children,
+      error: errorElement ?? children,
     };
     return contentMap[currentState];
-  }, [currentState, children, loadingElement, successElement, errorElement]);
+  }, [children, currentState, errorElement, loadingElement, successElement]);
 
-  // Memoize variant calculation
   const variant = useMemo(() => {
-    if (!(withSuccess && buttonState)) {
+    if (!(withSuccess && currentState !== 'idle')) {
       return buttonVariant;
     }
 
-    switch (buttonState) {
+    switch (currentState) {
       case 'success':
-        return 'success';
+        return buttonVariant || 'success';
       case 'error':
         return 'destructive';
       default:
         return buttonVariant;
     }
-  }, [withSuccess, buttonState, buttonVariant]);
+  }, [buttonVariant, currentState, withSuccess]);
 
-  // Memoize className calculation
   const buttonClassName = useMemo(() => {
     const baseClasses = 'relative select-none overflow-hidden';
-    const successClasses = loadingElement
-      ? currentState === 'success'
+    const successDisabledClasses =
+      withSuccess && currentState === 'success' && loadingElement
         ? 'disabled:bg-current dark:disabled:bg-inherit'
-        : ''
-      : '';
+        : '';
 
-    return cn(baseClasses, className, withSuccess && successClasses);
-  }, [className, loadingElement, currentState, withSuccess]);
+    return cn(baseClasses, className, successDisabledClasses);
+  }, [className, currentState, withSuccess, loadingElement]);
 
-  // Memoize motion span className
   const motionSpanClassName = useMemo(() => {
     const baseClasses =
       'flex w-full items-center justify-center gap-x-2 text-nowrap';
@@ -103,7 +168,7 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
       currentState === 'loading' && loadingElement ? 'text-primary' : '';
 
     return cn(baseClasses, motionClassName, loadingClasses);
-  }, [motionClassName, currentState, loadingElement]);
+  }, [currentState, loadingElement, motionClassName]);
 
   const isDisabled = currentState === 'loading';
 
