@@ -380,7 +380,7 @@ export function ContentFormatOptionsMenu({
                 // Special handling for metadata option - add sub-menu
                 if (optionKey === 'metadata' && onMetadataOptionsChange) {
                   return (
-                    <div className="space-y-2" key={optionKey}>
+                    <div className="group/metadata space-y-2" key={optionKey}>
                       {/* Main metadata toggle */}
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -419,7 +419,7 @@ export function ContentFormatOptionsMenu({
                             {isMetadataEnabled && (
                               <DropdownMenuSub>
                                 <DropdownMenuSubTrigger
-                                  className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground"
+                                  className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/metadata:bg-muted group-hover/metadata:text-foreground"
                                   icon={<Settings2 className="size-3" />}
                                 >
                                   <span className="font-medium text-xs uppercase">
