@@ -6,6 +6,7 @@ import {
   PromptInputActionMenuContent,
   PromptInputActionMenuTrigger,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
+import { ChartLineIcon } from '@deepcrawl/ui/components/icons/chart-line';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Label } from '@deepcrawl/ui/components/ui/label';
@@ -17,7 +18,6 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { ExtractLinksOptions, ReadUrlOptions } from 'deepcrawl';
-import { TrendingUp } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 type MetricsOptionsInput =
@@ -34,7 +34,10 @@ export function MetricsOptionsMenu({
   onMetricsOptionsChange,
 }: MetricsOptionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const iconRef = useRef<SVGSVGElement>(null);
+  const iconRef = useRef<{
+    startAnimation: () => void;
+    stopAnimation: () => void;
+  }>(null);
 
   const updateMetricsOption = (key: string, value: boolean) => {
     onMetricsOptionsChange({
@@ -60,8 +63,12 @@ export function MetricsOptionsMenu({
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
-          <PromptInputActionMenuTrigger className="cursor-help">
-            <TrendingUp
+          <PromptInputActionMenuTrigger
+            className="cursor-help"
+            onMouseEnter={() => iconRef.current?.startAnimation()}
+            onMouseLeave={() => iconRef.current?.stopAnimation()}
+          >
+            <ChartLineIcon
               className={cn('h-4 w-4', hasCustomSettings && 'text-violet-600')}
               ref={iconRef}
             />
