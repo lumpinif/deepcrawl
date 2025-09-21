@@ -1,6 +1,6 @@
  # Repository Guidelines
 
- ## Project Structure & Modules
+ ## Project Structure & Module Organization
  - Monorepo managed by `pnpm` and `turbo`.
  - Apps:
    - `apps/app` — Next.js dashboard (UI + docs).
@@ -12,7 +12,7 @@
    - `packages/*` — shared types, UI, ESLint, TS config.
  - Utilities: `scripts/`, root `turbo.json`, `biome.jsonc`, `pnpm-workspace.yaml`.
 
- ## Build, Test, and Dev
+ ## Build, Test, and Development Commands
  - Install: `pnpm install` (Node >= 20).
  - Dev (all): `pnpm dev`.
  - Dev (focused):
