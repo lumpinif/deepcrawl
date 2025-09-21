@@ -23,15 +23,9 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { ExtractLinksOptions, TreeOptions } from 'deepcrawl';
+import type { TreeOptions } from 'deepcrawl';
 import { ListTree } from 'lucide-react';
 import { useRef, useState } from 'react';
-
-type TreeOptionsInput = ExtractLinksOptions['folderFirst'] &
-  ExtractLinksOptions['linksOrder'] &
-  ExtractLinksOptions['extractedLinks'] &
-  ExtractLinksOptions['subdomainAsRootUrl'] &
-  ExtractLinksOptions['isPlatformUrl'];
 
 interface TreeOptionsMenuProps {
   treeOptions: TreeOptions | undefined;
