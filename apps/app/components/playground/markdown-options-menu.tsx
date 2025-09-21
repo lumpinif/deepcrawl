@@ -57,6 +57,71 @@ export function MarkdownOptionsMenu({
     });
   };
 
+  // Markdown option fields with their defaults and metadata
+  const MARKDOWN_OPTION_FIELDS = [
+    {
+      key: 'preferNativeParser',
+      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
+      type: 'switch',
+      label: 'Prefer Native Parser',
+      tooltip: 'Use native parser when available for better performance',
+    },
+    {
+      key: 'keepDataImages',
+      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
+      type: 'switch',
+      label: 'Keep Data Images',
+      tooltip: 'Preserve base64 encoded images in markdown output',
+    },
+    {
+      key: 'useInlineLinks',
+      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
+      type: 'switch',
+      label: 'Use Inline Links',
+      tooltip: 'Use inline link format instead of reference links',
+    },
+    {
+      key: 'useLinkReferenceDefinitions',
+      defaultValue:
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
+      type: 'switch',
+      label: 'Use Link References',
+      tooltip: 'Generate reference-style links with definitions at the end',
+    },
+    {
+      key: 'bulletMarker',
+      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker,
+      type: 'select',
+      label: 'Bullet Marker',
+      tooltip: 'Character used for unordered list items',
+      options: [
+        { value: '*', label: '* (asterisk)' },
+        { value: '-', label: '- (dash)' },
+        { value: '+', label: '+ (plus)' },
+      ],
+    },
+    {
+      key: 'codeBlockStyle',
+      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle,
+      type: 'select',
+      label: 'Code Block Style',
+      tooltip: 'Format style for code blocks in markdown',
+      options: [
+        { value: 'fenced', label: 'Fenced (```)' },
+        { value: 'indented', label: 'Indented (4 spaces)' },
+      ],
+    },
+    {
+      key: 'maxConsecutiveNewlines',
+      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
+      type: 'number',
+      label: 'Max Consecutive Newlines',
+      tooltip: 'Maximum number of consecutive newlines allowed',
+      min: 1,
+      max: 10,
+    },
+  ] as const;
+
   const resetToDefaults = () => {
     onMarkdownOptionsChange({
       preferNativeParser: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
@@ -71,28 +136,12 @@ export function MarkdownOptionsMenu({
     });
   };
 
-  const hasCustomSettings =
-    (markdownOptions?.preferNativeParser !== undefined &&
-      markdownOptions.preferNativeParser !==
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser) ||
-    (markdownOptions?.bulletMarker !== undefined &&
-      markdownOptions.bulletMarker !==
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker) ||
-    (markdownOptions?.codeBlockStyle !== undefined &&
-      markdownOptions.codeBlockStyle !==
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle) ||
-    (markdownOptions?.maxConsecutiveNewlines !== undefined &&
-      markdownOptions.maxConsecutiveNewlines !==
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines) ||
-    (markdownOptions?.keepDataImages !== undefined &&
-      markdownOptions.keepDataImages !==
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages) ||
-    (markdownOptions?.useInlineLinks !== undefined &&
-      markdownOptions.useInlineLinks !==
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks) ||
-    (markdownOptions?.useLinkReferenceDefinitions !== undefined &&
-      markdownOptions.useLinkReferenceDefinitions !==
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions);
+  const hasCustomSettings = MARKDOWN_OPTION_FIELDS.some(
+    ({ key, defaultValue }) => {
+      const currentValue = markdownOptions?.[key];
+      return currentValue !== undefined && currentValue !== defaultValue;
+    },
+  );
 
   return (
     <Tooltip>
@@ -129,219 +178,135 @@ export function MarkdownOptionsMenu({
             </div>
 
             <div className="space-y-4">
-              {/* Prefer Native Parser */}
-              <div className="flex w-fit items-center space-x-2">
-                <Switch
-                  checked={Boolean(
-                    markdownOptions?.preferNativeParser ??
-                      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
-                  )}
-                  id="prefer-native-parser"
-                  onCheckedChange={(checked) =>
-                    updateMarkdownOption('preferNativeParser', Boolean(checked))
-                  }
-                />
-                <Label
-                  className="cursor-pointer text-sm"
-                  htmlFor="prefer-native-parser"
-                >
-                  Prefer Native Parser
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default:{' '}
-                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser
-                      ? 'On'
-                      : 'Off'}
-                  </Badge>
-                </Label>
-              </div>
+              {MARKDOWN_OPTION_FIELDS.map((field) => {
+                const currentValue =
+                  markdownOptions?.[field.key] ?? field.defaultValue;
+                const fieldId = `markdown-${field.key}`;
 
-              {/* Keep Data Images */}
-              <div className="flex w-fit items-center space-x-2">
-                <Switch
-                  checked={Boolean(
-                    markdownOptions?.keepDataImages ??
-                      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
-                  )}
-                  id="keep-data-images"
-                  onCheckedChange={(checked) =>
-                    updateMarkdownOption('keepDataImages', Boolean(checked))
-                  }
-                />
-                <Label
-                  className="cursor-pointer text-sm"
-                  htmlFor="keep-data-images"
-                >
-                  Keep Data Images
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default:{' '}
-                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages
-                      ? 'On'
-                      : 'Off'}
-                  </Badge>
-                </Label>
-              </div>
+                if (field.type === 'switch') {
+                  return (
+                    <div
+                      className="flex w-fit items-center space-x-2"
+                      key={field.key}
+                    >
+                      <Switch
+                        checked={Boolean(currentValue)}
+                        id={fieldId}
+                        onCheckedChange={(checked) =>
+                          updateMarkdownOption(field.key, Boolean(checked))
+                        }
+                      />
+                      <Label
+                        className="cursor-pointer text-sm"
+                        htmlFor={fieldId}
+                      >
+                        {field.label}
+                        <Badge
+                          className="ml-2 text-muted-foreground text-xs uppercase"
+                          variant="outline"
+                        >
+                          Default: {field.defaultValue ? 'On' : 'Off'}
+                        </Badge>
+                      </Label>
+                    </div>
+                  );
+                }
 
-              {/* Use Inline Links */}
-              <div className="flex w-fit items-center space-x-2">
-                <Switch
-                  checked={Boolean(
-                    markdownOptions?.useInlineLinks ??
-                      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
-                  )}
-                  id="use-inline-links"
-                  onCheckedChange={(checked) =>
-                    updateMarkdownOption('useInlineLinks', Boolean(checked))
-                  }
-                />
-                <Label
-                  className="cursor-pointer text-sm"
-                  htmlFor="use-inline-links"
-                >
-                  Use Inline Links
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default:{' '}
-                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks
-                      ? 'On'
-                      : 'Off'}
-                  </Badge>
-                </Label>
-              </div>
+                if (field.type === 'select') {
+                  return (
+                    <div className="space-y-2" key={field.key}>
+                      <Label className="text-sm" htmlFor={fieldId}>
+                        {field.label}
+                        <Badge
+                          className="ml-2 text-muted-foreground text-xs uppercase"
+                          variant="outline"
+                        >
+                          Default: {field.defaultValue}
+                        </Badge>
+                      </Label>
+                      <Select
+                        onValueChange={(value) =>
+                          updateMarkdownOption(field.key, value)
+                        }
+                        value={
+                          typeof currentValue === 'string'
+                            ? currentValue
+                            : field.defaultValue
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={`Select ${field.label.toLowerCase()}`}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {field.options?.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  );
+                }
 
-              {/* Use Link Reference Definitions */}
-              <div className="flex w-fit items-center space-x-2">
-                <Switch
-                  checked={Boolean(
-                    markdownOptions?.useLinkReferenceDefinitions ??
-                      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
-                  )}
-                  id="use-link-reference-definitions"
-                  onCheckedChange={(checked) =>
-                    updateMarkdownOption(
-                      'useLinkReferenceDefinitions',
-                      Boolean(checked),
-                    )
-                  }
-                />
-                <Label
-                  className="cursor-pointer text-sm"
-                  htmlFor="use-link-reference-definitions"
-                >
-                  Use Link References
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default:{' '}
-                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions
-                      ? 'On'
-                      : 'Off'}
-                  </Badge>
-                </Label>
-              </div>
+                if (field.type === 'number') {
+                  return (
+                    <div className="space-y-2" key={field.key}>
+                      <Label className="text-sm" htmlFor={fieldId}>
+                        {field.label}
+                        <Badge
+                          className="ml-2 text-muted-foreground text-xs uppercase"
+                          variant="outline"
+                        >
+                          Default: {field.defaultValue}
+                        </Badge>
+                      </Label>
+                      <Input
+                        className="font-mono text-xs"
+                        id={fieldId}
+                        max={field.max?.toString()}
+                        min={field.min?.toString()}
+                        onBlur={(e) => {
+                          const newValue = e.target.value
+                            ? Number(e.target.value)
+                            : undefined;
 
-              {/* Bullet Marker */}
-              <div className="space-y-2">
-                <Label className="text-sm" htmlFor="bullet-marker">
-                  Bullet Marker
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default: {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker}
-                  </Badge>
-                </Label>
-                <Select
-                  onValueChange={(value) =>
-                    updateMarkdownOption('bulletMarker', value)
-                  }
-                  value={
-                    markdownOptions?.bulletMarker ||
-                    DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select bullet marker" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="*">* (asterisk)</SelectItem>
-                    <SelectItem value="-">- (dash)</SelectItem>
-                    <SelectItem value="+">+ (plus)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                          // Enforce minimum and maximum values when user finishes typing
+                          if (newValue !== undefined) {
+                            let correctedValue = newValue;
 
-              {/* Code Block Style */}
-              <div className="space-y-2">
-                <Label className="text-sm" htmlFor="code-block-style">
-                  Code Block Style
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default: {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle}
-                  </Badge>
-                </Label>
-                <Select
-                  onValueChange={(value) =>
-                    updateMarkdownOption('codeBlockStyle', value)
-                  }
-                  value={
-                    markdownOptions?.codeBlockStyle ||
-                    DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select code style" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fenced">Fenced (```)</SelectItem>
-                    <SelectItem value="indented">
-                      Indented (4 spaces)
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                            if (field.min && newValue < field.min) {
+                              correctedValue = field.min;
+                            } else if (field.max && newValue > field.max) {
+                              correctedValue = field.max;
+                            }
 
-              {/* Max Consecutive Newlines */}
-              <div className="space-y-2">
-                <Label className="text-sm" htmlFor="max-consecutive-newlines">
-                  Max Consecutive Newlines
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default:{' '}
-                    {DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines}
-                  </Badge>
-                </Label>
-                <Input
-                  className="font-mono text-xs"
-                  id="max-consecutive-newlines"
-                  max="10"
-                  min="1"
-                  onChange={(e) => {
-                    const newValue = e.target.value
-                      ? Number(e.target.value)
-                      : undefined;
-                    updateMarkdownOption('maxConsecutiveNewlines', newValue);
-                  }}
-                  placeholder={`Default: ${DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines}`}
-                  type="number"
-                  value={markdownOptions?.maxConsecutiveNewlines || ''}
-                />
-                <p className="text-muted-foreground text-xs">
-                  Maximum number of consecutive newlines allowed
-                </p>
-              </div>
+                            if (correctedValue !== newValue) {
+                              updateMarkdownOption(field.key, correctedValue);
+                            }
+                          }
+                        }}
+                        onChange={(e) => {
+                          const newValue = e.target.value
+                            ? Number(e.target.value)
+                            : undefined;
+                          updateMarkdownOption(field.key, newValue);
+                        }}
+                        placeholder={`Default: ${field.defaultValue}`}
+                        type="number"
+                        value={currentValue?.toString() || ''}
+                      />
+                      <p className="text-muted-foreground text-xs">
+                        {field.tooltip}
+                      </p>
+                    </div>
+                  );
+                }
+
+                return null;
+              })}
             </div>
 
             <div className="border-t pt-3">

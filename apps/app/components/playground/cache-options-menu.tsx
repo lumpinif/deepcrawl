@@ -56,6 +56,44 @@ export function CacheOptionsMenu({
     });
   };
 
+  // Cache option fields with their defaults and metadata
+  const CACHE_OPTION_FIELDS = [
+    {
+      key: 'enabled',
+      defaultValue: DEFAULT_CACHE_OPTIONS.enabled,
+      type: 'switch',
+      label: 'Enable Cache',
+      tooltip: 'Enable or disable caching for this request',
+    },
+    // {
+    //   key: 'expiration',
+    //   defaultValue: undefined,
+    //   type: 'number',
+    //   label: 'Expiration (epoch timestamp)',
+    //   tooltip: 'Specific timestamp when cache expires',
+    //   placeholder: '1717708800',
+    // },
+    {
+      key: 'expirationTtl',
+      defaultValue: DEFAULT_CACHE_OPTIONS.expirationTtl,
+      type: 'number',
+      label: 'Expiration TTL (seconds, min 60)',
+      tooltip: 'Time-to-live in seconds from now',
+      min: 60,
+      placeholder: `Default: ${DEFAULT_CACHE_OPTIONS.expirationTtl}`,
+      badge: `Default: ${formatDaysFromSeconds(DEFAULT_CACHE_OPTIONS.expirationTtl)} days`,
+    },
+  ] as const satisfies readonly {
+    key: string;
+    defaultValue: boolean | number | undefined;
+    type: 'switch' | 'number';
+    label: string;
+    tooltip: string;
+    placeholder?: string;
+    min?: number;
+    badge?: string;
+  }[];
+
   const resetToDefaults = () => {
     onCacheOptionsChange({
       enabled: DEFAULT_CACHE_OPTIONS.enabled,
@@ -64,12 +102,12 @@ export function CacheOptionsMenu({
     });
   };
 
-  const hasCustomSettings =
-    (cacheOptions?.enabled !== undefined &&
-      cacheOptions.enabled !== DEFAULT_CACHE_OPTIONS.enabled) ||
-    cacheOptions?.expiration !== undefined ||
-    (cacheOptions?.expirationTtl !== undefined &&
-      cacheOptions.expirationTtl !== DEFAULT_CACHE_OPTIONS.expirationTtl);
+  const hasCustomSettings = CACHE_OPTION_FIELDS.some(
+    ({ key, defaultValue }) => {
+      const currentValue = cacheOptions?.[key];
+      return currentValue !== undefined && currentValue !== defaultValue;
+    },
+  );
 
   return (
     <Tooltip>
@@ -106,85 +144,92 @@ export function CacheOptionsMenu({
             </div>
 
             <div className="space-y-4">
-              {/* Enable Cache */}
-              <div className="flex w-fit items-center space-x-2">
-                <Switch
-                  checked={Boolean(
-                    cacheOptions?.enabled ?? DEFAULT_CACHE_OPTIONS.enabled,
-                  )}
-                  id="cache-enabled"
-                  onCheckedChange={(checked) =>
-                    updateCacheOption('enabled', Boolean(checked))
-                  }
-                />
-                <Label
-                  className="cursor-pointer text-sm"
-                  htmlFor="cache-enabled"
-                >
-                  Enable Cache
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default: {DEFAULT_CACHE_OPTIONS.enabled ? 'On' : 'Off'}
-                  </Badge>
-                </Label>
-              </div>
+              {CACHE_OPTION_FIELDS.map((field) => {
+                const currentValue =
+                  cacheOptions?.[field.key] ?? field.defaultValue;
+                const fieldId = `cache-${field.key}`;
 
-              {/* Expiration Timestamp */}
-              <div className="space-y-2">
-                <Label className="text-sm" htmlFor="cache-expiration">
-                  Expiration (epoch timestamp)
-                </Label>
-                <Input
-                  className="font-mono text-xs"
-                  id="cache-expiration"
-                  onChange={(e) => {
-                    const newValue = e.target.value
-                      ? Number(e.target.value)
-                      : undefined;
-                    updateCacheOption('expiration', newValue);
-                  }}
-                  placeholder="1717708800"
-                  type="number"
-                  value={cacheOptions?.expiration || ''}
-                />
-                <p className="text-muted-foreground text-xs">
-                  Specific timestamp when cache expires
-                </p>
-              </div>
+                if (field.type === 'switch') {
+                  return (
+                    <div
+                      className="flex w-fit items-center space-x-2"
+                      key={field.key}
+                    >
+                      <Switch
+                        checked={Boolean(currentValue)}
+                        id={fieldId}
+                        onCheckedChange={(checked) =>
+                          updateCacheOption(field.key, Boolean(checked))
+                        }
+                      />
+                      <Label
+                        className="cursor-pointer text-sm"
+                        htmlFor={fieldId}
+                      >
+                        {field.label}
+                        <Badge
+                          className="ml-2 text-muted-foreground text-xs uppercase"
+                          variant="outline"
+                        >
+                          Default: {field.defaultValue ? 'On' : 'Off'}
+                        </Badge>
+                      </Label>
+                    </div>
+                  );
+                }
 
-              {/* Expiration TTL */}
-              <div className="space-y-2">
-                <Label className="text-sm" htmlFor="cache-expiration-ttl">
-                  Expiration TTL (seconds, min 60){' '}
-                  <Badge
-                    className="ml-2 text-muted-foreground text-xs uppercase"
-                    variant="outline"
-                  >
-                    Default:{' '}
-                    {formatDaysFromSeconds(DEFAULT_CACHE_OPTIONS.expirationTtl)}{' '}
-                    days
-                  </Badge>
-                </Label>
-                <Input
-                  className="font-mono text-xs"
-                  id="cache-expiration-ttl"
-                  min="60"
-                  onChange={(e) => {
-                    const newValue = e.target.value
-                      ? Number(e.target.value)
-                      : undefined;
-                    updateCacheOption('expirationTtl', newValue);
-                  }}
-                  placeholder={`Default: ${DEFAULT_CACHE_OPTIONS.expirationTtl}`}
-                  type="number"
-                  value={cacheOptions?.expirationTtl || ''}
-                />
-                <p className="text-muted-foreground text-xs">
-                  Time-to-live in seconds from now
-                </p>
-              </div>
+                if (field.type === 'number') {
+                  return (
+                    <div className="space-y-2" key={field.key}>
+                      <Label className="text-sm" htmlFor={fieldId}>
+                        {field.label}
+                        {'badge' in field && field.badge && (
+                          <Badge
+                            className="ml-2 text-muted-foreground text-xs uppercase"
+                            variant="outline"
+                          >
+                            {field.badge}
+                          </Badge>
+                        )}
+                      </Label>
+                      <Input
+                        className="font-mono text-xs"
+                        id={fieldId}
+                        min={'min' in field ? field.min?.toString() : undefined}
+                        onBlur={(e) => {
+                          const newValue = e.target.value
+                            ? Number(e.target.value)
+                            : undefined;
+
+                          // Enforce minimum value if specified when user finishes typing
+                          if (
+                            newValue !== undefined &&
+                            'min' in field &&
+                            field.min &&
+                            newValue < field.min
+                          ) {
+                            updateCacheOption(field.key, field.min);
+                          }
+                        }}
+                        onChange={(e) => {
+                          const newValue = e.target.value
+                            ? Number(e.target.value)
+                            : undefined;
+                          updateCacheOption(field.key, newValue);
+                        }}
+                        placeholder={field.placeholder}
+                        type="number"
+                        value={currentValue?.toString() || ''}
+                      />
+                      <p className="text-muted-foreground text-xs">
+                        {field.tooltip}
+                      </p>
+                    </div>
+                  );
+                }
+
+                return null;
+              })}
             </div>
 
             <div className="border-t pt-3">
