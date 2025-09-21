@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import type {
   DeepcrawlOperations,
   PlaygroundResponse,
-} from '@/components/playground/playground-client';
+} from '@/hooks/playground/use-task-input-state';
 
 export interface ErrorHandlerOptions {
   operation: DeepcrawlOperations;
