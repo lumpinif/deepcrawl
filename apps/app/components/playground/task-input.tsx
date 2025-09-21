@@ -145,12 +145,14 @@ export const TaskInput = ({
                   : 'idle'
             }
             buttonVariant="default"
-            className={cn('mr-2 w-32', isError && 'z-50 animate-none')}
+            className="group/spinner-button mr-2 w-32"
+            data-isLoading={isLoading[selectedOperation]}
             disabled={isError || !isUrlValid || isLoading[selectedOperation]}
+            errorElement={<span>Try again</span>}
             isLoading={isLoading[selectedOperation]}
             loadingElement={
               <NumberFlow
-                className="text-primary-foreground"
+                className="text-primary-foreground transition-all duration-200 ease-out group-data-[isLoading=true]/spinner-button:scale-110 group-data-[isLoading=true]/spinner-button:animate-pulse"
                 format={{
                   style: 'decimal',
                   signDisplay: 'auto',
