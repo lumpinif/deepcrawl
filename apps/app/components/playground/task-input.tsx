@@ -63,6 +63,7 @@ export const TaskInput = ({
     handleCacheOptionsChange,
     handleMarkdownOptionsChange,
     handleContentFormatOptionsChange,
+    handleMetadataOptionsChange,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
@@ -209,7 +210,9 @@ export const TaskInput = ({
                 tree: getCurrentOptionValue('tree') as boolean,
                 sitemapXML: getCurrentOptionValue('sitemapXML') as boolean,
               }}
+              metadataOptions={getCurrentOptionValue('metadataOptions')}
               onContentFormatOptionsChange={handleContentFormatOptionsChange}
+              onMetadataOptionsChange={handleMetadataOptionsChange}
               operation={selectedOperation}
             />
             <CleaningProcessorMenu

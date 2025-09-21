@@ -180,6 +180,8 @@ function NumberInput({
   );
 }
 
+/*
+// Metadata options component moved to MetadataOptionsMenu
 interface MetadataOptionsComponentProps {
   idPrefix: string;
   metadataOptions: MetadataOptionsInput | undefined;
@@ -265,6 +267,7 @@ function MetadataOptionsComponent({
     </div>
   );
 }
+*/
 
 interface MetricsOptionsComponentProps {
   idPrefix: string;
@@ -520,7 +523,8 @@ export function OptionsPanel({
           <Separator />
           */}
 
-          {/* Metadata Options */}
+          {/* Metadata Options - Now available in MetadataOptionsMenu in task input */}
+          {/*
           <CollapsibleSection
             id="metadataOptions"
             isOpen={expandedSections.has('metadataOptions')}
@@ -541,6 +545,7 @@ export function OptionsPanel({
           </CollapsibleSection>
 
           <Separator />
+          */}
 
           {/* Metrics Options for ReadUrl */}
           <CollapsibleSection
@@ -804,7 +809,8 @@ export function OptionsPanel({
 
           <Separator />
 
-          {/* Metadata Options for Links */}
+          {/* Metadata Options for Links - Now available in MetadataOptionsMenu in task input */}
+          {/*
           <CollapsibleSection
             id="metadataOptions"
             isOpen={expandedSections.has('metadataOptions')}
@@ -825,6 +831,7 @@ export function OptionsPanel({
           </CollapsibleSection>
 
           <Separator />
+          */}
 
           {/* Metrics Options for Extract Links */}
           <CollapsibleSection

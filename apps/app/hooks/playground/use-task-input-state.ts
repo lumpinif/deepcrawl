@@ -181,6 +181,18 @@ export function useTaskInputState({
     });
   };
 
+  const handleMetadataOptionsChange = (
+    metadataOptions:
+      | ReadUrlOptions['metadataOptions']
+      | ExtractLinksOptions['metadataOptions'],
+  ) => {
+    const currentOptions = getCurrentOptions();
+    handleOptionsChange({
+      ...currentOptions,
+      metadataOptions,
+    });
+  };
+
   return {
     // State
     requestUrl,
@@ -207,5 +219,6 @@ export function useTaskInputState({
     handleCacheOptionsChange,
     handleMarkdownOptionsChange,
     handleContentFormatOptionsChange,
+    handleMetadataOptionsChange,
   };
 }
