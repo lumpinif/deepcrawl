@@ -65,6 +65,7 @@ export function CacheOptionsMenu({
       label: 'Enable Cache',
       tooltip: 'Enable or disable caching for this request',
     },
+    /* @deprecated */
     // {
     //   key: 'expiration',
     //   defaultValue: undefined,
@@ -97,7 +98,6 @@ export function CacheOptionsMenu({
   const resetToDefaults = () => {
     onCacheOptionsChange({
       enabled: DEFAULT_CACHE_OPTIONS.enabled,
-      expiration: undefined,
       expirationTtl: DEFAULT_CACHE_OPTIONS.expirationTtl,
     });
   };
