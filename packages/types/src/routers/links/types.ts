@@ -220,7 +220,7 @@ export const LinksOptionsSchema = z
 
     /**
      * Cache configuration for links operation based on KV put options except for `metadata`.
-     * An object containing the `expiration` (optional) and `expirationTtl` (optional) attributes
+     * An object containing the `expirationTtl` (optional) attribute
      * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
      * @see Default: {@link DEFAULT_CACHE_OPTIONS}
      */

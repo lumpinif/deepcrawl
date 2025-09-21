@@ -313,7 +313,7 @@ export async function processReadRequest(
             cacheKey,
             valueToCache,
             {
-              expiration: cacheOptions?.expiration ?? undefined,
+              // expiration: cacheOptions?.expiration ?? undefined,
               expirationTtl:
                 cacheOptions?.expirationTtl ??
                 DEFAULT_CACHE_OPTIONS.expirationTtl,

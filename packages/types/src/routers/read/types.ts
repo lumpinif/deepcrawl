@@ -94,7 +94,6 @@ export const ReadOptionsSchema = z
      *
      * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
      * @example { expirationTtl: 3600 } // Cache for 1 hour
-     * @example { expiration: 1640995200 } // Cache until specific timestamp
      */
     cacheOptions: CacheOptionsSchema.optional().meta({
       description:

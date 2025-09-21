@@ -266,7 +266,7 @@ async function processNonTreeRequest({
                 description: targetScrapeResult?.description,
                 timestamp: new Date().toISOString(),
               },
-              expiration: cacheOptions?.expiration ?? undefined,
+              // expiration: cacheOptions?.expiration ?? undefined,
               expirationTtl:
                 cacheOptions?.expirationTtl ??
                 DEFAULT_CACHE_OPTIONS.expirationTtl,
@@ -854,7 +854,7 @@ export async function processLinksRequest(
                 description: targetScrapeResult?.description,
                 timestamp: new Date().toISOString(),
               },
-              expiration: cacheOptions?.expiration ?? undefined,
+              // expiration: cacheOptions?.expiration ?? undefined,
               expirationTtl:
                 cacheOptions?.expirationTtl ??
                 DEFAULT_CACHE_OPTIONS.expirationTtl,

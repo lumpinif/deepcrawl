@@ -10,7 +10,6 @@ const { enabled } = DEFAULT_CACHE_OPTIONS;
  * Controls how long responses should be cached and whether caching is enabled.
  *
  * @property {boolean} [enabled] - Whether to enable caching
- * @property {number} [expiration] - Unix timestamp when key-value pair should expire
  * @property {number} [expirationTtl] - TTL in seconds from now (minimum 60 seconds)
  *
  * @see https://developers.cloudflare.com/kv/api/write-key-value-pairs/#put-method
@@ -30,14 +29,15 @@ export const CacheOptionsSchema = z
       default: enabled,
       examples: [enabled, !enabled],
     }),
-    expiration: z
-      .number()
-      .optional()
-      .meta({
-        description:
-          'The number that represents when to expire the key-value pair in seconds since epoch',
-        examples: [1717708800], // 2024-06-06 00:00:00
-      }),
+    /* @deprecated */
+    // expiration: z
+    //   .number()
+    //   .optional()
+    //   .meta({
+    //     description:
+    //       'The number that represents when to expire the key-value pair in seconds since epoch',
+    //     examples: [1717708800], // 2024-06-06 00:00:00
+    //   }),
     expirationTtl: z
       .number()
       .min(60) // 1 minute
