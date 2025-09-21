@@ -10,6 +10,7 @@ import { useIsHydrated } from '@/hooks/use-hydrated';
 export type UrlInputProps = ComponentProps<typeof Input> & {
   onSubmit?: () => void;
   isError?: boolean;
+  children?: React.ReactNode;
 };
 
 export function UrlInput({
@@ -20,6 +21,7 @@ export function UrlInput({
   autoFocus,
   isError,
   value,
+  children,
   ...props
 }: UrlInputProps) {
   const isHydrated = useIsHydrated();
@@ -77,7 +79,7 @@ export function UrlInput({
   };
 
   return (
-    <div className="relative h-16">
+    <div className="relative h-18 w-full flex-1">
       {!hasProtocol && (
         <Badge className="-translate-y-1/2 absolute top-1/2 left-3 cursor-default select-none border-border bg-background py-1 text-muted-foreground">
           https://
@@ -86,9 +88,9 @@ export function UrlInput({
       <Input
         className={cn(
           'transition-all duration-200 ease-in-out',
-          !isError && 'border-none',
-          isError &&
-            '!border-destructive animate-pulse !focus-visible:ring-destructive',
+          'border-none',
+          // isError &&
+          //   '!border-destructive animate-pulse !focus-visible:ring-destructive',
           '!bg-transparent h-full rounded-none shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent',
           hasProtocol ? 'pl-3' : 'pl-20',
           className,
@@ -104,6 +106,7 @@ export function UrlInput({
         // Never pass autoFocus to DOM to avoid hydration mismatch
         {...props}
       />
+      {children}
     </div>
   );
 }

@@ -8,10 +8,10 @@ import {
 import {
   PromptInput,
   PromptInputBody,
-  PromptInputSubmit,
   PromptInputToolbar,
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
@@ -21,6 +21,7 @@ import {
 } from '@/hooks/playground/use-task-input-state';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
+import { SpinnerButton } from '../spinner-button';
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { MarkdownOptionsMenu } from './markdown-options-menu';
@@ -116,7 +117,13 @@ export const TaskInput = ({
           </PromptInputTools>
         </PromptInputToolbar>
 
-        <PromptInputBody>
+        <PromptInputBody
+          className={cn(
+            '!flex-row items-center',
+            isError &&
+              '!border-destructive animate-shake rounded border-[1.5px] shadow-lg !focus-visible:ring-destructive transition-all duration-200 ease-out',
+          )}
+        >
           <UrlInput
             autoFocus={true}
             isError={isError}
@@ -126,6 +133,14 @@ export const TaskInput = ({
             type="text"
             value={requestUrl}
           />
+          <SpinnerButton
+            className={cn('mr-2 w-32', isError && 'z-50 animate-none')}
+            disabled={isError || !isUrlValid || isLoading[selectedOperation]}
+            isLoading={isLoading[selectedOP?.operation || '']}
+            type="submit"
+          >
+            {selectedOP?.label}
+          </SpinnerButton>
         </PromptInputBody>
 
         <PromptInputToolbar>
@@ -157,12 +172,6 @@ export const TaskInput = ({
               onMarkdownOptionsChange={handleMarkdownOptionsChange}
             />
           </PromptInputTools>
-          <PromptInputSubmit
-            disabled={!isUrlValid || isLoading[selectedOperation]}
-            size="default"
-          >
-            {selectedOP.label}
-          </PromptInputSubmit>
         </PromptInputToolbar>
       </PromptInput>
 
