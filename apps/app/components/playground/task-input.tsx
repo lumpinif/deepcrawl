@@ -231,6 +231,13 @@ export const TaskInput = ({
               )}
               onCacheOptionsChange={handleCacheOptionsChange}
             />
+            <MarkdownOptionsMenu
+              markdownOptions={getCurrentOptionValue(
+                'markdownConverterOptions',
+                DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
+              )}
+              onMarkdownOptionsChange={handleMarkdownOptionsChange}
+            />
             {/* Metrics options - only available for readUrl and extractLinks */}
             {(selectedOperation === 'readUrl' ||
               selectedOperation === 'extractLinks') && (
@@ -239,13 +246,6 @@ export const TaskInput = ({
                 onMetricsOptionsChange={handleMetricsOptionsChange}
               />
             )}
-            <MarkdownOptionsMenu
-              markdownOptions={getCurrentOptionValue(
-                'markdownConverterOptions',
-                DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
-              )}
-              onMarkdownOptionsChange={handleMarkdownOptionsChange}
-            />
           </PromptInputTools>
         </PromptInputToolbar>
       </PromptInput>
