@@ -73,12 +73,11 @@ export function useExecutionTimer() {
   const formatTime = useCallback(
     (ms: number, asString = false): number | string => {
       if (ms < 1000) {
-        return asString ? `${ms} ms` : ms;
+        return asString ? `${ms.toFixed(2)} ms` : +ms.toFixed(2);
       }
 
       const roundedMs = (ms / 1000).toFixed(2);
-
-      return asString ? `${roundedMs} s` : roundedMs;
+      return asString ? `${roundedMs} s` : +roundedMs;
     },
     [],
   );
