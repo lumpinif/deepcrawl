@@ -27,7 +27,6 @@ import { MarkdownOptionsMenu } from './markdown-options-menu';
 import { MetricsOptionsMenu } from './metrics-options-menu';
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
-import { TaskInputOptions } from './task-input-options';
 import { TreeOptionsMenu } from './tree-options-menu';
 import { UrlInput } from './url-input';
 
@@ -194,11 +193,6 @@ export const TaskInput = ({
 
         <PromptInputToolbar>
           <PromptInputTools className="gap-x-0">
-            <TaskInputOptions
-              onOptionsChange={handleOptionsChange}
-              options={getCurrentOptions()}
-              selectedOperation={selectedOperation}
-            />
             {/* Tree options - only available for extractLinks */}
             {selectedOperation === 'extractLinks' && (
               <TreeOptionsMenu
@@ -227,7 +221,9 @@ export const TaskInput = ({
                 linkExtractionOptions={getCurrentOptionValue(
                   'linkExtractionOptions',
                 )}
-                onLinkExtractionOptionsChange={handleLinkExtractionOptionsChange}
+                onLinkExtractionOptionsChange={
+                  handleLinkExtractionOptionsChange
+                }
               />
             )}
             <ContentFormatOptionsMenu
