@@ -233,6 +233,16 @@ export function useTaskInputState({
     });
   };
 
+  const handleLinkExtractionOptionsChange = (
+    linkExtractionOptions: ExtractLinksOptions['linkExtractionOptions'],
+  ) => {
+    const currentOptions = getCurrentOptions();
+    handleOptionsChange({
+      ...currentOptions,
+      linkExtractionOptions,
+    });
+  };
+
   return {
     // State
     requestUrl,
@@ -262,5 +272,6 @@ export function useTaskInputState({
     handleMetadataOptionsChange,
     handleMetricsOptionsChange,
     handleTreeOptionsChange,
+    handleLinkExtractionOptionsChange,
   };
 }

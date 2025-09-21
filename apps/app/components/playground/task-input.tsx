@@ -22,6 +22,7 @@ import { SpinnerButton } from '../spinner-button';
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { ContentFormatOptionsMenu } from './content-format-options-menu';
+import { LinkExtractionOptionsMenu } from './link-extraction-options-menu';
 import { MarkdownOptionsMenu } from './markdown-options-menu';
 import { MetricsOptionsMenu } from './metrics-options-menu';
 import { OperationSelector } from './operation-selector';
@@ -63,6 +64,7 @@ export const TaskInput = ({
     handleMetadataOptionsChange,
     handleMetricsOptionsChange,
     handleTreeOptionsChange,
+    handleLinkExtractionOptionsChange,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
@@ -217,6 +219,15 @@ export const TaskInput = ({
                     'isPlatformUrl',
                   ) as boolean,
                 }}
+              />
+            )}
+            {/* Link extraction options - only available for extractLinks */}
+            {selectedOperation === 'extractLinks' && (
+              <LinkExtractionOptionsMenu
+                linkExtractionOptions={getCurrentOptionValue(
+                  'linkExtractionOptions',
+                )}
+                onLinkExtractionOptionsChange={handleLinkExtractionOptionsChange}
               />
             )}
             <ContentFormatOptionsMenu
