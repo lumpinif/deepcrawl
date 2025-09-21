@@ -22,11 +22,12 @@ type SpinnerButtonProps = ButtonProps & {
   successDuration?: number;
 };
 
+// Static constants moved outside component to prevent recreation
 const MOTION_CONFIG = {
   type: 'spring' as const,
   duration: 0.48,
   bounce: 0,
-};
+} as const;
 
 const DEFAULT_SUCCESS_DURATION = 1600;
 
@@ -34,7 +35,13 @@ const MOTION_VARIANTS = {
   initial: { opacity: 0, y: 45 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -45 },
-};
+} as const;
+
+const BASE_BUTTON_CLASSES = 'relative select-none overflow-hidden';
+const BASE_MOTION_CLASSES =
+  'flex w-full items-center justify-center gap-x-2 text-nowrap';
+
+/* SOCIAL: SHARE HOW I CREATED THIS COMPONENT */
 
 export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
   children,
@@ -50,8 +57,10 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
   successDuration = DEFAULT_SUCCESS_DURATION,
   ...props
 }) => {
-  const withSuccess = Boolean(successElement);
+  // Memoize expensive computations early
+  const withSuccess = useMemo(() => Boolean(successElement), [successElement]);
 
+  // Keep original state management for reliability
   const [internalState, setInternalState] = useState<ButtonState>('idle');
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevIsLoadingRef = useRef(isLoading);
@@ -76,8 +85,10 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
     [setButtonState],
   );
 
-  useEffect(() => () => clearSuccessTimer(), [clearSuccessTimer]);
+  // Cleanup timer on unmount
+  useEffect(() => clearSuccessTimer, [clearSuccessTimer]);
 
+  // Handle external buttonState changes
   useEffect(() => {
     if (buttonState === 'success' || buttonState === 'error') {
       clearSuccessTimer();
@@ -85,7 +96,9 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
     }
   }, [buttonState, clearSuccessTimer, updateState]);
 
+  // Handle loading state changes - optimized with early returns
   useEffect(() => {
+    // Skip processing if external state controls the button
     if (buttonState === 'success' || buttonState === 'error') {
       prevIsLoadingRef.current = isLoading;
       return;
@@ -118,57 +131,64 @@ export const SpinnerButton: React.FC<SpinnerButtonProps> = ({
     withSuccess,
   ]);
 
+  // Current state computation - preserve original logic
   const currentState: ButtonState = useMemo(() => {
     if (buttonState && buttonState !== 'idle') {
       return buttonState;
     }
-
     return internalState;
   }, [buttonState, internalState]);
 
+  // Optimized button content computation - avoid object recreation
   const buttonContent = useMemo(() => {
-    const contentMap: Record<ButtonState, React.ReactNode> = {
-      idle: children,
-      loading: loadingElement ?? <LoadingSpinner size={16} />,
-      success: successElement ?? children,
-      error: errorElement ?? children,
-    };
-    return contentMap[currentState];
-  }, [children, currentState, errorElement, loadingElement, successElement]);
+    switch (currentState) {
+      case 'loading':
+        return loadingElement ?? <LoadingSpinner size={16} />;
+      case 'success':
+        return successElement ?? children;
+      case 'error':
+        return errorElement ?? children;
+      default:
+        return children;
+    }
+  }, [currentState, children, errorElement, loadingElement, successElement]);
 
+  // Optimized variant computation with early returns
   const variant = useMemo(() => {
-    if (!(withSuccess && currentState !== 'idle')) {
+    if (!withSuccess || currentState === 'idle') {
       return buttonVariant;
     }
 
-    switch (currentState) {
-      case 'success':
-        return buttonVariant || 'success';
-      case 'error':
-        return 'destructive';
-      default:
-        return buttonVariant;
+    if (currentState === 'success') {
+      return buttonVariant || 'success';
     }
+
+    if (currentState === 'error') {
+      return 'destructive';
+    }
+
+    return buttonVariant;
   }, [buttonVariant, currentState, withSuccess]);
 
-  const buttonClassName = useMemo(() => {
-    const baseClasses = 'relative select-none overflow-hidden';
-    const successDisabledClasses =
-      withSuccess && currentState === 'success' && loadingElement
-        ? 'disabled:bg-current dark:disabled:bg-inherit'
-        : '';
+  // Split className computations for better performance
+  const successDisabledClasses = useMemo(() => {
+    return withSuccess && currentState === 'success' && loadingElement
+      ? 'disabled:bg-current dark:disabled:bg-inherit'
+      : '';
+  }, [withSuccess, currentState, loadingElement]);
 
-    return cn(baseClasses, className, successDisabledClasses);
-  }, [className, currentState, withSuccess, loadingElement]);
+  const buttonClassName = useMemo(() => {
+    return cn(BASE_BUTTON_CLASSES, className, successDisabledClasses);
+  }, [className, successDisabledClasses]);
+
+  // Optimized motion classes
+  const loadingTextClasses = useMemo(() => {
+    return currentState === 'loading' && loadingElement ? 'text-primary' : '';
+  }, [currentState, loadingElement]);
 
   const motionSpanClassName = useMemo(() => {
-    const baseClasses =
-      'flex w-full items-center justify-center gap-x-2 text-nowrap';
-    const loadingClasses =
-      currentState === 'loading' && loadingElement ? 'text-primary' : '';
-
-    return cn(baseClasses, motionClassName, loadingClasses);
-  }, [currentState, loadingElement, motionClassName]);
+    return cn(BASE_MOTION_CLASSES, motionClassName, loadingTextClasses);
+  }, [motionClassName, loadingTextClasses]);
 
   const isDisabled = currentState === 'loading';
 
