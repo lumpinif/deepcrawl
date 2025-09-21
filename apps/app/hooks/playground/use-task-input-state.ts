@@ -1,3 +1,8 @@
+import {
+  DEFAULT_GET_MARKDOWN_OPTIONS,
+  DEFAULT_LINKS_OPTIONS,
+  DEFAULT_READ_OPTIONS,
+} from '@deepcrawl/types/configs';
 import type {
   ExtractLinksOptions,
   ExtractLinksResponse,
@@ -95,11 +100,20 @@ export function useTaskInputState({
     Record<string, PlaygroundResponse>
   >({});
 
-  // Options state management - consolidated for cleaner access
+  // Options state management - consolidated for cleaner access with full defaults
   const [options, setOptions] = useState<OperationOptionsMap>(() => ({
-    readUrl: { url: '' },
-    extractLinks: { url: '' },
-    getMarkdown: { url: '' },
+    readUrl: {
+      url: '',
+      ...DEFAULT_READ_OPTIONS,
+    },
+    extractLinks: {
+      url: '',
+      ...DEFAULT_LINKS_OPTIONS,
+    },
+    getMarkdown: {
+      url: '',
+      ...DEFAULT_GET_MARKDOWN_OPTIONS, // getMarkdown uses similar options to readUrl
+    },
   }));
 
   // Add deduplication ref to prevent multiple simultaneous requests

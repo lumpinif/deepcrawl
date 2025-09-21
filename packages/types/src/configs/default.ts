@@ -188,6 +188,12 @@ export const DEFAULT_READ_OPTIONS = {
   ...DEFAULT_SCRAPE_OPTIONS,
 } as const;
 
+export const DEFAULT_GET_MARKDOWN_OPTIONS = {
+  cacheOptions: DEFAULT_CACHE_OPTIONS,
+  cleaningProcessor: DEFAULT_READ_OPTIONS.cleaningProcessor,
+  markdownConverterOptions: DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
+} as const;
+
 /** Links  */
 
 export const DEFAULT_LINK_EXTRACTION_OPTIONS = {
