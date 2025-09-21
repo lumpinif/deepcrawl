@@ -21,7 +21,7 @@ export function useExecutionTimer() {
 
   // Start timing for an operation
   const startTimer = useCallback((operationId: string) => {
-    const startTime = Date.now();
+    const startTime = performance.now();
     setState((prev) => ({
       ...prev,
       startTimes: { ...prev.startTimes, [operationId]: startTime },
@@ -34,13 +34,17 @@ export function useExecutionTimer() {
   // Stop timing for an operation
   const stopTimer = useCallback((operationId: string) => {
     setState((prev) => {
-      const startTime = prev.startTimes[operationId];
-      const finalTime = startTime ? Date.now() - startTime : 0;
+      const { [operationId]: removedStart, ...remainingStartTimes } =
+        prev.startTimes;
+      const { [operationId]: removedRunning, ...remainingRunning } =
+        prev.isRunning;
+      const { [operationId]: removedCurrent, ...remainingCurrentTimes } =
+        prev.currentTimes;
 
       return {
-        ...prev,
-        isRunning: { ...prev.isRunning, [operationId]: false },
-        currentTimes: { ...prev.currentTimes, [operationId]: 0 },
+        startTimes: remainingStartTimes,
+        isRunning: remainingRunning,
+        currentTimes: remainingCurrentTimes,
       };
     });
   }, []);
@@ -49,21 +53,35 @@ export function useExecutionTimer() {
   const getElapsedTime = useCallback(
     (operationId: string, startTime?: number): number => {
       if (startTime) {
-        return Date.now() - startTime;
+        return performance.now() - startTime;
       }
       const recorded = state.startTimes[operationId];
-      return recorded ? Date.now() - recorded : 0;
+      return recorded ? performance.now() - recorded : 0;
     },
     [state.startTimes],
   );
 
+  // Get current real-time execution time for a running operation
+  const getCurrentExecutionTime = useCallback(
+    (operationId: string): number => {
+      return state.currentTimes[operationId] || 0;
+    },
+    [state.currentTimes],
+  );
+
   // Format time for display
-  const formatTime = useCallback((ms: number): string => {
-    if (ms < 1000) {
-      return `${ms} ms`;
-    }
-    return `${(ms / 1000).toFixed(2)} s`;
-  }, []);
+  const formatTime = useCallback(
+    (ms: number, asString = false): number | string => {
+      if (ms < 1000) {
+        return asString ? `${ms} ms` : ms;
+      }
+
+      const roundedMs = (ms / 1000).toFixed(2);
+
+      return asString ? `${roundedMs} s` : roundedMs;
+    },
+    [],
+  );
 
   // Update current times for running operations
   useEffect(() => {
@@ -78,7 +96,8 @@ export function useExecutionTimer() {
             prev.isRunning,
           )) {
             if (isRunning && prev.startTimes[operationId]) {
-              updated[operationId] = Date.now() - prev.startTimes[operationId];
+              updated[operationId] =
+                performance.now() - prev.startTimes[operationId];
             }
           }
 
@@ -102,8 +121,7 @@ export function useExecutionTimer() {
     startTimer,
     stopTimer,
     getElapsedTime,
+    getCurrentExecutionTime,
     formatTime,
-    currentTimes: state.currentTimes,
-    isRunning: state.isRunning,
   };
 }

@@ -57,8 +57,13 @@ export function useTaskInputOperations({
   });
 
   // Initialize execution timer hook
-  const { startTimer, stopTimer, getElapsedTime, formatTime } =
-    useExecutionTimer();
+  const {
+    startTimer,
+    stopTimer,
+    getElapsedTime,
+    getCurrentExecutionTime,
+    formatTime,
+  } = useExecutionTimer();
 
   // Use centralized error handler
   const handleError = (
@@ -163,9 +168,12 @@ export function useTaskInputOperations({
         },
       }));
 
-      toast.success(`${label} completed successfully`, {
-        description: `Processed in ${formatTime(executionTime)}`,
-      });
+      toast.success(
+        `${label} completed successfully`,
+        //   , {
+        //   description: `Processed in ${formatTime(executionTime)}`,
+        // }
+      );
     } catch (error) {
       const executionTime = getElapsedTime(operation, startTime);
       const errorResponse = handleError(error, operation, label, executionTime);
@@ -190,6 +198,7 @@ export function useTaskInputOperations({
     executeApiCall,
     handleRetry,
     formatTime,
+    getCurrentExecutionTime,
     isReady: sdkClient && isReady,
   };
 }

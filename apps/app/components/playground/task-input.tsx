@@ -12,6 +12,8 @@ import {
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
 import { cn } from '@deepcrawl/ui/lib/utils';
+import NumberFlow, { continuous } from '@number-flow/react';
+import { Zap } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
@@ -62,16 +64,17 @@ export const TaskInput = ({
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
-  const { executeApiCall, handleRetry, formatTime } = useTaskInputOperations({
-    requestUrl,
-    options,
-    activeRequestsRef,
-    setIsLoading,
-    setResponses,
-  });
+  const { executeApiCall, handleRetry, formatTime, getCurrentExecutionTime } =
+    useTaskInputOperations({
+      requestUrl,
+      options,
+      activeRequestsRef,
+      setIsLoading,
+      setResponses,
+    });
 
   // Get current operation config
-  const selectedOP = getOperationConfig(selectedOperation);
+  const selectedOPConfig = getOperationConfig(selectedOperation);
 
   // Memoize URL validation to prevent re-renders
   const isUrlValid = useMemo(() => {
@@ -87,7 +90,7 @@ export const TaskInput = ({
 
     setIsError(false);
     // Execute API call with current operation
-    executeApiCall(selectedOperation, selectedOP.label);
+    executeApiCall(selectedOperation, selectedOPConfig.label);
   };
 
   // Clear error when user types
@@ -134,12 +137,52 @@ export const TaskInput = ({
             value={requestUrl}
           />
           <SpinnerButton
+            buttonState={
+              isLoading[selectedOperation]
+                ? 'loading'
+                : isError
+                  ? 'error'
+                  : 'idle'
+            }
+            buttonVariant="default"
             className={cn('mr-2 w-32', isError && 'z-50 animate-none')}
             disabled={isError || !isUrlValid || isLoading[selectedOperation]}
-            isLoading={isLoading[selectedOP?.operation || '']}
+            isLoading={isLoading[selectedOperation]}
+            loadingElement={
+              <NumberFlow
+                className="text-primary-foreground"
+                format={{
+                  style: 'decimal',
+                  signDisplay: 'auto',
+                  maximumFractionDigits:
+                    getCurrentExecutionTime(selectedOperation) > 1000 ? 2 : 0,
+                }}
+                plugins={[continuous]}
+                suffix={
+                  getCurrentExecutionTime(selectedOperation) > 1000
+                    ? ' s'
+                    : ' ms'
+                }
+                value={
+                  formatTime(
+                    getCurrentExecutionTime(selectedOperation),
+                    false, // asString = false
+                  ) as number
+                }
+                willChange={true}
+              />
+            }
+            successElement={
+              responses[selectedOperation]?.executionTime && (
+                <span className="flex items-center gap-2 text-primary-foreground">
+                  <Zap className="size-4" />
+                  {formatTime(responses[selectedOperation].executionTime, true)}
+                </span>
+              )
+            }
             type="submit"
           >
-            {selectedOP?.label}
+            {selectedOPConfig?.label}
           </SpinnerButton>
         </PromptInputBody>
 
@@ -181,11 +224,11 @@ export const TaskInput = ({
           <PGResponseArea
             formatTime={formatTime}
             onRetry={() => {
-              handleRetry(selectedOperation, selectedOP.label);
+              handleRetry(selectedOperation, selectedOPConfig.label);
             }}
             operation={selectedOperation}
-            operationLabel={selectedOP.label}
-            operationMethod={selectedOP.method}
+            operationLabel={selectedOPConfig.label}
+            operationMethod={selectedOPConfig.method}
             response={responses[selectedOperation]}
           />
         </div>

@@ -17,7 +17,7 @@ interface PGResponseArea {
   operationLabel?: string;
   operationMethod: string;
   onRetry: () => void;
-  formatTime: (ms: number) => string;
+  formatTime: (ms: number, asString?: boolean) => number | string;
 }
 
 const getErrorIcon = (errorType?: string) => {
@@ -88,7 +88,7 @@ export function PGResponseArea({
           )}
           {response.executionTime && (
             <Badge className="text-xs" variant="secondary">
-              {formatTime(response.executionTime)}
+              {formatTime(response.executionTime, true)}
             </Badge>
           )}
           {response.retryable && (
