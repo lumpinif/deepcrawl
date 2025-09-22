@@ -38,6 +38,10 @@ type OperationOptionValue<Key extends OperationOptionKey> = {
     : never;
 }[DeepcrawlOperations];
 
+type OperationOptionsUpdate<Op extends DeepcrawlOperations> =
+  | Partial<OperationOptionsMap[Op]>
+  | ((current: OperationOptionsMap[Op]) => OperationOptionsMap[Op]);
+
 export interface PlaygroundResponseMetadata {
   executionTime?: number;
   errorType?:
@@ -125,13 +129,26 @@ export function useTaskInputState({
     return { ...baseOptions, url: requestUrl };
   };
 
-  const setNewOptions = (
-    newOptions: ReadUrlOptions | ExtractLinksOptions | GetMarkdownOptions,
+  const handleOptionsChange = (
+    update: OperationOptionsUpdate<typeof selectedOperation>,
   ) => {
-    setOptions((prev) => ({
-      ...prev,
-      [selectedOperation]: newOptions,
-    }));
+    setOptions((prev) => {
+      const current = prev[
+        selectedOperation
+      ] as OperationOptionsMap[typeof selectedOperation];
+      const next =
+        typeof update === 'function'
+          ? update(current)
+          : ({
+              ...current,
+              ...update,
+            } as OperationOptionsMap[typeof selectedOperation]);
+
+      return {
+        ...prev,
+        [selectedOperation]: next,
+      };
+    });
   };
 
   const getCurrentOptionValue = <Key extends OperationOptionKey>(
@@ -145,102 +162,6 @@ export function useTaskInputState({
         : undefined;
 
     return (value ?? fallback) as OperationOptionValue<Key>;
-  };
-
-  const handleProcessorChange = (
-    processor: 'cheerio-reader' | 'html-rewriter',
-  ) => {
-    const currentOptions = getCurrentOptions();
-    setNewOptions({
-      ...currentOptions,
-      cleaningProcessor: processor,
-    });
-  };
-
-  const handleCacheOptionsChange = (
-    cacheOptions:
-      | ReadUrlOptions['cacheOptions']
-      | ExtractLinksOptions['cacheOptions']
-      | GetMarkdownOptions['cacheOptions'],
-  ) => {
-    const currentOptions = getCurrentOptions();
-    setNewOptions({
-      ...currentOptions,
-      cacheOptions,
-    });
-  };
-
-  const handleMarkdownOptionsChange = (
-    markdownConverterOptions:
-      | ReadUrlOptions['markdownConverterOptions']
-      | GetMarkdownOptions['markdownConverterOptions'],
-  ) => {
-    const currentOptions = getCurrentOptions();
-    setNewOptions({
-      ...currentOptions,
-      markdownConverterOptions,
-    });
-  };
-
-  const handleContentFormatOptionsChange = (
-    contentFormatOptions: Pick<
-      ReadUrlOptions,
-      'metadata' | 'markdown' | 'cleanedHtml' | 'rawHtml' | 'robots'
-    >,
-  ) => {
-    const currentOptions = getCurrentOptions();
-    setNewOptions({
-      ...currentOptions,
-      ...contentFormatOptions,
-    });
-  };
-
-  const handleMetadataOptionsChange = (
-    metadataOptions:
-      | ReadUrlOptions['metadataOptions']
-      | ExtractLinksOptions['metadataOptions'],
-  ) => {
-    const currentOptions = getCurrentOptions();
-    setNewOptions({
-      ...currentOptions,
-      metadataOptions,
-    });
-  };
-
-  const handleMetricsOptionsChange = (
-    metricsOptions:
-      | ReadUrlOptions['metricsOptions']
-      | ExtractLinksOptions['metricsOptions'],
-  ) => {
-    const currentOptions = getCurrentOptions();
-    setNewOptions({
-      ...currentOptions,
-      metricsOptions,
-    });
-  };
-
-  const handleTreeOptionsChange = (treeOptions: {
-    folderFirst?: boolean;
-    linksOrder?: 'page' | 'alphabetical';
-    extractedLinks?: boolean;
-    subdomainAsRootUrl?: boolean;
-    isPlatformUrl?: boolean;
-  }) => {
-    const currentOptions = getCurrentOptions();
-    setNewOptions({
-      ...currentOptions,
-      ...treeOptions,
-    });
-  };
-
-  const handleLinkExtractionOptionsChange = (
-    linkExtractionOptions: ExtractLinksOptions['linkExtractionOptions'],
-  ) => {
-    const currentOptions = getCurrentOptions();
-    setNewOptions({
-      ...currentOptions,
-      linkExtractionOptions,
-    });
   };
 
   return {
@@ -262,16 +183,6 @@ export function useTaskInputState({
     // Helpers
     getCurrentOptions,
     getCurrentOptionValue,
-    handleOptionsChange: setNewOptions,
-
-    // Computed
-    handleProcessorChange,
-    handleCacheOptionsChange,
-    handleMarkdownOptionsChange,
-    handleContentFormatOptionsChange,
-    handleMetadataOptionsChange,
-    handleMetricsOptionsChange,
-    handleTreeOptionsChange,
-    handleLinkExtractionOptionsChange,
+    handleOptionsChange,
   };
 }

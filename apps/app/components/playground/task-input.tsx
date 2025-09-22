@@ -53,15 +53,8 @@ export const TaskInput = ({
     setSelectedOperation,
     setIsLoading,
     setResponses,
-    handleProcessorChange,
     getCurrentOptionValue,
-    handleCacheOptionsChange,
-    handleMarkdownOptionsChange,
-    handleContentFormatOptionsChange,
-    handleMetadataOptionsChange,
-    handleMetricsOptionsChange,
-    handleTreeOptionsChange,
-    handleLinkExtractionOptionsChange,
+    handleOptionsChange,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
@@ -195,7 +188,9 @@ export const TaskInput = ({
             {selectedOperation === 'extractLinks' && (
               <TreeOptionsMenu
                 isTreeEnabled={getCurrentOptionValue('tree') as boolean}
-                onTreeOptionsChange={handleTreeOptionsChange}
+                onTreeOptionsChange={(treeOptions) =>
+                  handleOptionsChange(treeOptions)
+                }
                 treeOptions={{
                   folderFirst: getCurrentOptionValue('folderFirst') as boolean,
                   linksOrder: getCurrentOptionValue('linksOrder') as
@@ -219,8 +214,8 @@ export const TaskInput = ({
                 linkExtractionOptions={getCurrentOptionValue(
                   'linkExtractionOptions',
                 )}
-                onLinkExtractionOptionsChange={
-                  handleLinkExtractionOptionsChange
+                onLinkExtractionOptionsChange={(linkExtractionOptions) =>
+                  handleOptionsChange({ linkExtractionOptions })
                 }
               />
             )}
@@ -237,30 +232,42 @@ export const TaskInput = ({
                 sitemapXML: getCurrentOptionValue('sitemapXML') as boolean,
               }}
               metadataOptions={getCurrentOptionValue('metadataOptions')}
-              onContentFormatOptionsChange={handleContentFormatOptionsChange}
-              onMetadataOptionsChange={handleMetadataOptionsChange}
+              onContentFormatOptionsChange={(contentFormatOptions) =>
+                handleOptionsChange(contentFormatOptions)
+              }
+              onMetadataOptionsChange={(metadataOptions) =>
+                handleOptionsChange({ metadataOptions })
+              }
               operation={selectedOperation}
             />
             <CleaningProcessorMenu
-              onProcessorChange={handleProcessorChange}
+              onProcessorChange={(processor) =>
+                handleOptionsChange({ cleaningProcessor: processor })
+              }
               processor={getCurrentOptionValue('cleaningProcessor')}
             />
             <CacheOptionsMenu
               cacheOptions={getCurrentOptionValue('cacheOptions')}
-              onCacheOptionsChange={handleCacheOptionsChange}
+              onCacheOptionsChange={(cacheOptions) =>
+                handleOptionsChange({ cacheOptions })
+              }
             />
             <MarkdownOptionsMenu
               markdownOptions={getCurrentOptionValue(
                 'markdownConverterOptions',
               )}
-              onMarkdownOptionsChange={handleMarkdownOptionsChange}
+              onMarkdownOptionsChange={(markdownConverterOptions) =>
+                handleOptionsChange({ markdownConverterOptions })
+              }
             />
             {/* Metrics options - only available for readUrl and extractLinks */}
             {(selectedOperation === 'readUrl' ||
               selectedOperation === 'extractLinks') && (
               <MetricsOptionsMenu
                 metricsOptions={getCurrentOptionValue('metricsOptions')}
-                onMetricsOptionsChange={handleMetricsOptionsChange}
+                onMetricsOptionsChange={(metricsOptions) =>
+                  handleOptionsChange({ metricsOptions })
+                }
               />
             )}
           </PromptInputTools>
