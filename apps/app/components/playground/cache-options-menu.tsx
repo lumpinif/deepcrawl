@@ -46,15 +46,6 @@ export function CacheOptionsMenu({
     stopAnimation: () => void;
   }>(null);
 
-  const updateCacheOption = (
-    key: string,
-    value: boolean | number | undefined,
-  ) => {
-    onCacheOptionsChange({
-      [key]: value,
-    });
-  };
-
   // Cache option fields with their defaults and metadata
   const CACHE_OPTION_FIELDS = [
     {
@@ -160,7 +151,9 @@ export function CacheOptionsMenu({
                         checked={Boolean(currentValue)}
                         id={fieldId}
                         onCheckedChange={(checked) =>
-                          updateCacheOption(field.key, Boolean(checked))
+                          onCacheOptionsChange({
+                            [field.key]: Boolean(checked),
+                          })
                         }
                       />
                       <Label
@@ -209,14 +202,18 @@ export function CacheOptionsMenu({
                             field.min &&
                             newValue < field.min
                           ) {
-                            updateCacheOption(field.key, field.min);
+                            onCacheOptionsChange({
+                              [field.key]: field.min,
+                            });
                           }
                         }}
                         onChange={(e) => {
                           const newValue = e.target.value
                             ? Number(e.target.value)
                             : undefined;
-                          updateCacheOption(field.key, newValue);
+                          onCacheOptionsChange({
+                            [field.key]: newValue,
+                          });
                         }}
                         placeholder={field.placeholder}
                         type="number"

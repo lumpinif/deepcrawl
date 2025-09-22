@@ -69,15 +69,6 @@ export function LinkExtractionOptionsMenu({
     },
   ] as const;
 
-  const updateLinkExtractionOption = (
-    key: string,
-    value: boolean | string[] | undefined,
-  ) => {
-    onLinkExtractionOptionsChange({
-      [key]: value,
-    });
-  };
-
   const handleExcludePatternsChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -90,10 +81,9 @@ export function LinkExtractionOptionsMenu({
       .map((pattern) => pattern.trim())
       .filter((pattern) => pattern.length > 0);
 
-    updateLinkExtractionOption(
-      'excludePatterns',
-      patterns.length > 0 ? patterns : undefined,
-    );
+    onLinkExtractionOptionsChange({
+      excludePatterns: patterns.length > 0 ? patterns : undefined,
+    });
   };
 
   const resetToDefaults = () => {
@@ -163,10 +153,9 @@ export function LinkExtractionOptionsMenu({
                         checked={Boolean(currentValue)}
                         id={fieldId}
                         onCheckedChange={(checked) =>
-                          updateLinkExtractionOption(
-                            field.key,
-                            Boolean(checked),
-                          )
+                          onLinkExtractionOptionsChange({
+                            [field.key]: Boolean(checked),
+                          })
                         }
                       />
                       <Label

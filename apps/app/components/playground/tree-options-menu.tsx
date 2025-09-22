@@ -49,15 +49,6 @@ export function TreeOptionsMenu({
     return null;
   }
 
-  const updateTreeOption = (
-    key: string,
-    value: boolean | 'page' | 'alphabetical',
-  ) => {
-    onTreeOptionsChange({
-      [key]: value,
-    });
-  };
-
   // Tree option fields with their defaults and metadata
   const TREE_OPTION_FIELDS = [
     {
@@ -171,7 +162,9 @@ export function TreeOptionsMenu({
                         checked={Boolean(currentValue)}
                         id={fieldId}
                         onCheckedChange={(checked) =>
-                          updateTreeOption(field.key, Boolean(checked))
+                          onTreeOptionsChange({
+                            [field.key]: Boolean(checked),
+                          })
                         }
                       />
                       <Label
@@ -204,10 +197,9 @@ export function TreeOptionsMenu({
                       </Label>
                       <Select
                         onValueChange={(value) =>
-                          updateTreeOption(
-                            field.key,
-                            value as 'page' | 'alphabetical',
-                          )
+                          onTreeOptionsChange({
+                            [field.key]: value as 'page' | 'alphabetical',
+                          })
                         }
                         value={
                           typeof currentValue === 'string'

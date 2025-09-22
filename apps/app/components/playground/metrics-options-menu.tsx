@@ -39,12 +39,6 @@ export function MetricsOptionsMenu({
     stopAnimation: () => void;
   }>(null);
 
-  const updateMetricsOption = (key: string, value: boolean) => {
-    onMetricsOptionsChange({
-      [key]: value,
-    });
-  };
-
   const resetToDefaults = () => {
     onMetricsOptionsChange({
       enable: DEFAULT_METRICS_OPTIONS.enable,
@@ -100,7 +94,9 @@ export function MetricsOptionsMenu({
                   checked={Boolean(currentEnabled)}
                   id="metrics-enable"
                   onCheckedChange={(checked) =>
-                    updateMetricsOption('enable', Boolean(checked))
+                    onMetricsOptionsChange({
+                      enable: Boolean(checked),
+                    })
                   }
                 />
                 <Label

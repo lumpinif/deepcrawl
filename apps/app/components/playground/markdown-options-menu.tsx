@@ -47,15 +47,6 @@ export function MarkdownOptionsMenu({
     stopAnimation: () => void;
   }>(null);
 
-  const updateMarkdownOption = (
-    key: string,
-    value: boolean | number | string | undefined,
-  ) => {
-    onMarkdownOptionsChange({
-      [key]: value,
-    });
-  };
-
   // Markdown option fields with their defaults and metadata
   const MARKDOWN_OPTION_FIELDS = [
     {
@@ -194,7 +185,9 @@ export function MarkdownOptionsMenu({
                         checked={Boolean(currentValue)}
                         id={fieldId}
                         onCheckedChange={(checked) =>
-                          updateMarkdownOption(field.key, Boolean(checked))
+                          onMarkdownOptionsChange({
+                            [field.key]: Boolean(checked),
+                          })
                         }
                       />
                       <Label
@@ -227,7 +220,9 @@ export function MarkdownOptionsMenu({
                       </Label>
                       <Select
                         onValueChange={(value) =>
-                          updateMarkdownOption(field.key, value)
+                          onMarkdownOptionsChange({
+                            [field.key]: value,
+                          })
                         }
                         value={
                           typeof currentValue === 'string'
@@ -285,7 +280,9 @@ export function MarkdownOptionsMenu({
                             }
 
                             if (correctedValue !== newValue) {
-                              updateMarkdownOption(field.key, correctedValue);
+                              onMarkdownOptionsChange({
+                                [field.key]: correctedValue,
+                              });
                             }
                           }
                         }}
@@ -293,7 +290,9 @@ export function MarkdownOptionsMenu({
                           const newValue = e.target.value
                             ? Number(e.target.value)
                             : undefined;
-                          updateMarkdownOption(field.key, newValue);
+                          onMarkdownOptionsChange({
+                            [field.key]: newValue,
+                          });
                         }}
                         placeholder={`Default: ${field.defaultValue}`}
                         type="number"

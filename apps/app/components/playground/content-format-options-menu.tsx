@@ -256,15 +256,6 @@ export function ContentFormatOptionsMenu({
     return null;
   }
 
-  const updateContentFormatOption = (
-    key: keyof AllContentFormatOptions,
-    value: boolean,
-  ) => {
-    onContentFormatOptionsChange({
-      [key]: value,
-    });
-  };
-
   const resetToDefaults = () => {
     onContentFormatOptionsChange(operationConfig.defaults);
 
@@ -275,14 +266,6 @@ export function ContentFormatOptionsMenu({
   };
 
   // Metadata options helpers
-  const updateMetadataOption = (key: keyof MetadataOptions, value: boolean) => {
-    if (onMetadataOptionsChange) {
-      onMetadataOptionsChange({
-        [key]: value,
-      });
-    }
-  };
-
   const resetMetadataToDefaults = () => {
     if (onMetadataOptionsChange) {
       onMetadataOptionsChange({
@@ -389,10 +372,9 @@ export function ContentFormatOptionsMenu({
                               checked={Boolean(currentValue)}
                               id={`content-format-${optionKey}`}
                               onCheckedChange={(checked) =>
-                                updateContentFormatOption(
-                                  optionKey as keyof AllContentFormatOptions,
-                                  Boolean(checked),
-                                )
+                                onContentFormatOptionsChange({
+                                  [optionKey]: Boolean(checked),
+                                })
                               }
                             />
                             <Label
@@ -462,10 +444,9 @@ export function ContentFormatOptionsMenu({
                                                     onCheckedChange={(
                                                       checked,
                                                     ) =>
-                                                      updateMetadataOption(
-                                                        key,
-                                                        Boolean(checked),
-                                                      )
+                                                      onMetadataOptionsChange?.({
+                                                        [key]: Boolean(checked),
+                                                      })
                                                     }
                                                   />
                                                   <Label
@@ -508,10 +489,9 @@ export function ContentFormatOptionsMenu({
                       checked={Boolean(currentValue)}
                       id={`content-format-${optionKey}`}
                       onCheckedChange={(checked) =>
-                        updateContentFormatOption(
-                          optionKey as keyof AllContentFormatOptions,
-                          Boolean(checked),
-                        )
+                        onContentFormatOptionsChange({
+                          [optionKey]: Boolean(checked),
+                        })
                       }
                     />
                     <Label
