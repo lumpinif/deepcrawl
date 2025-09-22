@@ -300,6 +300,7 @@ The service includes comprehensive metrics tracking for performance monitoring:
 ### Usage in Processors
 
 Both read and links processors follow the same pattern:
+
 - Check `metricsOptions?.enable` before adding metrics
 - Use `getMetrics(startTime, performance.now())` to calculate metrics
 - Add metrics to response object: `response.metrics = metrics`
@@ -436,3 +437,4 @@ Based on `.claude/CLAUDE.md` (Ultracite/Biome rules):
   - Smart Placement enabled for optimal performance
   - Observability enabled for production monitoring
   - Service bindings for inter-worker communication
+- Always avoid using 'any' type assertion whenever possible
