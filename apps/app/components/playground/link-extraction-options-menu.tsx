@@ -74,7 +74,6 @@ export function LinkExtractionOptionsMenu({
     value: boolean | string[] | undefined,
   ) => {
     onLinkExtractionOptionsChange({
-      ...linkExtractionOptions,
       [key]: value,
     });
   };

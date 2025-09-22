@@ -51,7 +51,6 @@ export function CacheOptionsMenu({
     value: boolean | number | undefined,
   ) => {
     onCacheOptionsChange({
-      ...cacheOptions,
       [key]: value,
     });
   };

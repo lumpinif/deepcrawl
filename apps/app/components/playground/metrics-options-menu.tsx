@@ -41,7 +41,6 @@ export function MetricsOptionsMenu({
 
   const updateMetricsOption = (key: string, value: boolean) => {
     onMetricsOptionsChange({
-      ...metricsOptions,
       [key]: value,
     });
   };

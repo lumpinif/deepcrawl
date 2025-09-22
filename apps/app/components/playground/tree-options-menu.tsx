@@ -54,7 +54,6 @@ export function TreeOptionsMenu({
     value: boolean | 'page' | 'alphabetical',
   ) => {
     onTreeOptionsChange({
-      ...treeOptions,
       [key]: value,
     });
   };

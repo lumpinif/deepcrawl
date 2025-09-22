@@ -52,7 +52,6 @@ export function MarkdownOptionsMenu({
     value: boolean | number | string | undefined,
   ) => {
     onMarkdownOptionsChange({
-      ...markdownOptions,
       [key]: value,
     });
   };

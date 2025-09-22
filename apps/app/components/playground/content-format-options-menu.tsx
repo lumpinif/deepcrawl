@@ -261,7 +261,6 @@ export function ContentFormatOptionsMenu({
     value: boolean,
   ) => {
     onContentFormatOptionsChange({
-      ...contentFormatOptions,
       [key]: value,
     });
   };
@@ -279,7 +278,6 @@ export function ContentFormatOptionsMenu({
   const updateMetadataOption = (key: keyof MetadataOptions, value: boolean) => {
     if (onMetadataOptionsChange) {
       onMetadataOptionsChange({
-        ...metadataOptions,
         [key]: value,
       });
     }
