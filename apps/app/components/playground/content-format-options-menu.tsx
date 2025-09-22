@@ -316,8 +316,9 @@ export function ContentFormatOptionsMenu({
       return currentValue !== undefined && currentValue !== defaultValue;
     });
 
-  const hasCustomSettings = operationConfig.availableOptions.some(
-    (optionKey) => {
+  const hasCustomSettings =
+    hasCustomMetadataSettings ||
+    operationConfig.availableOptions.some((optionKey) => {
       const currentValue =
         contentFormatOptions?.[optionKey as keyof AllContentFormatOptions];
       const defaultValue =
@@ -325,8 +326,7 @@ export function ContentFormatOptionsMenu({
           optionKey as keyof typeof operationConfig.defaults
         ];
       return currentValue !== undefined && currentValue !== defaultValue;
-    },
-  );
+    });
 
   const baseColor =
     'group-data-[customized=true]:text-orange-600 group-hover:!text-orange-600' as const;
@@ -492,7 +492,7 @@ export function ContentFormatOptionsMenu({
                             )}
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent align="end" side="bottom">
+                        <TooltipContent align="start" side="bottom">
                           <p>{optionDef.tooltip}</p>
                         </TooltipContent>
                       </Tooltip>
