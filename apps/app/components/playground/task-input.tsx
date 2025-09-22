@@ -184,6 +184,12 @@ export const TaskInput = ({
 
         <PromptInputToolbar>
           <PromptInputTools className="gap-x-0">
+            {/*
+              SIMPLIFIED OPTION MENU PATTERN:
+              All option menus now use handleOptionsChange() directly!
+              The function auto-detects nested objects and merges them properly while
+              handling direct properties with simple assignment.
+            */}
             {/* Tree options - only available for extractLinks */}
             {selectedOperation === 'extractLinks' && (
               <TreeOptionsMenu
@@ -215,12 +221,7 @@ export const TaskInput = ({
                   'linkExtractionOptions',
                 )}
                 onLinkExtractionOptionsChange={(linkExtractionOptions) =>
-                  handleOptionsChange({
-                    linkExtractionOptions: {
-                      ...getCurrentOptionValue('linkExtractionOptions'),
-                      ...linkExtractionOptions,
-                    },
-                  })
+                  handleOptionsChange({ linkExtractionOptions })
                 }
               />
             )}
@@ -241,12 +242,7 @@ export const TaskInput = ({
                 handleOptionsChange(contentFormatOptions)
               }
               onMetadataOptionsChange={(metadataOptions) =>
-                handleOptionsChange({
-                  metadataOptions: {
-                    ...getCurrentOptionValue('metadataOptions'),
-                    ...metadataOptions,
-                  },
-                })
+                handleOptionsChange({ metadataOptions })
               }
               operation={selectedOperation}
             />
@@ -259,12 +255,7 @@ export const TaskInput = ({
             <CacheOptionsMenu
               cacheOptions={getCurrentOptionValue('cacheOptions')}
               onCacheOptionsChange={(cacheOptions) =>
-                handleOptionsChange({
-                  cacheOptions: {
-                    ...getCurrentOptionValue('cacheOptions'),
-                    ...cacheOptions,
-                  },
-                })
+                handleOptionsChange({ cacheOptions })
               }
             />
             <MarkdownOptionsMenu
@@ -272,12 +263,7 @@ export const TaskInput = ({
                 'markdownConverterOptions',
               )}
               onMarkdownOptionsChange={(markdownConverterOptions) =>
-                handleOptionsChange({
-                  markdownConverterOptions: {
-                    ...getCurrentOptionValue('markdownConverterOptions'),
-                    ...markdownConverterOptions,
-                  },
-                })
+                handleOptionsChange({ markdownConverterOptions })
               }
             />
             {/* Metrics options - only available for readUrl and extractLinks */}
@@ -286,12 +272,7 @@ export const TaskInput = ({
               <MetricsOptionsMenu
                 metricsOptions={getCurrentOptionValue('metricsOptions')}
                 onMetricsOptionsChange={(metricsOptions) =>
-                  handleOptionsChange({
-                    metricsOptions: {
-                      ...getCurrentOptionValue('metricsOptions'),
-                      ...metricsOptions,
-                    },
-                  })
+                  handleOptionsChange({ metricsOptions })
                 }
               />
             )}

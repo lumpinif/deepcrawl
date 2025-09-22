@@ -129,6 +129,16 @@ export function useTaskInputState({
     return { ...baseOptions, url: requestUrl };
   };
 
+  /**
+   * Enhanced options change handler with auto-detection for nested object merging.
+   *
+   * SMART MERGING LOGIC:
+   * - Direct properties (folderFirst, metadata, tree): Direct assignment
+   * - Nested objects (linkExtractionOptions, cacheOptions, etc.): Auto-detected and deep merged
+   * - Detection criteria: Both current and new values are plain objects (not arrays, null, etc.)
+   *
+   * This eliminates the need for separate merge helpers while maintaining state preservation.
+   */
   const handleOptionsChange = (
     update: OperationOptionsUpdate<typeof selectedOperation>,
   ) => {
@@ -136,13 +146,49 @@ export function useTaskInputState({
       const current = prev[
         selectedOperation
       ] as OperationOptionsMap[typeof selectedOperation];
-      const next =
-        typeof update === 'function'
-          ? update(current)
-          : ({
-              ...current,
-              ...update,
-            } as OperationOptionsMap[typeof selectedOperation]);
+
+      if (typeof update === 'function') {
+        return {
+          ...prev,
+          [selectedOperation]: update(current),
+        };
+      }
+
+      // Enhanced merging: auto-detect nested objects and merge them properly
+      type NextOptionsType = OperationOptionsMap[typeof selectedOperation];
+      const next: NextOptionsType = { ...current };
+
+      // Helper function to check if a value is a plain object
+      const isPlainObject = (obj: unknown): obj is Record<string, unknown> => {
+        return (
+          obj !== null &&
+          typeof obj === 'object' &&
+          !Array.isArray(obj) &&
+          obj.constructor === Object
+        );
+      };
+
+      for (const [key, value] of Object.entries(update)) {
+        const typedKey = key as keyof typeof current;
+        const currentValue = current[typedKey];
+
+        // Auto-detect nested objects that need deep merging
+        const isNestedObjectUpdate =
+          isPlainObject(currentValue) && isPlainObject(value);
+
+        if (isNestedObjectUpdate) {
+          // Deep merge for nested objects with explicit Record typing
+          const mergedValue = {
+            ...currentValue,
+            ...value,
+          };
+          (next as Record<keyof NextOptionsType, unknown>)[typedKey] =
+            mergedValue;
+        } else {
+          // Direct assignment for direct properties and complete replacements
+          (next as Record<keyof NextOptionsType, unknown>)[typedKey] = value;
+        }
+      }
 
       return {
         ...prev,
