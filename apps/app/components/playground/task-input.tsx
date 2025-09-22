@@ -30,6 +30,8 @@ import { PGResponseArea } from './pg-response-area';
 import { TreeOptionsMenu } from './tree-options-menu';
 import { UrlInput } from './url-input';
 
+// TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart handleOptionsChange generic function
+
 export interface TaskInputProps {
   defaultOperation?: DeepcrawlOperations;
   defaultUrl?: string;
