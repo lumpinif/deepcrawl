@@ -53,8 +53,6 @@ export const TaskInput = ({
     setSelectedOperation,
     setIsLoading,
     setResponses,
-    getCurrentOptions,
-    handleOptionsChange,
     handleProcessorChange,
     getCurrentOptionValue,
     handleCacheOptionsChange,

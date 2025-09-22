@@ -6,6 +6,7 @@ import {
   PromptInputActionMenuContent,
   PromptInputActionMenuTrigger,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
+import { ListTreeIcon } from '@deepcrawl/ui/components/icons/list-tree-icon';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Label } from '@deepcrawl/ui/components/ui/label';
@@ -24,7 +25,6 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { TreeOptions } from 'deepcrawl';
-import { ListTree } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 interface TreeOptionsMenuProps {
@@ -119,18 +119,21 @@ export function TreeOptionsMenu({
     return currentValue !== undefined && currentValue !== defaultValue;
   });
 
+  const baseColor =
+    'group-data-[customized=true]:text-lime-600 group-hover:!text-lime-600' as const;
+
   return (
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger
             className="cursor-help"
+            data-customized={hasCustomSettings ? 'true' : 'false'}
+            data-state={isOpen ? 'open' : 'closed'}
             onMouseEnter={() => iconRef.current?.startAnimation()}
             onMouseLeave={() => iconRef.current?.stopAnimation()}
           >
-            <ListTree
-              className={cn('h-4 w-4', hasCustomSettings && 'text-blue-600')}
-            />
+            <ListTreeIcon className={cn(baseColor)} ref={iconRef} />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
         <PromptInputActionMenuContent

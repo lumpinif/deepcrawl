@@ -15,7 +15,7 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Check } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 interface CleaningProcessorMenuProps {
   processor: string | undefined;
@@ -43,6 +43,7 @@ export function CleaningProcessorMenu({
     startAnimation: () => void;
     stopAnimation: () => void;
   }>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const currentProcessor =
     processor || DEFAULT_SCRAPE_OPTIONS.cleaningProcessor;
 
@@ -51,19 +52,21 @@ export function CleaningProcessorMenu({
   const hasCustomSettings =
     processor !== DEFAULT_SCRAPE_OPTIONS.cleaningProcessor;
 
+  const baseColor =
+    'group-data-[customized=true]:text-sky-600 group-hover:!text-sky-600' as const;
+
   return (
     <Tooltip>
-      <PromptInputActionMenu>
+      <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger
             className="cursor-help"
+            data-customized={hasCustomSettings ? 'true' : 'false'}
+            data-state={isOpen ? 'open' : 'closed'}
             onMouseEnter={() => iconRef.current?.startAnimation()}
             onMouseLeave={() => iconRef.current?.stopAnimation()}
           >
-            <CpuIcon
-              className={cn('h-4 w-4', hasCustomSettings && 'text-blue-600')}
-              ref={iconRef}
-            />
+            <CpuIcon className={cn(baseColor)} ref={iconRef} />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
         <PromptInputActionMenuContent

@@ -571,7 +571,15 @@ export const PromptInputActionMenuTrigger = ({
   ...props
 }: PromptInputActionMenuTriggerProps) => (
   <DropdownMenuTrigger asChild>
-    <PromptInputButton className={className} {...props}>
+    <PromptInputButton
+      className={cn(
+        className,
+        "group [&_svg:not([class*='size-'])]:size-4",
+        'data-[customized=false]:data-[state=open]:[&_svg:not([class*="text-"])]:text-primary',
+        '[&_svg]:transition-colors [&_svg]:duration-200 [&_svg]:ease-out',
+      )}
+      {...props}
+    >
       {children ?? <PlusIcon className="size-4" />}
     </PromptInputButton>
   </DropdownMenuTrigger>

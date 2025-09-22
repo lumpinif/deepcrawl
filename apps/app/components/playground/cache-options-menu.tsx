@@ -109,19 +109,21 @@ export function CacheOptionsMenu({
     },
   );
 
+  const baseColor =
+    'group-data-[customized=true]:text-green-600 group-hover:!text-green-600' as const;
+
   return (
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger
             className="cursor-help"
+            data-customized={hasCustomSettings ? 'true' : 'false'}
+            data-state={isOpen ? 'open' : 'closed'}
             onMouseEnter={() => iconRef.current?.startAnimation()}
             onMouseLeave={() => iconRef.current?.stopAnimation()}
           >
-            <ClockIcon
-              className={cn('h-4 w-4', hasCustomSettings && 'text-green-600')}
-              ref={iconRef}
-            />
+            <ClockIcon className={cn(baseColor)} ref={iconRef} />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
         <PromptInputActionMenuContent

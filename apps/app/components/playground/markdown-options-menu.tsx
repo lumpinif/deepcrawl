@@ -143,19 +143,21 @@ export function MarkdownOptionsMenu({
     },
   );
 
+  const baseColor =
+    'group-data-[customized=true]:text-purple-600 group-hover:!text-purple-600' as const;
+
   return (
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger
             className="cursor-help"
+            data-customized={hasCustomSettings ? 'true' : 'false'}
+            data-state={isOpen ? 'open' : 'closed'}
             onMouseEnter={() => iconRef.current?.startAnimation()}
             onMouseLeave={() => iconRef.current?.stopAnimation()}
           >
-            <MarkdownIcon
-              className={cn('h-4 w-4', hasCustomSettings && 'text-purple-600')}
-              ref={iconRef}
-            />
+            <MarkdownIcon className={cn(baseColor)} ref={iconRef} />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
         <PromptInputActionMenuContent

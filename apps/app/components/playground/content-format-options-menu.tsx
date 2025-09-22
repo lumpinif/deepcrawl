@@ -328,19 +328,21 @@ export function ContentFormatOptionsMenu({
     },
   );
 
+  const baseColor =
+    'group-data-[customized=true]:text-orange-600 group-hover:!text-orange-600' as const;
+
   return (
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger
             className="cursor-help"
+            data-customized={hasCustomSettings ? 'true' : 'false'}
+            data-state={isOpen ? 'open' : 'closed'}
             onMouseEnter={() => iconRef.current?.startAnimation()}
             onMouseLeave={() => iconRef.current?.stopAnimation()}
           >
-            <FilePenLineIcon
-              className={cn('h-4 w-4', hasCustomSettings && 'text-orange-600')}
-              ref={iconRef}
-            />
+            <FilePenLineIcon className={cn(baseColor)} ref={iconRef} />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
         <PromptInputActionMenuContent

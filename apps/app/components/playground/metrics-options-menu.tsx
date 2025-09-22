@@ -59,19 +59,21 @@ export function MetricsOptionsMenu({
   const currentEnabled =
     metricsOptions?.enable ?? DEFAULT_METRICS_OPTIONS.enable;
 
+  const baseColor =
+    'group-data-[customized=true]:text-teal-600 group-hover:!text-teal-600' as const;
+
   return (
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
         <TooltipTrigger asChild>
           <PromptInputActionMenuTrigger
             className="cursor-help"
+            data-customized={hasCustomSettings ? 'true' : 'false'}
+            data-state={isOpen ? 'open' : 'closed'}
             onMouseEnter={() => iconRef.current?.startAnimation()}
             onMouseLeave={() => iconRef.current?.stopAnimation()}
           >
-            <ChartLineIcon
-              className={cn('h-4 w-4', hasCustomSettings && 'text-violet-600')}
-              ref={iconRef}
-            />
+            <ChartLineIcon className={cn(baseColor)} ref={iconRef} />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
         <PromptInputActionMenuContent

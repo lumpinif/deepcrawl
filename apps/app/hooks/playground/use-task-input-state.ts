@@ -125,7 +125,7 @@ export function useTaskInputState({
     return { ...baseOptions, url: requestUrl };
   };
 
-  const handleOptionsChange = (
+  const setNewOptions = (
     newOptions: ReadUrlOptions | ExtractLinksOptions | GetMarkdownOptions,
   ) => {
     setOptions((prev) => ({
@@ -151,7 +151,7 @@ export function useTaskInputState({
     processor: 'cheerio-reader' | 'html-rewriter',
   ) => {
     const currentOptions = getCurrentOptions();
-    handleOptionsChange({
+    setNewOptions({
       ...currentOptions,
       cleaningProcessor: processor,
     });
@@ -164,7 +164,7 @@ export function useTaskInputState({
       | GetMarkdownOptions['cacheOptions'],
   ) => {
     const currentOptions = getCurrentOptions();
-    handleOptionsChange({
+    setNewOptions({
       ...currentOptions,
       cacheOptions,
     });
@@ -176,7 +176,7 @@ export function useTaskInputState({
       | GetMarkdownOptions['markdownConverterOptions'],
   ) => {
     const currentOptions = getCurrentOptions();
-    handleOptionsChange({
+    setNewOptions({
       ...currentOptions,
       markdownConverterOptions,
     });
@@ -189,7 +189,7 @@ export function useTaskInputState({
     >,
   ) => {
     const currentOptions = getCurrentOptions();
-    handleOptionsChange({
+    setNewOptions({
       ...currentOptions,
       ...contentFormatOptions,
     });
@@ -201,7 +201,7 @@ export function useTaskInputState({
       | ExtractLinksOptions['metadataOptions'],
   ) => {
     const currentOptions = getCurrentOptions();
-    handleOptionsChange({
+    setNewOptions({
       ...currentOptions,
       metadataOptions,
     });
@@ -213,7 +213,7 @@ export function useTaskInputState({
       | ExtractLinksOptions['metricsOptions'],
   ) => {
     const currentOptions = getCurrentOptions();
-    handleOptionsChange({
+    setNewOptions({
       ...currentOptions,
       metricsOptions,
     });
@@ -227,7 +227,7 @@ export function useTaskInputState({
     isPlatformUrl?: boolean;
   }) => {
     const currentOptions = getCurrentOptions();
-    handleOptionsChange({
+    setNewOptions({
       ...currentOptions,
       ...treeOptions,
     });
@@ -237,7 +237,7 @@ export function useTaskInputState({
     linkExtractionOptions: ExtractLinksOptions['linkExtractionOptions'],
   ) => {
     const currentOptions = getCurrentOptions();
-    handleOptionsChange({
+    setNewOptions({
       ...currentOptions,
       linkExtractionOptions,
     });
@@ -262,7 +262,7 @@ export function useTaskInputState({
     // Helpers
     getCurrentOptions,
     getCurrentOptionValue,
-    handleOptionsChange,
+    handleOptionsChange: setNewOptions,
 
     // Computed
     handleProcessorChange,
