@@ -215,7 +215,12 @@ export const TaskInput = ({
                   'linkExtractionOptions',
                 )}
                 onLinkExtractionOptionsChange={(linkExtractionOptions) =>
-                  handleOptionsChange({ linkExtractionOptions })
+                  handleOptionsChange({
+                    linkExtractionOptions: {
+                      ...getCurrentOptionValue('linkExtractionOptions'),
+                      ...linkExtractionOptions,
+                    },
+                  })
                 }
               />
             )}
@@ -236,7 +241,12 @@ export const TaskInput = ({
                 handleOptionsChange(contentFormatOptions)
               }
               onMetadataOptionsChange={(metadataOptions) =>
-                handleOptionsChange({ metadataOptions })
+                handleOptionsChange({
+                  metadataOptions: {
+                    ...getCurrentOptionValue('metadataOptions'),
+                    ...metadataOptions,
+                  },
+                })
               }
               operation={selectedOperation}
             />
@@ -249,7 +259,12 @@ export const TaskInput = ({
             <CacheOptionsMenu
               cacheOptions={getCurrentOptionValue('cacheOptions')}
               onCacheOptionsChange={(cacheOptions) =>
-                handleOptionsChange({ cacheOptions })
+                handleOptionsChange({
+                  cacheOptions: {
+                    ...getCurrentOptionValue('cacheOptions'),
+                    ...cacheOptions,
+                  },
+                })
               }
             />
             <MarkdownOptionsMenu
@@ -257,7 +272,12 @@ export const TaskInput = ({
                 'markdownConverterOptions',
               )}
               onMarkdownOptionsChange={(markdownConverterOptions) =>
-                handleOptionsChange({ markdownConverterOptions })
+                handleOptionsChange({
+                  markdownConverterOptions: {
+                    ...getCurrentOptionValue('markdownConverterOptions'),
+                    ...markdownConverterOptions,
+                  },
+                })
               }
             />
             {/* Metrics options - only available for readUrl and extractLinks */}
@@ -266,7 +286,12 @@ export const TaskInput = ({
               <MetricsOptionsMenu
                 metricsOptions={getCurrentOptionValue('metricsOptions')}
                 onMetricsOptionsChange={(metricsOptions) =>
-                  handleOptionsChange({ metricsOptions })
+                  handleOptionsChange({
+                    metricsOptions: {
+                      ...getCurrentOptionValue('metricsOptions'),
+                      ...metricsOptions,
+                    },
+                  })
                 }
               />
             )}
