@@ -27,7 +27,6 @@ import { MarkdownOptionsMenu } from './markdown-options-menu';
 import { MetricsOptionsMenu } from './metrics-options-menu';
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
-import { TreeOptionsMenu } from './tree-options-menu';
 import { UrlInput } from './url-input';
 
 // TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart handleOptionsChange generic function
@@ -192,41 +191,8 @@ export const TaskInput = ({
               The function auto-detects nested objects and merges them properly while
               handling direct properties with simple assignment.
             */}
-            {/* Tree options - only available for extractLinks */}
-            {selectedOperation === 'extractLinks' && (
-              <TreeOptionsMenu
-                isTreeEnabled={getCurrentOptionValue('tree') as boolean}
-                onTreeOptionsChange={(treeOptions) =>
-                  handleOptionsChange(treeOptions)
-                }
-                treeOptions={{
-                  folderFirst: getCurrentOptionValue('folderFirst') as boolean,
-                  linksOrder: getCurrentOptionValue('linksOrder') as
-                    | 'page'
-                    | 'alphabetical',
-                  extractedLinks: getCurrentOptionValue(
-                    'extractedLinks',
-                  ) as boolean,
-                  subdomainAsRootUrl: getCurrentOptionValue(
-                    'subdomainAsRootUrl',
-                  ) as boolean,
-                  isPlatformUrl: getCurrentOptionValue(
-                    'isPlatformUrl',
-                  ) as boolean,
-                }}
-              />
-            )}
-            {/* Link extraction options - only available for extractLinks */}
-            {selectedOperation === 'extractLinks' && (
-              <LinkExtractionOptionsMenu
-                linkExtractionOptions={getCurrentOptionValue(
-                  'linkExtractionOptions',
-                )}
-                onLinkExtractionOptionsChange={(linkExtractionOptions) =>
-                  handleOptionsChange({ linkExtractionOptions })
-                }
-              />
-            )}
+
+            {/* Content format options */}
             <ContentFormatOptionsMenu
               contentFormatOptions={{
                 // ReadUrl options
@@ -246,20 +212,56 @@ export const TaskInput = ({
               onMetadataOptionsChange={(metadataOptions) =>
                 handleOptionsChange({ metadataOptions })
               }
+              onTreeOptionsChange={(treeOptions) =>
+                handleOptionsChange(treeOptions)
+              }
               operation={selectedOperation}
+              treeOptions={{
+                folderFirst: getCurrentOptionValue('folderFirst') as boolean,
+                linksOrder: getCurrentOptionValue('linksOrder') as
+                  | 'page'
+                  | 'alphabetical',
+                extractedLinks: getCurrentOptionValue(
+                  'extractedLinks',
+                ) as boolean,
+                subdomainAsRootUrl: getCurrentOptionValue(
+                  'subdomainAsRootUrl',
+                ) as boolean,
+                isPlatformUrl: getCurrentOptionValue(
+                  'isPlatformUrl',
+                ) as boolean,
+              }}
             />
+
+            {/* Link extraction options - only available for extractLinks */}
+            {selectedOperation === 'extractLinks' && (
+              <LinkExtractionOptionsMenu
+                linkExtractionOptions={getCurrentOptionValue(
+                  'linkExtractionOptions',
+                )}
+                onLinkExtractionOptionsChange={(linkExtractionOptions) =>
+                  handleOptionsChange({ linkExtractionOptions })
+                }
+              />
+            )}
+
+            {/* Cleaning processor options */}
             <CleaningProcessorMenu
               onProcessorChange={(processor) =>
                 handleOptionsChange({ cleaningProcessor: processor })
               }
               processor={getCurrentOptionValue('cleaningProcessor')}
             />
+
+            {/* Cache options */}
             <CacheOptionsMenu
               cacheOptions={getCurrentOptionValue('cacheOptions')}
               onCacheOptionsChange={(cacheOptions) =>
                 handleOptionsChange({ cacheOptions })
               }
             />
+
+            {/* Markdown options */}
             <MarkdownOptionsMenu
               markdownOptions={getCurrentOptionValue(
                 'markdownConverterOptions',
@@ -268,6 +270,7 @@ export const TaskInput = ({
                 handleOptionsChange({ markdownConverterOptions })
               }
             />
+
             {/* Metrics options - only available for readUrl and extractLinks */}
             {(selectedOperation === 'readUrl' ||
               selectedOperation === 'extractLinks') && (

@@ -4,11 +4,13 @@ import type {
   LinksOptions,
   MetadataOptions,
   ReadOptions,
+  TreeOptions,
 } from '@deepcrawl/types';
 import {
   DEFAULT_LINKS_OPTIONS,
   DEFAULT_METADATA_OPTIONS,
   DEFAULT_READ_OPTIONS,
+  DEFAULT_TREE_OPTIONS,
 } from '@deepcrawl/types/configs';
 import type { ScrapeOptions } from '@deepcrawl/types/services/scrape/types';
 import {
@@ -28,6 +30,14 @@ import {
   DropdownMenuSubTrigger,
 } from '@deepcrawl/ui/components/ui/dropdown-menu';
 import { Label } from '@deepcrawl/ui/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@deepcrawl/ui/components/ui/select';
+import { Separator } from '@deepcrawl/ui/components/ui/separator';
 import { Switch } from '@deepcrawl/ui/components/ui/switch';
 import {
   Tooltip,
@@ -70,6 +80,8 @@ type MetadataOptionsInput =
   | ReadUrlOptions['metadataOptions']
   | ExtractLinksOptions['metadataOptions'];
 
+type TreeOptionsInput = Pick<ExtractLinksOptions, keyof TreeOptions>;
+
 interface ContentFormatOptionsMenuProps {
   operation: DeepcrawlOperations;
   contentFormatOptions: AllContentFormatOptions | undefined;
@@ -78,6 +90,8 @@ interface ContentFormatOptionsMenuProps {
   ) => void;
   metadataOptions?: MetadataOptionsInput;
   onMetadataOptionsChange?: (metadataOptions: MetadataOptionsInput) => void;
+  treeOptions?: TreeOptionsInput;
+  onTreeOptionsChange?: (treeOptions: TreeOptionsInput) => void;
 }
 
 // Configuration for different operations
@@ -155,6 +169,60 @@ const OPTION_DEFINITIONS = {
     icon: <Network />,
   },
 } as const;
+
+// Tree option field definitions
+const TREE_OPTION_FIELDS: Array<{
+  key: keyof TreeOptions;
+  label: string;
+  tooltip: string;
+  type: 'switch' | 'select';
+  options?: Array<{ value: string; label: string; tooltip?: string }>;
+}> = [
+  {
+    key: 'folderFirst',
+    label: 'Folders First',
+    tooltip: 'Whether to place folders before leaf nodes in the tree',
+    type: 'switch',
+  },
+  {
+    key: 'extractedLinks',
+    label: 'Include Extracted Links',
+    tooltip: 'Whether to include extracted links for each node in the tree',
+    type: 'switch',
+  },
+  {
+    key: 'subdomainAsRootUrl',
+    label: 'Subdomain as Root URL',
+    tooltip:
+      'Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL',
+    type: 'switch',
+  },
+  {
+    key: 'isPlatformUrl',
+    label: 'Platform URL',
+    tooltip:
+      'Whether the URL is a platform URL. If true, the targetUrl will be the platform URL',
+    type: 'switch',
+  },
+  {
+    key: 'linksOrder',
+    label: 'Links Ordering',
+    tooltip: 'How to order links within each folder',
+    type: 'select',
+    options: [
+      {
+        value: 'page',
+        label: 'Page Order',
+        tooltip: 'Preserve original order',
+      },
+      {
+        value: 'alphabetical',
+        label: 'Alphabetical (A→Z)',
+        tooltip: 'Sort links alphabetically',
+      },
+    ],
+  },
+];
 
 // Metadata field definitions
 const METADATA_FIELDS: Array<{
@@ -240,8 +308,12 @@ export function ContentFormatOptionsMenu({
   onContentFormatOptionsChange,
   metadataOptions,
   onMetadataOptionsChange,
+  treeOptions,
+  onTreeOptionsChange,
 }: ContentFormatOptionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMetadataSubOpen, setIsMetadataSubOpen] = useState(false);
+  const [isTreeSubOpen, setIsTreeSubOpen] = useState(false);
   const iconRef = useRef<{
     startAnimation: () => void;
     stopAnimation: () => void;
@@ -263,6 +335,11 @@ export function ContentFormatOptionsMenu({
     if (onMetadataOptionsChange) {
       resetMetadataToDefaults();
     }
+
+    // Also reset tree options if the handler is available
+    if (onTreeOptionsChange) {
+      resetTreeToDefaults();
+    }
   };
 
   // Metadata options helpers
@@ -283,9 +360,28 @@ export function ContentFormatOptionsMenu({
     }
   };
 
+  // Tree options helpers
+  const resetTreeToDefaults = () => {
+    if (onTreeOptionsChange) {
+      onTreeOptionsChange({
+        folderFirst: DEFAULT_TREE_OPTIONS.folderFirst,
+        linksOrder: DEFAULT_TREE_OPTIONS.linksOrder,
+        extractedLinks: DEFAULT_TREE_OPTIONS.extractedLinks,
+        subdomainAsRootUrl: DEFAULT_TREE_OPTIONS.subdomainAsRootUrl,
+        isPlatformUrl: DEFAULT_TREE_OPTIONS.isPlatformUrl,
+      });
+    }
+  };
+
   // Check if metadata extraction is enabled
   const isMetadataEnabled = Boolean(
     contentFormatOptions?.metadata ?? operationConfig.defaults.metadata,
+  );
+
+  // Check if tree is enabled (only for extractLinks operation)
+  const isTreeEnabled = Boolean(
+    contentFormatOptions?.tree ??
+      (operation === 'extractLinks' ? DEFAULT_LINKS_OPTIONS.tree : false),
   );
 
   // Check if metadata options have been customized
@@ -297,8 +393,18 @@ export function ContentFormatOptionsMenu({
       return currentValue !== undefined && currentValue !== defaultValue;
     });
 
+  // Check if tree options have been customized
+  const hasCustomTreeSettings =
+    treeOptions &&
+    TREE_OPTION_FIELDS.some(({ key }) => {
+      const currentValue = treeOptions[key];
+      const defaultValue = DEFAULT_TREE_OPTIONS[key];
+      return currentValue !== undefined && currentValue !== defaultValue;
+    });
+
   const hasCustomSettings =
     hasCustomMetadataSettings ||
+    hasCustomTreeSettings ||
     operationConfig.availableOptions.some((optionKey) => {
       const currentValue =
         contentFormatOptions?.[optionKey as keyof AllContentFormatOptions];
@@ -365,7 +471,7 @@ export function ContentFormatOptionsMenu({
                   return (
                     <div className="group/metadata space-y-2" key={optionKey}>
                       {/* Main metadata toggle */}
-                      <Tooltip>
+                      <Tooltip open={isMetadataSubOpen ? false : undefined}>
                         <TooltipTrigger asChild>
                           <div className="flex w-full items-center space-x-2">
                             <Switch
@@ -399,7 +505,9 @@ export function ContentFormatOptionsMenu({
 
                             {/* Metadata sub-menu - only show when metadata is enabled */}
                             {isMetadataEnabled && (
-                              <DropdownMenuSub>
+                              <DropdownMenuSub
+                                onOpenChange={setIsMetadataSubOpen}
+                              >
                                 <DropdownMenuSubTrigger
                                   className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/metadata:bg-muted group-hover/metadata:text-foreground"
                                   icon={<Settings2 className="size-3" />}
@@ -410,7 +518,7 @@ export function ContentFormatOptionsMenu({
                                 </DropdownMenuSubTrigger>
                                 <DropdownMenuPortal>
                                   <DropdownMenuSubContent
-                                    className="w-80 p-4"
+                                    className="min-w-80 p-4"
                                     sideOffset={25}
                                   >
                                     <div className="space-y-4">
@@ -444,9 +552,12 @@ export function ContentFormatOptionsMenu({
                                                     onCheckedChange={(
                                                       checked,
                                                     ) =>
-                                                      onMetadataOptionsChange?.({
-                                                        [key]: Boolean(checked),
-                                                      })
+                                                      onMetadataOptionsChange?.(
+                                                        {
+                                                          [key]:
+                                                            Boolean(checked),
+                                                        },
+                                                      )
                                                     }
                                                   />
                                                   <Label
@@ -479,7 +590,198 @@ export function ContentFormatOptionsMenu({
                   );
                 }
 
-                // Standard option rendering for non-metadata options
+                // Special handling for tree option - add sub-menu
+                if (optionKey === 'tree' && onTreeOptionsChange) {
+                  return (
+                    <div className="group/tree space-y-2" key={optionKey}>
+                      {/* Main tree toggle */}
+                      <Tooltip open={isTreeSubOpen ? false : undefined}>
+                        <TooltipTrigger asChild>
+                          <div className="flex w-full items-center space-x-2">
+                            <Switch
+                              checked={Boolean(currentValue)}
+                              id={`content-format-${optionKey}`}
+                              onCheckedChange={(checked) =>
+                                onContentFormatOptionsChange({
+                                  [optionKey]: Boolean(checked),
+                                })
+                              }
+                            />
+                            <Label
+                              className="flex-1 cursor-pointer text-sm"
+                              htmlFor={`content-format-${optionKey}`}
+                            >
+                              {renderIcon(optionDef.icon, 'h-4 w-4')}
+                              {optionDef.label}
+                              {hasCustomTreeSettings && (
+                                <div className="ml-1 inline-flex h-2 w-2 rounded-full bg-orange-500" />
+                              )}
+                              {'badge' in optionDef && optionDef.badge}
+                              {!isTreeEnabled && (
+                                <Badge
+                                  className="ml-auto text-muted-foreground text-xs uppercase"
+                                  variant="outline"
+                                >
+                                  Default: {defaultValue ? 'On' : 'Off'}
+                                </Badge>
+                              )}
+                            </Label>
+
+                            {/* Tree sub-menu - only show when tree is enabled */}
+                            {isTreeEnabled && (
+                              <DropdownMenuSub onOpenChange={setIsTreeSubOpen}>
+                                <DropdownMenuSubTrigger
+                                  className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/tree:bg-muted group-hover/tree:text-foreground"
+                                  icon={<Settings2 className="size-3" />}
+                                >
+                                  <span className="font-medium text-xs uppercase">
+                                    Configure
+                                  </span>
+                                </DropdownMenuSubTrigger>
+                                <DropdownMenuPortal>
+                                  <DropdownMenuSubContent
+                                    className="min-w-80 p-4"
+                                    sideOffset={25}
+                                  >
+                                    <div className="space-y-4">
+                                      <div className="flex items-center justify-between">
+                                        <h4 className="font-medium text-sm">
+                                          Tree Options
+                                        </h4>
+                                        <Button
+                                          className="text-xs"
+                                          onClick={resetTreeToDefaults}
+                                          size="sm"
+                                          variant="outline"
+                                        >
+                                          Reset
+                                        </Button>
+                                      </div>
+                                      <div className="space-y-3">
+                                        {TREE_OPTION_FIELDS.map(
+                                          ({
+                                            key,
+                                            label,
+                                            tooltip,
+                                            type,
+                                            options,
+                                          }) => (
+                                            <Tooltip key={key}>
+                                              <TooltipTrigger asChild>
+                                                <div className="flex w-full items-center space-x-2">
+                                                  {type === 'switch' ? (
+                                                    <>
+                                                      <Switch
+                                                        checked={Boolean(
+                                                          treeOptions?.[key] ??
+                                                            DEFAULT_TREE_OPTIONS[
+                                                              key
+                                                            ],
+                                                        )}
+                                                        id={`tree-${key}`}
+                                                        onCheckedChange={(
+                                                          checked,
+                                                        ) =>
+                                                          onTreeOptionsChange?.(
+                                                            {
+                                                              [key]:
+                                                                Boolean(
+                                                                  checked,
+                                                                ),
+                                                            },
+                                                          )
+                                                        }
+                                                      />
+                                                      <Label
+                                                        className="flex-1 cursor-pointer text-sm"
+                                                        htmlFor={`tree-${key}`}
+                                                      >
+                                                        {label}
+                                                      </Label>
+                                                    </>
+                                                  ) : (
+                                                    <div className="w-full space-y-2">
+                                                      <Separator />
+                                                      <div className="flex w-full items-center justify-between gap-x-2">
+                                                        <Label
+                                                          className="min-w-0 flex-1 text-sm"
+                                                          htmlFor={`tree-${key}`}
+                                                        >
+                                                          {label}
+                                                        </Label>
+                                                        <Select
+                                                          onValueChange={(
+                                                            value,
+                                                          ) =>
+                                                            onTreeOptionsChange?.(
+                                                              {
+                                                                [key]: value,
+                                                              },
+                                                            )
+                                                          }
+                                                          value={
+                                                            (treeOptions?.[
+                                                              key
+                                                            ] as string) ??
+                                                            (DEFAULT_TREE_OPTIONS[
+                                                              key
+                                                            ] as string)
+                                                          }
+                                                        >
+                                                          <SelectTrigger
+                                                            className="w-auto min-w-fit"
+                                                            id={`tree-${key}`}
+                                                          >
+                                                            <SelectValue />
+                                                          </SelectTrigger>
+                                                          <SelectContent>
+                                                            {options?.map(
+                                                              (option) => (
+                                                                <SelectItem
+                                                                  key={
+                                                                    option.value
+                                                                  }
+                                                                  title={
+                                                                    option.tooltip
+                                                                  }
+                                                                  value={
+                                                                    option.value
+                                                                  }
+                                                                >
+                                                                  {option.label}
+                                                                </SelectItem>
+                                                              ),
+                                                            )}
+                                                          </SelectContent>
+                                                        </Select>
+                                                      </div>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </TooltipTrigger>
+                                              <TooltipContent side="right">
+                                                <p>{tooltip}</p>
+                                              </TooltipContent>
+                                            </Tooltip>
+                                          ),
+                                        )}
+                                      </div>
+                                    </div>
+                                  </DropdownMenuSubContent>
+                                </DropdownMenuPortal>
+                              </DropdownMenuSub>
+                            )}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent align="start" side="bottom">
+                          <p>{optionDef.tooltip}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  );
+                }
+
+                // Standard option rendering for non-metadata and non-tree options
                 const content = (
                   <div
                     className="flex w-full items-center space-x-2"
