@@ -33,11 +33,13 @@ type MarkdownOptionsInput =
   | GetMarkdownOptions['markdownConverterOptions'];
 
 interface MarkdownOptionsMenuProps {
+  isMarkdownEnabled: boolean;
   markdownOptions: MarkdownOptionsInput | undefined;
   onMarkdownOptionsChange: (markdownOptions: MarkdownOptionsInput) => void;
 }
 
 export function MarkdownOptionsMenu({
+  isMarkdownEnabled,
   markdownOptions,
   onMarkdownOptionsChange,
 }: MarkdownOptionsMenuProps) {
@@ -46,6 +48,11 @@ export function MarkdownOptionsMenu({
     startAnimation: () => void;
     stopAnimation: () => void;
   }>(null);
+
+  // Skip rendering if markdown is not enabled
+  if (!isMarkdownEnabled) {
+    return null;
+  }
 
   // Markdown option fields with their defaults and metadata
   const MARKDOWN_OPTION_FIELDS = [

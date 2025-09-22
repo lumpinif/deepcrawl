@@ -253,21 +253,26 @@ export const TaskInput = ({
               processor={getCurrentOptionValue('cleaningProcessor')}
             />
 
-            {/* Cache options */}
-            <CacheOptionsMenu
-              cacheOptions={getCurrentOptionValue('cacheOptions')}
-              onCacheOptionsChange={(cacheOptions) =>
-                handleOptionsChange({ cacheOptions })
-              }
-            />
-
-            {/* Markdown options */}
+            {/* Markdown options - disabled for extractLinks */}
             <MarkdownOptionsMenu
+              isMarkdownEnabled={
+                selectedOperation === 'getMarkdown' ||
+                (selectedOperation === 'readUrl' &&
+                  (getCurrentOptionValue('markdown') as boolean))
+              }
               markdownOptions={getCurrentOptionValue(
                 'markdownConverterOptions',
               )}
               onMarkdownOptionsChange={(markdownConverterOptions) =>
                 handleOptionsChange({ markdownConverterOptions })
+              }
+            />
+
+            {/* Cache options */}
+            <CacheOptionsMenu
+              cacheOptions={getCurrentOptionValue('cacheOptions')}
+              onCacheOptionsChange={(cacheOptions) =>
+                handleOptionsChange({ cacheOptions })
               }
             />
 
