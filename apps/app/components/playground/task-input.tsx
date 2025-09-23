@@ -3,12 +3,14 @@
 import {
   PromptInput,
   PromptInputBody,
+  PromptInputButton,
   PromptInputToolbar,
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
+import { DetailedOptionsAccordion } from '@deepcrawl/ui/components/detailed-options-accordion';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import NumberFlow, { continuous } from '@number-flow/react';
-import { Zap } from 'lucide-react';
+import { Plus, Zap } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
@@ -43,6 +45,7 @@ export const TaskInput = ({
   defaultUrl = '',
 }: TaskInputProps) => {
   const [isError, setIsError] = useState(false);
+  const [isDetailedBarOpen, setIsDetailedBarOpen] = useState(false);
 
   // Use custom hooks for state management
   const {
@@ -185,7 +188,13 @@ export const TaskInput = ({
           </SpinnerButton>
         </PromptInputBody>
 
-        <PromptInputToolbar>
+        <PromptInputToolbar
+          className="group/toolbar border-b-0 hover:cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsDetailedBarOpen(!isDetailedBarOpen);
+          }}
+        >
           <PromptInputTools className="gap-x-0">
             {/*
               SIMPLIFIED OPTION MENU PATTERN:
@@ -291,7 +300,27 @@ export const TaskInput = ({
               />
             )}
           </PromptInputTools>
+
+          <PromptInputButton
+            className="cursor-pointer transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]>svg]:text-primary"
+            data-state={isDetailedBarOpen ? 'open' : 'closed'}
+            onClick={() => setIsDetailedBarOpen(!isDetailedBarOpen)}
+            type="button"
+          >
+            <Plus
+              className="size-4 shrink-0 transition-transform duration-200 group-hover/toolbar:text-primary"
+              strokeWidth={1}
+            />
+          </PromptInputButton>
         </PromptInputToolbar>
+
+        {/* detailed options accordion */}
+        <DetailedOptionsAccordion
+          childrenProps={{ className: 'p-4' }}
+          open={isDetailedBarOpen}
+        >
+          <div>detailed content</div>
+        </DetailedOptionsAccordion>
       </PromptInput>
 
       {/* Results Section */}
