@@ -30,7 +30,6 @@ import {
   Pickaxe,
   Settings2,
   Timer,
-  Trash,
   Trash2,
   X,
 } from 'lucide-react';
