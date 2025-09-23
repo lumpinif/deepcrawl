@@ -10,6 +10,7 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import NumberFlow, { continuous } from '@number-flow/react';
 import { Plus, Zap } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
@@ -214,6 +215,23 @@ export const TaskInput = ({
           }}
         >
           <PromptInputTools className="gap-x-0">
+            <AnimatePresence mode="wait">
+              {isDetailedBarOpen && (
+                <motion.span
+                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                  className={cn(
+                    'mr-1 ml-3 select-none text-nowrap font-medium text-muted-foreground text-xs',
+                  )}
+                  exit={{ opacity: 0, x: -20, filter: 'blur(2px)' }}
+                  initial={{ opacity: 0, x: -20 }}
+                  key="customize-options"
+                  transition={{ duration: 0.15, ease: 'easeInOut' }}
+                >
+                  Customize Options:
+                </motion.span>
+              )}
+            </AnimatePresence>
+
             {/*
               SIMPLIFIED OPTION MENU PATTERN:
               All option menus now use handleOptionsChange() directly!
