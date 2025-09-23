@@ -208,7 +208,7 @@ export const TaskInput = ({
         </PromptInputBody>
 
         <PromptInputToolbar
-          className="group/toolbar border-b-0 hover:cursor-pointer"
+          className="peer/toolbar group/toolbar border-b-0 hover:cursor-pointer"
           onClick={(e) => {
             e.preventDefault();
             setIsDetailedBarOpen(!isDetailedBarOpen);
