@@ -38,6 +38,14 @@ type OperationOptionValue<Key extends OperationOptionKey> = {
     : never;
 }[DeepcrawlOperations];
 
+// Export the function type for components to use - flexible interface for component access
+export type GetCurrentOptionValue = <Key extends string>(
+  key: Key,
+  fallback?: unknown,
+) => unknown;
+
+export type GetCurrentOptions = () => OperationOptionsMap[DeepcrawlOperations];
+
 type OperationOptionsUpdate<Op extends DeepcrawlOperations> =
   | Partial<OperationOptionsMap[Op]>
   | ((current: OperationOptionsMap[Op]) => OperationOptionsMap[Op]);
@@ -124,7 +132,7 @@ export function useTaskInputState({
   const activeRequestsRef = useRef<Set<string>>(new Set());
 
   // Helper functions for cleaner OptionsPanel configuration
-  const getCurrentOptions = () => {
+  const getCurrentOptions: GetCurrentOptions = () => {
     const baseOptions = options[selectedOperation] || { url: '' };
     return { ...baseOptions, url: requestUrl };
   };
@@ -210,6 +218,56 @@ export function useTaskInputState({
     return (value ?? fallback) as OperationOptionValue<Key>;
   };
 
+  /**
+   * Reset operation options to their default values
+   * @param operation - Optional operation to reset. If not provided, resets all operations
+   */
+  const resetToDefaults = (operation?: DeepcrawlOperations) => {
+    setOptions((prev) => {
+      const defaultOptionsMap = {
+        readUrl: {
+          url: '',
+          ...DEFAULT_READ_OPTIONS,
+        },
+        extractLinks: {
+          url: '',
+          ...DEFAULT_LINKS_OPTIONS,
+        },
+        getMarkdown: {
+          url: '',
+          ...DEFAULT_GET_MARKDOWN_OPTIONS,
+        },
+      };
+
+      if (operation) {
+        // Reset only the specified operation
+        return {
+          ...prev,
+          [operation]: {
+            ...defaultOptionsMap[operation],
+            url: requestUrl, // Preserve current URL
+          },
+        };
+      }
+
+      // Reset all operations
+      return {
+        readUrl: {
+          ...defaultOptionsMap.readUrl,
+          url: requestUrl, // Preserve current URL
+        },
+        extractLinks: {
+          ...defaultOptionsMap.extractLinks,
+          url: requestUrl, // Preserve current URL
+        },
+        getMarkdown: {
+          ...defaultOptionsMap.getMarkdown,
+          url: requestUrl, // Preserve current URL
+        },
+      };
+    });
+  };
+
   return {
     // State
     requestUrl,
@@ -230,5 +288,6 @@ export function useTaskInputState({
     getCurrentOptions,
     getCurrentOptionValue,
     handleOptionsChange,
+    resetToDefaults,
   };
 }

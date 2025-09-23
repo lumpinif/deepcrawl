@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
 import {
   type DeepcrawlOperations,
+  type GetCurrentOptionValue,
   useTaskInputState,
 } from '@/hooks/playground/use-task-input-state';
 import { getOperationConfig } from '@/lib/playground/operations-config';
@@ -23,11 +24,13 @@ import { SpinnerButton } from '../spinner-button';
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { ContentFormatOptionsMenu } from './content-format-options-menu';
+import { DetailedOptions } from './detailed-options';
 import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { LinkExtractionOptionsMenu } from './link-extraction-options-menu';
 import { MarkdownOptionsMenu } from './markdown-options-menu';
 import { MetricsOptionsMenu } from './metrics-options-menu';
 import { OperationSelector } from './operation-selector';
+import { OptionPreviewBadges } from './option-preview-badges';
 import { PGResponseArea } from './pg-response-area';
 import { UrlInput } from './url-input';
 
@@ -61,6 +64,8 @@ export const TaskInput = ({
     setResponses,
     getCurrentOptionValue,
     handleOptionsChange,
+    getCurrentOptions,
+    resetToDefaults,
   } = useTaskInputState({ defaultOperation, defaultUrl });
 
   // Use custom hook for API operations
@@ -75,6 +80,19 @@ export const TaskInput = ({
 
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
+
+  // Bridge function to make the strictly-typed hook function compatible with component interfaces
+  // This allows components to access both operation keys and additional keys like 'cacheOptions', 'treeOptions', etc.
+  const getOptionValue: GetCurrentOptionValue = <Key extends string>(
+    key: Key,
+    fallback?: unknown,
+  ) => {
+    // Type-safe casting: the hook function accepts the same parameter types at runtime
+    type HookKey = Parameters<typeof getCurrentOptionValue>[0];
+    type HookFallback = Parameters<typeof getCurrentOptionValue>[1];
+
+    return getCurrentOptionValue(key as HookKey, fallback as HookFallback);
+  };
 
   // Memoize URL validation to prevent re-renders
   const isUrlValid = useMemo(() => {
@@ -301,18 +319,25 @@ export const TaskInput = ({
             )}
           </PromptInputTools>
 
-          {/* Detailed options toggle button */}
-          <PromptInputButton
-            className="cursor-pointer transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]>svg]:text-primary"
-            data-state={isDetailedBarOpen ? 'open' : 'closed'}
-            onClick={() => setIsDetailedBarOpen(!isDetailedBarOpen)}
-            type="button"
-          >
-            <Plus
-              className="size-4 shrink-0 transition-transform duration-200 group-hover/toolbar:text-primary"
-              strokeWidth={1}
+          <div className="flex items-center gap-x-0 overflow-hidden">
+            <OptionPreviewBadges
+              getCurrentOptionValue={getOptionValue}
+              isAccordionOpen={isDetailedBarOpen}
+              operation={selectedOperation}
             />
-          </PromptInputButton>
+            {/* Detailed options toggle button */}
+            <PromptInputButton
+              className="cursor-pointer transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]>svg]:text-primary"
+              data-state={isDetailedBarOpen ? 'open' : 'closed'}
+              onClick={() => setIsDetailedBarOpen(!isDetailedBarOpen)}
+              type="button"
+            >
+              <Plus
+                className="size-4 shrink-0 transition-transform duration-200 group-hover/toolbar:rotate-90 group-hover/toolbar:text-primary"
+                strokeWidth={1}
+              />
+            </PromptInputButton>
+          </div>
         </PromptInputToolbar>
 
         {/* detailed options accordion */}
@@ -320,7 +345,13 @@ export const TaskInput = ({
           childrenProps={{ className: 'p-4' }}
           open={isDetailedBarOpen}
         >
-          <div>detailed content</div>
+          <DetailedOptions
+            getCurrentOptions={getCurrentOptions}
+            getCurrentOptionValue={getOptionValue}
+            operation={selectedOperation}
+            requestUrl={requestUrl}
+            resetToDefaults={resetToDefaults}
+          />
         </DetailedOptionsAccordion>
       </PromptInput>
 
