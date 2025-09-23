@@ -174,15 +174,15 @@ export function OptionPreviewBadges({
           >
             <div
               className={cn(
-                `border-${config.colorClass}`,
+                `border-${key}`,
                 "flex items-center justify-center rounded-full border p-0.5 not-hover:[&_svg:not([class*='text-'])]:text-muted-foreground",
               )}
             >
               {isEnabled ? (
                 <Check
                   className={cn(
+                    `text-${key}`,
                     'size-2.5 shrink-0 rounded-full',
-                    `text-${config.colorClass}`,
                   )}
                 />
               ) : (

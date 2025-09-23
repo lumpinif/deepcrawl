@@ -124,13 +124,18 @@
   --color-background-subtle: var(--background-subtle);
 
   /* Custom task options */
-  --color-cache: (var(--color-green-600));
-  --color-markdown: (var(--color-purple-600));
-  --color-metadata: (var(--color-orange-600));
-  --color-cleaned-html: (var(--color-blue-600));
-  --color-tree: (var(--color-indigo-600));
-  --color-external: (var(--color-cyan-600));
+  --color-cache: var(--color-green-600);
+  --color-markdown: var(--color-purple-600);
+  --color-metadata: var(--color-orange-600);
+  --color-cleaned-html: var(--color-blue-600);
+  --color-tree: var(--color-indigo-600);
+  --color-external: var(--color-cyan-600);
 }
+
+/* Safelist for dynamic classes - ensures Tailwind generates these utilities */
+@source inline("border-cache border-markdown border-metadata border-cleaned-html border-tree border-external");
+@source inline("text-cache text-markdown text-metadata text-cleaned-html text-tree text-external");
+@source inline("bg-cache bg-markdown bg-metadata bg-cleaned-html bg-tree bg-external");
 
 /* biome ignore this line */
 @plugin 'tailwind-scrollbar' {
