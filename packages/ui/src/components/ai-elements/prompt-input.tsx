@@ -220,215 +220,224 @@ export const PromptInput = ({
   className,
   accept,
   multiple,
-  globalDrop,
-  syncHiddenInput,
-  maxFiles,
-  maxFileSize,
-  onError,
+  // globalDrop,
+  // syncHiddenInput,
+  // maxFiles,
+  // maxFileSize,
+  // onError,
   onSubmit,
   ...props
 }: PromptInputProps) => {
-  const [items, setItems] = useState<(FileUIPart & { id: string })[]>([]);
+  // const [items, setItems] = useState<(FileUIPart & { id: string })[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const anchorRef = useRef<HTMLSpanElement>(null);
-  const formRef = useRef<HTMLFormElement | null>(null);
+  // const formRef = useRef<HTMLFormElement | null>(null);
+
+  /* ENABLE THESE FEATURES IF NEEDED IN FUTURE */
 
   // Find nearest form to scope drag & drop
-  useEffect(() => {
-    const root = anchorRef.current?.closest('form');
-    if (root instanceof HTMLFormElement) {
-      formRef.current = root;
-    }
-  }, []);
+  // useEffect(() => {
+  //   const root = anchorRef.current?.closest('form');
+  //   if (root instanceof HTMLFormElement) {
+  //     formRef.current = root;
+  //   }
+  // }, []);
 
-  const openFileDialog = useCallback(() => {
-    inputRef.current?.click();
-  }, []);
+  // const openFileDialog = useCallback(() => {
+  //   inputRef.current?.click();
+  // }, []);
 
-  const matchesAccept = useCallback(
-    (f: File) => {
-      if (!accept || accept.trim() === '') {
-        return true;
-      }
-      // Simple check: if accept includes "image/*", filter to images; otherwise allow.
-      if (accept.includes('image/*')) {
-        return f.type.startsWith('image/');
-      }
-      return true;
-    },
-    [accept],
-  );
+  // const matchesAccept = useCallback(
+  //   (f: File) => {
+  //     if (!accept || accept.trim() === '') {
+  //       return true;
+  //     }
+  //     // Simple check: if accept includes "image/*", filter to images; otherwise allow.
+  //     if (accept.includes('image/*')) {
+  //       return f.type.startsWith('image/');
+  //     }
+  //     return true;
+  //   },
+  //   [accept],
+  // );
 
-  const add = useCallback(
-    (files: File[] | FileList) => {
-      const incoming = Array.from(files);
-      const accepted = incoming.filter((f) => matchesAccept(f));
-      if (accepted.length === 0) {
-        onError?.({
-          code: 'accept',
-          message: 'No files match the accepted types.',
-        });
-        return;
-      }
-      const withinSize = (f: File) =>
-        maxFileSize ? f.size <= maxFileSize : true;
-      const sized = accepted.filter(withinSize);
-      if (sized.length === 0 && accepted.length > 0) {
-        onError?.({
-          code: 'max_file_size',
-          message: 'All files exceed the maximum size.',
-        });
-        return;
-      }
-      setItems((prev) => {
-        const capacity =
-          typeof maxFiles === 'number'
-            ? Math.max(0, maxFiles - prev.length)
-            : undefined;
-        const capped =
-          typeof capacity === 'number' ? sized.slice(0, capacity) : sized;
-        if (typeof capacity === 'number' && sized.length > capacity) {
-          onError?.({
-            code: 'max_files',
-            message: 'Too many files. Some were not added.',
-          });
-        }
-        const next: (FileUIPart & { id: string })[] = [];
-        for (const file of capped) {
-          next.push({
-            id: nanoid(),
-            type: 'file',
-            url: URL.createObjectURL(file),
-            mediaType: file.type,
-            filename: file.name,
-          });
-        }
-        return prev.concat(next);
-      });
-    },
-    [matchesAccept, maxFiles, maxFileSize, onError],
-  );
+  // const add = useCallback(
+  //   (files: File[] | FileList) => {
+  //     const incoming = Array.from(files);
+  //     const accepted = incoming.filter((f) => matchesAccept(f));
+  //     if (accepted.length === 0) {
+  //       onError?.({
+  //         code: 'accept',
+  //         message: 'No files match the accepted types.',
+  //       });
+  //       return;
+  //     }
+  //     const withinSize = (f: File) =>
+  //       maxFileSize ? f.size <= maxFileSize : true;
+  //     const sized = accepted.filter(withinSize);
+  //     if (sized.length === 0 && accepted.length > 0) {
+  //       onError?.({
+  //         code: 'max_file_size',
+  //         message: 'All files exceed the maximum size.',
+  //       });
+  //       return;
+  //     }
+  //     setItems((prev) => {
+  //       const capacity =
+  //         typeof maxFiles === 'number'
+  //           ? Math.max(0, maxFiles - prev.length)
+  //           : undefined;
+  //       const capped =
+  //         typeof capacity === 'number' ? sized.slice(0, capacity) : sized;
+  //       if (typeof capacity === 'number' && sized.length > capacity) {
+  //         onError?.({
+  //           code: 'max_files',
+  //           message: 'Too many files. Some were not added.',
+  //         });
+  //       }
+  //       const next: (FileUIPart & { id: string })[] = [];
+  //       for (const file of capped) {
+  //         next.push({
+  //           id: nanoid(),
+  //           type: 'file',
+  //           url: URL.createObjectURL(file),
+  //           mediaType: file.type,
+  //           filename: file.name,
+  //         });
+  //       }
+  //       return prev.concat(next);
+  //     });
+  //   },
+  //   [matchesAccept, maxFiles, maxFileSize, onError],
+  // );
 
-  const remove = useCallback((id: string) => {
-    setItems((prev) => {
-      const found = prev.find((file) => file.id === id);
-      if (found?.url) {
-        URL.revokeObjectURL(found.url);
-      }
-      return prev.filter((file) => file.id !== id);
-    });
-  }, []);
+  // const remove = useCallback((id: string) => {
+  //   setItems((prev) => {
+  //     const found = prev.find((file) => file.id === id);
+  //     if (found?.url) {
+  //       URL.revokeObjectURL(found.url);
+  //     }
+  //     return prev.filter((file) => file.id !== id);
+  //   });
+  // }, []);
 
-  const clear = useCallback(() => {
-    setItems((prev) => {
-      for (const file of prev) {
-        if (file.url) {
-          URL.revokeObjectURL(file.url);
-        }
-      }
-      return [];
-    });
-  }, []);
+  // const clear = useCallback(() => {
+  //   setItems((prev) => {
+  //     for (const file of prev) {
+  //       if (file.url) {
+  //         URL.revokeObjectURL(file.url);
+  //       }
+  //     }
+  //     return [];
+  //   });
+  // }, []);
 
   // Note: File input cannot be programmatically set for security reasons
   // The syncHiddenInput prop is no longer functional
-  useEffect(() => {
-    if (syncHiddenInput && inputRef.current) {
-      // Clear the input when items are cleared
-      if (items.length === 0) {
-        inputRef.current.value = '';
-      }
-    }
-  }, [items, syncHiddenInput]);
+  // useEffect(() => {
+  //   if (syncHiddenInput && inputRef.current) {
+  //     // Clear the input when items are cleared
+  //     if (items.length === 0) {
+  //       inputRef.current.value = '';
+  //     }
+  //   }
+  // }, [items, syncHiddenInput]);
 
   // Attach drop handlers on nearest form and document (opt-in)
-  useEffect(() => {
-    const form = formRef.current;
-    if (!form) {
-      return;
-    }
-    const onDragOver = (e: DragEvent) => {
-      if (e.dataTransfer?.types?.includes('Files')) {
-        e.preventDefault();
-      }
-    };
-    const onDrop = (e: DragEvent) => {
-      if (e.dataTransfer?.types?.includes('Files')) {
-        e.preventDefault();
-      }
-      if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
-        add(e.dataTransfer.files);
-      }
-    };
-    form.addEventListener('dragover', onDragOver);
-    form.addEventListener('drop', onDrop);
-    return () => {
-      form.removeEventListener('dragover', onDragOver);
-      form.removeEventListener('drop', onDrop);
-    };
-  }, [add]);
+  // useEffect(() => {
+  //   const form = formRef.current;
+  //   if (!form) {
+  //     return;
+  //   }
+  //   const onDragOver = (e: DragEvent) => {
+  //     if (e.dataTransfer?.types?.includes('Files')) {
+  //       e.preventDefault();
+  //     }
+  //   };
+  //   const onDrop = (e: DragEvent) => {
+  //     if (e.dataTransfer?.types?.includes('Files')) {
+  //       e.preventDefault();
+  //     }
+  //     if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+  //       add(e.dataTransfer.files);
+  //     }
+  //   };
+  //   form.addEventListener('dragover', onDragOver);
+  //   form.addEventListener('drop', onDrop);
+  //   return () => {
+  //     form.removeEventListener('dragover', onDragOver);
+  //     form.removeEventListener('drop', onDrop);
+  //   };
+  // }, [add]);
 
-  useEffect(() => {
-    if (!globalDrop) {
-      return;
-    }
-    const onDragOver = (e: DragEvent) => {
-      if (e.dataTransfer?.types?.includes('Files')) {
-        e.preventDefault();
-      }
-    };
-    const onDrop = (e: DragEvent) => {
-      if (e.dataTransfer?.types?.includes('Files')) {
-        e.preventDefault();
-      }
-      if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
-        add(e.dataTransfer.files);
-      }
-    };
-    document.addEventListener('dragover', onDragOver);
-    document.addEventListener('drop', onDrop);
-    return () => {
-      document.removeEventListener('dragover', onDragOver);
-      document.removeEventListener('drop', onDrop);
-    };
-  }, [add, globalDrop]);
+  // useEffect(() => {
+  //   if (!globalDrop) {
+  //     return;
+  //   }
+  //   const onDragOver = (e: DragEvent) => {
+  //     if (e.dataTransfer?.types?.includes('Files')) {
+  //       e.preventDefault();
+  //     }
+  //   };
+  //   const onDrop = (e: DragEvent) => {
+  //     if (e.dataTransfer?.types?.includes('Files')) {
+  //       e.preventDefault();
+  //     }
+  //     if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+  //       add(e.dataTransfer.files);
+  //     }
+  //   };
+  //   document.addEventListener('dragover', onDragOver);
+  //   document.addEventListener('drop', onDrop);
+  //   return () => {
+  //     document.removeEventListener('dragover', onDragOver);
+  //     document.removeEventListener('drop', onDrop);
+  //   };
+  // }, [add, globalDrop]);
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    if (event.currentTarget.files) {
-      add(event.currentTarget.files);
-    }
-  };
+  // const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+  //   if (event.currentTarget.files) {
+  //     add(event.currentTarget.files);
+  //   }
+  // };
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
 
-    const files: FileUIPart[] = items.map(({ ...item }) => ({
-      ...item,
-    }));
+    // const files: FileUIPart[] = items.map(({ ...item }) => ({
+    //   ...item,
+    // }));
 
-    onSubmit({ text: event.currentTarget.message.value, files }, event);
+    onSubmit(
+      {
+        text: event.currentTarget.message.value,
+        // files
+      },
+      event,
+    );
   };
 
-  const ctx = useMemo<AttachmentsContext>(
-    () => ({
-      files: items.map((item) => ({ ...item, id: item.id })),
-      add,
-      remove,
-      clear,
-      openFileDialog,
-      fileInputRef: inputRef,
-    }),
-    [items, add, remove, clear, openFileDialog],
-  );
+  // const ctx = useMemo<AttachmentsContext>(
+  //   () => ({
+  //     files: items.map((item) => ({ ...item, id: item.id })),
+  //     add,
+  //     remove,
+  //     clear,
+  //     openFileDialog,
+  //     fileInputRef: inputRef,
+  //   }),
+  //   [items, add, remove, clear, openFileDialog],
+  // );
 
   return (
-    <AttachmentsContext.Provider value={ctx}>
+    /* use value={ctx} when enabling the AI-specific features if needed in future */
+    <AttachmentsContext.Provider value={null}>
       <span aria-hidden="true" className="hidden" ref={anchorRef} />
       <input
         accept={accept}
         className="hidden"
         multiple={multiple}
-        onChange={handleChange}
+        // onChange={handleChange}
         ref={inputRef}
         type="file"
       />
