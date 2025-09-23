@@ -15,7 +15,7 @@ interface CopyButtonProps extends ButtonProps {
   iconProps?: IconProps;
 }
 
-interface IconProps extends SVGProps<SVGSVGElement> {}
+type IconProps = SVGProps<SVGSVGElement>;
 
 export default function CopyButton({
   textToCopy,
