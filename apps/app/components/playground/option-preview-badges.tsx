@@ -154,8 +154,8 @@ export function OptionPreviewBadges({
   return (
     <div
       className={cn(
-        'flex select-none flex-row items-center transition-all duration-200 ease-out',
-        isAccordionOpen && 'translate-y-10 opacity-0 blur-xl',
+        'flex select-none flex-row items-center transition-all duration-300 ease-in-out',
+        isAccordionOpen && 'translate-y-5 scale-95 opacity-0 blur',
         className,
       )}
     >
