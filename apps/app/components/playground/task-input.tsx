@@ -7,7 +7,6 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
-import { DetailedOptionsAccordion } from '@deepcrawl/ui/components/detailed-options-accordion';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import NumberFlow, { continuous } from '@number-flow/react';
 import { Plus, Zap } from 'lucide-react';
@@ -24,6 +23,7 @@ import { SpinnerButton } from '../spinner-button';
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { ContentFormatOptionsMenu } from './content-format-options-menu';
+import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { LinkExtractionOptionsMenu } from './link-extraction-options-menu';
 import { MarkdownOptionsMenu } from './markdown-options-menu';
 import { MetricsOptionsMenu } from './metrics-options-menu';
@@ -301,6 +301,7 @@ export const TaskInput = ({
             )}
           </PromptInputTools>
 
+          {/* Detailed options toggle button */}
           <PromptInputButton
             className="cursor-pointer transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]>svg]:text-primary"
             data-state={isDetailedBarOpen ? 'open' : 'closed'}
