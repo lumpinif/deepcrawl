@@ -180,16 +180,13 @@ export function OptionPreviewBadges({
             >
               {isEnabled ? (
                 <Check
-                  className={cn(
-                    `text-${key}`,
-                    'size-2.5 shrink-0 rounded-full',
-                  )}
+                  className={cn(`text-${key}`, 'size-2 shrink-0 rounded-full')}
                 />
               ) : (
                 <X
                   className={cn(
                     'text-destructive',
-                    'size-2.5 shrink-0 rounded-full',
+                    'size-2 shrink-0 rounded-full',
                   )}
                 />
               )}
