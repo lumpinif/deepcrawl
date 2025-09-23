@@ -31,6 +31,8 @@ import { UrlInput } from './url-input';
 
 // TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart handleOptionsChange generic function
 
+// TODO: VALIDATE ALL TOOLTIPS AND DESCRIPTIONS FOR ALL OPTIONS
+
 export interface TaskInputProps {
   defaultOperation?: DeepcrawlOperations;
   defaultUrl?: string;
@@ -205,9 +207,15 @@ export const TaskInput = ({
                 tree: getCurrentOptionValue('tree') as boolean,
                 sitemapXML: getCurrentOptionValue('sitemapXML') as boolean,
               }}
+              markdownOptions={getCurrentOptionValue(
+                'markdownConverterOptions',
+              )}
               metadataOptions={getCurrentOptionValue('metadataOptions')}
               onContentFormatOptionsChange={(contentFormatOptions) =>
                 handleOptionsChange(contentFormatOptions)
+              }
+              onMarkdownOptionsChange={(markdownConverterOptions) =>
+                handleOptionsChange({ markdownConverterOptions })
               }
               onMetadataOptionsChange={(metadataOptions) =>
                 handleOptionsChange({ metadataOptions })
@@ -245,27 +253,23 @@ export const TaskInput = ({
               />
             )}
 
-            {/* Cleaning processor options */}
-            <CleaningProcessorMenu
-              onProcessorChange={(processor) =>
-                handleOptionsChange({ cleaningProcessor: processor })
-              }
-              processor={getCurrentOptionValue('cleaningProcessor')}
-            />
-
-            {/* Markdown options - disabled for extractLinks */}
+            {/* Markdown options - showing standalone for getMarkdown only */}
             <MarkdownOptionsMenu
-              isMarkdownEnabled={
-                selectedOperation === 'getMarkdown' ||
-                (selectedOperation === 'readUrl' &&
-                  (getCurrentOptionValue('markdown') as boolean))
-              }
+              isMarkdownEnabled={selectedOperation === 'getMarkdown'}
               markdownOptions={getCurrentOptionValue(
                 'markdownConverterOptions',
               )}
               onMarkdownOptionsChange={(markdownConverterOptions) =>
                 handleOptionsChange({ markdownConverterOptions })
               }
+            />
+
+            {/* Cleaning processor options */}
+            <CleaningProcessorMenu
+              onProcessorChange={(processor) =>
+                handleOptionsChange({ cleaningProcessor: processor })
+              }
+              processor={getCurrentOptionValue('cleaningProcessor')}
             />
 
             {/* Cache options */}
