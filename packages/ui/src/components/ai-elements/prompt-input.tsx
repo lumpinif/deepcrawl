@@ -601,7 +601,15 @@ export const PromptInputActionMenuContent = ({
   className,
   ...props
 }: PromptInputActionMenuContentProps) => (
-  <DropdownMenuContent align="start" className={cn(className)} {...props} />
+  <DropdownMenuContent
+    align="start"
+    className={cn(className)}
+    onClick={(e) => {
+      e.stopPropagation();
+      props.onClick?.(e);
+    }}
+    {...props}
+  />
 );
 
 export type PromptInputActionMenuItemProps = ComponentProps<
