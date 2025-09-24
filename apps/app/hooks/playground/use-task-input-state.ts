@@ -142,12 +142,26 @@ export function useTaskInputState({
     parseAsJson(OperationOptionsSchema).withDefault(DEFAULT_OPERATION_OPTIONS),
   );
 
+  const typedOptions = {
+    getMarkdown: {
+      ...DEFAULT_GET_MARKDOWN_OPTIONS,
+      url: '',
+      ...options.getMarkdown,
+    },
+    readUrl: { ...DEFAULT_READ_OPTIONS, url: '', ...options.readUrl },
+    extractLinks: {
+      ...DEFAULT_LINKS_OPTIONS,
+      url: '',
+      ...options.extractLinks,
+    },
+  };
+
   // Add deduplication ref to prevent multiple simultaneous requests
   const activeRequestsRef = useRef<Set<string>>(new Set());
 
   // Helper functions for cleaner OptionsPanel configuration
   const getCurrentOptions: GetCurrentOptions = () => {
-    const baseOptions = options[selectedOperation] || { url: '' };
+    const baseOptions = typedOptions[selectedOperation] || { url: '' };
     return { ...baseOptions, url: requestUrl };
   };
 
@@ -223,7 +237,7 @@ export function useTaskInputState({
     key: Key,
     fallback?: OperationOptionValue<Key>,
   ): OperationOptionValue<Key> => {
-    const operationOptions = options[selectedOperation];
+    const operationOptions = typedOptions[selectedOperation];
     const value =
       operationOptions && key in operationOptions
         ? operationOptions[key as keyof typeof operationOptions]
@@ -288,7 +302,7 @@ export function useTaskInputState({
     selectedOperation,
     isLoading,
     responses,
-    options,
+    options: typedOptions,
     activeRequestsRef,
 
     // Actions
