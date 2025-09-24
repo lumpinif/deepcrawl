@@ -149,8 +149,6 @@ export function OptionPreviewBadges({
     return null;
   }
 
-  //TODO: DEBUG: WHY SOME OF THE COLORS ARE NOT SHOWING
-
   return (
     <div
       className={cn(
