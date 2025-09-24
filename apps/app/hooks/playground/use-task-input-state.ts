@@ -11,7 +11,7 @@ import type {
   ReadUrlOptions,
   ReadUrlResponse,
 } from 'deepcrawl';
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useRef, useState } from 'react';
 
 // Types
@@ -89,8 +89,10 @@ export function useTaskInputState({
   defaultOperation = 'getMarkdown',
   defaultUrl = '',
 }: UseTaskInputStateProps = {}) {
-  // URL state management
-  const [requestUrl, setRequestUrl] = useState(defaultUrl);
+  const [requestUrl, setRequestUrl] = useQueryState(
+    'url',
+    parseAsString.withDefault(defaultUrl),
+  );
 
   // Operation state management using useQueryState for persistence
   const [selectedOperation, setSelectedOperation] = useQueryState(
