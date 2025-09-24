@@ -1,3 +1,5 @@
+import { ReadGETInputSchema } from '@deepcrawl/contracts/read';
+import { LinksOptionsSchema, ReadOptionsSchema } from '@deepcrawl/types';
 import {
   DEFAULT_GET_MARKDOWN_OPTIONS,
   DEFAULT_LINKS_OPTIONS,
@@ -11,8 +13,14 @@ import type {
   ReadUrlOptions,
   ReadUrlResponse,
 } from 'deepcrawl';
-import { parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
+import {
+  parseAsJson,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryState,
+} from 'nuqs';
 import { useRef, useState } from 'react';
+import { z } from 'zod/v4';
 
 // Types
 export type DeepcrawlOperations = 'getMarkdown' | 'readUrl' | 'extractLinks';
@@ -26,6 +34,20 @@ type OperationOptionsMap = {
   getMarkdown: GetMarkdownOptions;
   readUrl: ReadUrlOptions;
   extractLinks: ExtractLinksOptions;
+};
+
+// Combined schema for all operations options (without URL since that's managed separately)
+const OperationOptionsSchema = z.object({
+  getMarkdown: ReadGETInputSchema.partial().optional(),
+  readUrl: ReadOptionsSchema.partial().optional(),
+  extractLinks: LinksOptionsSchema.partial().optional(),
+});
+
+// Default options without URL for compact serialization
+const DEFAULT_OPERATION_OPTIONS = {
+  getMarkdown: { url: '', ...DEFAULT_GET_MARKDOWN_OPTIONS },
+  readUrl: { url: '', ...DEFAULT_READ_OPTIONS },
+  extractLinks: { url: '', ...DEFAULT_LINKS_OPTIONS },
 };
 
 type OperationOptionKey = {
@@ -114,21 +136,11 @@ export function useTaskInputState({
     Record<string, PlaygroundResponse>
   >({});
 
-  // Options state management - consolidated for cleaner access with full defaults
-  const [options, setOptions] = useState<OperationOptionsMap>(() => ({
-    readUrl: {
-      url: '',
-      ...DEFAULT_READ_OPTIONS,
-    },
-    extractLinks: {
-      url: '',
-      ...DEFAULT_LINKS_OPTIONS,
-    },
-    getMarkdown: {
-      url: '',
-      ...DEFAULT_GET_MARKDOWN_OPTIONS, // getMarkdown uses similar options to readUrl
-    },
-  }));
+  // Options state management using nuqs for URL persistence and sharing
+  const [options, setOptions] = useQueryState(
+    'options',
+    parseAsJson(OperationOptionsSchema).withDefault(DEFAULT_OPERATION_OPTIONS),
+  );
 
   // Add deduplication ref to prevent multiple simultaneous requests
   const activeRequestsRef = useRef<Set<string>>(new Set());
