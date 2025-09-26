@@ -1,10 +1,13 @@
 'use client';
 
 import type {
-  LinksOptions,
+  LinksOptionsInput,
+  MarkdownConverterOptionsInput,
   MetadataOptions,
-  ReadOptions,
+  MetadataOptionsInput,
+  ReadOptionsInput,
   TreeOptions,
+  TreeOptionsInput,
 } from '@deepcrawl/types';
 import {
   DEFAULT_LINKS_OPTIONS,
@@ -13,7 +16,7 @@ import {
   DEFAULT_READ_OPTIONS,
   DEFAULT_TREE_OPTIONS,
 } from '@deepcrawl/types/configs';
-import type { ScrapeOptions } from '@deepcrawl/types/services/scrape/types';
+import type { ScrapeOptionsInput } from '@deepcrawl/types/services/scrape/types';
 import {
   PromptInputActionMenu,
   PromptInputActionMenuContent,
@@ -47,11 +50,6 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type {
-  ExtractLinksOptions,
-  GetMarkdownOptions,
-  ReadUrlOptions,
-} from 'deepcrawl';
 import {
   Bot,
   FileCheck2,
@@ -63,7 +61,7 @@ import {
 } from 'lucide-react';
 import type { ElementType, ReactElement } from 'react';
 import { cloneElement, isValidElement, useRef, useState } from 'react';
-import type { DeepcrawlOperations } from '@/hooks/playground/use-task-input-state';
+import type { DeepcrawlOperations } from '@/hooks/playground/types';
 
 // Union type for all possible content format options
 // {
@@ -76,21 +74,11 @@ import type { DeepcrawlOperations } from '@/hooks/playground/use-task-input-stat
 //   rawHtml?: boolean;
 // };
 type AllContentFormatOptions = Pick<
-  ScrapeOptions,
+  ScrapeOptionsInput,
   'metadata' | 'cleanedHtml' | 'robots' | 'sitemapXML'
 > &
-  Pick<LinksOptions, 'tree'> &
-  Pick<ReadOptions, 'markdown' | 'rawHtml'> & {};
-
-type MetadataOptionsInput =
-  | ReadUrlOptions['metadataOptions']
-  | ExtractLinksOptions['metadataOptions'];
-
-type TreeOptionsInput = Pick<ExtractLinksOptions, keyof TreeOptions>;
-
-type MarkdownOptionsInput =
-  | ReadUrlOptions['markdownConverterOptions']
-  | GetMarkdownOptions['markdownConverterOptions'];
+  Pick<LinksOptionsInput, 'tree'> &
+  Pick<ReadOptionsInput, 'markdown' | 'rawHtml'> & {};
 
 interface ContentFormatOptionsMenuProps {
   operation: DeepcrawlOperations;
@@ -102,8 +90,10 @@ interface ContentFormatOptionsMenuProps {
   onMetadataOptionsChange?: (metadataOptions: MetadataOptionsInput) => void;
   treeOptions?: TreeOptionsInput;
   onTreeOptionsChange?: (treeOptions: TreeOptionsInput) => void;
-  markdownOptions?: MarkdownOptionsInput;
-  onMarkdownOptionsChange?: (markdownOptions: MarkdownOptionsInput) => void;
+  markdownOptions?: MarkdownConverterOptionsInput;
+  onMarkdownOptionsChange?: (
+    markdownOptions: MarkdownConverterOptionsInput,
+  ) => void;
 }
 
 // Configuration for different operations

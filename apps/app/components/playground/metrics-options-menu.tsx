@@ -17,12 +17,8 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { ExtractLinksOptions, ReadUrlOptions } from 'deepcrawl';
+import type { MetricsOptionsInput } from 'deepcrawl';
 import { useRef, useState } from 'react';
-
-type MetricsOptionsInput =
-  | ReadUrlOptions['metricsOptions']
-  | ExtractLinksOptions['metricsOptions'];
 
 interface MetricsOptionsMenuProps {
   metricsOptions: MetricsOptionsInput | undefined;

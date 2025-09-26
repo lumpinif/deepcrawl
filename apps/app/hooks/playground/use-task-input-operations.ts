@@ -1,38 +1,28 @@
-import type {
-  ExtractLinksOptions,
-  ExtractLinksResponse,
-  GetMarkdownOptions,
-  ReadUrlOptions,
-  ReadUrlResponse,
-} from 'deepcrawl';
+import type { ExtractLinksResponse, ReadUrlResponse } from 'deepcrawl';
 import { toast } from 'sonner';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
-import { useDeepcrawlClient } from './use-deepcrawl-client';
-import { useExecutionTimer } from './use-execution-timer';
 import type {
   DCResponseData,
   DeepcrawlOperations,
+  GetAnyOperationState,
   PlaygroundResponse,
-} from './use-task-input-state';
+  PlaygroundResponses,
+} from './types';
+import { useDeepcrawlClient } from './use-deepcrawl-client';
+import { useExecutionTimer } from './use-execution-timer';
 
 interface UseTaskInputOperationsProps {
   requestUrl: string;
-  options: {
-    readUrl: ReadUrlOptions;
-    extractLinks: ExtractLinksOptions;
-    getMarkdown: GetMarkdownOptions;
-  };
+  getAnyOperationState: GetAnyOperationState;
   activeRequestsRef: React.RefObject<Set<string>>;
-  setIsLoading: (
+  setIsExecuting: (
     fn: (
       prev: Record<DeepcrawlOperations, boolean>,
     ) => Record<DeepcrawlOperations, boolean>,
   ) => void;
   setResponses: (
-    fn: (
-      prev: Record<string, PlaygroundResponse>,
-    ) => Record<string, PlaygroundResponse>,
+    fn: (prev: PlaygroundResponses) => PlaygroundResponses,
   ) => void;
 }
 
@@ -42,9 +32,9 @@ const API_KEY =
 
 export function useTaskInputOperations({
   requestUrl,
-  options,
+  getAnyOperationState,
   activeRequestsRef,
-  setIsLoading,
+  setIsExecuting,
   setResponses,
 }: UseTaskInputOperationsProps) {
   // Initialize SDK client with custom hook
@@ -84,13 +74,15 @@ export function useTaskInputOperations({
     operation: DeepcrawlOperations,
     label: string,
   ) => {
+    /* TODO: Extra hardening (optional) Runtime validation before API call (belt-and-suspenders): */
+
     // Guard against invalid URLs (defense in depth)
     if (!isPlausibleUrl(requestUrl)) {
       toast.error('Please enter a valid URL');
       return;
     }
 
-    if (!(sdkClient && isReady)) {
+    if (!sdkClient) {
       toast.error('Please wait for the SDK client to be ready');
       return;
     }
@@ -102,7 +94,7 @@ export function useTaskInputOperations({
       return;
     }
 
-    setIsLoading((prev) => ({ ...prev, [operation]: true }));
+    setIsExecuting((prev) => ({ ...prev, [operation]: true }));
     activeRequestsRef.current.add(requestKey);
 
     const startTime = startTimer(operation);
@@ -113,38 +105,25 @@ export function useTaskInputOperations({
 
       switch (operation) {
         case 'getMarkdown': {
-          // Use the configured markdown options, excluding the url field
-          const { url: _, ...optionsWithoutUrl } = {
-            ...options.getMarkdown,
-            url: requestUrl,
-          };
-          result = await sdkClient.getMarkdown(requestUrl, optionsWithoutUrl);
+          const { options: currentOptions } =
+            getAnyOperationState('getMarkdown');
+          result = await sdkClient.getMarkdown(requestUrl, currentOptions);
           targetUrl = requestUrl;
           break;
         }
         case 'readUrl': {
-          // Use the configured read options, excluding the url field
-          const { url: _, ...optionsWithoutUrl } = {
-            ...options.readUrl,
-            url: requestUrl,
-          };
-          const readData = await sdkClient.readUrl(
-            requestUrl,
-            optionsWithoutUrl,
-          );
+          const { options: currentOptions } = getAnyOperationState('readUrl');
+          const readData = await sdkClient.readUrl(requestUrl, currentOptions);
           result = readData;
           targetUrl = (readData as ReadUrlResponse)?.targetUrl || requestUrl;
           break;
         }
         case 'extractLinks': {
-          // Use the configured links options, excluding the url field
-          const { url: _, ...optionsWithoutUrl } = {
-            ...options.extractLinks,
-            url: requestUrl,
-          };
+          const { options: currentOptions } =
+            getAnyOperationState('extractLinks');
           const linksData = await sdkClient.extractLinks(
             requestUrl,
-            optionsWithoutUrl,
+            currentOptions,
           );
           result = linksData;
           targetUrl =
@@ -184,7 +163,7 @@ export function useTaskInputOperations({
       }));
     } finally {
       // Always cleanup - prevent memory leaks
-      setIsLoading((prev) => ({ ...prev, [operation]: false }));
+      setIsExecuting((prev) => ({ ...prev, [operation]: false }));
       activeRequestsRef.current.delete(requestKey);
       stopTimer(operation);
     }

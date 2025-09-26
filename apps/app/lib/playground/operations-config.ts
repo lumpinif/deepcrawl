@@ -3,7 +3,7 @@ import {
   GetMarkdownGridIcon,
   ReadUrlGridIcon,
 } from '@/components/animate-ui/components/grid-icons';
-import type { DeepcrawlOperations } from '@/hooks/playground/use-task-input-state';
+import type { DeepcrawlOperations } from '@/hooks/playground/types';
 
 interface OperationConfig {
   operation: DeepcrawlOperations;

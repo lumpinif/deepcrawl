@@ -8,7 +8,7 @@ import { SpinnerButton } from '@/components/spinner-button';
 import type {
   DeepcrawlOperations,
   PlaygroundResponse,
-} from '@/hooks/playground/use-task-input-state';
+} from '@/hooks/playground/types';
 import { copyToClipboard } from '@/utils/clipboard';
 
 interface PGResponseArea {

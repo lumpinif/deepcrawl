@@ -25,17 +25,15 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { GetMarkdownOptions, ReadUrlOptions } from 'deepcrawl';
+import type { MarkdownConverterOptionsInput } from 'deepcrawl';
 import { useRef, useState } from 'react';
-
-type MarkdownOptionsInput =
-  | ReadUrlOptions['markdownConverterOptions']
-  | GetMarkdownOptions['markdownConverterOptions'];
 
 interface MarkdownOptionsMenuProps {
   isMarkdownEnabled: boolean;
-  markdownOptions: MarkdownOptionsInput | undefined;
-  onMarkdownOptionsChange: (markdownOptions: MarkdownOptionsInput) => void;
+  markdownOptions: MarkdownConverterOptionsInput | undefined;
+  onMarkdownOptionsChange: (
+    markdownOptions: MarkdownConverterOptionsInput,
+  ) => void;
 }
 
 export function MarkdownOptionsMenu({

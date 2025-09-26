@@ -9,7 +9,7 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { useState } from 'react';
-import type { DeepcrawlOperations } from '@/hooks/playground/use-task-input-state';
+import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { DeepcrawlFeatures } from '@/lib/playground/operations-config';
 
 interface OperationSelectorProps {

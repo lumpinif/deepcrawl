@@ -1,307 +1,309 @@
-import { ReadGETInputSchema } from '@deepcrawl/contracts/read';
-import { LinksOptionsSchema, ReadOptionsSchema } from '@deepcrawl/types';
-import {
-  DEFAULT_GET_MARKDOWN_OPTIONS,
-  DEFAULT_LINKS_OPTIONS,
-  DEFAULT_READ_OPTIONS,
-} from '@deepcrawl/types/configs';
-import type {
-  ExtractLinksOptions,
-  ExtractLinksResponse,
-  GetMarkdownOptions,
-  GetMarkdownResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-} from 'deepcrawl';
-import {
-  parseAsJson,
-  parseAsString,
-  parseAsStringLiteral,
-  useQueryState,
-} from 'nuqs';
-import { useRef, useState } from 'react';
-import { z } from 'zod/v4';
+/* DEPRECATED */
 
-// Types
-export type DeepcrawlOperations = 'getMarkdown' | 'readUrl' | 'extractLinks';
+// import { ReadGETInputSchema } from '@deepcrawl/contracts/read';
+// import { LinksOptionsSchema, ReadOptionsSchema } from '@deepcrawl/types';
+// import {
+//   DEFAULT_GET_MARKDOWN_OPTIONS,
+//   DEFAULT_LINKS_OPTIONS,
+//   DEFAULT_READ_OPTIONS,
+// } from '@deepcrawl/types/configs';
+// import type {
+//   ExtractLinksOptions,
+//   ExtractLinksResponse,
+//   GetMarkdownOptions,
+//   GetMarkdownResponse,
+//   ReadUrlOptions,
+//   ReadUrlResponse,
+// } from 'deepcrawl';
+// import {
+//   parseAsJson,
+//   parseAsString,
+//   parseAsStringLiteral,
+//   useQueryState,
+// } from 'nuqs';
+// import { useRef, useState } from 'react';
+// import { z } from 'zod/v4';
 
-export type DCResponseData =
-  | GetMarkdownResponse
-  | ReadUrlResponse
-  | ExtractLinksResponse;
+// // Types
+// export type DeepcrawlOperations = 'getMarkdown' | 'readUrl' | 'extractLinks';
 
-type OperationOptionsMap = {
-  getMarkdown: GetMarkdownOptions;
-  readUrl: ReadUrlOptions;
-  extractLinks: ExtractLinksOptions;
-};
+// export type DCResponseData =
+//   | GetMarkdownResponse
+//   | ReadUrlResponse
+//   | ExtractLinksResponse;
 
-// Combined schema for all operations options (without URL since that's managed separately)
-const OperationOptionsSchema = z.object({
-  getMarkdown: ReadGETInputSchema.partial().optional(),
-  readUrl: ReadOptionsSchema.partial().optional(),
-  extractLinks: LinksOptionsSchema.partial().optional(),
-});
+// type OperationOptionsMap = {
+//   getMarkdown: GetMarkdownOptions;
+//   readUrl: ReadUrlOptions;
+//   extractLinks: ExtractLinksOptions;
+// };
 
-// Default options without URL for compact serialization
-const DEFAULT_OPERATION_OPTIONS = {
-  getMarkdown: { url: '', ...DEFAULT_GET_MARKDOWN_OPTIONS },
-  readUrl: { url: '', ...DEFAULT_READ_OPTIONS },
-  extractLinks: { url: '', ...DEFAULT_LINKS_OPTIONS },
-};
+// // Combined schema for all operations options (without URL since that's managed separately)
+// const OperationOptionsSchema = z.object({
+//   getMarkdown: ReadGETInputSchema.partial().optional(),
+//   readUrl: ReadOptionsSchema.partial().optional(),
+//   extractLinks: LinksOptionsSchema.partial().optional(),
+// });
 
-type OperationOptionKey = {
-  [Op in DeepcrawlOperations]: keyof OperationOptionsMap[Op];
-}[DeepcrawlOperations];
+// // Default options without URL for compact serialization
+// const DEFAULT_OPERATION_OPTIONS = {
+//   getMarkdown: { url: '', ...DEFAULT_GET_MARKDOWN_OPTIONS },
+//   readUrl: { url: '', ...DEFAULT_READ_OPTIONS },
+//   extractLinks: { url: '', ...DEFAULT_LINKS_OPTIONS },
+// };
 
-type OperationOptionValue<Key extends OperationOptionKey> = {
-  [Op in DeepcrawlOperations]: Key extends keyof OperationOptionsMap[Op]
-    ? OperationOptionsMap[Op][Key]
-    : never;
-}[DeepcrawlOperations];
+// type OperationOptionKey = {
+//   [Op in DeepcrawlOperations]: keyof OperationOptionsMap[Op];
+// }[DeepcrawlOperations];
 
-// Export the function type for components to use - flexible interface for component access
-export type GetCurrentOptionValue = <Key extends string>(
-  key: Key,
-  fallback?: unknown,
-) => unknown;
+// type OperationOptionValue<Key extends OperationOptionKey> = {
+//   [Op in DeepcrawlOperations]: Key extends keyof OperationOptionsMap[Op]
+//     ? OperationOptionsMap[Op][Key]
+//     : never;
+// }[DeepcrawlOperations];
 
-export type GetCurrentOptions = () => OperationOptionsMap[DeepcrawlOperations];
+// // Export the function type for components to use - flexible interface for component access
+// export type GetCurrentOptionValue = <Key extends string>(
+//   key: Key,
+//   fallback?: unknown,
+// ) => unknown;
 
-type OperationOptionsUpdate<Op extends DeepcrawlOperations> =
-  | Partial<OperationOptionsMap[Op]>
-  | ((current: OperationOptionsMap[Op]) => OperationOptionsMap[Op]);
+// export type GetCurrentOptions = () => OperationOptionsMap[DeepcrawlOperations];
 
-export interface PlaygroundResponseMetadata {
-  executionTime?: number;
-  errorType?:
-    | 'read'
-    | 'links'
-    | 'rateLimit'
-    | 'auth'
-    | 'validation'
-    | 'network'
-    | 'server'
-    | 'unknown';
-  retryable?: boolean;
-  retryAfter?: number;
-  userMessage?: string;
-}
+// type OperationOptionsUpdate<Op extends DeepcrawlOperations> =
+//   | Partial<OperationOptionsMap[Op]>
+//   | ((current: OperationOptionsMap[Op]) => OperationOptionsMap[Op]);
 
-export type PlaygroundResponse = PlaygroundResponseMetadata & {
-  data?: DCResponseData;
-  error?: string;
-  status?: number;
-  targetUrl?: string;
-  timestamp?: string;
-};
+// export interface PlaygroundResponseMetadata {
+//   executionTime?: number;
+//   errorType?:
+//     | 'read'
+//     | 'links'
+//     | 'rateLimit'
+//     | 'auth'
+//     | 'validation'
+//     | 'network'
+//     | 'server'
+//     | 'unknown';
+//   retryable?: boolean;
+//   retryAfter?: number;
+//   userMessage?: string;
+// }
 
-const operations: readonly DeepcrawlOperations[] = [
-  'getMarkdown',
-  'readUrl',
-  'extractLinks',
-] as const;
+// export type PlaygroundResponse = PlaygroundResponseMetadata & {
+//   data?: DCResponseData;
+//   error?: string;
+//   status?: number;
+//   targetUrl?: string;
+//   timestamp?: string;
+// };
 
-interface UseTaskInputStateProps {
-  defaultOperation?: DeepcrawlOperations;
-  defaultUrl?: string;
-}
+// const operations: readonly DeepcrawlOperations[] = [
+//   'getMarkdown',
+//   'readUrl',
+//   'extractLinks',
+// ] as const;
 
-export function useTaskInputState({
-  defaultOperation = 'getMarkdown',
-  defaultUrl = '',
-}: UseTaskInputStateProps = {}) {
-  const [requestUrl, setRequestUrl] = useQueryState(
-    'url',
-    parseAsString.withDefault(defaultUrl),
-  );
+// interface UseTaskInputStateProps {
+//   defaultOperation?: DeepcrawlOperations;
+//   defaultUrl?: string;
+// }
 
-  // Operation state management using useQueryState for persistence
-  const [selectedOperation, setSelectedOperation] = useQueryState(
-    'operation',
-    parseAsStringLiteral(operations).withDefault(defaultOperation),
-  );
+// export function useTaskInputState({
+//   defaultOperation = 'getMarkdown',
+//   defaultUrl = '',
+// }: UseTaskInputStateProps = {}) {
+//   const [requestUrl, setRequestUrl] = useQueryState(
+//     'url',
+//     parseAsString.withDefault(defaultUrl),
+//   );
 
-  // Loading state management - separate state for each operation
-  const [isLoading, setIsLoading] = useState<
-    Record<DeepcrawlOperations, boolean>
-  >({
-    getMarkdown: false,
-    readUrl: false,
-    extractLinks: false,
-  });
+//   // Operation state management using useQueryState for persistence
+//   const [selectedOperation, setSelectedOperation] = useQueryState(
+//     'operation',
+//     parseAsStringLiteral(operations).withDefault(defaultOperation),
+//   );
 
-  // Response state management
-  const [responses, setResponses] = useState<
-    Record<string, PlaygroundResponse>
-  >({});
+//   // Loading state management - separate state for each operation
+//   const [isLoading, setIsLoading] = useState<
+//     Record<DeepcrawlOperations, boolean>
+//   >({
+//     getMarkdown: false,
+//     readUrl: false,
+//     extractLinks: false,
+//   });
 
-  // Options state management using nuqs for URL persistence and sharing
-  const [options, setOptions] = useQueryState(
-    'options',
-    parseAsJson(OperationOptionsSchema).withDefault(DEFAULT_OPERATION_OPTIONS),
-  );
+//   // Response state management
+//   const [responses, setResponses] = useState<
+//     Record<string, PlaygroundResponse>
+//   >({});
 
-  // Add deduplication ref to prevent multiple simultaneous requests
-  const activeRequestsRef = useRef<Set<string>>(new Set());
+//   // Options state management using nuqs for URL persistence and sharing
+//   const [options, setOptions] = useQueryState(
+//     'options',
+//     parseAsJson(OperationOptionsSchema).withDefault(DEFAULT_OPERATION_OPTIONS),
+//   );
 
-  // Helper functions for cleaner OptionsPanel configuration
-  const getCurrentOptions: GetCurrentOptions = () => {
-    const baseOptions = options[selectedOperation] || { url: '' };
-    return { ...baseOptions, url: requestUrl };
-  };
+//   // Add deduplication ref to prevent multiple simultaneous requests
+//   const activeRequestsRef = useRef<Set<string>>(new Set());
 
-  /**
-   * Enhanced options change handler with auto-detection for nested object merging.
-   *
-   * SMART MERGING LOGIC:
-   * - Direct properties (folderFirst, metadata, tree): Direct assignment
-   * - Nested objects (linkExtractionOptions, cacheOptions, etc.): Auto-detected and deep merged
-   * - Detection criteria: Both current and new values are plain objects (not arrays, null, etc.)
-   *
-   * This eliminates the need for separate merge helpers while maintaining state preservation.
-   */
-  const handleOptionsChange = (
-    update: OperationOptionsUpdate<typeof selectedOperation>,
-  ) => {
-    setOptions((prev) => {
-      const current = prev[
-        selectedOperation
-      ] as OperationOptionsMap[typeof selectedOperation];
+//   // Helper functions for cleaner OptionsPanel configuration
+//   const getCurrentOptions: GetCurrentOptions = () => {
+//     const baseOptions = options[selectedOperation] || { url: '' };
+//     return { ...baseOptions, url: requestUrl };
+//   };
 
-      if (typeof update === 'function') {
-        return {
-          ...prev,
-          [selectedOperation]: update(current),
-        };
-      }
+//   /**
+//    * Enhanced options change handler with auto-detection for nested object merging.
+//    *
+//    * SMART MERGING LOGIC:
+//    * - Direct properties (folderFirst, metadata, tree): Direct assignment
+//    * - Nested objects (linkExtractionOptions, cacheOptions, etc.): Auto-detected and deep merged
+//    * - Detection criteria: Both current and new values are plain objects (not arrays, null, etc.)
+//    *
+//    * This eliminates the need for separate merge helpers while maintaining state preservation.
+//    */
+//   const handleOptionsChange = (
+//     update: OperationOptionsUpdate<typeof selectedOperation>,
+//   ) => {
+//     setOptions((prev) => {
+//       const current = prev[
+//         selectedOperation
+//       ] as OperationOptionsMap[typeof selectedOperation];
 
-      // Enhanced merging: auto-detect nested objects and merge them properly
-      type NextOptionsType = OperationOptionsMap[typeof selectedOperation];
-      const next: NextOptionsType = { ...current };
+//       if (typeof update === 'function') {
+//         return {
+//           ...prev,
+//           [selectedOperation]: update(current),
+//         };
+//       }
 
-      // Helper function to check if a value is a plain object
-      const isPlainObject = (obj: unknown): obj is Record<string, unknown> => {
-        return (
-          obj !== null &&
-          typeof obj === 'object' &&
-          !Array.isArray(obj) &&
-          obj.constructor === Object
-        );
-      };
+//       // Enhanced merging: auto-detect nested objects and merge them properly
+//       type NextOptionsType = OperationOptionsMap[typeof selectedOperation];
+//       const next: NextOptionsType = { ...current };
 
-      for (const [key, value] of Object.entries(update)) {
-        const typedKey = key as keyof typeof current;
-        const currentValue = current[typedKey];
+//       // Helper function to check if a value is a plain object
+//       const isPlainObject = (obj: unknown): obj is Record<string, unknown> => {
+//         return (
+//           obj !== null &&
+//           typeof obj === 'object' &&
+//           !Array.isArray(obj) &&
+//           obj.constructor === Object
+//         );
+//       };
 
-        // Auto-detect nested objects that need deep merging
-        const isNestedObjectUpdate =
-          isPlainObject(currentValue) && isPlainObject(value);
+//       for (const [key, value] of Object.entries(update)) {
+//         const typedKey = key as keyof typeof current;
+//         const currentValue = current[typedKey];
 
-        if (isNestedObjectUpdate) {
-          // Deep merge for nested objects with explicit Record typing
-          const mergedValue = {
-            ...currentValue,
-            ...value,
-          };
-          (next as Record<keyof NextOptionsType, unknown>)[typedKey] =
-            mergedValue;
-        } else {
-          // Direct assignment for direct properties and complete replacements
-          (next as Record<keyof NextOptionsType, unknown>)[typedKey] = value;
-        }
-      }
+//         // Auto-detect nested objects that need deep merging
+//         const isNestedObjectUpdate =
+//           isPlainObject(currentValue) && isPlainObject(value);
 
-      return {
-        ...prev,
-        [selectedOperation]: next,
-      };
-    });
-  };
+//         if (isNestedObjectUpdate) {
+//           // Deep merge for nested objects with explicit Record typing
+//           const mergedValue = {
+//             ...currentValue,
+//             ...value,
+//           };
+//           (next as Record<keyof NextOptionsType, unknown>)[typedKey] =
+//             mergedValue;
+//         } else {
+//           // Direct assignment for direct properties and complete replacements
+//           (next as Record<keyof NextOptionsType, unknown>)[typedKey] = value;
+//         }
+//       }
 
-  const getCurrentOptionValue = <Key extends OperationOptionKey>(
-    key: Key,
-    fallback?: OperationOptionValue<Key>,
-  ): OperationOptionValue<Key> => {
-    const operationOptions = options[selectedOperation];
-    const value =
-      operationOptions && key in operationOptions
-        ? operationOptions[key as keyof typeof operationOptions]
-        : undefined;
+//       return {
+//         ...prev,
+//         [selectedOperation]: next,
+//       };
+//     });
+//   };
 
-    return (value ?? fallback) as OperationOptionValue<Key>;
-  };
+//   const getCurrentOptionValue = <Key extends OperationOptionKey>(
+//     key: Key,
+//     fallback?: OperationOptionValue<Key>,
+//   ): OperationOptionValue<Key> => {
+//     const operationOptions = options[selectedOperation];
+//     const value =
+//       operationOptions && key in operationOptions
+//         ? operationOptions[key as keyof typeof operationOptions]
+//         : undefined;
 
-  /**
-   * Reset operation options to their default values
-   * @param operation - Optional operation to reset. If not provided, resets all operations
-   */
-  const resetToDefaults = (operation?: DeepcrawlOperations) => {
-    setOptions((prev) => {
-      const defaultOptionsMap = {
-        readUrl: {
-          url: '',
-          ...DEFAULT_READ_OPTIONS,
-        },
-        extractLinks: {
-          url: '',
-          ...DEFAULT_LINKS_OPTIONS,
-        },
-        getMarkdown: {
-          url: '',
-          ...DEFAULT_GET_MARKDOWN_OPTIONS,
-        },
-      };
+//     return (value ?? fallback) as OperationOptionValue<Key>;
+//   };
 
-      if (operation) {
-        // Reset only the specified operation
-        return {
-          ...prev,
-          [operation]: {
-            ...defaultOptionsMap[operation],
-            url: requestUrl, // Preserve current URL
-          },
-        };
-      }
+//   /**
+//    * Reset operation options to their default values
+//    * @param operation - Optional operation to reset. If not provided, resets all operations
+//    */
+//   const resetToDefaults = (operation?: DeepcrawlOperations) => {
+//     setOptions((prev) => {
+//       const defaultOptionsMap = {
+//         readUrl: {
+//           url: '',
+//           ...DEFAULT_READ_OPTIONS,
+//         },
+//         extractLinks: {
+//           url: '',
+//           ...DEFAULT_LINKS_OPTIONS,
+//         },
+//         getMarkdown: {
+//           url: '',
+//           ...DEFAULT_GET_MARKDOWN_OPTIONS,
+//         },
+//       };
 
-      // Reset all operations
-      return {
-        readUrl: {
-          ...defaultOptionsMap.readUrl,
-          url: requestUrl, // Preserve current URL
-        },
-        extractLinks: {
-          ...defaultOptionsMap.extractLinks,
-          url: requestUrl, // Preserve current URL
-        },
-        getMarkdown: {
-          ...defaultOptionsMap.getMarkdown,
-          url: requestUrl, // Preserve current URL
-        },
-      };
-    });
-  };
+//       if (operation) {
+//         // Reset only the specified operation
+//         return {
+//           ...prev,
+//           [operation]: {
+//             ...defaultOptionsMap[operation],
+//             url: requestUrl, // Preserve current URL
+//           },
+//         };
+//       }
 
-  return {
-    // State
-    requestUrl,
-    selectedOperation,
-    isLoading,
-    responses,
-    options,
-    activeRequestsRef,
+//       // Reset all operations
+//       return {
+//         readUrl: {
+//           ...defaultOptionsMap.readUrl,
+//           url: requestUrl, // Preserve current URL
+//         },
+//         extractLinks: {
+//           ...defaultOptionsMap.extractLinks,
+//           url: requestUrl, // Preserve current URL
+//         },
+//         getMarkdown: {
+//           ...defaultOptionsMap.getMarkdown,
+//           url: requestUrl, // Preserve current URL
+//         },
+//       };
+//     });
+//   };
 
-    // Actions
-    setRequestUrl,
-    setSelectedOperation,
-    setIsLoading,
-    setResponses,
-    setOptions,
+//   return {
+//     // State
+//     requestUrl,
+//     selectedOperation,
+//     isLoading,
+//     responses,
+//     options,
+//     activeRequestsRef,
 
-    // Helpers
-    getCurrentOptions,
-    getCurrentOptionValue,
-    handleOptionsChange,
-    resetToDefaults,
-  };
-}
+//     // Actions
+//     setRequestUrl,
+//     setSelectedOperation,
+//     setIsLoading,
+//     setResponses,
+//     setOptions,
+
+//     // Helpers
+//     getCurrentOptions,
+//     getCurrentOptionValue,
+//     handleOptionsChange,
+//     resetToDefaults,
+//   };
+// }

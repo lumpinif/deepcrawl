@@ -13,19 +13,18 @@ import { Plus, Zap } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
 import {
   type DeepcrawlOperations,
-  type GetCurrentOptionValue,
-  useTaskInputState,
-} from '@/hooks/playground/use-task-input-state';
+  useEnhancedTaskInputState,
+} from '@/hooks/playground';
+import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import { SpinnerButton } from '../spinner-button';
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { ContentFormatOptionsMenu } from './content-format-options-menu';
-import { DetailedOptions } from './detailed-options';
+// import { DetailedOptions } from './detailed-options';
 import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { LinkExtractionOptionsMenu } from './link-extraction-options-menu';
 import { MarkdownOptionsMenu } from './markdown-options-menu';
@@ -35,7 +34,7 @@ import { OptionPreviewBadges } from './option-preview-badges';
 import { PGResponseArea } from './pg-response-area';
 import { UrlInput } from './url-input';
 
-// TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart handleOptionsChange generic function
+// TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart currentState.setOptions generic function
 
 // TODO: VALIDATE ALL TOOLTIPS AND DESCRIPTIONS FOR ALL OPTIONS
 
@@ -51,49 +50,37 @@ export const TaskInput = ({
   const [isError, setIsError] = useState(false);
   const [isDetailedBarOpen, setIsDetailedBarOpen] = useState(false);
 
-  // Use custom hooks for state management
+  // Use enhanced state management with operation-specific hooks
   const {
     requestUrl,
     selectedOperation,
-    isLoading,
+    isExecuting,
     responses,
-    options,
     activeRequestsRef,
     setRequestUrl,
     setSelectedOperation,
-    setIsLoading,
+    setIsExecuting,
     setResponses,
-    getCurrentOptionValue,
-    handleOptionsChange,
-    getCurrentOptions,
+    currentQueryState,
     resetToDefaults,
-  } = useTaskInputState({ defaultOperation, defaultUrl });
+    getAnyOperationState,
+    options: currentOptions,
+  } = useEnhancedTaskInputState({ defaultOperation, defaultUrl });
+
+  const { options: currentOpts, setOptions } = currentQueryState;
 
   // Use custom hook for API operations
   const { executeApiCall, handleRetry, formatTime, getCurrentExecutionTime } =
     useTaskInputOperations({
       requestUrl,
-      options,
+      getAnyOperationState,
       activeRequestsRef,
-      setIsLoading,
+      setIsExecuting,
       setResponses,
     });
 
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
-
-  // Bridge function to make the strictly-typed hook function compatible with component interfaces
-  // This allows components to access both operation keys and additional keys like 'cacheOptions', 'treeOptions', etc.
-  const getOptionValue: GetCurrentOptionValue = <Key extends string>(
-    key: Key,
-    fallback?: unknown,
-  ) => {
-    // Type-safe casting: the hook function accepts the same parameter types at runtime
-    type HookKey = Parameters<typeof getCurrentOptionValue>[0];
-    type HookFallback = Parameters<typeof getCurrentOptionValue>[1];
-
-    return getCurrentOptionValue(key as HookKey, fallback as HookFallback);
-  };
 
   // Memoize URL validation to prevent re-renders
   const isUrlValid = useMemo(() => {
@@ -132,7 +119,7 @@ export const TaskInput = ({
         <PromptInputToolbar>
           <PromptInputTools className="[&_button:first-child]:rounded-tl-lg [&_button:first-child]:rounded-bl-md">
             <OperationSelector
-              isLoading={isLoading[selectedOperation]}
+              isLoading={isExecuting[selectedOperation]}
               onOperationChange={setSelectedOperation}
               selectedOperation={selectedOperation}
             />
@@ -157,7 +144,7 @@ export const TaskInput = ({
           />
           <SpinnerButton
             buttonState={
-              isLoading[selectedOperation]
+              isExecuting[selectedOperation]
                 ? 'loading'
                 : isError
                   ? 'error'
@@ -165,10 +152,10 @@ export const TaskInput = ({
             }
             buttonVariant="default"
             className="group/spinner-button mr-2 w-32"
-            data-loading={isLoading[selectedOperation]}
-            disabled={isError || !isUrlValid || isLoading[selectedOperation]}
+            data-loading={isExecuting[selectedOperation]}
+            disabled={isError || !isUrlValid || isExecuting[selectedOperation]}
             errorElement={<span>Try again</span>}
-            isLoading={isLoading[selectedOperation]}
+            isLoading={isExecuting[selectedOperation]}
             loadingElement={
               <NumberFlow
                 className="text-primary-foreground transition-all duration-200 ease-out group-data-[loading=true]/spinner-button:scale-110 group-data-[loading=true]/spinner-button:animate-pulse"
@@ -234,7 +221,7 @@ export const TaskInput = ({
 
             {/*
               SIMPLIFIED OPTION MENU PATTERN:
-              All option menus now use handleOptionsChange() directly!
+              All option menus now use currentState.setOptions() directly!
               The function auto-detects nested objects and merges them properly while
               handling direct properties with simple assignment.
             */}
@@ -242,58 +229,72 @@ export const TaskInput = ({
             {/* Content format options */}
             <ContentFormatOptionsMenu
               contentFormatOptions={{
-                // ReadUrl options
-                metadata: getCurrentOptionValue('metadata') as boolean,
-                markdown: getCurrentOptionValue('markdown') as boolean,
-                cleanedHtml: getCurrentOptionValue('cleanedHtml') as boolean,
-                rawHtml: getCurrentOptionValue('rawHtml') as boolean,
-                robots: getCurrentOptionValue('robots') as boolean,
-                // ExtractLinks options
-                tree: getCurrentOptionValue('tree') as boolean,
-                sitemapXML: getCurrentOptionValue('sitemapXML') as boolean,
+                metadata:
+                  'metadata' in currentOpts ? currentOpts.metadata : undefined,
+                markdown:
+                  'markdown' in currentOpts
+                    ? currentOpts.markdown
+                    : selectedOperation === 'getMarkdown', // always true for getMarkdown
+                cleanedHtml:
+                  'cleanedHtml' in currentOpts
+                    ? currentOpts.cleanedHtml
+                    : undefined,
+                rawHtml:
+                  'rawHtml' in currentOpts ? currentOpts.rawHtml : undefined,
+                robots:
+                  'robots' in currentOpts ? currentOpts.robots : undefined,
+                tree: 'tree' in currentOpts ? currentOpts.tree : undefined,
+                sitemapXML:
+                  'sitemapXML' in currentOpts
+                    ? currentOpts.sitemapXML
+                    : undefined,
               }}
-              markdownOptions={getCurrentOptionValue(
-                'markdownConverterOptions',
-              )}
-              metadataOptions={getCurrentOptionValue('metadataOptions')}
+              markdownOptions={
+                'markdownConverterOptions' in currentOpts
+                  ? currentOpts.markdownConverterOptions
+                  : undefined
+              }
+              metadataOptions={
+                'metadataOptions' in currentOpts
+                  ? currentOpts.metadataOptions
+                  : undefined
+              }
               onContentFormatOptionsChange={(contentFormatOptions) =>
-                handleOptionsChange(contentFormatOptions)
+                setOptions(contentFormatOptions)
               }
               onMarkdownOptionsChange={(markdownConverterOptions) =>
-                handleOptionsChange({ markdownConverterOptions })
+                setOptions({ markdownConverterOptions })
               }
               onMetadataOptionsChange={(metadataOptions) =>
-                handleOptionsChange({ metadataOptions })
+                setOptions({ metadataOptions })
               }
-              onTreeOptionsChange={(treeOptions) =>
-                handleOptionsChange(treeOptions)
-              }
+              onTreeOptionsChange={(treeOptions) => setOptions(treeOptions)}
               operation={selectedOperation}
-              treeOptions={{
-                folderFirst: getCurrentOptionValue('folderFirst') as boolean,
-                linksOrder: getCurrentOptionValue('linksOrder') as
-                  | 'page'
-                  | 'alphabetical',
-                extractedLinks: getCurrentOptionValue(
-                  'extractedLinks',
-                ) as boolean,
-                subdomainAsRootUrl: getCurrentOptionValue(
-                  'subdomainAsRootUrl',
-                ) as boolean,
-                isPlatformUrl: getCurrentOptionValue(
-                  'isPlatformUrl',
-                ) as boolean,
-              }}
+              treeOptions={
+                /* extractLinks options include folderFirst, so it narrows currentOpts to LinksOptions type */
+                'folderFirst' in currentOpts &&
+                selectedOperation === 'extractLinks'
+                  ? {
+                      folderFirst: currentOpts.folderFirst,
+                      linksOrder: currentOpts.linksOrder,
+                      extractedLinks: currentOpts.extractedLinks,
+                      subdomainAsRootUrl: currentOpts.subdomainAsRootUrl,
+                      isPlatformUrl: currentOpts.isPlatformUrl,
+                    }
+                  : undefined
+              }
             />
 
             {/* Link extraction options - only available for extractLinks */}
             {selectedOperation === 'extractLinks' && (
               <LinkExtractionOptionsMenu
-                linkExtractionOptions={getCurrentOptionValue(
-                  'linkExtractionOptions',
-                )}
+                linkExtractionOptions={
+                  'linkExtractionOptions' in currentOpts
+                    ? currentOpts.linkExtractionOptions
+                    : undefined
+                }
                 onLinkExtractionOptionsChange={(linkExtractionOptions) =>
-                  handleOptionsChange({ linkExtractionOptions })
+                  setOptions({ linkExtractionOptions })
                 }
               />
             )}
@@ -301,27 +302,37 @@ export const TaskInput = ({
             {/* Markdown options - showing standalone for getMarkdown only */}
             <MarkdownOptionsMenu
               isMarkdownEnabled={selectedOperation === 'getMarkdown'}
-              markdownOptions={getCurrentOptionValue(
-                'markdownConverterOptions',
-              )}
+              markdownOptions={
+                'markdownConverterOptions' in currentOpts
+                  ? currentOpts.markdownConverterOptions
+                  : undefined
+              }
               onMarkdownOptionsChange={(markdownConverterOptions) =>
-                handleOptionsChange({ markdownConverterOptions })
+                setOptions({ markdownConverterOptions })
               }
             />
 
             {/* Cleaning processor options */}
             <CleaningProcessorMenu
               onProcessorChange={(processor) =>
-                handleOptionsChange({ cleaningProcessor: processor })
+                setOptions({ cleaningProcessor: processor })
               }
-              processor={getCurrentOptionValue('cleaningProcessor')}
+              processor={
+                'cleaningProcessor' in currentOpts
+                  ? currentOpts.cleaningProcessor
+                  : undefined
+              }
             />
 
             {/* Cache options */}
             <CacheOptionsMenu
-              cacheOptions={getCurrentOptionValue('cacheOptions')}
+              cacheOptions={
+                'cacheOptions' in currentOpts
+                  ? currentOpts.cacheOptions
+                  : undefined
+              }
               onCacheOptionsChange={(cacheOptions) =>
-                handleOptionsChange({ cacheOptions })
+                setOptions({ cacheOptions })
               }
             />
 
@@ -329,9 +340,13 @@ export const TaskInput = ({
             {(selectedOperation === 'readUrl' ||
               selectedOperation === 'extractLinks') && (
               <MetricsOptionsMenu
-                metricsOptions={getCurrentOptionValue('metricsOptions')}
+                metricsOptions={
+                  'metricsOptions' in currentOpts
+                    ? currentOpts.metricsOptions
+                    : undefined
+                }
                 onMetricsOptionsChange={(metricsOptions) =>
-                  handleOptionsChange({ metricsOptions })
+                  setOptions({ metricsOptions })
                 }
               />
             )}
@@ -339,9 +354,9 @@ export const TaskInput = ({
 
           <div className="flex items-center gap-x-0 overflow-hidden">
             <OptionPreviewBadges
-              getCurrentOptionValue={getOptionValue}
               isAccordionOpen={isDetailedBarOpen}
               operation={selectedOperation}
+              options={currentOptions}
             />
             {/* Detailed options toggle button */}
             <PromptInputButton
@@ -363,13 +378,13 @@ export const TaskInput = ({
           childrenProps={{ className: 'p-4' }}
           open={isDetailedBarOpen}
         >
-          <DetailedOptions
-            getCurrentOptions={getCurrentOptions}
-            getCurrentOptionValue={getOptionValue}
+          {/* We will fix it later */}
+          {/* <DetailedOptions
             operation={selectedOperation}
+            options={currentOptions}
             requestUrl={requestUrl}
             resetToDefaults={resetToDefaults}
-          />
+          /> */}
         </DetailedOptionsAccordion>
       </PromptInput>
 

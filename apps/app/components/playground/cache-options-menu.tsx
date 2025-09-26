@@ -18,18 +18,9 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type {
-  ExtractLinksOptions,
-  GetMarkdownOptions,
-  ReadUrlOptions,
-} from 'deepcrawl';
+import type { CacheOptionsInput } from 'deepcrawl';
 import { useRef, useState } from 'react';
 import { formatDaysFromSeconds } from '@/utils/playground/formatter';
-
-type CacheOptionsInput =
-  | ReadUrlOptions['cacheOptions']
-  | ExtractLinksOptions['cacheOptions']
-  | GetMarkdownOptions['cacheOptions'];
 
 interface CacheOptionsMenuProps {
   cacheOptions: CacheOptionsInput | undefined;

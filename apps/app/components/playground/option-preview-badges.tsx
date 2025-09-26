@@ -14,8 +14,16 @@ import {
 import type { ReactElement } from 'react';
 import type {
   DeepcrawlOperations,
-  GetCurrentOptionValue,
-} from '@/hooks/playground/use-task-input-state';
+  ExtractLinksOptionsWithoutUrl,
+  GetMarkdownOptionsWithoutUrl,
+  ReadUrlOptionsWithoutUrl,
+} from '@/hooks/playground/types';
+
+// Union type for all operation options
+type AllOperationOptions =
+  | ReadUrlOptionsWithoutUrl
+  | ExtractLinksOptionsWithoutUrl
+  | GetMarkdownOptionsWithoutUrl;
 
 interface OptionPreviewConfig {
   icon: ReactElement;
@@ -23,11 +31,11 @@ interface OptionPreviewConfig {
   condition: 'enabled' | 'always';
   operations: DeepcrawlOperations[] | 'all';
   colorClass: string;
-  getValue: (getCurrentOptionValue: GetCurrentOptionValue) => unknown;
+  getValue: (options: AllOperationOptions) => unknown;
   shouldShow?: (
     value: unknown,
     operation: DeepcrawlOperations,
-    getCurrentOptionValue: GetCurrentOptionValue,
+    options: AllOperationOptions,
   ) => boolean;
 }
 
@@ -38,12 +46,7 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     condition: 'always',
     operations: 'all',
     colorClass: 'green-600' as const,
-    getValue: (getCurrentOptionValue) => {
-      const options = getCurrentOptionValue('cacheOptions') as
-        | Record<string, unknown>
-        | undefined;
-      return options?.enabled;
-    },
+    getValue: (options) => options.cacheOptions?.enabled,
     shouldShow: () => true, // Always show cache status
   },
   markdown: {
@@ -52,7 +55,8 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     condition: 'enabled',
     operations: ['readUrl', 'getMarkdown'],
     colorClass: 'purple-600' as const,
-    getValue: (getCurrentOptionValue) => getCurrentOptionValue('markdown'),
+    getValue: (options) =>
+      'markdown' in options ? options.markdown : undefined,
     shouldShow: (value, operation) =>
       (operation === 'readUrl' || operation === 'getMarkdown') &&
       Boolean(value),
@@ -63,7 +67,8 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     condition: 'enabled',
     operations: ['readUrl', 'extractLinks'],
     colorClass: 'orange-600' as const,
-    getValue: (getCurrentOptionValue) => getCurrentOptionValue('metadata'),
+    getValue: (options) =>
+      'metadata' in options ? options.metadata : undefined,
     shouldShow: (value, operation) =>
       (operation === 'readUrl' || operation === 'extractLinks') &&
       Boolean(value),
@@ -74,7 +79,8 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     condition: 'enabled',
     operations: ['readUrl', 'extractLinks'],
     colorClass: 'blue-600' as const,
-    getValue: (getCurrentOptionValue) => getCurrentOptionValue('cleanedHtml'),
+    getValue: (options) =>
+      'cleanedHtml' in options ? options.cleanedHtml : undefined,
     shouldShow: (value, operation) =>
       (operation === 'readUrl' || operation === 'extractLinks') &&
       Boolean(value),
@@ -85,7 +91,7 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     condition: 'enabled',
     operations: ['extractLinks'],
     colorClass: 'indigo-600' as const,
-    getValue: (getCurrentOptionValue) => getCurrentOptionValue('tree'),
+    getValue: (options) => ('tree' in options ? options.tree : undefined),
     shouldShow: (value, operation) =>
       operation === 'extractLinks' && Boolean(value),
   },
@@ -95,11 +101,9 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     condition: 'enabled',
     operations: ['extractLinks'],
     colorClass: 'cyan-600' as const,
-    getValue: (getCurrentOptionValue) => {
-      const options = getCurrentOptionValue('linkExtractionOptions') as
-        | Record<string, unknown>
-        | undefined;
-      return options?.includeExternal;
+    getValue: (options) => {
+      const extractOptions = options as ExtractLinksOptionsWithoutUrl;
+      return extractOptions.linkExtractionOptions?.includeExternal;
     },
     shouldShow: (value, operation) =>
       operation === 'extractLinks' && Boolean(value),
@@ -108,14 +112,14 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
 
 interface OptionPreviewBadgesProps {
   operation: DeepcrawlOperations;
-  getCurrentOptionValue: GetCurrentOptionValue;
+  options: AllOperationOptions;
   className?: string;
   isAccordionOpen?: boolean;
 }
 
 export function OptionPreviewBadges({
   operation,
-  getCurrentOptionValue,
+  options,
   className,
   isAccordionOpen,
 }: OptionPreviewBadgesProps) {
@@ -131,11 +135,11 @@ export function OptionPreviewBadges({
       }
 
       // Get the current value
-      const value = config.getValue(getCurrentOptionValue);
+      const value = config.getValue(options);
 
       // Check if should show based on condition and custom logic
       return config.shouldShow
-        ? config.shouldShow(value, operation, getCurrentOptionValue)
+        ? config.shouldShow(value, operation, options)
         : config.condition === 'always'
           ? true
           : Boolean(value);
@@ -158,7 +162,7 @@ export function OptionPreviewBadges({
       )}
     >
       {optionsToShow.map(([key, config]) => {
-        const value = config.getValue(getCurrentOptionValue);
+        const value = config.getValue(options);
         const isEnabled = Boolean(value);
 
         // Special handling for cache - show enabled/disabled status
