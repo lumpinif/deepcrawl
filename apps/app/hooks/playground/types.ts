@@ -120,3 +120,80 @@ export type PlaygroundResponse = PlaygroundResponseMetadata & {
 export type PlaygroundResponses = {
   [K in DeepcrawlOperations]?: PlaygroundResponse;
 };
+
+/* ------------------------------------------------------------------------------------ */
+/* REACT CONTEXT TYPES FOR GRANULAR STATE MANAGEMENT */
+/* ------------------------------------------------------------------------------------ */
+
+// Core playground state - URL, operation, execution status, responses
+export interface PlaygroundCoreState {
+  requestUrl: string;
+  selectedOperation: DeepcrawlOperations;
+  isExecuting: Record<DeepcrawlOperations, boolean>;
+  responses: PlaygroundResponses;
+  activeRequestsRef: React.RefObject<Set<string>>;
+}
+
+// Operation-specific options state with current operation focus
+export interface PlaygroundOptionsState {
+  // Current operation's query state for direct access
+  currentQueryState: OperationQueryState<OperationToOptions[DeepcrawlOperations]>;
+  // All operation states for cross-operation access
+  operationQueryStates: OperationQueryStateMap;
+  // Utility getter for any operation state
+  getAnyOperationState: GetAnyOperationState;
+  // Direct access to current operation options (convenience)
+  currentOptions: OperationToOptions[DeepcrawlOperations];
+}
+
+// All action functions for state updates
+export interface PlaygroundActions {
+  // Core actions
+  setRequestUrl: (value: string | ((old: string) => string | null) | null, options?: any) => Promise<URLSearchParams>;
+  setSelectedOperation: (value: DeepcrawlOperations | ((old: DeepcrawlOperations) => DeepcrawlOperations | null) | null, options?: any) => Promise<URLSearchParams>;
+  setIsExecuting: (
+    fn: (prev: Record<DeepcrawlOperations, boolean>) => Record<DeepcrawlOperations, boolean>
+  ) => void;
+  setResponses: (fn: (prev: PlaygroundResponses) => PlaygroundResponses) => void;
+
+  // Option actions
+  resetToDefaults: (operation?: DeepcrawlOperations) => void;
+
+  // API operations
+  executeApiCall: (operation: DeepcrawlOperations, label: string) => Promise<void>;
+  handleRetry: (operation: DeepcrawlOperations, label: string) => void;
+
+  // Utility functions
+  formatTime: (ms: number, asString?: boolean) => number | string;
+  getCurrentExecutionTime: (operation: DeepcrawlOperations) => number;
+}
+
+// Context provider props
+export interface PlaygroundProviderProps {
+  children: React.ReactNode;
+  defaultOperation?: DeepcrawlOperations;
+  defaultUrl?: string;
+}
+
+// Hook return types for granular access
+export interface UsePlaygroundCoreReturn extends PlaygroundCoreState {}
+
+export interface UsePlaygroundOptionsReturn extends PlaygroundOptionsState {}
+
+export interface UsePlaygroundActionsReturn extends PlaygroundActions {}
+
+// Combined hook return for backward compatibility
+export interface UsePlaygroundReturn
+  extends PlaygroundCoreState,
+          PlaygroundOptionsState,
+          PlaygroundActions {}
+
+// Context selector types for performance optimization
+export type PlaygroundCoreSelector<T> = (state: PlaygroundCoreState) => T;
+export type PlaygroundOptionsSelector<T> = (state: PlaygroundOptionsState) => T;
+export type PlaygroundActionsSelector<T> = (state: PlaygroundActions) => T;
+
+// Provider context values (internal)
+export interface PlaygroundCoreContextValue extends PlaygroundCoreState {}
+export interface PlaygroundOptionsContextValue extends PlaygroundOptionsState {}
+export interface PlaygroundActionsContextValue extends PlaygroundActions {}
