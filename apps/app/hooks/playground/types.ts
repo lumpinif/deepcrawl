@@ -13,6 +13,7 @@ import {
   ReadOptionsSchema,
   type ReadUrlResponse,
 } from 'deepcrawl';
+import type { UseQueryStateOptions } from 'nuqs';
 import type z from 'zod/v4';
 
 // The default configs already don't include URL, but the SDK types do
@@ -137,7 +138,9 @@ export interface PlaygroundCoreState {
 // Operation-specific options state with current operation focus
 export interface PlaygroundOptionsState {
   // Current operation's query state for direct access
-  currentQueryState: OperationQueryState<OperationToOptions[DeepcrawlOperations]>;
+  currentQueryState: OperationQueryState<
+    OperationToOptions[DeepcrawlOperations]
+  >;
   // All operation states for cross-operation access
   operationQueryStates: OperationQueryStateMap;
   // Utility getter for any operation state
@@ -149,18 +152,34 @@ export interface PlaygroundOptionsState {
 // All action functions for state updates
 export interface PlaygroundActions {
   // Core actions
-  setRequestUrl: (value: string | ((old: string) => string | null) | null, options?: any) => Promise<URLSearchParams>;
-  setSelectedOperation: (value: DeepcrawlOperations | ((old: DeepcrawlOperations) => DeepcrawlOperations | null) | null, options?: any) => Promise<URLSearchParams>;
+  setRequestUrl: (
+    value: string | ((old: string) => string | null) | null,
+    options?: UseQueryStateOptions<string>,
+  ) => Promise<URLSearchParams>;
+  setSelectedOperation: (
+    value:
+      | DeepcrawlOperations
+      | ((old: DeepcrawlOperations) => DeepcrawlOperations | null)
+      | null,
+    options?: UseQueryStateOptions<DeepcrawlOperations>,
+  ) => Promise<URLSearchParams>;
   setIsExecuting: (
-    fn: (prev: Record<DeepcrawlOperations, boolean>) => Record<DeepcrawlOperations, boolean>
+    fn: (
+      prev: Record<DeepcrawlOperations, boolean>,
+    ) => Record<DeepcrawlOperations, boolean>,
   ) => void;
-  setResponses: (fn: (prev: PlaygroundResponses) => PlaygroundResponses) => void;
+  setResponses: (
+    fn: (prev: PlaygroundResponses) => PlaygroundResponses,
+  ) => void;
 
   // Option actions
   resetToDefaults: (operation?: DeepcrawlOperations) => void;
 
   // API operations
-  executeApiCall: (operation: DeepcrawlOperations, label: string) => Promise<void>;
+  executeApiCall: (
+    operation: DeepcrawlOperations,
+    label: string,
+  ) => Promise<void>;
   handleRetry: (operation: DeepcrawlOperations, label: string) => void;
 
   // Utility functions
@@ -185,8 +204,8 @@ export interface UsePlaygroundActionsReturn extends PlaygroundActions {}
 // Combined hook return for backward compatibility
 export interface UsePlaygroundReturn
   extends PlaygroundCoreState,
-          PlaygroundOptionsState,
-          PlaygroundActions {}
+    PlaygroundOptionsState,
+    PlaygroundActions {}
 
 // Context selector types for performance optimization
 export type PlaygroundCoreSelector<T> = (state: PlaygroundCoreState) => T;
