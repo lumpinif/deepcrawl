@@ -61,10 +61,10 @@ import {
 } from 'lucide-react';
 import type { ElementType, ReactElement } from 'react';
 import { cloneElement, isValidElement, useRef, useState } from 'react';
-import type {
-  DeepcrawlOperations,
-  GetAnyOperationState,
-} from '@/hooks/playground/types';
+import {
+  usePlaygroundCore,
+  usePlaygroundOptions,
+} from '@/hooks/playground/playground-context';
 
 // Union type for all possible content format options
 // {
@@ -82,23 +82,6 @@ type ContentFormatOptions = Pick<
 > &
   Pick<LinksOptionsInput, 'tree'> &
   Pick<ReadOptionsInput, 'markdown' | 'rawHtml'> & {};
-
-interface ContentFormatOptionsMenuProps {
-  operation: DeepcrawlOperations;
-  getAnyOperationState: GetAnyOperationState;
-  contentFormatOptions: ContentFormatOptions | undefined;
-  onContentFormatOptionsChange: (
-    contentFormatOptions: ContentFormatOptions,
-  ) => void;
-  metadataOptions?: MetadataOptionsInput;
-  onMetadataOptionsChange?: (metadataOptions: MetadataOptionsInput) => void;
-  treeOptions?: TreeOptionsInput;
-  onTreeOptionsChange?: (treeOptions: TreeOptionsInput) => void;
-  markdownOptions?: MarkdownConverterOptionsInput;
-  onMarkdownOptionsChange?: (
-    markdownOptions: MarkdownConverterOptionsInput,
-  ) => void;
-}
 
 // Configuration for different operations
 const OPERATION_CONFIGS = {
@@ -373,17 +356,67 @@ function renderIcon(
   return <C aria-hidden className={extraClass} />;
 }
 
-export function ContentFormatOptionsMenu({
-  operation,
-  contentFormatOptions,
-  onContentFormatOptionsChange,
-  metadataOptions,
-  onMetadataOptionsChange,
-  treeOptions,
-  onTreeOptionsChange,
-  markdownOptions,
-  onMarkdownOptionsChange,
-}: ContentFormatOptionsMenuProps) {
+export function ContentFormatOptionsMenu() {
+  // Get state and actions from context
+  const { selectedOperation } = usePlaygroundCore();
+  const { currentQueryState } = usePlaygroundOptions();
+
+  // Extract all the data that was previously passed as props
+  const op = selectedOperation;
+  const { options: currentOpts, setOptions } = currentQueryState;
+
+  const contentFormatOptions = {
+    metadata: 'metadata' in currentOpts ? currentOpts.metadata : undefined,
+    markdown:
+      'markdown' in currentOpts
+        ? currentOpts.markdown
+        : selectedOperation === 'getMarkdown', // always true for getMarkdown
+    cleanedHtml:
+      'cleanedHtml' in currentOpts ? currentOpts.cleanedHtml : undefined,
+    rawHtml: 'rawHtml' in currentOpts ? currentOpts.rawHtml : undefined,
+    robots: 'robots' in currentOpts ? currentOpts.robots : undefined,
+    tree: 'tree' in currentOpts ? currentOpts.tree : undefined,
+    sitemapXML:
+      'sitemapXML' in currentOpts ? currentOpts.sitemapXML : undefined,
+  } as ContentFormatOptions;
+
+  const metadataOptions =
+    'metadataOptions' in currentOpts ? currentOpts.metadataOptions : undefined;
+  const treeOptions =
+    'folderFirst' in currentOpts && selectedOperation === 'extractLinks'
+      ? {
+          folderFirst: currentOpts.folderFirst,
+          linksOrder: currentOpts.linksOrder,
+          extractedLinks: currentOpts.extractedLinks,
+          subdomainAsRootUrl: currentOpts.subdomainAsRootUrl,
+          isPlatformUrl: currentOpts.isPlatformUrl,
+        }
+      : undefined;
+  const markdownOptions =
+    'markdownConverterOptions' in currentOpts
+      ? currentOpts.markdownConverterOptions
+      : undefined;
+
+  // Create change handlers that use context
+  const onContentFormatOptionsChange = (
+    contentFormatOptions: ContentFormatOptions,
+  ) => {
+    setOptions(contentFormatOptions);
+  };
+
+  const onMetadataOptionsChange = (metadataOptions: MetadataOptionsInput) => {
+    setOptions({ metadataOptions });
+  };
+
+  const onTreeOptionsChange = (treeOptions: TreeOptionsInput) => {
+    setOptions(treeOptions);
+  };
+
+  const onMarkdownOptionsChange = (
+    markdownOptions: MarkdownConverterOptionsInput,
+  ) => {
+    setOptions({ markdownConverterOptions: markdownOptions });
+  };
   const [isOpen, setIsOpen] = useState(false);
   const [isMetadataSubOpen, setIsMetadataSubOpen] = useState(false);
   const [isTreeSubOpen, setIsTreeSubOpen] = useState(false);
@@ -395,7 +428,7 @@ export function ContentFormatOptionsMenu({
 
   // Get operation-specific configuration
   const operationConfig =
-    OPERATION_CONFIGS[operation as keyof typeof OPERATION_CONFIGS];
+    OPERATION_CONFIGS[op as keyof typeof OPERATION_CONFIGS];
 
   // Skip rendering if operation doesn't have content options
   if (!operationConfig) {
@@ -405,69 +438,56 @@ export function ContentFormatOptionsMenu({
   const resetToDefaults = () => {
     onContentFormatOptionsChange(operationConfig.defaults);
 
-    // Also reset metadata options if the handler is available
-    if (onMetadataOptionsChange) {
-      resetMetadataToDefaults();
-    }
+    // Also reset metadata options
+    resetMetadataToDefaults();
 
-    // Also reset tree options if the handler is available
-    if (onTreeOptionsChange) {
-      resetTreeToDefaults();
-    }
+    // Also reset tree options
+    resetTreeToDefaults();
 
-    // Also reset markdown options if the handler is available
-    if (onMarkdownOptionsChange) {
-      resetMarkdownToDefaults();
-    }
+    // Also reset markdown options
+    resetMarkdownToDefaults();
   };
 
   // Metadata options helpers
   const resetMetadataToDefaults = () => {
-    if (onMetadataOptionsChange) {
-      onMetadataOptionsChange({
-        title: DEFAULT_METADATA_OPTIONS.title,
-        description: DEFAULT_METADATA_OPTIONS.description,
-        language: DEFAULT_METADATA_OPTIONS.language,
-        canonical: DEFAULT_METADATA_OPTIONS.canonical,
-        robots: DEFAULT_METADATA_OPTIONS.robots,
-        author: DEFAULT_METADATA_OPTIONS.author,
-        keywords: DEFAULT_METADATA_OPTIONS.keywords,
-        favicon: DEFAULT_METADATA_OPTIONS.favicon,
-        openGraph: DEFAULT_METADATA_OPTIONS.openGraph,
-        twitter: DEFAULT_METADATA_OPTIONS.twitter,
-      });
-    }
+    onMetadataOptionsChange({
+      title: DEFAULT_METADATA_OPTIONS.title,
+      description: DEFAULT_METADATA_OPTIONS.description,
+      language: DEFAULT_METADATA_OPTIONS.language,
+      canonical: DEFAULT_METADATA_OPTIONS.canonical,
+      robots: DEFAULT_METADATA_OPTIONS.robots,
+      author: DEFAULT_METADATA_OPTIONS.author,
+      keywords: DEFAULT_METADATA_OPTIONS.keywords,
+      favicon: DEFAULT_METADATA_OPTIONS.favicon,
+      openGraph: DEFAULT_METADATA_OPTIONS.openGraph,
+      twitter: DEFAULT_METADATA_OPTIONS.twitter,
+    });
   };
 
   // Tree options helpers
   const resetTreeToDefaults = () => {
-    if (onTreeOptionsChange) {
-      onTreeOptionsChange({
-        folderFirst: DEFAULT_TREE_OPTIONS.folderFirst,
-        linksOrder: DEFAULT_TREE_OPTIONS.linksOrder,
-        extractedLinks: DEFAULT_TREE_OPTIONS.extractedLinks,
-        subdomainAsRootUrl: DEFAULT_TREE_OPTIONS.subdomainAsRootUrl,
-        isPlatformUrl: DEFAULT_TREE_OPTIONS.isPlatformUrl,
-      });
-    }
+    onTreeOptionsChange({
+      folderFirst: DEFAULT_TREE_OPTIONS.folderFirst,
+      linksOrder: DEFAULT_TREE_OPTIONS.linksOrder,
+      extractedLinks: DEFAULT_TREE_OPTIONS.extractedLinks,
+      subdomainAsRootUrl: DEFAULT_TREE_OPTIONS.subdomainAsRootUrl,
+      isPlatformUrl: DEFAULT_TREE_OPTIONS.isPlatformUrl,
+    });
   };
 
   // Markdown options helpers
   const resetMarkdownToDefaults = () => {
-    if (onMarkdownOptionsChange) {
-      onMarkdownOptionsChange({
-        preferNativeParser:
-          DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
-        bulletMarker: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker,
-        codeBlockStyle: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle,
-        maxConsecutiveNewlines:
-          DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
-        keepDataImages: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
-        useInlineLinks: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
-        useLinkReferenceDefinitions:
-          DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
-      });
-    }
+    onMarkdownOptionsChange({
+      preferNativeParser: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
+      bulletMarker: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker,
+      codeBlockStyle: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle,
+      maxConsecutiveNewlines:
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
+      keepDataImages: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
+      useInlineLinks: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
+      useLinkReferenceDefinitions:
+        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
+    });
   };
 
   // Check if metadata extraction is enabled
@@ -481,15 +501,13 @@ export function ContentFormatOptionsMenu({
   // Check if tree is enabled (only for extractLinks operation)
   const isTreeEnabled = Boolean(
     contentFormatOptions?.tree ??
-      (operation === 'extractLinks' ? DEFAULT_LINKS_OPTIONS.tree : false),
+      (op === 'extractLinks' ? DEFAULT_LINKS_OPTIONS.tree : false),
   );
 
   // Check if markdown is enabled (for readUrl and getMarkdown operations)
   const isMarkdownEnabled = Boolean(
     contentFormatOptions?.markdown ??
-      (operation === 'readUrl'
-        ? DEFAULT_READ_OPTIONS.markdown
-        : operation === 'getMarkdown'),
+      (op === 'readUrl' ? DEFAULT_READ_OPTIONS.markdown : op === 'getMarkdown'),
   );
 
   // Check if metadata options have been customized
@@ -533,9 +551,6 @@ export function ContentFormatOptionsMenu({
       return currentValue !== undefined && currentValue !== defaultValue;
     });
 
-  const baseColor =
-    'group-data-[customized=true]:text-orange-600 group-hover:!text-orange-600' as const;
-
   return (
     <Tooltip>
       <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
@@ -547,7 +562,12 @@ export function ContentFormatOptionsMenu({
             onMouseEnter={() => iconRef.current?.startAnimation()}
             onMouseLeave={() => iconRef.current?.stopAnimation()}
           >
-            <FilePenLineIcon className={cn(baseColor)} ref={iconRef} />
+            <FilePenLineIcon
+              className={cn(
+                'group-hover:!text-metadata group-data-[customized=true]:text-metadata',
+              )}
+              ref={iconRef}
+            />
           </PromptInputActionMenuTrigger>
         </TooltipTrigger>
         <PromptInputActionMenuContent
@@ -585,7 +605,7 @@ export function ContentFormatOptionsMenu({
                   ] ?? defaultValue;
 
                 // Special handling for metadata option - add sub-menu
-                if (optionKey === 'metadata' && onMetadataOptionsChange) {
+                if (optionKey === 'metadata') {
                   return (
                     <div className="group/metadata space-y-2" key={optionKey}>
                       {/* Main metadata toggle */}
@@ -709,7 +729,7 @@ export function ContentFormatOptionsMenu({
                 }
 
                 // Special handling for tree option - add sub-menu
-                if (optionKey === 'tree' && onTreeOptionsChange) {
+                if (optionKey === 'tree') {
                   return (
                     <div className="group/tree space-y-2" key={optionKey}>
                       {/* Main tree toggle */}
@@ -900,9 +920,9 @@ export function ContentFormatOptionsMenu({
                 }
 
                 // Special handling for markdown option - add sub-menu
-                if (optionKey === 'markdown' && onMarkdownOptionsChange) {
+                if (optionKey === 'markdown') {
                   // For getMarkdown operation, markdown is displayed as a standalone option menu
-                  if (operation === 'getMarkdown') {
+                  if (op === 'getMarkdown') {
                     return null;
                   }
 

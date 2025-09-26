@@ -58,67 +58,8 @@ export function PlaygroundOptionsMenusToolbar({
           )}
         </AnimatePresence>
 
-        {/*
-              SIMPLIFIED OPTION MENU PATTERN:
-              All option menus now use currentState.setOptions() directly!
-              The function auto-detects nested objects and merges them properly while
-              handling direct properties with simple assignment.
-            */}
-
         {/* Content format options */}
-        <ContentFormatOptionsMenu
-          contentFormatOptions={{
-            metadata:
-              'metadata' in currentOpts ? currentOpts.metadata : undefined,
-            markdown:
-              'markdown' in currentOpts
-                ? currentOpts.markdown
-                : selectedOperation === 'getMarkdown', // always true for getMarkdown
-            cleanedHtml:
-              'cleanedHtml' in currentOpts
-                ? currentOpts.cleanedHtml
-                : undefined,
-            rawHtml: 'rawHtml' in currentOpts ? currentOpts.rawHtml : undefined,
-            robots: 'robots' in currentOpts ? currentOpts.robots : undefined,
-            tree: 'tree' in currentOpts ? currentOpts.tree : undefined,
-            sitemapXML:
-              'sitemapXML' in currentOpts ? currentOpts.sitemapXML : undefined,
-          }}
-          getAnyOperationState={getAnyOperationState}
-          markdownOptions={
-            'markdownConverterOptions' in currentOpts
-              ? currentOpts.markdownConverterOptions
-              : undefined
-          }
-          metadataOptions={
-            'metadataOptions' in currentOpts
-              ? currentOpts.metadataOptions
-              : undefined
-          }
-          onContentFormatOptionsChange={(contentFormatOptions) =>
-            setOptions(contentFormatOptions)
-          }
-          onMarkdownOptionsChange={(markdownConverterOptions) =>
-            setOptions({ markdownConverterOptions })
-          }
-          onMetadataOptionsChange={(metadataOptions) =>
-            setOptions({ metadataOptions })
-          }
-          onTreeOptionsChange={(treeOptions) => setOptions(treeOptions)}
-          operation={selectedOperation}
-          treeOptions={
-            /* extractLinks options include folderFirst, so it narrows currentOpts to LinksOptions type */
-            'folderFirst' in currentOpts && selectedOperation === 'extractLinks'
-              ? {
-                  folderFirst: currentOpts.folderFirst,
-                  linksOrder: currentOpts.linksOrder,
-                  extractedLinks: currentOpts.extractedLinks,
-                  subdomainAsRootUrl: currentOpts.subdomainAsRootUrl,
-                  isPlatformUrl: currentOpts.isPlatformUrl,
-                }
-              : undefined
-          }
-        />
+        <ContentFormatOptionsMenu />
 
         {/* Link extraction options - only available for extractLinks */}
         {selectedOperation === 'extractLinks' && (
