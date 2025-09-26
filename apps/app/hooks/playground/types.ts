@@ -29,6 +29,7 @@ export const LinksOptionsSchemaWithoutUrl = LinksOptionsSchema.omit({
   url: true,
 });
 
+/* NOTE: WE ARE USING INPUT TYPES HERE TO DEFINE THE OPTIONS, WHICH MAY CONTAIN SMARTBOOL AS STRING */
 export type GetMarkdownOptionsWithoutUrl = z.input<
   typeof GetMarkdownOptionsSchemaWithoutUrl
 >;

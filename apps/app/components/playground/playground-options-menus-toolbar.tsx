@@ -6,10 +6,7 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import {
-  usePlaygroundCore,
-  usePlaygroundOptions,
-} from '@/hooks/playground/playground-context';
+
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { ContentFormatOptionsMenu } from './content-format-options-menu';
@@ -27,11 +24,6 @@ export function PlaygroundOptionsMenusToolbar({
   isDetailedBarOpen,
   setIsDetailedBarOpen,
 }: PlaygroundOptionsMenusToolbarProps) {
-  // Get state from context instead of props
-  const { selectedOperation } = usePlaygroundCore();
-  const { currentQueryState, getAnyOperationState } = usePlaygroundOptions();
-  const { options: currentOpts, setOptions } = currentQueryState;
-
   return (
     <PromptInputToolbar
       className="peer/toolbar group/toolbar border-b-0 hover:cursor-pointer"
@@ -78,11 +70,7 @@ export function PlaygroundOptionsMenusToolbar({
       </PromptInputTools>
 
       <div className="flex items-center gap-x-0 overflow-hidden">
-        <OptionPreviewBadges
-          isAccordionOpen={isDetailedBarOpen}
-          operation={selectedOperation}
-          options={currentOpts}
-        />
+        <OptionPreviewBadges isAccordionOpen={isDetailedBarOpen} />
         {/* Detailed options toggle button */}
         <PromptInputButton
           className="cursor-pointer transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]>svg]:text-primary"

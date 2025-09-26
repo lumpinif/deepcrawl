@@ -12,30 +12,45 @@ import {
   X,
 } from 'lucide-react';
 import type { ReactElement } from 'react';
+import {
+  usePlaygroundCore,
+  usePlaygroundOptions,
+} from '@/hooks/playground/playground-context';
 import type {
   DeepcrawlOperations,
-  ExtractLinksOptionsWithoutUrl,
-  GetMarkdownOptionsWithoutUrl,
-  ReadUrlOptionsWithoutUrl,
+  OperationToOptions,
 } from '@/hooks/playground/types';
 
-// Union type for all operation options
-type AllOperationOptions =
-  | ReadUrlOptionsWithoutUrl
-  | ExtractLinksOptionsWithoutUrl
-  | GetMarkdownOptionsWithoutUrl;
+// Helper function to convert smartbool values to boolean
+function convertSmartBool(
+  value: string | boolean | undefined,
+): boolean | undefined {
+  if (value === undefined) {
+    return;
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (value === 'true') {
+    return true;
+  }
+  if (value === 'false') {
+    return false;
+  }
+  return;
+}
 
-interface OptionPreviewConfig {
+interface OptionPreviewConfig<T = boolean | undefined> {
   icon: ReactElement;
   label: string;
   condition: 'enabled' | 'always';
   operations: DeepcrawlOperations[] | 'all';
   colorClass: string;
-  getValue: (options: AllOperationOptions) => unknown;
+  getValue: (options: OperationToOptions[DeepcrawlOperations]) => T;
   shouldShow?: (
-    value: unknown,
+    value: T,
     operation: DeepcrawlOperations,
-    options: AllOperationOptions,
+    options: OperationToOptions[DeepcrawlOperations],
   ) => boolean;
 }
 
@@ -46,7 +61,7 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     condition: 'always',
     operations: 'all',
     colorClass: 'green-600' as const,
-    getValue: (options) => options.cacheOptions?.enabled,
+    getValue: (options) => convertSmartBool(options.cacheOptions?.enabled),
     shouldShow: () => true, // Always show cache status
   },
   markdown: {
@@ -56,7 +71,7 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     operations: ['readUrl', 'getMarkdown'],
     colorClass: 'purple-600' as const,
     getValue: (options) =>
-      'markdown' in options ? options.markdown : undefined,
+      'markdown' in options ? convertSmartBool(options.markdown) : undefined,
     shouldShow: (value, operation) =>
       (operation === 'readUrl' || operation === 'getMarkdown') &&
       Boolean(value),
@@ -68,7 +83,7 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     operations: ['readUrl', 'extractLinks'],
     colorClass: 'orange-600' as const,
     getValue: (options) =>
-      'metadata' in options ? options.metadata : undefined,
+      'metadata' in options ? convertSmartBool(options.metadata) : undefined,
     shouldShow: (value, operation) =>
       (operation === 'readUrl' || operation === 'extractLinks') &&
       Boolean(value),
@@ -80,7 +95,9 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     operations: ['readUrl', 'extractLinks'],
     colorClass: 'blue-600' as const,
     getValue: (options) =>
-      'cleanedHtml' in options ? options.cleanedHtml : undefined,
+      'cleanedHtml' in options
+        ? convertSmartBool(options.cleanedHtml)
+        : undefined,
     shouldShow: (value, operation) =>
       (operation === 'readUrl' || operation === 'extractLinks') &&
       Boolean(value),
@@ -91,7 +108,8 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     condition: 'enabled',
     operations: ['extractLinks'],
     colorClass: 'indigo-600' as const,
-    getValue: (options) => ('tree' in options ? options.tree : undefined),
+    getValue: (options) =>
+      'tree' in options ? convertSmartBool(options.tree) : undefined,
     shouldShow: (value, operation) =>
       operation === 'extractLinks' && Boolean(value),
   },
@@ -102,8 +120,9 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
     operations: ['extractLinks'],
     colorClass: 'cyan-600' as const,
     getValue: (options) => {
-      const extractOptions = options as ExtractLinksOptionsWithoutUrl;
-      return extractOptions.linkExtractionOptions?.includeExternal;
+      return 'linkExtractionOptions' in options
+        ? convertSmartBool(options.linkExtractionOptions?.includeExternal)
+        : undefined;
     },
     shouldShow: (value, operation) =>
       operation === 'extractLinks' && Boolean(value),
@@ -111,18 +130,21 @@ const OPTION_PREVIEW_CONFIG: Record<string, OptionPreviewConfig> = {
 };
 
 interface OptionPreviewBadgesProps {
-  operation: DeepcrawlOperations;
-  options: AllOperationOptions;
   className?: string;
   isAccordionOpen?: boolean;
 }
 
 export function OptionPreviewBadges({
-  operation,
-  options,
   className,
   isAccordionOpen,
 }: OptionPreviewBadgesProps) {
+  // Get state from context
+  const { selectedOperation } = usePlaygroundCore();
+  const { currentQueryState } = usePlaygroundOptions();
+  const { options: currentOptions } = currentQueryState;
+
+  // Use context data instead of props
+  const operation = selectedOperation;
   // Get all applicable options for the current operation
   const applicableOptions = Object.entries(OPTION_PREVIEW_CONFIG).filter(
     ([_, config]) => {
@@ -135,11 +157,11 @@ export function OptionPreviewBadges({
       }
 
       // Get the current value
-      const value = config.getValue(options);
+      const value = config.getValue(currentOptions);
 
       // Check if should show based on condition and custom logic
       return config.shouldShow
-        ? config.shouldShow(value, operation, options)
+        ? config.shouldShow(value, operation, currentOptions)
         : config.condition === 'always'
           ? true
           : Boolean(value);
@@ -162,7 +184,7 @@ export function OptionPreviewBadges({
       )}
     >
       {optionsToShow.map(([key, config]) => {
-        const value = config.getValue(options);
+        const value = config.getValue(currentOptions);
         const isEnabled = Boolean(value);
 
         // Special handling for cache - show enabled/disabled status
