@@ -25,6 +25,6 @@ export type DeepcrawlClient = CRC<
   typeof import('@deepcrawl/contracts').contract
 >;
 
-// Re-export all types from internal packages
-export type * from '@deepcrawl/contracts';
-export type * from '@deepcrawl/types';
+// Re-export all from internal packages
+export * from '@deepcrawl/contracts';
+export * from '@deepcrawl/types';
