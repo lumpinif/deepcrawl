@@ -26,5 +26,13 @@ export type DeepcrawlClient = CRC<
 >;
 
 // Re-export all from internal packages
-export * from '@deepcrawl/contracts';
+export type * from '@deepcrawl/contracts';
+export {
+  GetMarkdownOptionsSchema,
+  ReadGETInputSchema,
+} from '@deepcrawl/contracts';
 export * from '@deepcrawl/types';
+export {
+  LinksOptionsSchema,
+  ReadOptionsSchema,
+} from '@deepcrawl/types';

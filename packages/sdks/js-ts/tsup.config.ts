@@ -7,7 +7,7 @@ export default defineConfig({
   noExternal: ['@deepcrawl/contracts', '@deepcrawl/types'],
   treeshake: true,
   splitting: false,
-  minify: false, // Keep readable for debugging
+  minify: true,
   target: 'es2020',
   dts: {
     resolve: true,
