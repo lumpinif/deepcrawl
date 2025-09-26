@@ -210,6 +210,10 @@ export function usePlayground(): UsePlaygroundReturn {
 /* ------------------------------------------------------------------------------------ */
 
 /**
+ * ⚠️ Important: useContext(...) + useMemo(selector(...)) does not stop re-renders; the consumer already re-rendered. For true selective subscriptions, use a context-selector library (e.g. use-context-selector) or split contexts so each slice changes independently (you already split Core/Options/Actions, which helps a lot). Replace React.createContext with createContext from the library and pass the full slice value if we are using use-context-selector.
+ */
+
+/**
  * Hook to select specific data from core state
  * Prevents re-renders when unrelated core state changes
  */
