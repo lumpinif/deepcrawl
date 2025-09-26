@@ -405,17 +405,44 @@ export function ContentFormatOptionsMenu() {
   };
 
   const onMetadataOptionsChange = (metadataOptions: MetadataOptionsInput) => {
-    setOptions({ metadataOptions });
+    setOptions({
+      metadataOptions: {
+        ...('metadataOptions' in currentOpts
+          ? currentOpts.metadataOptions
+          : {}),
+        ...metadataOptions,
+      },
+    });
   };
 
   const onTreeOptionsChange = (treeOptions: TreeOptionsInput) => {
-    setOptions(treeOptions);
+    setOptions({
+      // Preserve existing tree options that are at root level
+      ...TREE_OPTION_FIELDS.reduce(
+        (acc, field) => {
+          if (field.key in currentOpts) {
+            acc[field.key] = currentOpts[field.key as keyof typeof currentOpts];
+          }
+          return acc;
+        },
+        {} as Record<string, unknown>,
+      ),
+      // Apply new tree options
+      ...treeOptions,
+    });
   };
 
   const onMarkdownOptionsChange = (
     markdownOptions: MarkdownConverterOptionsInput,
   ) => {
-    setOptions({ markdownConverterOptions: markdownOptions });
+    setOptions({
+      markdownConverterOptions: {
+        ...('markdownConverterOptions' in currentOpts
+          ? currentOpts.markdownConverterOptions
+          : {}),
+        ...markdownOptions,
+      },
+    });
   };
   const [isOpen, setIsOpen] = useState(false);
   const [isMetadataSubOpen, setIsMetadataSubOpen] = useState(false);

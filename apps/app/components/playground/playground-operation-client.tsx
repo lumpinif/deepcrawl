@@ -15,7 +15,7 @@ import {
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
-// import { DetailedOptions } from './detailed-options';
+import { DetailedOptions } from './detailed-options';
 import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
@@ -109,13 +109,7 @@ const PlaygroundOperationClientContent = () => {
           childrenProps={{ className: 'p-4' }}
           open={isDetailedBarOpen}
         >
-          {/* We will fix it later */}
-          {/* <DetailedOptions
-            operation={selectedOperation}
-            options={currentOpts}
-            requestUrl={requestUrl}
-            resetToDefaults={resetToDefaults}
-          /> */}
+          <DetailedOptions />
         </DetailedOptionsAccordion>
       </PromptInput>
 

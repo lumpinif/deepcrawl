@@ -22,7 +22,7 @@ import type {
 } from '@/hooks/playground/types';
 
 // Helper function to convert smartbool values to boolean
-function convertSmartBool(
+export function convertSmartBool(
   value: string | boolean | undefined,
 ): boolean | undefined {
   if (value === undefined) {
