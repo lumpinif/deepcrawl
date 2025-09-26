@@ -1,10 +1,3 @@
-import {
-  type ExtractLinksResponse,
-  GetMarkdownOptionsSchema,
-  LinksOptionsSchema,
-  ReadOptionsSchema,
-  type ReadUrlResponse,
-} from 'deepcrawl';
 import { toast } from 'sonner';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
@@ -133,7 +126,7 @@ export function useTaskInputOperations({
           }
           const readData = await sdkClient.readUrl(requestUrl, currentOptions);
           result = readData;
-          targetUrl = (readData as ReadUrlResponse)?.targetUrl || requestUrl;
+          targetUrl = readData.targetUrl || requestUrl;
           break;
         }
         case 'extractLinks': {
@@ -149,8 +142,7 @@ export function useTaskInputOperations({
             currentOptions,
           );
           result = linksData;
-          targetUrl =
-            (linksData as ExtractLinksResponse)?.targetUrl || requestUrl;
+          targetUrl = linksData.targetUrl || requestUrl;
           break;
         }
       }
