@@ -6,27 +6,17 @@
  */
 
 import {
-  type ExtractLinksOptions,
   type ExtractLinksResponse,
-  type GetMarkdownOptions,
   GetMarkdownOptionsSchema,
   type GetMarkdownResponse,
   LinksOptionsSchema,
   ReadOptionsSchema,
-  type ReadUrlOptions,
   type ReadUrlResponse,
 } from 'deepcrawl';
+import type z from 'zod/v4';
 
-// const ReadUrlSchemaForHook = ReadOptionsSchema.omit({ url: true });
-// export type ReadUrlOptionsForHook = z.infer<typeof ReadUrlSchemaForHook>;
-// const ExtractLinksSchemaForHook = LinksOptionsSchema.omit({ url: true });
-// export type ExtractLinksOptionsForHook = z.infer<
-//   typeof ExtractLinksSchemaForHook
-// >;
-// const GetMarkdownSchemaForHook = GetMarkdownOptionsSchema.omit({ url: true });
-// export type GetMarkdownOptionsForHook = z.infer<
-//   typeof GetMarkdownSchemaForHook
-// >;
+// The default configs already don't include URL, but the SDK types do
+// So we need to omit URL from the SDK types to match our hook usage
 
 export const GetMarkdownOptionsSchemaWithoutUrl = GetMarkdownOptionsSchema.omit(
   { url: true },
@@ -38,12 +28,15 @@ export const LinksOptionsSchemaWithoutUrl = LinksOptionsSchema.omit({
   url: true,
 });
 
-// The default configs already don't include URL, but the SDK types do
-// So we need to omit URL from the SDK types to match our hook usage
-export type ReadUrlOptionsWithoutUrl = Omit<ReadUrlOptions, 'url'>;
-export type ExtractLinksOptionsWithoutUrl = Omit<ExtractLinksOptions, 'url'>;
-// GetMarkdown only uses a subset of ReadOptions (cacheOptions, cleaningProcessor, markdownConverterOptions)
-export type GetMarkdownOptionsWithoutUrl = Omit<GetMarkdownOptions, 'url'>;
+export type GetMarkdownOptionsWithoutUrl = z.input<
+  typeof GetMarkdownOptionsSchemaWithoutUrl
+>;
+export type ReadUrlOptionsWithoutUrl = z.input<
+  typeof ReadUrlOptionsSchemaWithoutUrl
+>;
+export type ExtractLinksOptionsWithoutUrl = z.input<
+  typeof LinksOptionsSchemaWithoutUrl
+>;
 
 // Operation union type for type safety
 export type DeepcrawlOperations = 'getMarkdown' | 'readUrl' | 'extractLinks';
