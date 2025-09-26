@@ -62,66 +62,19 @@ export function PlaygroundOptionsMenusToolbar({
         <ContentFormatOptionsMenu />
 
         {/* Link extraction options - only available for extractLinks */}
-        {selectedOperation === 'extractLinks' && (
-          <LinkExtractionOptionsMenu
-            linkExtractionOptions={
-              'linkExtractionOptions' in currentOpts
-                ? currentOpts.linkExtractionOptions
-                : undefined
-            }
-            onLinkExtractionOptionsChange={(linkExtractionOptions) =>
-              setOptions({ linkExtractionOptions })
-            }
-          />
-        )}
+        <LinkExtractionOptionsMenu />
 
         {/* Markdown options - showing standalone for getMarkdown only */}
-        <MarkdownOptionsMenu
-          isMarkdownEnabled={selectedOperation === 'getMarkdown'}
-          markdownOptions={
-            'markdownConverterOptions' in currentOpts
-              ? currentOpts.markdownConverterOptions
-              : undefined
-          }
-          onMarkdownOptionsChange={(markdownConverterOptions) =>
-            setOptions({ markdownConverterOptions })
-          }
-        />
+        <MarkdownOptionsMenu />
 
         {/* Cleaning processor options */}
-        <CleaningProcessorMenu
-          onProcessorChange={(processor) =>
-            setOptions({ cleaningProcessor: processor })
-          }
-          processor={
-            'cleaningProcessor' in currentOpts
-              ? currentOpts.cleaningProcessor
-              : undefined
-          }
-        />
+        <CleaningProcessorMenu />
 
         {/* Cache options */}
-        <CacheOptionsMenu
-          cacheOptions={
-            'cacheOptions' in currentOpts ? currentOpts.cacheOptions : undefined
-          }
-          onCacheOptionsChange={(cacheOptions) => setOptions({ cacheOptions })}
-        />
+        <CacheOptionsMenu />
 
         {/* Metrics options - only available for readUrl and extractLinks */}
-        {(selectedOperation === 'readUrl' ||
-          selectedOperation === 'extractLinks') && (
-          <MetricsOptionsMenu
-            metricsOptions={
-              'metricsOptions' in currentOpts
-                ? currentOpts.metricsOptions
-                : undefined
-            }
-            onMetricsOptionsChange={(metricsOptions) =>
-              setOptions({ metricsOptions })
-            }
-          />
-        )}
+        <MetricsOptionsMenu />
       </PromptInputTools>
 
       <div className="flex items-center gap-x-0 overflow-hidden">

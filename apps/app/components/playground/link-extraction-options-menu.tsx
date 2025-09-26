@@ -20,20 +20,25 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { ExtractLinksOptions } from 'deepcrawl';
 import { useRef, useState } from 'react';
+import {
+  usePlaygroundCore,
+  usePlaygroundOptions,
+} from '@/hooks/playground/playground-context';
 
 type LinkExtractionOptionsInput = ExtractLinksOptions['linkExtractionOptions'];
 
-interface LinkExtractionOptionsMenuProps {
-  linkExtractionOptions: LinkExtractionOptionsInput | undefined;
-  onLinkExtractionOptionsChange: (
-    linkExtractionOptions: LinkExtractionOptionsInput,
-  ) => void;
-}
+export function LinkExtractionOptionsMenu() {
+  // Get state and actions from context
+  const { selectedOperation } = usePlaygroundCore();
+  const { currentQueryState } = usePlaygroundOptions();
+  const { options: currentOpts, setOptions } = currentQueryState;
 
-export function LinkExtractionOptionsMenu({
-  linkExtractionOptions,
-  onLinkExtractionOptionsChange,
-}: LinkExtractionOptionsMenuProps) {
+  // Extract link extraction options from current options
+  const linkExtractionOptions =
+    'linkExtractionOptions' in currentOpts
+      ? currentOpts.linkExtractionOptions
+      : undefined;
+
   const [isOpen, setIsOpen] = useState(false);
   const [excludePatternsInput, setExcludePatternsInput] = useState<string>(
     linkExtractionOptions?.excludePatterns?.join('\n') ?? '',
@@ -42,6 +47,18 @@ export function LinkExtractionOptionsMenu({
     startAnimation: () => void;
     stopAnimation: () => void;
   }>(null);
+
+  // Create change handler that uses context
+  const onLinkExtractionOptionsChange = (
+    linkExtractionOptions: LinkExtractionOptionsInput,
+  ) => {
+    setOptions({ linkExtractionOptions });
+  };
+
+  // Only show for extractLinks operation
+  if (selectedOperation !== 'extractLinks') {
+    return null;
+  }
 
   // Link extraction option fields with their defaults and metadata
   const LINK_EXTRACTION_OPTION_FIELDS = [

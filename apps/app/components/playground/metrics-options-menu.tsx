@@ -19,21 +19,37 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { MetricsOptionsInput } from 'deepcrawl';
 import { useRef, useState } from 'react';
+import {
+  usePlaygroundCore,
+  usePlaygroundOptions,
+} from '@/hooks/playground/playground-context';
 
-interface MetricsOptionsMenuProps {
-  metricsOptions: MetricsOptionsInput | undefined;
-  onMetricsOptionsChange: (metricsOptions: MetricsOptionsInput) => void;
-}
-
-export function MetricsOptionsMenu({
-  metricsOptions,
-  onMetricsOptionsChange,
-}: MetricsOptionsMenuProps) {
+// Component now uses context - no props needed!
+export function MetricsOptionsMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const iconRef = useRef<{
     startAnimation: () => void;
     stopAnimation: () => void;
   }>(null);
+
+  // Get state and actions from context
+  const { selectedOperation } = usePlaygroundCore();
+  const { currentQueryState } = usePlaygroundOptions();
+  const { options: currentOpts, setOptions } = currentQueryState;
+
+  // Extract metrics options from current options
+  const metricsOptions =
+    'metricsOptions' in currentOpts ? currentOpts.metricsOptions : undefined;
+
+  // Create change handler that uses context
+  const onMetricsOptionsChange = (metricsOptions: MetricsOptionsInput) => {
+    setOptions({ metricsOptions });
+  };
+
+  // Only show for readUrl and extractLinks operations
+  if (selectedOperation !== 'readUrl' && selectedOperation !== 'extractLinks') {
+    return null;
+  }
 
   const resetToDefaults = () => {
     onMetricsOptionsChange({

@@ -21,16 +21,21 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import type { CacheOptionsInput } from 'deepcrawl';
 import { useRef, useState } from 'react';
 import { formatDaysFromSeconds } from '@/utils/playground/formatter';
+import { usePlaygroundOptions } from '@/hooks/playground/playground-context';
 
-interface CacheOptionsMenuProps {
-  cacheOptions: CacheOptionsInput | undefined;
-  onCacheOptionsChange: (cacheOptions: CacheOptionsInput) => void;
-}
+// Component now uses context - no props needed!
+export function CacheOptionsMenu() {
+  // Get state and actions from context
+  const { currentQueryState } = usePlaygroundOptions();
+  const { options: currentOpts, setOptions } = currentQueryState;
 
-export function CacheOptionsMenu({
-  cacheOptions,
-  onCacheOptionsChange,
-}: CacheOptionsMenuProps) {
+  // Extract cache options from current options
+  const cacheOptions = 'cacheOptions' in currentOpts ? currentOpts.cacheOptions : undefined;
+
+  // Create change handler that uses context
+  const onCacheOptionsChange = (cacheOptions: CacheOptionsInput) => {
+    setOptions({ cacheOptions });
+  };
   const [isOpen, setIsOpen] = useState(false);
   const iconRef = useRef<{
     startAnimation: () => void;

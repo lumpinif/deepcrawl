@@ -27,20 +27,33 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { MarkdownConverterOptionsInput } from 'deepcrawl';
 import { useRef, useState } from 'react';
+import {
+  usePlaygroundCore,
+  usePlaygroundOptions,
+} from '@/hooks/playground/playground-context';
 
-interface MarkdownOptionsMenuProps {
-  isMarkdownEnabled: boolean;
-  markdownOptions: MarkdownConverterOptionsInput | undefined;
-  onMarkdownOptionsChange: (
-    markdownOptions: MarkdownConverterOptionsInput,
-  ) => void;
-}
+// Component now uses context - no props needed!
+export function MarkdownOptionsMenu() {
+  // Get state and actions from context
+  const { selectedOperation } = usePlaygroundCore();
+  const { currentQueryState } = usePlaygroundOptions();
+  const { options: currentOpts, setOptions } = currentQueryState;
 
-export function MarkdownOptionsMenu({
-  isMarkdownEnabled,
-  markdownOptions,
-  onMarkdownOptionsChange,
-}: MarkdownOptionsMenuProps) {
+  // Extract markdown options from current options
+  const markdownOptions =
+    'markdownConverterOptions' in currentOpts
+      ? currentOpts.markdownConverterOptions
+      : undefined;
+
+  // Determine if markdown is enabled based on operation
+  const isMarkdownEnabled = selectedOperation === 'getMarkdown';
+
+  // Create change handler that uses context
+  const onMarkdownOptionsChange = (
+    markdownConverterOptions: MarkdownConverterOptionsInput,
+  ) => {
+    setOptions({ markdownConverterOptions });
+  };
   const [isOpen, setIsOpen] = useState(false);
   const iconRef = useRef<{
     startAnimation: () => void;

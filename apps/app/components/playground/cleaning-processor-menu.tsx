@@ -16,11 +16,7 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Check } from 'lucide-react';
 import { useRef, useState } from 'react';
-
-interface CleaningProcessorMenuProps {
-  processor: string | undefined;
-  onProcessorChange: (processor: 'cheerio-reader' | 'html-rewriter') => void;
-}
+import { usePlaygroundOptions } from '@/hooks/playground/playground-context';
 
 const PROCESSOR_OPTIONS = [
   {
@@ -35,10 +31,23 @@ const PROCESSOR_OPTIONS = [
   },
 ] as const;
 
-export function CleaningProcessorMenu({
-  processor,
-  onProcessorChange,
-}: CleaningProcessorMenuProps) {
+export function CleaningProcessorMenu() {
+  // Get state and actions from context
+  const { currentQueryState } = usePlaygroundOptions();
+  const { options: currentOpts, setOptions } = currentQueryState;
+
+  // Extract processor from current options
+  const processor =
+    'cleaningProcessor' in currentOpts
+      ? currentOpts.cleaningProcessor
+      : undefined;
+
+  // Create change handler that uses context
+  const onProcessorChange = (
+    cleaningProcessor: 'cheerio-reader' | 'html-rewriter',
+  ) => {
+    setOptions({ cleaningProcessor });
+  };
   const iconRef = useRef<{
     startAnimation: () => void;
     stopAnimation: () => void;
