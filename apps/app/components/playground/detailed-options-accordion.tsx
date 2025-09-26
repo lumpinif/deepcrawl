@@ -40,7 +40,7 @@ export function DetailedOptionsAccordion({
     <div
       className={cn(
         'overflow-hidden border-none transition-[height] duration-200 ease-out last:border-b-0',
-        isOpen ? '' : 'peer-hover/toolbar:!h-2 h-0',
+        isOpen ? '' : 'h-0',
         className,
       )}
       style={
