@@ -125,10 +125,7 @@ export const PlaygroundOperationClient = ({
 
         {/* Option menu toolbar */}
         <PlaygroundOptionsMenusToolbar
-          currentQueryState={currentQueryState}
-          getAnyOperationState={getAnyOperationState}
           isDetailedBarOpen={isDetailedBarOpen}
-          selectedOperation={selectedOperation}
           setIsDetailedBarOpen={setIsDetailedBarOpen}
         />
 

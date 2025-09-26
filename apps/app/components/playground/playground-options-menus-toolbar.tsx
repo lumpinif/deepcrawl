@@ -6,12 +6,10 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import type {
-  DeepcrawlOperations,
-  GetAnyOperationState,
-  OperationQueryState,
-  OperationToOptions,
-} from '@/hooks/playground/types';
+import {
+  usePlaygroundCore,
+  usePlaygroundOptions,
+} from '@/hooks/playground/playground-context';
 import { CacheOptionsMenu } from './cache-options-menu';
 import { CleaningProcessorMenu } from './cleaning-processor-menu';
 import { ContentFormatOptionsMenu } from './content-format-options-menu';
@@ -23,20 +21,15 @@ import { OptionPreviewBadges } from './option-preview-badges';
 interface PlaygroundOptionsMenusToolbarProps {
   isDetailedBarOpen: boolean;
   setIsDetailedBarOpen: (isDetailedBarOpen: boolean) => void;
-  selectedOperation: DeepcrawlOperations;
-  currentQueryState: OperationQueryState<
-    OperationToOptions[keyof OperationToOptions]
-  >;
-  getAnyOperationState: GetAnyOperationState;
 }
 
 export function PlaygroundOptionsMenusToolbar({
   isDetailedBarOpen,
   setIsDetailedBarOpen,
-  selectedOperation,
-  currentQueryState,
-  getAnyOperationState,
 }: PlaygroundOptionsMenusToolbarProps) {
+  // Get state from context instead of props
+  const { selectedOperation } = usePlaygroundCore();
+  const { currentQueryState, getAnyOperationState } = usePlaygroundOptions();
   const { options: currentOpts, setOptions } = currentQueryState;
 
   return (
