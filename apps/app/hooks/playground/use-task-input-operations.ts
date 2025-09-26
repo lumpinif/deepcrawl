@@ -1,13 +1,22 @@
-import type { ExtractLinksResponse, ReadUrlResponse } from 'deepcrawl';
+import {
+  type ExtractLinksResponse,
+  GetMarkdownOptionsSchema,
+  LinksOptionsSchema,
+  ReadOptionsSchema,
+  type ReadUrlResponse,
+} from 'deepcrawl';
 import { toast } from 'sonner';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
-import type {
-  DCResponseData,
-  DeepcrawlOperations,
-  GetAnyOperationState,
-  PlaygroundResponse,
-  PlaygroundResponses,
+import {
+  type DCResponseData,
+  type DeepcrawlOperations,
+  type GetAnyOperationState,
+  GetMarkdownOptionsSchemaWithoutUrl,
+  LinksOptionsSchemaWithoutUrl,
+  type PlaygroundResponse,
+  type PlaygroundResponses,
+  ReadUrlOptionsSchemaWithoutUrl,
 } from './types';
 import { useDeepcrawlClient } from './use-deepcrawl-client';
 import { useExecutionTimer } from './use-execution-timer';
@@ -74,8 +83,6 @@ export function useTaskInputOperations({
     operation: DeepcrawlOperations,
     label: string,
   ) => {
-    /* TODO: Extra hardening (optional) Runtime validation before API call (belt-and-suspenders): */
-
     // Guard against invalid URLs (defense in depth)
     if (!isPlausibleUrl(requestUrl)) {
       toast.error('Please enter a valid URL');
@@ -107,12 +114,23 @@ export function useTaskInputOperations({
         case 'getMarkdown': {
           const { options: currentOptions } =
             getAnyOperationState('getMarkdown');
+          const parse =
+            GetMarkdownOptionsSchemaWithoutUrl.parse(currentOptions);
+          if (!parse) {
+            toast.error(`Invalid options for ${operation}`);
+            return;
+          }
           result = await sdkClient.getMarkdown(requestUrl, currentOptions);
           targetUrl = requestUrl;
           break;
         }
         case 'readUrl': {
           const { options: currentOptions } = getAnyOperationState('readUrl');
+          const parse = ReadUrlOptionsSchemaWithoutUrl.parse(currentOptions);
+          if (!parse) {
+            toast.error(`Invalid options for ${operation}`);
+            return;
+          }
           const readData = await sdkClient.readUrl(requestUrl, currentOptions);
           result = readData;
           targetUrl = (readData as ReadUrlResponse)?.targetUrl || requestUrl;
@@ -121,6 +139,11 @@ export function useTaskInputOperations({
         case 'extractLinks': {
           const { options: currentOptions } =
             getAnyOperationState('extractLinks');
+          const parse = LinksOptionsSchemaWithoutUrl.parse(currentOptions);
+          if (!parse) {
+            toast.error(`Invalid options for ${operation}`);
+            return;
+          }
           const linksData = await sdkClient.extractLinks(
             requestUrl,
             currentOptions,

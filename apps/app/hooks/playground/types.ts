@@ -5,13 +5,16 @@
  * ensuring proper type safety while handling URL separately in the main hook.
  */
 
-import type {
-  ExtractLinksOptions,
-  ExtractLinksResponse,
-  GetMarkdownOptions,
-  GetMarkdownResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
+import {
+  type ExtractLinksOptions,
+  type ExtractLinksResponse,
+  type GetMarkdownOptions,
+  GetMarkdownOptionsSchema,
+  type GetMarkdownResponse,
+  LinksOptionsSchema,
+  ReadOptionsSchema,
+  type ReadUrlOptions,
+  type ReadUrlResponse,
 } from 'deepcrawl';
 
 // const ReadUrlSchemaForHook = ReadOptionsSchema.omit({ url: true });
@@ -24,6 +27,16 @@ import type {
 // export type GetMarkdownOptionsForHook = z.infer<
 //   typeof GetMarkdownSchemaForHook
 // >;
+
+export const GetMarkdownOptionsSchemaWithoutUrl = GetMarkdownOptionsSchema.omit(
+  { url: true },
+);
+export const ReadUrlOptionsSchemaWithoutUrl = ReadOptionsSchema.omit({
+  url: true,
+});
+export const LinksOptionsSchemaWithoutUrl = LinksOptionsSchema.omit({
+  url: true,
+});
 
 // The default configs already don't include URL, but the SDK types do
 // So we need to omit URL from the SDK types to match our hook usage
