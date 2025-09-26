@@ -3,7 +3,7 @@ import {
   // PageHeader,
   PageTitle,
 } from '@/components/page-elements';
-import { TaskInput } from '@/components/playground/task-input';
+import { PlaygroundOperationClient } from '@/components/playground/playground-operation-client';
 
 export default async function DashboardPage() {
   return (
@@ -16,7 +16,7 @@ export default async function DashboardPage() {
           title="What would you like to see?"
           titleSize="3xl"
         />
-        <TaskInput />
+        <PlaygroundOperationClient />
       </PageContainer>
     </>
   );
