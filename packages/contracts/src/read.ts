@@ -36,6 +36,8 @@ export const ReadGETInputSchema = ReadOptionsSchema.pick({
   markdownConverterOptions: true,
 });
 
+export const GetMarkdownOptionsSchema = ReadGETInputSchema;
+
 export const readGETContract = readOC
   .route({
     tags,
