@@ -27,7 +27,8 @@ export * from './common/smart-schemas';
 
 export * from './configs';
 export * from './configs/default';
-
+export * from './metrics';
+export * from './metrics/types';
 // Type-only exports for better IDE support
 export * from './routers/links';
 export * from './routers/links/types';

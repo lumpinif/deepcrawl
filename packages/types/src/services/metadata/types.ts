@@ -148,6 +148,12 @@ export const MetadataOptionsSchema = z
 export type MetadataOptions = z.infer<typeof MetadataOptionsSchema>;
 
 /**
+ * @description This is the input type for the `MetadataOptions` schema.
+ * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+ */
+export type MetadataOptionsInput = z.input<typeof MetadataOptionsSchema>;
+
+/**
  * Schema for page metadata extracted from a webpage.
  * Defines the structure and validation rules for all possible metadata fields.
  *

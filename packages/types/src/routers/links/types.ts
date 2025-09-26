@@ -145,6 +145,12 @@ export const TreeOptionsSchema = z
  */
 export type TreeOptions = z.infer<typeof TreeOptionsSchema>;
 
+/**
+ * @description This is the input type for the `TreeOptions` schema.
+ * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+ */
+export type TreeOptionsInput = z.input<typeof TreeOptionsSchema>;
+
 const { tree, metricsOptions } = DEFAULT_LINKS_OPTIONS;
 
 /**
@@ -926,6 +932,12 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
  * ```
  */
 export type LinksOptions = z.infer<typeof LinksOptionsSchema>;
+
+/**
+ * @description This is the input type for the `LinksOptions` schema.
+ * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+ */
+export type LinksOptionsInput = z.input<typeof LinksOptionsSchema>;
 
 /**
  * Represents a URL that was skipped during scraping.

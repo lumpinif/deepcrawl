@@ -46,6 +46,12 @@ export const MetricsOptionsSchema = z
 export type MetricsOptions = z.infer<typeof MetricsOptionsSchema>;
 
 /**
+ * @description This is the input type for the `MetricsOptions` schema.
+ * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+ */
+export type MetricsOptionsInput = z.input<typeof MetricsOptionsSchema>;
+
+/**
  * Performance metrics schema for tracking operation timing data.
  * Provides detailed timing information including human-readable duration and precise timestamps.
  *

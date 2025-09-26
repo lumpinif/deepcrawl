@@ -346,3 +346,11 @@ export const MarkdownConverterOptionsSchema = z
 export type MarkdownConverterOptions = z.infer<
   typeof MarkdownConverterOptionsSchema
 >;
+
+/**
+ * @description This is the input type for the `MarkdownConverterOptions` schema.
+ * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+ */
+export type MarkdownConverterOptionsInput = z.input<
+  typeof MarkdownConverterOptionsSchema
+>;

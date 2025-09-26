@@ -56,3 +56,9 @@ export const CacheOptionsSchema = z
  * If you wish to use this type as input which contains both string and boolean for smartbool, you can use the Input types re-exported from the `@deepcrawl/contracts` package for each endpoint such as `ReadUrlOptions['cacheOptions']`.
  */
 export type CacheOptions = z.infer<typeof CacheOptionsSchema>;
+
+/**
+ * @description This is the input type for the `CacheOptions` schema.
+ * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+ */
+export type CacheOptionsInput = z.input<typeof CacheOptionsSchema>;

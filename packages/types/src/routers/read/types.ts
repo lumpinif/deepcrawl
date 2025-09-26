@@ -427,6 +427,12 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
 export type ReadOptions = z.infer<typeof ReadOptionsSchema>;
 
 /**
+ * @description This is the input type for the `ReadOptions` schema.
+ * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+ */
+export type ReadOptionsInput = z.input<typeof ReadOptionsSchema>;
+
+/**
  * Base type for all read operation responses.
  * Contains common properties shared by both successful and error responses.
  *
