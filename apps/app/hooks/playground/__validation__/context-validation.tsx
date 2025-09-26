@@ -7,6 +7,7 @@
 
 'use client';
 
+import type { CacheOptions } from 'deepcrawl';
 import { useEffect } from 'react';
 import {
   PlaygroundProvider,
@@ -151,7 +152,7 @@ function PlaygroundContextValidator() {
     // Option menu props (e.g., CacheOptionsMenu)
     const cacheMenuProps = {
       cacheOptions: combined.currentQueryState.getOption('cacheOptions'),
-      onCacheOptionsChange: (cacheOptions: any) =>
+      onCacheOptionsChange: (cacheOptions: CacheOptions) =>
         combined.currentQueryState.setOptions({ cacheOptions }),
     };
     console.log(
