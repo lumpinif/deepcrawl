@@ -2,24 +2,18 @@ import { PromptInputBody } from '@deepcrawl/ui/components/ai-elements/prompt-inp
 import { cn } from '@deepcrawl/ui/lib/utils';
 import NumberFlow, { continuous } from '@number-flow/react';
 import { Zap } from 'lucide-react';
-import type {
-  DeepcrawlOperations,
-  PlaygroundResponses,
-} from '@/hooks/playground';
+import {
+  usePlaygroundActions,
+  usePlaygroundCore,
+} from '@/hooks/playground/playground-context';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { SpinnerButton } from '../spinner-button';
 import { UrlInput } from './url-input';
 
 type PlaygroundUrlInputProps = {
   isError: boolean;
-  selectedOperation: DeepcrawlOperations;
   handleUrlChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => void;
-  requestUrl: string;
-  responses: PlaygroundResponses;
-  isExecuting: Record<DeepcrawlOperations, boolean>;
-  getCurrentExecutionTime: (operationId: string) => number;
-  formatTime: (ms: number, asString?: boolean) => number | string;
   isUrlValid: boolean;
 };
 
@@ -27,14 +21,12 @@ export function PlaygroundUrlInput({
   isError,
   handleUrlChange,
   handleSubmit,
-  requestUrl,
-  isExecuting,
   isUrlValid,
-  selectedOperation,
-  responses,
-  getCurrentExecutionTime,
-  formatTime,
 }: PlaygroundUrlInputProps) {
+  // Get state from context instead of props
+  const { requestUrl, selectedOperation, isExecuting, responses } =
+    usePlaygroundCore();
+  const { formatTime, getCurrentExecutionTime } = usePlaygroundActions();
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
 

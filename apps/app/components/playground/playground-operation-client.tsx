@@ -11,12 +11,12 @@ import {
   type DeepcrawlOperations,
   useEnhancedTaskInputState,
 } from '@/hooks/playground';
+import { PlaygroundProvider } from '@/hooks/playground/playground-context';
 import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 // import { DetailedOptions } from './detailed-options';
 import { DetailedOptionsAccordion } from './detailed-options-accordion';
-
 import { OperationSelector } from './operation-selector';
 import { PGResponseArea } from './pg-response-area';
 import { PlaygroundOptionsMenusToolbar } from './playground-options-menus-toolbar';
@@ -93,7 +93,10 @@ export const PlaygroundOperationClient = ({
   };
 
   return (
-    <>
+    <PlaygroundProvider
+      defaultOperation={defaultOperation}
+      defaultUrl={defaultUrl}
+    >
       <PromptInput
         className="relative mx-auto mt-4 sm:max-w-2/3"
         onSubmit={(_, event) => {
@@ -114,16 +117,10 @@ export const PlaygroundOperationClient = ({
 
         {/* URL input */}
         <PlaygroundUrlInput
-          formatTime={formatTime}
-          getCurrentExecutionTime={getCurrentExecutionTime}
           handleSubmit={handleSubmit}
           handleUrlChange={handleUrlChange}
           isError={isError}
-          isExecuting={isExecuting}
           isUrlValid={isUrlValid}
-          requestUrl={requestUrl}
-          responses={responses}
-          selectedOperation={selectedOperation}
         />
 
         {/* Option menu toolbar */}
@@ -165,6 +162,6 @@ export const PlaygroundOperationClient = ({
           />
         </div>
       )}
-    </>
+    </PlaygroundProvider>
   );
 };
