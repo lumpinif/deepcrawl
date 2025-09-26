@@ -20,8 +20,8 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { CacheOptionsInput } from 'deepcrawl';
 import { useRef, useState } from 'react';
-import { formatDaysFromSeconds } from '@/utils/playground/formatter';
 import { usePlaygroundOptions } from '@/hooks/playground/playground-context';
+import { formatDaysFromSeconds } from '@/utils/playground/formatter';
 
 // Component now uses context - no props needed!
 export function CacheOptionsMenu() {
@@ -30,7 +30,8 @@ export function CacheOptionsMenu() {
   const { options: currentOpts, setOptions } = currentQueryState;
 
   // Extract cache options from current options
-  const cacheOptions = 'cacheOptions' in currentOpts ? currentOpts.cacheOptions : undefined;
+  const cacheOptions =
+    'cacheOptions' in currentOpts ? currentOpts.cacheOptions : undefined;
 
   // Create change handler that uses context
   const onCacheOptionsChange = (cacheOptions: CacheOptionsInput) => {
