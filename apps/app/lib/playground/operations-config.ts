@@ -5,7 +5,7 @@ import {
 } from '@/components/animate-ui/components/grid-icons';
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 
-interface OperationConfig {
+export interface OperationConfig {
   operation: DeepcrawlOperations;
   label: string;
   icon: React.ElementType;

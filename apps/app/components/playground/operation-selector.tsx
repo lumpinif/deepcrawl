@@ -9,24 +9,24 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { useState } from 'react';
+import {
+  usePlaygroundActions,
+  usePlaygroundCore,
+} from '@/hooks/playground/playground-context';
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { DeepcrawlFeatures } from '@/lib/playground/operations-config';
 
-interface OperationSelectorProps {
-  selectedOperation: DeepcrawlOperations;
-  onOperationChange: (operation: DeepcrawlOperations | null) => void;
-  className?: string;
-  isLoading: boolean;
-}
-
-export function OperationSelector({
-  selectedOperation,
-  onOperationChange,
-  className,
-  isLoading,
-}: OperationSelectorProps) {
+export function OperationSelector({ className }: { className?: string }) {
+  const { selectedOperation, isExecuting } = usePlaygroundCore();
+  const { setSelectedOperation } = usePlaygroundActions();
   const [hoveredOperation, setHoveredOperation] =
     useState<DeepcrawlOperations | null>(null);
+
+  const onOperationChange = (operation: DeepcrawlOperations) => {
+    setSelectedOperation(operation);
+  };
+
+  const isLoading = isExecuting[selectedOperation];
 
   return (
     <div className={cn('grid gap-2 p-1 lg:grid-cols-3', className)}>

@@ -37,10 +37,8 @@ const PlaygroundOperationClientContent = () => {
   const [isDetailedBarOpen, setIsDetailedBarOpen] = useState(false);
 
   // Get state and actions from context
-  const { requestUrl, selectedOperation, isExecuting, responses } =
-    usePlaygroundCore();
-  const { setRequestUrl, setSelectedOperation, executeApiCall, handleRetry } =
-    usePlaygroundActions();
+  const { requestUrl, selectedOperation } = usePlaygroundCore();
+  const { setRequestUrl, executeApiCall } = usePlaygroundActions();
 
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
@@ -82,11 +80,7 @@ const PlaygroundOperationClientContent = () => {
         {/* Operation selector */}
         <PromptInputToolbar>
           <PromptInputTools className="[&_button:first-child]:rounded-tl-lg [&_button:first-child]:rounded-bl-md">
-            <OperationSelector
-              isLoading={isExecuting[selectedOperation]}
-              onOperationChange={setSelectedOperation}
-              selectedOperation={selectedOperation}
-            />
+            <OperationSelector />
           </PromptInputTools>
         </PromptInputToolbar>
 
@@ -114,19 +108,9 @@ const PlaygroundOperationClientContent = () => {
       </PromptInput>
 
       {/* Results Section */}
-      {responses[selectedOperation] && (
-        <div className="mt-6 space-y-3">
-          <PGResponseArea
-            onRetry={() => {
-              handleRetry(selectedOperation, selectedOPConfig.label);
-            }}
-            operation={selectedOperation}
-            operationLabel={selectedOPConfig.label}
-            operationMethod={selectedOPConfig.method}
-            response={responses[selectedOperation]}
-          />
-        </div>
-      )}
+      <div className="mt-6 space-y-3">
+        <PGResponseArea selectedOPConfig={selectedOPConfig} />
+      </div>
     </>
   );
 };

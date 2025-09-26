@@ -5,19 +5,15 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
 import { SpinnerButton } from '@/components/spinner-button';
-import { usePlaygroundActions } from '@/hooks/playground/playground-context';
-import type {
-  DeepcrawlOperations,
-  PlaygroundResponse,
-} from '@/hooks/playground/types';
+import {
+  usePlaygroundActions,
+  usePlaygroundCore,
+} from '@/hooks/playground/playground-context';
+import type { OperationConfig } from '@/lib/playground/operations-config';
 import { copyToClipboard } from '@/utils/clipboard';
 
 interface PGResponseArea {
-  response: PlaygroundResponse;
-  operation: DeepcrawlOperations;
-  operationLabel?: string;
-  operationMethod: string;
-  onRetry: () => void;
+  selectedOPConfig: OperationConfig;
 }
 
 const getErrorIcon = (errorType?: string) => {
@@ -50,18 +46,26 @@ const formatResponseData = (data: unknown): string => {
   return JSON.stringify(data, null, 2);
 };
 
-export function PGResponseArea({
-  response,
-  operation,
-  operationMethod,
-  onRetry,
-}: PGResponseArea) {
+export function PGResponseArea({ selectedOPConfig }: PGResponseArea) {
   // Get formatTime from context instead of props
-  const { formatTime } = usePlaygroundActions();
+  const { selectedOperation, responses } = usePlaygroundCore();
+  const { formatTime, handleRetry } = usePlaygroundActions();
   const handleCopy = async (text: string) => {
     await copyToClipboard(text);
     toast.success('Copied to clipboard');
   };
+  const onRetry = () => {
+    handleRetry(selectedOperation, selectedOPConfig.label);
+  };
+
+  const operationMethod = selectedOPConfig.method;
+  // const operationLabel = selectedOPConfig.label;
+
+  const response = responses[selectedOperation];
+
+  if (!response) {
+    return null;
+  }
 
   return (
     <div className="space-y-3">
@@ -158,7 +162,8 @@ export function PGResponseArea({
               </div>
             )}
           </div>
-        ) : operation === 'getMarkdown' && typeof response.data === 'string' ? (
+        ) : selectedOperation === 'getMarkdown' &&
+          typeof response.data === 'string' ? (
           <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:border prose-table:border prose-td:border prose-th:border prose-blockquote:border-muted-foreground prose-blockquote:border-l-4 prose-pre:bg-muted prose-th:bg-muted prose-blockquote:pl-4 prose-headings:font-semibold prose-a:text-primary prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:no-underline hover:prose-a:underline">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {response.data}
