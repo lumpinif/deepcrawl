@@ -8,11 +8,11 @@ import {
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
-  type DeepcrawlOperations,
-  useEnhancedTaskInputState,
-} from '@/hooks/playground';
-import { PlaygroundProvider } from '@/hooks/playground/playground-context';
-import { useTaskInputOperations } from '@/hooks/playground/use-task-input-operations';
+  PlaygroundProvider,
+  usePlaygroundActions,
+  usePlaygroundCore,
+} from '@/hooks/playground/playground-context';
+import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 // import { DetailedOptions } from './detailed-options';
@@ -31,38 +31,16 @@ export interface PlaygroundOperationClientProps {
   defaultUrl?: string;
 }
 
-export const PlaygroundOperationClient = ({
-  defaultOperation = 'getMarkdown',
-  defaultUrl = '',
-}: PlaygroundOperationClientProps) => {
+// Internal component that uses context
+const PlaygroundOperationClientContent = () => {
   const [isError, setIsError] = useState(false);
   const [isDetailedBarOpen, setIsDetailedBarOpen] = useState(false);
 
-  // Use enhanced state management with operation-specific hooks
-  const {
-    requestUrl,
-    selectedOperation,
-    isExecuting,
-    responses,
-    activeRequestsRef,
-    setRequestUrl,
-    setSelectedOperation,
-    setIsExecuting,
-    setResponses,
-    currentQueryState,
-    // resetToDefaults,
-    getAnyOperationState,
-  } = useEnhancedTaskInputState({ defaultOperation, defaultUrl });
-
-  // Use custom hook for API operations
-  const { executeApiCall, handleRetry, formatTime, getCurrentExecutionTime } =
-    useTaskInputOperations({
-      requestUrl,
-      getAnyOperationState,
-      activeRequestsRef,
-      setIsExecuting,
-      setResponses,
-    });
+  // Get state and actions from context
+  const { requestUrl, selectedOperation, isExecuting, responses } =
+    usePlaygroundCore();
+  const { setRequestUrl, setSelectedOperation, executeApiCall, handleRetry } =
+    usePlaygroundActions();
 
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
@@ -93,10 +71,7 @@ export const PlaygroundOperationClient = ({
   };
 
   return (
-    <PlaygroundProvider
-      defaultOperation={defaultOperation}
-      defaultUrl={defaultUrl}
-    >
+    <>
       <PromptInput
         className="relative mx-auto mt-4 sm:max-w-2/3"
         onSubmit={(_, event) => {
@@ -148,7 +123,6 @@ export const PlaygroundOperationClient = ({
       {responses[selectedOperation] && (
         <div className="mt-6 space-y-3">
           <PGResponseArea
-            formatTime={formatTime}
             onRetry={() => {
               handleRetry(selectedOperation, selectedOPConfig.label);
             }}
@@ -159,6 +133,21 @@ export const PlaygroundOperationClient = ({
           />
         </div>
       )}
+    </>
+  );
+};
+
+// Main exported component with Provider wrapper
+export const PlaygroundOperationClient = ({
+  defaultOperation = 'getMarkdown',
+  defaultUrl = '',
+}: PlaygroundOperationClientProps) => {
+  return (
+    <PlaygroundProvider
+      defaultOperation={defaultOperation}
+      defaultUrl={defaultUrl}
+    >
+      <PlaygroundOperationClientContent />
     </PlaygroundProvider>
   );
 };

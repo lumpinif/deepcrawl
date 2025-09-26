@@ -9,6 +9,7 @@ import type {
   DeepcrawlOperations,
   PlaygroundResponse,
 } from '@/hooks/playground/types';
+import { usePlaygroundActions } from '@/hooks/playground/playground-context';
 import { copyToClipboard } from '@/utils/clipboard';
 
 interface PGResponseArea {
@@ -17,7 +18,6 @@ interface PGResponseArea {
   operationLabel?: string;
   operationMethod: string;
   onRetry: () => void;
-  formatTime: (ms: number, asString?: boolean) => number | string;
 }
 
 const getErrorIcon = (errorType?: string) => {
@@ -55,8 +55,9 @@ export function PGResponseArea({
   operation,
   operationMethod,
   onRetry,
-  formatTime,
 }: PGResponseArea) {
+  // Get formatTime from context instead of props
+  const { formatTime } = usePlaygroundActions();
   const handleCopy = async (text: string) => {
     await copyToClipboard(text);
     toast.success('Copied to clipboard');
