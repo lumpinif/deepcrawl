@@ -8,6 +8,7 @@ import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import type {
   DeepcrawlOperations,
+  GetAnyOperationState,
   OperationQueryState,
   OperationToOptions,
 } from '@/hooks/playground/types';
@@ -26,6 +27,7 @@ interface PlaygroundOptionsMenusToolbarProps {
   currentQueryState: OperationQueryState<
     OperationToOptions[keyof OperationToOptions]
   >;
+  getAnyOperationState: GetAnyOperationState;
 }
 
 export function PlaygroundOptionsMenusToolbar({
@@ -33,6 +35,7 @@ export function PlaygroundOptionsMenusToolbar({
   setIsDetailedBarOpen,
   selectedOperation,
   currentQueryState,
+  getAnyOperationState,
 }: PlaygroundOptionsMenusToolbarProps) {
   const { options: currentOpts, setOptions } = currentQueryState;
 
@@ -88,6 +91,7 @@ export function PlaygroundOptionsMenusToolbar({
             sitemapXML:
               'sitemapXML' in currentOpts ? currentOpts.sitemapXML : undefined,
           }}
+          getAnyOperationState={getAnyOperationState}
           markdownOptions={
             'markdownConverterOptions' in currentOpts
               ? currentOpts.markdownConverterOptions

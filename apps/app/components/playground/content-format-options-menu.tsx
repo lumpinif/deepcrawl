@@ -61,7 +61,10 @@ import {
 } from 'lucide-react';
 import type { ElementType, ReactElement } from 'react';
 import { cloneElement, isValidElement, useRef, useState } from 'react';
-import type { DeepcrawlOperations } from '@/hooks/playground/types';
+import type {
+  DeepcrawlOperations,
+  GetAnyOperationState,
+} from '@/hooks/playground/types';
 
 // Union type for all possible content format options
 // {
@@ -73,7 +76,7 @@ import type { DeepcrawlOperations } from '@/hooks/playground/types';
 //   markdown?: boolean;
 //   rawHtml?: boolean;
 // };
-type AllContentFormatOptions = Pick<
+type ContentFormatOptions = Pick<
   ScrapeOptionsInput,
   'metadata' | 'cleanedHtml' | 'robots' | 'sitemapXML'
 > &
@@ -82,9 +85,10 @@ type AllContentFormatOptions = Pick<
 
 interface ContentFormatOptionsMenuProps {
   operation: DeepcrawlOperations;
-  contentFormatOptions: AllContentFormatOptions | undefined;
+  getAnyOperationState: GetAnyOperationState;
+  contentFormatOptions: ContentFormatOptions | undefined;
   onContentFormatOptionsChange: (
-    contentFormatOptions: AllContentFormatOptions,
+    contentFormatOptions: ContentFormatOptions,
   ) => void;
   metadataOptions?: MetadataOptionsInput;
   onMetadataOptionsChange?: (metadataOptions: MetadataOptionsInput) => void;
@@ -521,7 +525,7 @@ export function ContentFormatOptionsMenu({
     hasCustomMarkdownSettings ||
     operationConfig.availableOptions.some((optionKey) => {
       const currentValue =
-        contentFormatOptions?.[optionKey as keyof AllContentFormatOptions];
+        contentFormatOptions?.[optionKey as keyof ContentFormatOptions];
       const defaultValue =
         operationConfig.defaults[
           optionKey as keyof typeof operationConfig.defaults
@@ -577,7 +581,7 @@ export function ContentFormatOptionsMenu({
                   ];
                 const currentValue =
                   contentFormatOptions?.[
-                    optionKey as keyof AllContentFormatOptions
+                    optionKey as keyof ContentFormatOptions
                   ] ?? defaultValue;
 
                 // Special handling for metadata option - add sub-menu
