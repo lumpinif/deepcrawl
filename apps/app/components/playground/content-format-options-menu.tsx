@@ -159,7 +159,7 @@ const OPTION_DEFINITIONS = {
   },
 } as const;
 
-// Tree option field definitions
+// Tree option field definitions !IMPORTANT!: TEHY ARE FLATTEND IN THE LINKSOPTIONS ROOT LEVEL INSTEAD OF A NESTED OBJECT
 const TREE_OPTION_FIELDS: Array<{
   key: keyof TreeOptions;
   label: string;
@@ -443,8 +443,7 @@ export function ContentFormatOptionsMenu() {
       return;
     }
 
-    setOptions({
-      // Preserve existing tree options that are at root level
+    const treeOptionsToSet = {
       ...TREE_OPTION_FIELDS.reduce(
         (acc, field) => {
           if (field.key in currentOpts) {
@@ -454,9 +453,10 @@ export function ContentFormatOptionsMenu() {
         },
         {} as Record<string, unknown>,
       ),
-      // Apply new tree options
       ...treeOptions,
-    });
+    };
+
+    setOptions(treeOptionsToSet);
   };
 
   const onMarkdownOptionsChange = (

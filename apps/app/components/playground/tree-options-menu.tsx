@@ -1,3 +1,5 @@
+// @ DEPRECATED: USE CONTENT-FORMAT-OPTIONS-MENU.TSX INSTEAD
+
 'use client';
 
 import { DEFAULT_TREE_OPTIONS } from '@deepcrawl/types/configs';
