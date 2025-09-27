@@ -202,6 +202,7 @@ export const DEFAULT_LINK_EXTRACTION_OPTIONS = {
   removeQueryParams: true,
 } as const;
 
+/* BE CAREFUL: THESE ARE FLATTEND IN THE LINKSOPTIONS ROOT LEVEL INSTEAD OF A NESTED OBJECT */
 export const DEFAULT_TREE_OPTIONS = {
   folderFirst: true,
   linksOrder: 'page',
@@ -214,7 +215,7 @@ export const DEFAULT_LINKS_OPTIONS = {
   tree: true,
   linkExtractionOptions: DEFAULT_LINK_EXTRACTION_OPTIONS,
   cacheOptions: DEFAULT_CACHE_OPTIONS,
-  treeOptions: DEFAULT_TREE_OPTIONS,
   metricsOptions: DEFAULT_METRICS_OPTIONS,
   ...DEFAULT_SCRAPE_OPTIONS,
+  ...DEFAULT_TREE_OPTIONS,
 } as const;
