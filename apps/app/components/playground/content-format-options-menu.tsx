@@ -356,6 +356,26 @@ function renderIcon(
   return <C aria-hidden className={extraClass} />;
 }
 
+// Type for all possible content format option keys
+type AvailableOptionKey = keyof ContentFormatOptions;
+// TODO: CONSIDER SHOULD WE ACTUALLY MOVE THIS FUNCTION TO THE HOOK'S SETOPTIONS FUNCTION LEVEL? FOR EXAMPLE MAKE A GUARD TO CHECK IF NEW UPDATES ARE VALID FOR THE CURRENT OPERATION?
+// Helper function to filter options by current operation with proper typing
+const getFilteredContentFormatOptions = <
+  T extends (typeof OPERATION_CONFIGS)[keyof typeof OPERATION_CONFIGS],
+>(
+  contentFormatOptions: ContentFormatOptions,
+  operationConfig: T,
+): Pick<ContentFormatOptions, T['availableOptions'][number]> => {
+  const availableKeys =
+    operationConfig.availableOptions as readonly AvailableOptionKey[];
+
+  return Object.fromEntries(
+    Object.entries(contentFormatOptions).filter(([key]) =>
+      availableKeys.includes(key as AvailableOptionKey),
+    ),
+  ) as Pick<ContentFormatOptions, T['availableOptions'][number]>;
+};
+
 export function ContentFormatOptionsMenu() {
   // Get state and actions from context
   const { selectedOperation } = usePlaygroundCore();
@@ -401,7 +421,9 @@ export function ContentFormatOptionsMenu() {
   const onContentFormatOptionsChange = (
     contentFormatOptions: ContentFormatOptions,
   ) => {
-    setOptions(contentFormatOptions);
+    setOptions(
+      getFilteredContentFormatOptions(contentFormatOptions, operationConfig),
+    );
   };
 
   const onMetadataOptionsChange = (metadataOptions: MetadataOptionsInput) => {
@@ -416,6 +438,11 @@ export function ContentFormatOptionsMenu() {
   };
 
   const onTreeOptionsChange = (treeOptions: TreeOptionsInput) => {
+    // Only allow tree options for extractLinks operation
+    if (op !== 'extractLinks') {
+      return;
+    }
+
     setOptions({
       // Preserve existing tree options that are at root level
       ...TREE_OPTION_FIELDS.reduce(
@@ -435,6 +462,11 @@ export function ContentFormatOptionsMenu() {
   const onMarkdownOptionsChange = (
     markdownOptions: MarkdownConverterOptionsInput,
   ) => {
+    // Only allow markdown options for readUrl and getMarkdown operations
+    if (op !== 'readUrl' && op !== 'getMarkdown') {
+      return;
+    }
+
     setOptions({
       markdownConverterOptions: {
         ...('markdownConverterOptions' in currentOpts
@@ -965,7 +997,6 @@ export function ContentFormatOptionsMenu() {
                               id={`content-format-${optionKey}`}
                               onCheckedChange={(checked) =>
                                 onContentFormatOptionsChange({
-                                  ...contentFormatOptions,
                                   [optionKey]: Boolean(checked),
                                 })
                               }
