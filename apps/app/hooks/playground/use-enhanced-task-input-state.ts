@@ -87,7 +87,7 @@ export function useEnhancedTaskInputState({
   );
 
   const [selectedOperation, setSelectedOperation] = useQueryState(
-    'operation',
+    'op',
     parseAsStringLiteral(operations).withDefault(defaultOperation).withOptions({
       shallow: true,
       history: 'push',
