@@ -5,18 +5,55 @@
  * smart default handling, and automatic URL parameter management.
  */
 
+import { deepmerge } from 'deepmerge-ts';
 import { parseAsJson, useQueryState } from 'nuqs';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { z } from 'zod/v4';
 import { isEqual } from '@/utils/playground/deep-equal';
 import type { OperationOptionsUpdate, OperationQueryState } from './types';
+
+function hasEntries(
+  value: Record<string, unknown> | null | undefined,
+): boolean {
+  return !!value && Object.keys(value).length > 0;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function computeChangedValues<T extends Record<string, unknown>>(
+  fullOptions: T,
+  baseline: T,
+): Partial<T> {
+  const changed: Partial<T> = {};
+
+  for (const key in fullOptions) {
+    const value = fullOptions[key];
+    const base = baseline[key];
+
+    if (isEqual(value, base)) {
+      continue;
+    }
+
+    if (isPlainObject(value) && isPlainObject(base)) {
+      const nestedDiff = computeChangedValues(
+        value as Record<string, unknown>,
+        base as Record<string, unknown>,
+      );
+
+      if (Object.keys(nestedDiff).length > 0) {
+        changed[key] = nestedDiff as T[typeof key];
+      }
+
+      continue;
+    }
+
+    changed[key] = value;
+  }
+
+  return changed;
+}
 
 interface UseOperationOptionsProps<T> {
   /**
@@ -50,6 +87,8 @@ interface UseOperationOptionsProps<T> {
   initialValues?: Partial<T>;
 }
 
+const ENABLE_QUERY_STATE = true;
+
 /**
  * Generic hook for managing operation-specific options with URL synchronization.
  *
@@ -61,15 +100,7 @@ interface UseOperationOptionsProps<T> {
  * - Type-safe option getters
  * - Atomic state updates with React 18 concurrent rendering
  * - Non-blocking state transitions
- *
- * ## React 18 `startTransition` Benefits:
- *
- * **Atomic State Updates**: All state changes (local + URL) are wrapped in transitions
- * - Prevents blocking urgent UI updates (typing, clicking)
- * - Multiple simultaneous state updates don't freeze the interface
- * - Complex JSON serialization to URL doesn't block user interactions
- * - `isTransitioning` indicates when complex updates are in progress
- *
+
  * **Optimized for Client-Side Playground Usage**:
  * - Uses `shallow: true` for fast client-side navigation
  * - No server round-trips, optimal for interactive playground components
@@ -85,129 +116,167 @@ export function useOperationOptions<T extends Record<string, unknown>>({
   schema,
   initialValues,
 }: UseOperationOptionsProps<T>): OperationQueryState<T> {
-  // React 18 concurrent features for atomic state updates
-  const [isTransitioning, startTransition] = useTransition();
   // Initialize with defaults + initial values
   const initDefaults = useMemo<T>(
-    () => ({ ...defaultOptions, ...initialValues }) as T,
+    () => deepmerge(defaultOptions, initialValues ?? {}) as T,
     [defaultOptions, initialValues],
   );
 
   const parser = useMemo(
     () =>
       parseAsJson(schema) // schema: ZodType<T>
-        .withDefault(initDefaults)
+        .withDefault({} as T) // Empty object as default - only store changed values for query state
         .withOptions({ clearOnDefault: true, shallow: true, history: 'push' }),
-    [schema, initDefaults],
+    [schema],
   );
 
-  // URL state with client-side optimizations
+  // Query state with NUQS (represents diff from defaults)
   const [queryOptions, setQueryOptions] = useQueryState(urlKey, parser);
 
-  // Local preservation state - maintains values when operation is inactive
-  const [_localOptions, _setLocalOptions] = useState<T>(initDefaults);
+  // Local state keeps full options for persistence across operation switches
+  const [localOptions, setLocalOptions] = useState<T>(() => initDefaults);
 
-  // Track last known URL state for sync detection
-  const lastUrlStateRef = useRef<T>(queryOptions as T);
+  // Skip flag to avoid clearing local state when we intentionally emptied the query
+  const skipNextQuerySyncRef = useRef(false);
 
-  // Current options: URL when active, local when inactive
-  const currentOptions = active ? (queryOptions as T) : _localOptions;
-
-  // Type-safe option getter with fallback support
-  const getOption = useCallback(
-    <K extends keyof T>(key: K, fallback?: T[K]): T[K] => {
-      return currentOptions[key] ?? fallback ?? defaultOptions[key];
-    },
-    [currentOptions, defaultOptions],
+  const extractChangedValues = useCallback(
+    (fullOptions: T): Partial<T> =>
+      computeChangedValues(fullOptions, initDefaults),
+    [initDefaults],
   );
+
+  // Keep local options aligned when defaults change (e.g., new initial values)
+  useEffect(() => {
+    setLocalOptions((prev) =>
+      isEqual(prev, initDefaults) ? prev : initDefaults,
+    );
+  }, [initDefaults]);
+
+  // Current options: merge defaults with query/local values
+  const currentOptions = useMemo(() => {
+    if (active && ENABLE_QUERY_STATE && hasEntries(queryOptions)) {
+      return deepmerge(localOptions, queryOptions) as T;
+    }
+    return localOptions;
+  }, [active, localOptions, queryOptions]);
+
+  // NOTE: THIS IS NOT FULLY TYPED, AS IT ONLY HAVE INTELLISENSE FOR SHARED OPTIONS. THIS IS NOT URGENT TO FIX FOR NOW.
+  // Type-safe option getter with fallback support
+  // const getOption = useCallback(
+  //   <K extends keyof T>(key: K, fallback?: T[K]): T[K] => {
+  //     return currentOptions[key] ?? fallback ?? defaultOptions[key];
+  //   },
+  //   [currentOptions, defaultOptions],
+  // );
+  function _getOption<K extends keyof T>(key: K): T[K] | undefined;
+  function _getOption<K extends keyof T>(key: K, fallback: T[K]): T[K];
+  function _getOption<K extends keyof T>(key: K, fallback?: T[K]) {
+    return (currentOptions[key] ?? fallback ?? defaultOptions[key]) as T[K];
+  }
+
+  // Helper function to extract only changed values (non-defaults)
+  // Reset to defaults function
+  const resetToDefaults = useCallback(() => {
+    setLocalOptions((prev) =>
+      isEqual(prev, initDefaults) ? prev : initDefaults,
+    );
+
+    if (active && ENABLE_QUERY_STATE) {
+      setQueryOptions({} as T);
+    }
+  }, [active, initDefaults, setQueryOptions]);
 
   // Atomic state setter with proper batching and transitions
   const setOptions = useCallback(
     (update: OperationOptionsUpdate<T>) => {
+      // whole new object with defaults
       const newValue =
         typeof update === 'function'
           ? update(currentOptions)
-          : { ...currentOptions, ...update };
+          : (deepmerge(currentOptions, update) as T);
 
-      // Validation: ensure new value is different
       if (isEqual(newValue, currentOptions)) {
         return;
       }
 
-      // Use startTransition for non-urgent state updates to prevent blocking UI
-      // This is especially beneficial for playground where:
-      // - Complex nested options objects need JSON serialization to URL
-      // - Users are actively typing/interacting while options change
-      // - Multiple state updates happen simultaneously (local + URL sync)
-      startTransition(() => {
-        if (active) {
-          // Update URL state when active
-          setQueryOptions(newValue);
-          // Also keep local state in sync for potential future switches
-          _setLocalOptions(newValue);
+      if (isEqual(newValue, initDefaults)) {
+        resetToDefaults();
+        return;
+      }
+
+      const changedValues = extractChangedValues(newValue);
+
+      setLocalOptions((prev) => (isEqual(prev, newValue) ? prev : newValue));
+
+      if (active && ENABLE_QUERY_STATE) {
+        if (hasEntries(changedValues as Record<string, unknown>)) {
+          setQueryOptions(changedValues as T);
         } else {
-          // Update local state when inactive
-          _setLocalOptions(newValue);
+          setQueryOptions({} as T);
         }
-      });
+      }
     },
-    [active, currentOptions, setQueryOptions, startTransition],
+    [
+      active,
+      currentOptions,
+      initDefaults,
+      extractChangedValues,
+      resetToDefaults,
+      setQueryOptions,
+    ],
   );
 
-  // Reset to defaults function
-  const resetToDefaults = useCallback(() => {
-    setOptions(initDefaults);
-  }, [setOptions, initDefaults]);
-
-  // Sync local→URL when becoming active (only if values differ)
+  // Handle activation/deactivation side-effects for URL parameters
   useEffect(() => {
-    if (active && !isEqual(_localOptions, queryOptions)) {
-      // Use transition for non-urgent URL sync when becoming active
-      startTransition(() => {
-        setQueryOptions(_localOptions);
-      });
+    if (!ENABLE_QUERY_STATE) {
+      return;
     }
-  }, [active, _localOptions, queryOptions, setQueryOptions, startTransition]);
 
-  // Update local state when URL state changes while active
-  useEffect(() => {
-    if (active && !isEqual(queryOptions, lastUrlStateRef.current)) {
-      // Use transition for non-urgent local state sync
-      startTransition(() => {
-        _setLocalOptions(queryOptions as T);
-        lastUrlStateRef.current = queryOptions as T;
-      });
-    }
-  }, [active, queryOptions, startTransition]);
-
-  // Development validation
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      // Validate schema compatibility
-      try {
-        schema.parse(currentOptions);
-      } catch (error) {
-        console.warn(
-          `[useOperationOptions:${urlKey}] Schema validation failed:`,
-          error,
-        );
+    if (active) {
+      if (!hasEntries(queryOptions)) {
+        const diff = computeChangedValues(localOptions, initDefaults);
+        if (hasEntries(diff as Record<string, unknown>)) {
+          setQueryOptions(diff as T);
+        }
       }
-
-      // Validate defaults are present
-      if (!defaultOptions || typeof defaultOptions !== 'object') {
-        console.warn(
-          `[useOperationOptions:${urlKey}] Invalid defaultOptions provided`,
-        );
-      }
+      return;
     }
-  }, [schema, currentOptions, defaultOptions, urlKey]);
+
+    if (hasEntries(queryOptions)) {
+      skipNextQuerySyncRef.current = true;
+      setQueryOptions({} as T);
+    }
+  }, [active, initDefaults, localOptions, queryOptions, setQueryOptions]);
+
+  // Keep local state in sync with URL-driven changes (manual query edits)
+  useEffect(() => {
+    if (!(active && ENABLE_QUERY_STATE)) {
+      return;
+    }
+
+    if (skipNextQuerySyncRef.current) {
+      skipNextQuerySyncRef.current = false;
+      return;
+    }
+
+    if (!hasEntries(queryOptions)) {
+      setLocalOptions((prev) =>
+        isEqual(prev, initDefaults) ? prev : initDefaults,
+      );
+      return;
+    }
+
+    const nextOptions = deepmerge(initDefaults, queryOptions) as T;
+
+    setLocalOptions((prev) =>
+      isEqual(prev, nextOptions) ? prev : nextOptions,
+    );
+  }, [active, initDefaults, queryOptions]);
 
   return {
     options: currentOptions,
     setOptions,
     resetToDefaults,
-    getOption,
-    // Always expose isTransitioning since we use it for atomic state updates
-    isTransitioning,
+    getOption: _getOption,
   };
 }

@@ -145,3 +145,40 @@ export function isShallowEqual(
 
   return true;
 }
+
+export function findFirstDiff(
+  // biome-ignore lint/suspicious/noExplicitAny: <forgive it>
+  a: any,
+  // biome-ignore lint/suspicious/noExplicitAny: <forgive it>
+  b: any,
+  path: string[] = [],
+): string | null {
+  if (a === b) {
+    return null;
+  }
+
+  const ta = typeof a;
+  const tb = typeof b;
+  if (a == null || b == null || ta !== tb) {
+    return `${path.join('.') || '(root)'}: ${String(a)} (${ta}) !== ${String(b)} (${tb})`;
+  }
+  if (ta !== 'object') {
+    return `${path.join('.') || '(root)'}: ${a} !== ${b}`;
+  }
+
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  for (const k of new Set([...aKeys, ...bKeys])) {
+    if (!(k in a)) {
+      return `${[...path, k].join('.')}: missing in A`;
+    }
+    if (!(k in b)) {
+      return `${[...path, k].join('.')}: missing in B`;
+    }
+    const r = findFirstDiff(a[k], b[k], [...path, k]);
+    if (r) {
+      return r;
+    }
+  }
+  return null;
+}
