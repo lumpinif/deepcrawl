@@ -200,6 +200,7 @@ export function OptionPreviewBadges({
               className={cn(
                 `border-${key}`,
                 "flex items-center justify-center rounded-full border p-0.5 not-hover:[&_svg:not([class*='text-'])]:text-muted-foreground",
+                !isEnabled && 'border-destructive',
               )}
             >
               {isEnabled ? (
