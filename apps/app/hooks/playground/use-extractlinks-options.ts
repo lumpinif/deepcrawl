@@ -63,7 +63,7 @@ export function useExtractLinksOptions({
   return useOperationOptions({
     active,
     defaultOptions: DEFAULT_EXTRACT_LINKS_OPTIONS_FOR_HOOK,
-    urlKey: 'extractLinksOptions',
+    urlKey: 'eo',
     schema: schemaForHook,
     initialValues,
   });

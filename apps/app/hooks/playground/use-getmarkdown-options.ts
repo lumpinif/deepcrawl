@@ -62,7 +62,7 @@ export function useGetMarkdownOptions({
   return useOperationOptions({
     active,
     defaultOptions: DEFAULT_GET_MARKDOWN_OPTIONS_FOR_HOOK,
-    urlKey: 'getMarkdownOptions',
+    urlKey: 'go',
     schema: schemaForHook,
     initialValues,
   });

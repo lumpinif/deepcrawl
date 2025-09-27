@@ -64,7 +64,7 @@ export function useReadUrlOptions({
   return useOperationOptions<ReadUrlOptionsWithoutUrl>({
     active,
     defaultOptions: DEFAULT_READ_OPTIONS_FOR_HOOK,
-    urlKey: 'readUrlOptions',
+    urlKey: 'ro',
     schema: schemaForHook,
     initialValues,
   });
