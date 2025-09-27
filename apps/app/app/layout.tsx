@@ -4,6 +4,10 @@ import '@deepcrawl/ui/globals.css';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Providers } from '@/components/providers';
 
+/** TODO: FIX THIS
+ * The resource http://localhost:3000/_next/static/media/Geist_Variable-s.p.f19e4721.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+ */
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -12,6 +16,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* React Scan */}
+        {/* <script src="https://unpkg.com/react-scan/dist/auto.global.js" /> */}
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         {/* Theme color matches bg-background from globals.css */}
         <meta
