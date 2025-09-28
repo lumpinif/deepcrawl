@@ -160,19 +160,22 @@ export function useOperationOptions<T extends Record<string, unknown>>({
     return localOptions;
   }, [active, localOptions, queryOptions]);
 
-  // NOTE: THIS IS NOT FULLY TYPED, AS IT ONLY HAVE INTELLISENSE FOR SHARED OPTIONS. THIS IS NOT URGENT TO FIX FOR NOW.
-  // Type-safe option getter with fallback support
-  // const getOption = useCallback(
-  //   <K extends keyof T>(key: K, fallback?: T[K]): T[K] => {
-  //     return currentOptions[key] ?? fallback ?? defaultOptions[key];
-  //   },
-  //   [currentOptions, defaultOptions],
-  // );
-  function _getOption<K extends keyof T>(key: K): T[K] | undefined;
-  function _getOption<K extends keyof T>(key: K, fallback: T[K]): T[K];
-  function _getOption<K extends keyof T>(key: K, fallback?: T[K]) {
-    return (currentOptions[key] ?? fallback ?? defaultOptions[key]) as T[K];
-  }
+  const getOption = useCallback(
+    <K extends keyof T>(key: K, fallback?: T[K]) => {
+      const value = currentOptions[key];
+
+      if (value !== undefined) {
+        return value;
+      }
+
+      if (fallback !== undefined) {
+        return fallback;
+      }
+
+      return defaultOptions[key];
+    },
+    [currentOptions, defaultOptions],
+  ) as OperationQueryState<T>['getOption'];
 
   // Helper function to extract only changed values (non-defaults)
   // Reset to defaults function
@@ -277,6 +280,6 @@ export function useOperationOptions<T extends Record<string, unknown>>({
     options: currentOptions,
     setOptions,
     resetToDefaults,
-    getOption: _getOption,
+    getOption,
   };
 }
