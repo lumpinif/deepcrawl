@@ -11,7 +11,14 @@
  * Each context is optimized to prevent unnecessary re-renders.
  */
 
-import { createContext, useContext, useMemo } from 'react';
+// SOCIAL: SHARE USE-CONTEXT-SELECTOR ON SOCIAL
+
+import { useCallback, useMemo } from 'react';
+import {
+  type Context,
+  createContext,
+  useContextSelector,
+} from 'use-context-selector';
 import type {
   PlaygroundActionsContextValue,
   PlaygroundCoreContextValue,
@@ -85,9 +92,15 @@ export function PlaygroundProvider({
       currentQueryState: s.currentQueryState,
       operationQueryStates: s.operationQueryStates,
       getAnyOperationState: s.getAnyOperationState,
+      getOptionFor: s.getOptionFor,
       currentOptions: s.currentQueryState.options,
     }),
-    [s.currentQueryState, s.operationQueryStates, s.getAnyOperationState],
+    [
+      s.currentQueryState,
+      s.operationQueryStates,
+      s.getAnyOperationState,
+      s.getOptionFor,
+    ],
   );
 
   // Actions context value
@@ -138,23 +151,58 @@ export function PlaygroundProvider({
 /* GRANULAR CONTEXT HOOKS */
 /* ------------------------------------------------------------------------------------ */
 
-function useNonNull<T>(ctx: T | null, name: string): T {
-  if (!ctx) {
-    throw new Error(`${name} must be used within <PlaygroundProvider>`);
-  }
-  return ctx;
+type AnySelector<ContextValue, Selected> =
+  | ((state: ContextValue) => Selected)
+  | keyof ContextValue;
+
+function useContextSlice<ContextValue, Selected>(
+  context: Context<ContextValue | null>,
+  hookName: string,
+  selector: (state: ContextValue) => Selected,
+): Selected {
+  const wrappedSelector = useCallback(
+    (value: ContextValue | null) => {
+      if (!value) {
+        throw new Error(`${hookName} must be used within <PlaygroundProvider>`);
+      }
+      return selector(value);
+    },
+    [hookName, selector],
+  );
+
+  return useContextSelector(context, wrappedSelector);
 }
+
+function useContextSelectorStrict<ContextValue, Selected>(
+  context: Context<ContextValue | null>,
+  hookName: string,
+  selector: AnySelector<ContextValue, Selected>,
+): Selected {
+  const normalizedSelector = useMemo(
+    () =>
+      typeof selector === 'function'
+        ? selector
+        : (state: ContextValue) => state[selector] as Selected,
+    [selector],
+  );
+
+  return useContextSlice(context, hookName, normalizedSelector);
+}
+
+const selectCoreIdentity = (state: PlaygroundCoreContextValue) => state;
+const selectOptionsIdentity = (state: PlaygroundOptionsContextValue) => state;
+const selectActionsIdentity = (state: PlaygroundActionsContextValue) => state;
 
 /**
  * Hook to access core playground state (URL, operation, execution, responses)
  * Use this when you only need to read core state without options or actions
  */
 export function usePlaygroundCore(): UsePlaygroundCoreReturn {
-  const context = useNonNull(
-    useContext(PlaygroundCoreContext),
+  return useContextSlice(
+    PlaygroundCoreContext,
     'usePlaygroundCore',
+    selectCoreIdentity,
   );
-  return context;
 }
 
 /**
@@ -162,11 +210,11 @@ export function usePlaygroundCore(): UsePlaygroundCoreReturn {
  * Use this when you need to read/write operation-specific options
  */
 export function usePlaygroundOptions(): UsePlaygroundOptionsReturn {
-  const context = useNonNull(
-    useContext(PlaygroundOptionsContext),
+  return useContextSlice(
+    PlaygroundOptionsContext,
     'usePlaygroundOptions',
+    selectOptionsIdentity,
   );
-  return context;
 }
 
 /**
@@ -174,11 +222,11 @@ export function usePlaygroundOptions(): UsePlaygroundOptionsReturn {
  * Use this when you need to trigger state changes or API operations
  */
 export function usePlaygroundActions(): UsePlaygroundActionsReturn {
-  const context = useNonNull(
-    useContext(PlaygroundActionsContext),
+  return useContextSlice(
+    PlaygroundActionsContext,
     'usePlaygroundActions',
+    selectActionsIdentity,
   );
-  return context;
 }
 
 /* ------------------------------------------------------------------------------------ */
@@ -210,38 +258,67 @@ export function usePlayground(): UsePlaygroundReturn {
 /* ------------------------------------------------------------------------------------ */
 
 /**
- * ⚠️ Important: useContext(...) + useMemo(selector(...)) does not stop re-renders; the consumer already re-rendered. For true selective subscriptions, use a context-selector library (e.g. use-context-selector) or split contexts so each slice changes independently (you already split Core/Options/Actions, which helps a lot). Replace React.createContext with createContext from the library and pass the full slice value if we are using use-context-selector.
+ * Hook to select specific data from core state.
+ * Accepts either a selector function or a property key.
  */
-
-/**
- * Hook to select specific data from core state
- * Prevents re-renders when unrelated core state changes
- */
+export function usePlaygroundCoreSelector<
+  K extends keyof PlaygroundCoreContextValue,
+>(selector: K): PlaygroundCoreContextValue[K];
 export function usePlaygroundCoreSelector<T>(
   selector: (state: PlaygroundCoreContextValue) => T,
+): T;
+export function usePlaygroundCoreSelector<T>(
+  selector:
+    | ((state: PlaygroundCoreContextValue) => T)
+    | keyof PlaygroundCoreContextValue,
 ): T {
-  const core = usePlaygroundCore();
-  return useMemo(() => selector(core), [selector, core]);
+  return useContextSelectorStrict(
+    PlaygroundCoreContext,
+    'usePlaygroundCoreSelector',
+    selector,
+  );
 }
 
 /**
- * Hook to select specific data from options state
- * Prevents re-renders when unrelated options state changes
+ * Hook to select specific data from options state.
+ * Accepts either a selector function or a property key.
  */
+export function usePlaygroundOptionsSelector<
+  K extends keyof PlaygroundOptionsContextValue,
+>(selector: K): PlaygroundOptionsContextValue[K];
 export function usePlaygroundOptionsSelector<T>(
   selector: (state: PlaygroundOptionsContextValue) => T,
+): T;
+export function usePlaygroundOptionsSelector<T>(
+  selector:
+    | ((state: PlaygroundOptionsContextValue) => T)
+    | keyof PlaygroundOptionsContextValue,
 ): T {
-  const options = usePlaygroundOptions();
-  return useMemo(() => selector(options), [selector, options]);
+  return useContextSelectorStrict(
+    PlaygroundOptionsContext,
+    'usePlaygroundOptionsSelector',
+    selector,
+  );
 }
 
 /**
- * Hook to select specific data from actions
- * Typically actions don't change, but provided for consistency
+ * Hook to select specific data from actions.
+ * Accepts either a selector function or a property key.
  */
+export function usePlaygroundActionsSelector<
+  K extends keyof PlaygroundActionsContextValue,
+>(selector: K): PlaygroundActionsContextValue[K];
 export function usePlaygroundActionsSelector<T>(
   selector: (state: PlaygroundActionsContextValue) => T,
+): T;
+export function usePlaygroundActionsSelector<T>(
+  selector:
+    | ((state: PlaygroundActionsContextValue) => T)
+    | keyof PlaygroundActionsContextValue,
 ): T {
-  const actions = usePlaygroundActions();
-  return useMemo(() => selector(actions), [selector, actions]);
+  return useContextSelectorStrict(
+    PlaygroundActionsContext,
+    'usePlaygroundActionsSelector',
+    selector,
+  );
 }

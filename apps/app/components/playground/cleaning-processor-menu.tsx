@@ -15,8 +15,9 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Check } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { usePlaygroundOptions } from '@/hooks/playground/playground-context';
+import { useCallback, useRef, useState } from 'react';
+import { usePlaygroundOptionsSelector } from '@/hooks/playground/playground-context';
+import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
 const PROCESSOR_OPTIONS = [
   {
@@ -33,8 +34,13 @@ const PROCESSOR_OPTIONS = [
 
 export function CleaningProcessorMenu() {
   // Get state and actions from context
-  const { currentQueryState } = usePlaygroundOptions();
-  const { options: currentOpts, setOptions } = currentQueryState;
+  const currentOpts = usePlaygroundOptionsSelector('currentOptions');
+  const selectSetOptions = useCallback(
+    (state: PlaygroundOptionsContextValue) =>
+      state.currentQueryState.setOptions,
+    [],
+  );
+  const setOptions = usePlaygroundOptionsSelector(selectSetOptions);
 
   // Extract processor from current options
   const processor =

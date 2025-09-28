@@ -10,15 +10,18 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { useState } from 'react';
 import {
-  usePlaygroundActions,
-  usePlaygroundCore,
+  usePlaygroundActionsSelector,
+  usePlaygroundCoreSelector,
 } from '@/hooks/playground/playground-context';
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { DeepcrawlFeatures } from '@/lib/playground/operations-config';
 
 export function OperationSelector({ className }: { className?: string }) {
-  const { selectedOperation, isExecuting } = usePlaygroundCore();
-  const { setSelectedOperation } = usePlaygroundActions();
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const isExecuting = usePlaygroundCoreSelector('isExecuting');
+  const setSelectedOperation = usePlaygroundActionsSelector(
+    'setSelectedOperation',
+  );
   const [hoveredOperation, setHoveredOperation] =
     useState<DeepcrawlOperations | null>(null);
 

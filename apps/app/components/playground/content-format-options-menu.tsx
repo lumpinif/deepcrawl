@@ -60,11 +60,18 @@ import {
   Settings2,
 } from 'lucide-react';
 import type { ElementType, ReactElement } from 'react';
-import { cloneElement, isValidElement, useRef, useState } from 'react';
 import {
-  usePlaygroundCore,
-  usePlaygroundOptions,
+  cloneElement,
+  isValidElement,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
+import {
+  usePlaygroundCoreSelector,
+  usePlaygroundOptionsSelector,
 } from '@/hooks/playground/playground-context';
+import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
 // Union type for all possible content format options
 // {
@@ -378,12 +385,17 @@ const getFilteredContentFormatOptions = <
 
 export function ContentFormatOptionsMenu() {
   // Get state and actions from context
-  const { selectedOperation } = usePlaygroundCore();
-  const { currentQueryState } = usePlaygroundOptions();
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const currentOpts = usePlaygroundOptionsSelector('currentOptions');
+  const selectSetOptions = useCallback(
+    (state: PlaygroundOptionsContextValue) =>
+      state.currentQueryState.setOptions,
+    [],
+  );
+  const setOptions = usePlaygroundOptionsSelector(selectSetOptions);
 
   // Extract all the data that was previously passed as props
   const op = selectedOperation;
-  const { options: currentOpts, setOptions } = currentQueryState;
 
   const contentFormatOptions = {
     metadata: 'metadata' in currentOpts ? currentOpts.metadata : undefined,

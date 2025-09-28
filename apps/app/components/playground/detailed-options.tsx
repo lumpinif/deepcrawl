@@ -35,9 +35,9 @@ import {
 } from 'lucide-react';
 import type { ReactElement } from 'react';
 import {
-  usePlaygroundActions,
-  usePlaygroundCore,
-  usePlaygroundOptions,
+  usePlaygroundActionsSelector,
+  usePlaygroundCoreSelector,
+  usePlaygroundOptionsSelector,
 } from '@/hooks/playground/playground-context';
 import type {
   DeepcrawlOperations,
@@ -550,11 +550,11 @@ const DETAILED_OPTIONS_CONFIG: OptionGroup[] = [
 ];
 
 export function DetailedOptions({ className }: { className?: string }) {
-  const { requestUrl, selectedOperation } = usePlaygroundCore();
-  const { currentQueryState } = usePlaygroundOptions();
-  const { resetToDefaults } = usePlaygroundActions();
+  const requestUrl = usePlaygroundCoreSelector('requestUrl');
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const currentOptions = usePlaygroundOptionsSelector('currentOptions');
+  const resetToDefaults = usePlaygroundActionsSelector('resetToDefaults');
 
-  const { options: currentOptions } = currentQueryState;
   const operation = selectedOperation;
 
   return (

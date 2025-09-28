@@ -3,8 +3,8 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import NumberFlow, { continuous } from '@number-flow/react';
 import { Zap } from 'lucide-react';
 import {
-  usePlaygroundActions,
-  usePlaygroundCore,
+  usePlaygroundActionsSelector,
+  usePlaygroundCoreSelector,
 } from '@/hooks/playground/playground-context';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { SpinnerButton } from '../spinner-button';
@@ -24,9 +24,14 @@ export function PlaygroundUrlInput({
   isUrlValid,
 }: PlaygroundUrlInputProps) {
   // Get state from context instead of props
-  const { requestUrl, selectedOperation, isExecuting, responses } =
-    usePlaygroundCore();
-  const { formatTime, getCurrentExecutionTime } = usePlaygroundActions();
+  const requestUrl = usePlaygroundCoreSelector('requestUrl');
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const isExecuting = usePlaygroundCoreSelector('isExecuting');
+  const responses = usePlaygroundCoreSelector('responses');
+  const formatTime = usePlaygroundActionsSelector('formatTime');
+  const getCurrentExecutionTime = usePlaygroundActionsSelector(
+    'getCurrentExecutionTime',
+  );
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
 

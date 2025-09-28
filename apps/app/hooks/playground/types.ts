@@ -54,11 +54,17 @@ export type OperationQueryStateMap = {
 };
 
 export interface GetOptionFor {
-  <Op extends keyof OperationToOptions, Key extends keyof OperationToOptions[Op]>(
+  <
+    Op extends keyof OperationToOptions,
+    Key extends keyof OperationToOptions[Op],
+  >(
     operation: Op,
     key: Key,
   ): OperationToOptions[Op][Key] | undefined;
-  <Op extends keyof OperationToOptions, Key extends keyof OperationToOptions[Op]>(
+  <
+    Op extends keyof OperationToOptions,
+    Key extends keyof OperationToOptions[Op],
+  >(
     operation: Op,
     key: Key,
     fallback: OperationToOptions[Op][Key],

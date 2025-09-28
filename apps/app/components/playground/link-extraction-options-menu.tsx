@@ -19,19 +19,25 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { ExtractLinksOptions } from 'deepcrawl';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
-  usePlaygroundCore,
-  usePlaygroundOptions,
+  usePlaygroundCoreSelector,
+  usePlaygroundOptionsSelector,
 } from '@/hooks/playground/playground-context';
+import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
 type LinkExtractionOptionsInput = ExtractLinksOptions['linkExtractionOptions'];
 
 export function LinkExtractionOptionsMenu() {
   // Get state and actions from context
-  const { selectedOperation } = usePlaygroundCore();
-  const { currentQueryState } = usePlaygroundOptions();
-  const { options: currentOpts, setOptions } = currentQueryState;
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const currentOpts = usePlaygroundOptionsSelector('currentOptions');
+  const selectSetOptions = useCallback(
+    (state: PlaygroundOptionsContextValue) =>
+      state.currentQueryState.setOptions,
+    [],
+  );
+  const setOptions = usePlaygroundOptionsSelector(selectSetOptions);
 
   // Extract link extraction options from current options
   const linkExtractionOptions =

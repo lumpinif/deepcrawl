@@ -9,8 +9,8 @@ import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
   PlaygroundProvider,
-  usePlaygroundActions,
-  usePlaygroundCore,
+  usePlaygroundActionsSelector,
+  usePlaygroundCoreSelector,
 } from '@/hooks/playground/playground-context';
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { getOperationConfig } from '@/lib/playground/operations-config';
@@ -37,8 +37,10 @@ const PlaygroundOperationClientContent = () => {
   const [isDetailedBarOpen, setIsDetailedBarOpen] = useState(false);
 
   // Get state and actions from context
-  const { requestUrl, selectedOperation } = usePlaygroundCore();
-  const { setRequestUrl, executeApiCall } = usePlaygroundActions();
+  const requestUrl = usePlaygroundCoreSelector('requestUrl');
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const setRequestUrl = usePlaygroundActionsSelector('setRequestUrl');
+  const executeApiCall = usePlaygroundActionsSelector('executeApiCall');
 
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);

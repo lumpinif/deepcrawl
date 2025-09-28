@@ -26,18 +26,24 @@ import {
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { MarkdownConverterOptionsInput } from 'deepcrawl';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
-  usePlaygroundCore,
-  usePlaygroundOptions,
+  usePlaygroundCoreSelector,
+  usePlaygroundOptionsSelector,
 } from '@/hooks/playground/playground-context';
+import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
 // Component now uses context - no props needed!
 export function MarkdownOptionsMenu() {
   // Get state and actions from context
-  const { selectedOperation } = usePlaygroundCore();
-  const { currentQueryState } = usePlaygroundOptions();
-  const { options: currentOpts, setOptions } = currentQueryState;
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const currentOpts = usePlaygroundOptionsSelector('currentOptions');
+  const selectSetOptions = useCallback(
+    (state: PlaygroundOptionsContextValue) =>
+      state.currentQueryState.setOptions,
+    [],
+  );
+  const setOptions = usePlaygroundOptionsSelector(selectSetOptions);
 
   // Extract markdown options from current options
   const markdownOptions =

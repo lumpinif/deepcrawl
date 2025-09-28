@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 import type { ReactElement } from 'react';
 import {
-  usePlaygroundCore,
-  usePlaygroundOptions,
+  usePlaygroundCoreSelector,
+  usePlaygroundOptionsSelector,
 } from '@/hooks/playground/playground-context';
 import type {
   DeepcrawlOperations,
@@ -139,9 +139,8 @@ export function OptionPreviewBadges({
   isAccordionOpen,
 }: OptionPreviewBadgesProps) {
   // Get state from context
-  const { selectedOperation } = usePlaygroundCore();
-  const { currentQueryState } = usePlaygroundOptions();
-  const { options: currentOptions } = currentQueryState;
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const currentOptions = usePlaygroundOptionsSelector('currentOptions');
 
   // Use context data instead of props
   const operation = selectedOperation;

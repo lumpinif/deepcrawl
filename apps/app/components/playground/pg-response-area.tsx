@@ -6,8 +6,8 @@ import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
 import { SpinnerButton } from '@/components/spinner-button';
 import {
-  usePlaygroundActions,
-  usePlaygroundCore,
+  usePlaygroundActionsSelector,
+  usePlaygroundCoreSelector,
 } from '@/hooks/playground/playground-context';
 import type { OperationConfig } from '@/lib/playground/operations-config';
 import { copyToClipboard } from '@/utils/clipboard';
@@ -48,8 +48,10 @@ const formatResponseData = (data: unknown): string => {
 
 export function PGResponseArea({ selectedOPConfig }: PGResponseArea) {
   // Get formatTime from context instead of props
-  const { selectedOperation, responses } = usePlaygroundCore();
-  const { formatTime, handleRetry } = usePlaygroundActions();
+  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+  const responses = usePlaygroundCoreSelector('responses');
+  const formatTime = usePlaygroundActionsSelector('formatTime');
+  const handleRetry = usePlaygroundActionsSelector('handleRetry');
   const handleCopy = async (text: string) => {
     await copyToClipboard(text);
     toast.success('Copied to clipboard');
