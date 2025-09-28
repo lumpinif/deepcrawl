@@ -11,7 +11,7 @@
  * Each context is optimized to prevent unnecessary re-renders.
  */
 
-// SOCIAL: SHARE USE-CONTEXT-SELECTOR ON SOCIAL
+// SOCIAL: SHARE USE-CONTEXT-SELECTOR ON SOCIAL: Hard to quote a single percentage without measuring your exact UI. The re-render savings depend on how many components subscribed to each context field, how expensive their renders are, and how often the underlying data changes. In practice, when a large form or dashboard switches from plain useContext to per-field selectors, it's common to see render counts drop by 50–90 % for the busiest components, which translates to noticeably smoother interactions (URL typing, option toggles) and lower React DevTools flame charts. Grab a React Profiler snapshot before and after (type a URL, flip a few switches) to get the real numbers for your playground— that will show precisely how many renders were skipped and what the timing gains are.
 
 import { useCallback, useMemo } from 'react';
 import {
