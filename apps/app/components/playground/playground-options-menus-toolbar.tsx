@@ -4,7 +4,7 @@ import {
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { Plus } from 'lucide-react';
+import { ChevronRight, Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { CacheOptionsMenu } from './cache-options-menu';
@@ -24,6 +24,13 @@ export function PlaygroundOptionsMenusToolbar({
   isDetailedBarOpen,
   setIsDetailedBarOpen,
 }: PlaygroundOptionsMenusToolbarProps) {
+  const customizeLabelClasses = cn(
+    'mr-1 flex w-fit select-none items-center overflow-hidden text-nowrap font-medium text-muted-foreground text-xs transition-all duration-250 ease-out',
+    isDetailedBarOpen
+      ? 'ml-3 max-w-[12rem] opacity-100 translate-x-0'
+      : 'ml-0 max-w-0 opacity-0 -translate-x-1 pointer-events-none blur-[3px]',
+  );
+
   return (
     <PromptInputToolbar
       className="peer/toolbar group/toolbar border-b-0 hover:cursor-pointer"
@@ -32,23 +39,32 @@ export function PlaygroundOptionsMenusToolbar({
         setIsDetailedBarOpen(!isDetailedBarOpen);
       }}
     >
-      <PromptInputTools className="gap-x-0">
-        <AnimatePresence mode="wait">
-          {isDetailedBarOpen && (
-            <motion.span
-              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-              className={cn(
-                'mr-1 ml-3 select-none text-nowrap font-medium text-muted-foreground text-xs',
-              )}
-              exit={{ opacity: 0, x: -20, filter: 'blur(2px)' }}
-              initial={{ opacity: 0, x: -20 }}
-              key="customize-options"
-              transition={{ duration: 0.15, ease: 'easeInOut' }}
-            >
-              Customize Options:
-            </motion.span>
-          )}
-        </AnimatePresence>
+      <PromptInputTools className="items-center gap-x-0">
+        <div className={customizeLabelClasses}>
+          <AnimatePresence mode="wait">
+            {isDetailedBarOpen && (
+              <motion.span
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                className="flex w-fit select-none items-center gap-x-1"
+                exit={{ opacity: 0, x: -15, filter: 'blur(4px)' }}
+                initial={{ opacity: 0, x: -10, filter: 'blur(6px)' }}
+                key="customize-options"
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+              >
+                Customize Options{' '}
+                <motion.span
+                  animate={{ rotate: 360 }}
+                  className="shrink-0 select-none"
+                  exit={{ rotate: -180 }}
+                  initial={{ rotate: 0 }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                >
+                  <ChevronRight className="size-3 shrink-0 select-none" />
+                </motion.span>
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Content format options */}
         <ContentFormatOptionsMenu />
