@@ -603,7 +603,7 @@ export const PromptInputActionMenuContent = ({
 }: PromptInputActionMenuContentProps) => (
   <DropdownMenuContent
     align="start"
-    className={cn('bg-popover/30 backdrop-blur-sm', className)}
+    className={cn('bg-popover/60 backdrop-blur-sm', className)}
     onClick={(e) => {
       e.stopPropagation();
       props.onClick?.(e);
