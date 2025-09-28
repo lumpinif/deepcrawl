@@ -32,7 +32,7 @@ export function OperationSelector({ className }: { className?: string }) {
   const isLoading = isExecuting[selectedOperation];
 
   return (
-    <div className={cn('grid gap-2 p-1 lg:grid-cols-3', className)}>
+    <div className={cn('grid select-none gap-2 p-1 lg:grid-cols-3', className)}>
       {DeepcrawlFeatures.map((feat) => (
         <Card
           className={cn(
