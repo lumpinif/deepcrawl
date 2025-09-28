@@ -5,6 +5,7 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -27,12 +28,19 @@ import { PlaygroundUrlInput } from './playground-url-input';
 // TODO: VALIDATE ALL TOOLTIPS AND DESCRIPTIONS FOR ALL OPTIONS
 
 export interface PlaygroundOperationClientProps {
+  className?: string;
   defaultOperation?: DeepcrawlOperations;
   defaultUrl?: string;
 }
 
+interface PlaygroundOperationClientContentProps {
+  className?: string;
+}
+
 // Internal component that uses context
-const PlaygroundOperationClientContent = () => {
+const PlaygroundOperationClientContent = ({
+  className,
+}: PlaygroundOperationClientContentProps) => {
   const [isError, setIsError] = useState(false);
   const [isDetailedBarOpen, setIsDetailedBarOpen] = useState(false);
 
@@ -73,7 +81,7 @@ const PlaygroundOperationClientContent = () => {
   return (
     <>
       <PromptInput
-        className="relative mx-auto mt-4 sm:max-w-2/3"
+        className={cn('relative mx-auto sm:max-w-4/5', className)}
         onSubmit={(_, event) => {
           event.preventDefault();
           handleSubmit();
@@ -119,6 +127,7 @@ const PlaygroundOperationClientContent = () => {
 
 // Main exported component with Provider wrapper
 export const PlaygroundOperationClient = ({
+  className,
   defaultOperation = 'getMarkdown',
   defaultUrl = '',
 }: PlaygroundOperationClientProps) => {
@@ -127,7 +136,7 @@ export const PlaygroundOperationClient = ({
       defaultOperation={defaultOperation}
       defaultUrl={defaultUrl}
     >
-      <PlaygroundOperationClientContent />
+      <PlaygroundOperationClientContent className={className} />
     </PlaygroundProvider>
   );
 };
