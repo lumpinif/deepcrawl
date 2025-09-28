@@ -1,5 +1,5 @@
 import { DeepcrawlApp } from 'deepcrawl';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 interface UseDeepcrawlClientOptions {
   apiKey: string;
@@ -16,7 +16,7 @@ export function useDeepcrawlClient({
 }: UseDeepcrawlClientOptions) {
   const clientRef = useRef<DeepcrawlApp | null>(null);
 
-  // Memoize client configuration to prevent unnecessary re-initialization
+  // Track config to detect changes that require reinitialization
   const clientConfig = useMemo(
     () => ({
       apiKey,
@@ -25,23 +25,42 @@ export function useDeepcrawlClient({
     [apiKey, baseUrl],
   );
 
-  // Initialize client when config changes
-  useEffect(() => {
+  const configRef = useRef(clientConfig);
+
+  const ensureClient = useCallback(() => {
+    const configChanged = configRef.current !== clientConfig;
+
     if (!apiKey) {
       clientRef.current = null;
-      return;
+      configRef.current = clientConfig;
+      return null;
     }
 
-    try {
-      clientRef.current = new DeepcrawlApp(clientConfig);
-    } catch (error) {
-      console.error('Failed to initialize DeepcrawlApp:', error);
+    if (configChanged) {
       clientRef.current = null;
     }
-  }, [clientConfig, apiKey]);
+
+    if (!clientRef.current) {
+      try {
+        clientRef.current = new DeepcrawlApp(clientConfig);
+      } catch (error) {
+        console.error('Failed to initialize DeepcrawlApp:', error);
+        clientRef.current = null;
+      }
+    }
+
+    configRef.current = clientConfig;
+
+    return clientRef.current;
+  }, [apiKey, clientConfig]);
+
+  useEffect(() => {
+    ensureClient();
+  }, [ensureClient]);
 
   return {
     client: clientRef.current,
+    ensureClient,
     isReady: clientRef.current !== null,
   };
 }

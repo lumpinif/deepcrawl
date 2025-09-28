@@ -40,7 +40,11 @@ export function useTaskInputOperations({
   setResponses,
 }: UseTaskInputOperationsProps) {
   // Initialize SDK client with custom hook
-  const { client: sdkClient, isReady } = useDeepcrawlClient({
+  const {
+    client: sdkClient,
+    ensureClient,
+    isReady,
+  } = useDeepcrawlClient({
     apiKey: API_KEY,
     baseUrl:
       process.env.NODE_ENV === 'development'
@@ -82,8 +86,10 @@ export function useTaskInputOperations({
       return;
     }
 
-    if (!sdkClient) {
-      toast.error('Please wait for the SDK client to be ready');
+    const client = sdkClient ?? ensureClient();
+
+    if (!client) {
+      toast.error('Unable to initialize the Deepcrawl client');
       return;
     }
 
@@ -113,7 +119,7 @@ export function useTaskInputOperations({
             toast.error(`Invalid options for ${operation}`);
             return;
           }
-          result = await sdkClient.getMarkdown(requestUrl, currentOptions);
+          result = await client.getMarkdown(requestUrl, currentOptions);
           targetUrl = requestUrl;
           break;
         }
@@ -124,7 +130,7 @@ export function useTaskInputOperations({
             toast.error(`Invalid options for ${operation}`);
             return;
           }
-          const readData = await sdkClient.readUrl(requestUrl, currentOptions);
+          const readData = await client.readUrl(requestUrl, currentOptions);
           result = readData;
           targetUrl = readData.targetUrl || requestUrl;
           break;
@@ -137,7 +143,7 @@ export function useTaskInputOperations({
             toast.error(`Invalid options for ${operation}`);
             return;
           }
-          const linksData = await sdkClient.extractLinks(
+          const linksData = await client.extractLinks(
             requestUrl,
             currentOptions,
           );
