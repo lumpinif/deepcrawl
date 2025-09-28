@@ -53,6 +53,18 @@ export type OperationQueryStateMap = {
   [K in keyof OperationToOptions]: OperationQueryState<OperationToOptions[K]>;
 };
 
+export interface GetOptionFor {
+  <Op extends keyof OperationToOptions, Key extends keyof OperationToOptions[Op]>(
+    operation: Op,
+    key: Key,
+  ): OperationToOptions[Op][Key] | undefined;
+  <Op extends keyof OperationToOptions, Key extends keyof OperationToOptions[Op]>(
+    operation: Op,
+    key: Key,
+    fallback: OperationToOptions[Op][Key],
+  ): OperationToOptions[Op][Key];
+}
+
 export type PreservedOperationStates = {
   [K in keyof OperationToOptions]: OperationToOptions[K];
 };
@@ -65,12 +77,9 @@ export type OperationOptionsUpdate<T extends object> =
 // Operation-specific state structure
 export interface OperationQueryState<T extends object> {
   options: T;
+  defaults: T;
   setOptions: (update: OperationOptionsUpdate<T>) => void;
   resetToDefaults: () => void;
-
-  // Overloads improve IntelliSense (fallback narrows)
-  getOption<K extends keyof T>(key: K): T[K] | undefined;
-  getOption<K extends keyof T>(key: K, fallback: T[K]): T[K];
 
   isTransitioning?: boolean;
 }
@@ -146,6 +155,8 @@ export interface PlaygroundOptionsState {
   operationQueryStates: OperationQueryStateMap;
   // Utility getter for any operation state
   getAnyOperationState: GetAnyOperationState;
+  // Option getter with operation narrowing
+  getOptionFor: GetOptionFor;
   // Direct access to current operation options (convenience)
   currentOptions: OperationToOptions[DeepcrawlOperations];
 }
@@ -207,11 +218,6 @@ export interface UsePlaygroundReturn
   extends PlaygroundCoreState,
     PlaygroundOptionsState,
     PlaygroundActions {}
-
-// Context selector types for performance optimization
-export type PlaygroundCoreSelector<T> = (state: PlaygroundCoreState) => T;
-export type PlaygroundOptionsSelector<T> = (state: PlaygroundOptionsState) => T;
-export type PlaygroundActionsSelector<T> = (state: PlaygroundActions) => T;
 
 // Provider context values (internal)
 export interface PlaygroundCoreContextValue extends PlaygroundCoreState {}

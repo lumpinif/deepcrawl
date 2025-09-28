@@ -42,8 +42,8 @@ interface UseExtractLinksOptionsProps {
  * });
  *
  * // Type-safe access to options
- * const treeEnabled = extractLinksState.getOption('tree', true);
- * const folderFirst = extractLinksState.getOption('treeOptions')?.folderFirst;
+ * const treeEnabled = extractLinksState.options.tree ?? true;
+ * const folderFirst = extractLinksState.options.treeOptions?.folderFirst ?? true;
  *
  * // Type-safe updates
  * extractLinksState.setOptions({

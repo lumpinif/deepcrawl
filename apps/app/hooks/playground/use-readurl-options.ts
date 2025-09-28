@@ -42,8 +42,8 @@ interface UseReadUrlOptionsProps {
  * });
  *
  * // Type-safe access to options
- * const markdownEnabled = readUrlState.getOption('markdown', true);
- * const cacheEnabled = readUrlState.getOption('cacheOptions')?.enabled;
+ * const markdownEnabled = readUrlState.options.markdown ?? true;
+ * const cacheEnabled = readUrlState.options.cacheOptions?.enabled ?? false;
  *
  * // Type-safe updates
  * readUrlState.setOptions({

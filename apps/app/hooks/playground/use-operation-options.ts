@@ -160,23 +160,6 @@ export function useOperationOptions<T extends Record<string, unknown>>({
     return localOptions;
   }, [active, localOptions, queryOptions]);
 
-  const getOption = useCallback(
-    <K extends keyof T>(key: K, fallback?: T[K]) => {
-      const value = currentOptions[key];
-
-      if (value !== undefined) {
-        return value;
-      }
-
-      if (fallback !== undefined) {
-        return fallback;
-      }
-
-      return defaultOptions[key];
-    },
-    [currentOptions, defaultOptions],
-  ) as OperationQueryState<T>['getOption'];
-
   // Helper function to extract only changed values (non-defaults)
   // Reset to defaults function
   const resetToDefaults = useCallback(() => {
@@ -278,8 +261,8 @@ export function useOperationOptions<T extends Record<string, unknown>>({
 
   return {
     options: currentOptions,
+    defaults: initDefaults,
     setOptions,
     resetToDefaults,
-    getOption,
   };
 }

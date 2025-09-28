@@ -11,6 +11,7 @@ import { parseAsString, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useCallback, useMemo, useState } from 'react';
 import {
   type DeepcrawlOperations,
+  type GetOptionFor,
   type OperationQueryStateMap,
   type OperationToOptions,
   type PlaygroundResponses,
@@ -161,6 +162,24 @@ export function useEnhancedTaskInputState({
     [operationQueryStates],
   );
 
+  const getOptionFor = useCallback(
+    ((operation, key, fallback) => {
+      const state = operationQueryStates[operation];
+      const value = state.options[key];
+
+      if (value !== undefined) {
+        return value;
+      }
+
+      if (fallback !== undefined) {
+        return fallback;
+      }
+
+      return state.defaults[key];
+    }) as GetOptionFor,
+    [operationQueryStates],
+  );
+
   return {
     // Core state
     requestUrl,
@@ -179,6 +198,7 @@ export function useEnhancedTaskInputState({
     currentQueryState,
     operationQueryStates,
     getAnyOperationState,
+    getOptionFor,
 
     // Core helpers (minimized for clean architecture)
     resetToDefaults,

@@ -42,8 +42,8 @@ interface UseGetMarkdownOptionsProps {
  * });
  *
  * // Type-safe access to options
- * const cacheEnabled = getMarkdownState.getOption('cacheOptions')?.enabled;
- * const codeFence = getMarkdownState.getOption('markdownConverterOptions')?.codeFence;
+ * const cacheEnabled = getMarkdownState.options.cacheOptions?.enabled ?? false;
+ * const codeFence = getMarkdownState.options.markdownConverterOptions?.codeFence ?? '```';
  *
  * // Type-safe updates
  * getMarkdownState.setOptions({
