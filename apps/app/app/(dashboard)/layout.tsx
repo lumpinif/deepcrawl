@@ -59,7 +59,7 @@ export default async function DashboardLayout({
             navigationMode={navigationMode}
             session={currentSession}
           />
-          <ScrollArea className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
+          <ScrollArea className="relative flex min-h-0 flex-1 flex-col">
             {children}
           </ScrollArea>
         </SidebarInset>

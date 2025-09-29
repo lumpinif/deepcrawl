@@ -68,7 +68,7 @@ export function HeaderNavigationLayout({
       </div>
 
       <ScrollArea
-        className="relative flex min-h-0 flex-1 flex-col gap-4 md:gap-6"
+        className={cn('relative flex min-h-0 flex-1 flex-col')}
         viewportRef={viewportRef}
       >
         {children}
