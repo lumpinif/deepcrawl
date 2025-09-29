@@ -32,11 +32,16 @@ export function OperationSelector({ className }: { className?: string }) {
   const isLoading = isExecuting[selectedOperation];
 
   return (
-    <div className={cn('grid select-none gap-2 p-1 lg:grid-cols-3', className)}>
+    <div
+      className={cn(
+        'grid w-full select-none gap-2 p-1 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]',
+        className,
+      )}
+    >
       {DeepcrawlFeatures.map((feat) => (
         <Card
           className={cn(
-            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-primary/80 hover:shadow-md hover:dark:bg-background',
+            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-primary/80 hover:shadow-md 2xl:py-7 hover:dark:bg-background',
             selectedOperation === feat.operation &&
               'border-ring bg-primary/95 shadow-md hover:bg-primary/95 dark:bg-background',
           )}

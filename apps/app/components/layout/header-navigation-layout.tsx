@@ -39,14 +39,15 @@ export function HeaderNavigationLayout({
   return (
     <main
       className={cn(
-        'relative flex w-full flex-1 flex-col bg-background',
+        'group/header-nav-layout relative flex w-full flex-1 flex-col bg-background',
         defaultInsetClassname,
       )}
+      data-nav-mode={navigationMode === 'header' ? 'header' : 'sidebar'}
     >
       <div className="relative">
         <SiteHeader
           className={cn(
-            'absolute top-0 right-0 left-0 z-50 h-16 transition-transform duration-100 ease-in-out will-change-transform',
+            'absolute top-0 right-0 left-0 z-50 transition-transform duration-100 ease-in-out will-change-transform',
             shouldHideHeader && '-translate-y-full',
           )}
           deviceSessions={deviceSessions}

@@ -1,6 +1,6 @@
 import { cn } from '@deepcrawl/ui/lib/utils';
 
-const baseContainerCN = 'container mx-auto px-6 2xl:px-[8rem]';
+export const baseContainerCN = 'container mx-auto px-6 2xl:px-[6rem]' as const;
 
 export function PageContainer({
   children,
@@ -27,16 +27,23 @@ export function PageTitle({
   className,
   description,
   titleSize,
+  desPos = 'bottom',
 }: {
   title: string;
   description?: string;
+  desPos?: 'top' | 'bottom';
   titleSize?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 } & React.HTMLAttributes<HTMLDivElement>) {
   const titleSizeCN = titleSize ? `text-${titleSize}` : 'text-3xl';
   return (
     <div className={cn('my-2 w-full', className)}>
+      {description && desPos === 'top' && (
+        <p className="text-muted-foreground">{description}</p>
+      )}
       <h1 className={cn('font-semibold', titleSizeCN)}>{title}</h1>
-      {description && <p className="text-muted-foreground">{description}</p>}
+      {description && desPos === 'bottom' && (
+        <p className="text-muted-foreground">{description}</p>
+      )}
     </div>
   );
 }

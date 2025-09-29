@@ -16,10 +16,10 @@ import {
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
+import { PageContainer, PageTitle } from '../page-elements';
 import { DetailedOptions } from './detailed-options';
 import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { OperationSelector } from './operation-selector';
-import { PGResponseArea } from './pg-response-area';
 import { PlaygroundOptionsMenusToolbar } from './playground-options-menus-toolbar';
 import { PlaygroundUrlInput } from './playground-url-input';
 
@@ -38,7 +38,7 @@ interface PlaygroundOperationClientContentProps {
 }
 
 // Internal component that uses context
-const PlaygroundOperationClientContent = ({
+export const PlaygroundOperationClientContent = ({
   className,
 }: PlaygroundOperationClientContentProps) => {
   const [isError, setIsError] = useState(false);
@@ -49,6 +49,8 @@ const PlaygroundOperationClientContent = ({
   const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
   const setRequestUrl = usePlaygroundActionsSelector('setRequestUrl');
   const executeApiCall = usePlaygroundActionsSelector('executeApiCall');
+
+  const response = usePlaygroundCoreSelector('responses')[selectedOperation];
 
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
@@ -79,9 +81,26 @@ const PlaygroundOperationClientContent = ({
   };
 
   return (
-    <>
+    <PageContainer
+      className={cn(
+        'h-full',
+        response?.data &&
+          'min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.14)-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
+      )}
+    >
+      <PageTitle
+        className="mx-auto mt-28 mb-10 w-full text-center sm:mb-12 md:mt-[20svh]"
+        description="API Playground for Deepcrawl"
+        desPos="top"
+        title="What would you like to see?"
+        titleSize="3xl"
+      />
       <PromptInput
-        className={cn('relative mx-auto sm:max-w-4/5', className)}
+        className={cn(
+          'relative mx-auto sm:max-w-4/5',
+          response?.data && 'mb-20 md:mb-40',
+          className,
+        )}
         onSubmit={(_, event) => {
           event.preventDefault();
           handleSubmit();
@@ -89,7 +108,7 @@ const PlaygroundOperationClientContent = ({
       >
         {/* Operation selector */}
         <PromptInputToolbar>
-          <PromptInputTools className="[&_button:first-child]:rounded-tl-lg [&_button:first-child]:rounded-bl-md">
+          <PromptInputTools className="w-full [&_button:first-child]:rounded-tl-lg [&_button:first-child]:rounded-bl-md">
             <OperationSelector />
           </PromptInputTools>
         </PromptInputToolbar>
@@ -116,12 +135,7 @@ const PlaygroundOperationClientContent = ({
           <DetailedOptions />
         </DetailedOptionsAccordion>
       </PromptInput>
-
-      {/* Results Section */}
-      <div className="mt-6 space-y-3">
-        <PGResponseArea selectedOPConfig={selectedOPConfig} />
-      </div>
-    </>
+    </PageContainer>
   );
 };
 
