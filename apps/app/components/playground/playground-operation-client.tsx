@@ -7,7 +7,7 @@ import {
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
 
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
   PlaygroundProvider,
@@ -23,7 +23,8 @@ import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { OperationSelector } from './operation-selector';
 import { PlaygroundOptionsMenusToolbar } from './playground-options-menus-toolbar';
 import { PlaygroundUrlInput } from './playground-url-input';
-import { PLAYGROUND_SECTION_ID } from './scroll-anchors';
+import { PLAYGROUND_SECTION_ID, RESPONSE_SECTION_ID } from './scroll-anchors';
+import { useScrollToAnchor } from './use-scroll-to-anchor';
 // TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart currentState.setOptions generic function
 
 // TODO: VALIDATE ALL TOOLTIPS AND DESCRIPTIONS FOR ALL OPTIONS
@@ -54,14 +55,33 @@ export const PlaygroundOperationClientContent = ({
   const response = usePlaygroundCoreSelector('responses')[selectedOperation];
   const hasResponseData =
     response?.data !== undefined && response?.data !== null;
+  const hasResponseReady = hasResponseData || Boolean(response?.error);
 
-  // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
-
-  // Memoize URL validation to prevent re-renders
   const isUrlValid = useMemo(() => {
     return Boolean(requestUrl && isPlausibleUrl(requestUrl));
   }, [requestUrl]);
+
+  const scrollToAnchor = useScrollToAnchor();
+  const lastAutoScrolledResponseRef = useRef<typeof response>(undefined);
+
+  useEffect(() => {
+    if (!(response && hasResponseReady)) {
+      lastAutoScrolledResponseRef.current = undefined;
+      return;
+    }
+
+    if (lastAutoScrolledResponseRef.current === response) {
+      return;
+    }
+
+    lastAutoScrolledResponseRef.current = response;
+    scrollToAnchor(RESPONSE_SECTION_ID);
+  }, [hasResponseReady, response, scrollToAnchor]);
+
+  useEffect(() => {
+    lastAutoScrolledResponseRef.current = undefined;
+  }, [selectedOperation]);
 
   const handleSubmit = () => {
     if (!isUrlValid) {
@@ -71,11 +91,9 @@ export const PlaygroundOperationClientContent = ({
     }
 
     setIsError(false);
-    // Execute API call with current operation
     executeApiCall(selectedOperation, selectedOPConfig.label);
   };
 
-  // Clear error when user types
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRequestUrl(e.target.value);
     if (isError) {
@@ -86,7 +104,7 @@ export const PlaygroundOperationClientContent = ({
   return (
     <PageContainer
       className={cn(
-        'h-full',
+        'h-full scroll-mt-24',
         hasResponseData &&
           'min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.14)-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
       )}
