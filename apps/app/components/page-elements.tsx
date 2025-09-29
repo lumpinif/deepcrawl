@@ -1,16 +1,18 @@
 import { cn } from '@deepcrawl/ui/lib/utils';
+import type { HTMLAttributes, PropsWithChildren } from 'react';
 
 export const baseContainerCN = 'container mx-auto px-6 2xl:px-[6rem]' as const;
+
+type PageContainerProps = PropsWithChildren<HTMLAttributes<HTMLElement>>;
 
 export function PageContainer({
   children,
   className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+  ...rest
+}: PageContainerProps) {
   return (
     <main
+      {...rest}
       className={cn(
         'flex flex-col gap-4 pb-6 sm:gap-6 xl:pb-8 2xl:pb-10',
         baseContainerCN,

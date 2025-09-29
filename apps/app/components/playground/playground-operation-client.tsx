@@ -5,6 +5,7 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
+
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -22,7 +23,7 @@ import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { OperationSelector } from './operation-selector';
 import { PlaygroundOptionsMenusToolbar } from './playground-options-menus-toolbar';
 import { PlaygroundUrlInput } from './playground-url-input';
-
+import { PLAYGROUND_SECTION_ID } from './scroll-anchors';
 // TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart currentState.setOptions generic function
 
 // TODO: VALIDATE ALL TOOLTIPS AND DESCRIPTIONS FOR ALL OPTIONS
@@ -51,6 +52,8 @@ export const PlaygroundOperationClientContent = ({
   const executeApiCall = usePlaygroundActionsSelector('executeApiCall');
 
   const response = usePlaygroundCoreSelector('responses')[selectedOperation];
+  const hasResponseData =
+    response?.data !== undefined && response?.data !== null;
 
   // Get current operation config
   const selectedOPConfig = getOperationConfig(selectedOperation);
@@ -84,9 +87,10 @@ export const PlaygroundOperationClientContent = ({
     <PageContainer
       className={cn(
         'h-full',
-        response?.data &&
+        hasResponseData &&
           'min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.14)-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
       )}
+      id={PLAYGROUND_SECTION_ID}
     >
       <PageTitle
         className="mx-auto mt-28 mb-10 w-full text-center sm:mb-12 md:mt-[20svh]"
@@ -95,46 +99,44 @@ export const PlaygroundOperationClientContent = ({
         title="What would you like to see?"
         titleSize="3xl"
       />
-      <PromptInput
-        className={cn(
-          'relative mx-auto sm:max-w-4/5',
-          response?.data && 'mb-20 md:mb-40',
-          className,
-        )}
-        onSubmit={(_, event) => {
-          event.preventDefault();
-          handleSubmit();
-        }}
-      >
-        {/* Operation selector */}
-        <PromptInputToolbar>
-          <PromptInputTools className="w-full [&_button:first-child]:rounded-tl-lg [&_button:first-child]:rounded-bl-md">
-            <OperationSelector />
-          </PromptInputTools>
-        </PromptInputToolbar>
-
-        {/* URL input */}
-        <PlaygroundUrlInput
-          handleSubmit={handleSubmit}
-          handleUrlChange={handleUrlChange}
-          isError={isError}
-          isUrlValid={isUrlValid}
-        />
-
-        {/* Option menu toolbar */}
-        <PlaygroundOptionsMenusToolbar
-          isDetailedBarOpen={isDetailedBarOpen}
-          setIsDetailedBarOpen={setIsDetailedBarOpen}
-        />
-
-        {/* detailed options accordion */}
-        <DetailedOptionsAccordion
-          childrenProps={{ className: 'p-4' }}
-          open={isDetailedBarOpen}
+      <div className="mx-auto flex w-full flex-col gap-4 sm:max-w-4/5">
+        <PromptInput
+          className={cn('relative w-full', className)}
+          onSubmit={(_, event) => {
+            event.preventDefault();
+            handleSubmit();
+          }}
         >
-          <DetailedOptions />
-        </DetailedOptionsAccordion>
-      </PromptInput>
+          {/* Operation selector */}
+          <PromptInputToolbar>
+            <PromptInputTools className="w-full [&_button:first-child]:rounded-tl-lg [&_button:first-child]:rounded-bl-md">
+              <OperationSelector hasResponseData={hasResponseData} />
+            </PromptInputTools>
+          </PromptInputToolbar>
+
+          {/* URL input */}
+          <PlaygroundUrlInput
+            handleSubmit={handleSubmit}
+            handleUrlChange={handleUrlChange}
+            isError={isError}
+            isUrlValid={isUrlValid}
+          />
+
+          {/* Option menu toolbar */}
+          <PlaygroundOptionsMenusToolbar
+            isDetailedBarOpen={isDetailedBarOpen}
+            setIsDetailedBarOpen={setIsDetailedBarOpen}
+          />
+
+          {/* detailed options accordion */}
+          <DetailedOptionsAccordion
+            childrenProps={{ className: 'p-4' }}
+            open={isDetailedBarOpen}
+          >
+            <DetailedOptions />
+          </DetailedOptionsAccordion>
+        </PromptInput>
+      </div>
     </PageContainer>
   );
 };

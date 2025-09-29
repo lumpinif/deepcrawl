@@ -1,8 +1,13 @@
 'use client';
 
+import {
+  IconHoverButton,
+  IconHoverButtonIcon,
+  IconHoverButtonText,
+} from '@deepcrawl/ui/components/annui/icon-hover-button';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { AlertTriangle, Copy, RefreshCw } from 'lucide-react';
+import { AlertTriangle, ChevronUp, Copy, RefreshCw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { toast } from 'sonner';
@@ -14,6 +19,8 @@ import {
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { copyToClipboard } from '@/utils/clipboard';
 import { baseContainerCN, PageHeader } from '../page-elements';
+import { PLAYGROUND_SECTION_ID, RESPONSE_SECTION_ID } from './scroll-anchors';
+import { useScrollToAnchor } from './use-scroll-to-anchor';
 
 const getErrorIcon = (errorType?: string) => {
   switch (errorType) {
@@ -67,17 +74,41 @@ export function PGResponseArea({ className }: { className?: string }) {
   // const operationLabel = selectedOPConfig.label;
 
   const response = responses[selectedOperation];
+  const hasResponseData =
+    response?.data !== undefined && response?.data !== null;
+  const scrollToAnchor = useScrollToAnchor();
 
   if (!response) {
     return null;
   }
 
   return (
-    <div className="min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]">
+    <div
+      className={cn(
+        'min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
+      )}
+      id={RESPONSE_SECTION_ID}
+    >
       <PageHeader
+        containerClassName="flex w-full items-center justify-between"
         description={selectedOPConfig.description}
         title={`${selectedOPConfig.label} Result`}
-      />
+      >
+        {hasResponseData && (
+          <IconHoverButton
+            aria-label="Scroll to playground"
+            className="ml-auto text-muted-foreground hover:text-foreground"
+            onClick={() => scrollToAnchor(PLAYGROUND_SECTION_ID)}
+            type="button"
+            variant="outline"
+          >
+            <IconHoverButtonIcon>
+              <ChevronUp />
+            </IconHoverButtonIcon>
+            <IconHoverButtonText>Back to playground</IconHoverButtonText>
+          </IconHoverButton>
+        )}
+      </PageHeader>
       <div
         className={cn(
           baseContainerCN,

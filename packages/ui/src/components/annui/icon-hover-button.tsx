@@ -7,26 +7,48 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import { AnimatePresence, motion } from 'motion/react';
 import * as React from 'react';
 
+interface IconHoverButtonProps
+  extends React.ComponentPropsWithoutRef<typeof Button> {
+  forceHover?: boolean;
+}
+
 const IconHoverButton = React.forwardRef<
   React.ComponentRef<typeof Button>,
-  React.ComponentPropsWithoutRef<typeof Button>
->(({ className, children, ...props }, ref) => {
-  const [isHover, setIsHover] = React.useState(false);
+  IconHoverButtonProps
+>(
+  (
+    { className, children, forceHover, onMouseEnter, onMouseLeave, ...props },
+    ref,
+  ) => {
+    const [isHover, setIsHover] = React.useState(false);
 
-  return (
-    <IconHoverButtonProvider value={{ isHover }}>
-      <Button
-        className={cn('min-w-9 gap-0 px-2.5', className)}
-        onMouseEnter={() => setIsHover(true)}
-        onMouseLeave={() => setIsHover(false)}
-        ref={ref}
-        {...props}
-      >
-        {children}
-      </Button>
-    </IconHoverButtonProvider>
-  );
-});
+    const resolvedHover = forceHover ?? isHover;
+
+    const handleMouseEnter = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setIsHover(true);
+      onMouseEnter?.(event);
+    };
+
+    const handleMouseLeave = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setIsHover(false);
+      onMouseLeave?.(event);
+    };
+
+    return (
+      <IconHoverButtonProvider value={{ isHover: resolvedHover }}>
+        <Button
+          className={cn('min-w-9 gap-0 px-2.5', className)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </Button>
+      </IconHoverButtonProvider>
+    );
+  },
+);
 IconHoverButton.displayName = 'IconHoverButton';
 
 const IconHoverButtonIcon = React.forwardRef<

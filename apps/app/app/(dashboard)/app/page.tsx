@@ -12,6 +12,8 @@ export default async function DashboardPage() {
 
   const isSidebar = navigationMode === 'sidebar';
 
+  // todo: redesign the response area to be the component out side of playground operation client and make it anchored to scroll to smoothly after there is a new response
+
   return (
     <PlaygroundProvider>
       <PlaygroundOperationClientContent />
