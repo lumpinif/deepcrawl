@@ -14,6 +14,7 @@ interface ActionButtonsProps {
   markdownContent?: string;
   response: PlaygroundOperationResponse;
   onRetry?: () => void;
+  error?: string;
 }
 
 /**

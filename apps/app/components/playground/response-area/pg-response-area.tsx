@@ -26,7 +26,7 @@ import { useScrollToAnchor } from '../use-scroll-to-anchor';
 import { ContentTabs } from './content-tabs';
 import { ErrorCard } from './error-card';
 import { PageMetadataCard } from './page-metadata-card';
-import { TaskInfoCard } from './task-info-card';
+import { MetricsDisplay, TitleDescriptionDisplay } from './task-info-card';
 
 export interface PGResponseAreaProps {
   className?: string;
@@ -109,17 +109,20 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
 
   const metadata = readUrlResponseData?.metadata || treeData?.metadata;
 
+  const metrics =
+    readUrlResponseData?.metrics || extractedLinksResponseData?.metrics;
+
   return (
     <div
       className={cn(
-        'min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
+        'flex min-h-[calc(100svh-theme(spacing.16))] flex-col group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
       )}
       id={RESPONSE_SECTION_ID}
     >
       <PageHeader
         containerClassName="flex w-full items-center justify-between"
         description={selectedOPConfig.description}
-        title={`${selectedOPConfig.label} Result`}
+        title={`${selectedOPConfig.label} Result - ${response.targetUrl}`}
       >
         <div className="flex items-center gap-2">
           <IconHoverButton
@@ -152,41 +155,63 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         </div>
       </PageHeader>
 
-      {/* Main Response Area */}
+      {/* Main Response Area Bento Grid*/}
       <div
         className={cn(
           baseContainerCN,
-          'flex flex-col gap-4 pb-6 sm:gap-6 xl:pb-8 2xl:pb-10',
+          'grid h-full gap-2 sm:gap-4 md:grid-cols-4',
+          'pb-6 xl:pb-8 2xl:pb-10',
           className,
         )}
       >
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* Task Info Card */}
-          <TaskInfoCard
-            formatTime={formatTime}
-            operationMethod={operationMethod}
+        {/* Title */}
+        <TitleDescriptionDisplay
+          description={metadata?.description}
+          title={metadata?.title}
+        />
+
+        {/* Main content */}
+        <div
+          className={cn(
+            'md:col-span-3 md:h-full',
+            !response.error && response.operation !== 'getMarkdown'
+              ? 'md:row-span-3'
+              : '',
+          )}
+        >
+          {/* Error State */}
+          <ErrorCard
+            activeTab={activeTab}
+            onRetry={onRetry}
             response={response}
           />
 
-          {/* Page Metadata Card */}
-          <PageMetadataCard metadata={metadata} />
+          {/* Success State - Content Cards with Tabs */}
+          {!response.error && hasResponseData && (
+            <ContentTabs
+              activeTab={activeTab}
+              markdownContent={markdownContent}
+              onRetry={onRetry}
+              onTabChange={setActiveTab}
+              response={response}
+              selectedOperation={selectedOP}
+              treeData={treeData}
+            />
+          )}
         </div>
 
-        {/* Error State */}
-        <ErrorCard response={response} />
+        {/* Metrics */}
+        <MetricsDisplay
+          apiMetrics={metrics}
+          executionTime={response.executionTime}
+          formatTime={formatTime}
+          operationMethod={operationMethod}
+          response={response}
+          timestamp={response.timestamp}
+        />
 
-        {/* Success State - Content Cards with Tabs */}
-        {!response.error && hasResponseData && (
-          <ContentTabs
-            activeTab={activeTab}
-            markdownContent={markdownContent}
-            onRetry={onRetry}
-            onTabChange={setActiveTab}
-            response={response}
-            selectedOperation={selectedOP}
-            treeData={treeData}
-          />
-        )}
+        {/* Page Metadata Card */}
+        <PageMetadataCard metadata={metadata} />
       </div>
     </div>
   );

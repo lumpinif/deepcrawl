@@ -76,55 +76,55 @@ export function ContentTabs({
   const apiResponse = response?.data;
 
   return (
-    <Tabs
-      defaultValue="markdown"
-      onValueChange={(value) =>
-        onTabChange(value as 'markdown' | 'tree' | 'raw')
-      }
-      value={activeTab}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <TabsList>
-          {hasMarkdown && (
-            <VariantTrigger value="markdown">
-              <TabsTriggerIcon>
-                <MarkdownIcon size={16} />
-              </TabsTriggerIcon>
-              <TabsTriggerText>Markdown</TabsTriggerText>
-            </VariantTrigger>
-          )}
-          {hasTree && (
-            <VariantTrigger value="tree">
-              <TabsTriggerIcon>
-                <ListTreeIcon size={16} />
-              </TabsTriggerIcon>
-              <TabsTriggerText>Links Tree</TabsTriggerText>
-            </VariantTrigger>
-          )}
-          {response.operation !== 'getMarkdown' && (
-            <VariantTrigger value="raw">
-              <TabsTriggerIcon>
-                <Code2 />
-              </TabsTriggerIcon>
-              <TabsTriggerText>JSON</TabsTriggerText>
-            </VariantTrigger>
-          )}
-        </TabsList>
-        {/* Action Buttons */}
-        <ActionButtons
-          activeTab={activeTab}
-          markdownContent={markdownContent}
-          onRetry={onRetry}
-          response={response}
-        />
-      </div>
+    <Card>
+      <Tabs
+        defaultValue="markdown"
+        onValueChange={(value) =>
+          onTabChange(value as 'markdown' | 'tree' | 'raw')
+        }
+        value={activeTab}
+      >
+        <CardHeader className="flex items-center justify-between gap-2 border-b">
+          <TabsList>
+            {hasMarkdown && (
+              <VariantTrigger value="markdown">
+                <TabsTriggerIcon>
+                  <MarkdownIcon size={16} />
+                </TabsTriggerIcon>
+                <TabsTriggerText>Markdown</TabsTriggerText>
+              </VariantTrigger>
+            )}
+            {hasTree && (
+              <VariantTrigger value="tree">
+                <TabsTriggerIcon>
+                  <ListTreeIcon size={16} />
+                </TabsTriggerIcon>
+                <TabsTriggerText>Links Tree</TabsTriggerText>
+              </VariantTrigger>
+            )}
+            {response.operation !== 'getMarkdown' && (
+              <VariantTrigger value="raw">
+                <TabsTriggerIcon>
+                  <Code2 />
+                </TabsTriggerIcon>
+                <TabsTriggerText>JSON</TabsTriggerText>
+              </VariantTrigger>
+            )}
+          </TabsList>
+          {/* Action Buttons */}
+          <ActionButtons
+            activeTab={activeTab}
+            markdownContent={markdownContent}
+            onRetry={onRetry}
+            response={response}
+          />
+        </CardHeader>
 
-      {/* Markdown View Tab */}
-      {hasMarkdown && (
-        <TabsContent value="markdown">
-          {markdownContent && (
-            <Card>
-              <ScrollArea className="h-[600px]">
+        {/* Markdown View Tab */}
+        {hasMarkdown && (
+          <TabsContent value="markdown">
+            {markdownContent && (
+              <ScrollArea className="h-[800px]">
                 <CardContent>
                   <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:border prose-table:border prose-td:border prose-th:border prose-blockquote:border-muted-foreground prose-blockquote:border-l-4 prose-pre:bg-muted prose-th:bg-muted prose-blockquote:pl-4 prose-headings:font-semibold prose-a:text-primary prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:no-underline hover:prose-a:underline">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -133,15 +133,13 @@ export function ContentTabs({
                   </div>
                 </CardContent>
               </ScrollArea>
-            </Card>
-          )}
-        </TabsContent>
-      )}
+            )}
+          </TabsContent>
+        )}
 
-      {/* Tree View Tab */}
-      {hasTree && (
-        <TabsContent value="tree">
-          <Card>
+        {/* Tree View Tab */}
+        {hasTree && (
+          <TabsContent value="tree">
             <CardHeader>
               <CardTitle>Links Tree</CardTitle>
               <CardDescription>
@@ -153,13 +151,11 @@ export function ContentTabs({
                 {formatResponseData(treeData)}
               </pre>
             </CardContent>
-          </Card>
-        </TabsContent>
-      )}
+          </TabsContent>
+        )}
 
-      {/* Raw JSON View Tab */}
-      <TabsContent value="raw">
-        <Card>
+        {/* Raw JSON View Tab */}
+        <TabsContent value="raw">
           <CardHeader>
             <CardTitle>API Response Data</CardTitle>
             <CardDescription>
@@ -171,8 +167,8 @@ export function ContentTabs({
               {formatResponseData(apiResponse)}
             </pre>
           </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+        </TabsContent>
+      </Tabs>
+    </Card>
   );
 }

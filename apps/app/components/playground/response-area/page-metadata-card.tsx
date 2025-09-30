@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@deepcrawl/ui/components/ui/card';
+import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 import type { PageMetadata } from 'deepcrawl';
 
 /**
@@ -54,15 +48,15 @@ export function PageMetadataCard({
 
   return (
     <Card>
-      <CardHeader>
+      {/* <CardHeader>
         <CardTitle>Page Metadata</CardTitle>
         <CardDescription>
           Extracted metadata from the target page
         </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4 sm:grid-cols-2">
-        <MetadataItem label="Title" value={metadata.title} />
-        <MetadataItem label="Description" value={metadata.description} />
+      </CardHeader> */}
+      <CardContent className="space-y-4">
+        {/* <MetadataItem label="Title" value={metadata.title} /> */}
+        {/* <MetadataItem label="Description" value={metadata.description} /> */}
         <MetadataItem label="Language" value={metadata.language} />
         <MetadataItem label="Author" value={metadata.author} />
         <MetadataItem label="Keywords" value={metadata.keywords} />

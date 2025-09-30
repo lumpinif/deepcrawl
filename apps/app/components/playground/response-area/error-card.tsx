@@ -7,15 +7,18 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { AlertTriangle } from 'lucide-react';
 import type { PlaygroundOperationResponse } from '@/hooks/playground/types';
+import { ActionButtons } from './action-buttons';
 
 interface ErrorCardProps {
   response: PlaygroundOperationResponse;
+  activeTab: 'markdown' | 'tree' | 'raw';
+  onRetry?: () => void;
 }
 
 /**
  * ErrorCard component for displaying error information
  */
-export function ErrorCard({ response }: ErrorCardProps) {
+export function ErrorCard({ response, activeTab, onRetry }: ErrorCardProps) {
   if (!response.error) {
     return null;
   }
@@ -23,10 +26,19 @@ export function ErrorCard({ response }: ErrorCardProps) {
   return (
     <Card className="border-destructive/50 bg-destructive/5">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5" />
-          Error
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Error
+          </CardTitle>
+
+          {/* Action Buttons */}
+          <ActionButtons
+            activeTab={activeTab}
+            onRetry={onRetry}
+            response={response}
+          />
+        </div>
         {response.userMessage && (
           <CardDescription>{response.userMessage}</CardDescription>
         )}
@@ -37,7 +49,7 @@ export function ErrorCard({ response }: ErrorCardProps) {
         </pre>
         {response.targetUrl && (
           <div className="text-muted-foreground text-xs">
-            Invalid input: {response.targetUrl}
+            Target URL: {response.targetUrl}
           </div>
         )}
         {response.retryAfter && (
