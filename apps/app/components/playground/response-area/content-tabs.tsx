@@ -101,15 +101,14 @@ export function ContentTabs({
               <TabsTriggerText>Links Tree</TabsTriggerText>
             </VariantTrigger>
           )}
-          {selectedOperation !== 'getMarkdown' ||
-            (response.operation !== 'getMarkdown' && (
-              <VariantTrigger value="raw">
-                <TabsTriggerIcon>
-                  <Code2 />
-                </TabsTriggerIcon>
-                <TabsTriggerText>JSON</TabsTriggerText>
-              </VariantTrigger>
-            ))}
+          {response.operation !== 'getMarkdown' && (
+            <VariantTrigger value="raw">
+              <TabsTriggerIcon>
+                <Code2 />
+              </TabsTriggerIcon>
+              <TabsTriggerText>JSON</TabsTriggerText>
+            </VariantTrigger>
+          )}
         </TabsList>
         {/* Action Buttons */}
         <ActionButtons
