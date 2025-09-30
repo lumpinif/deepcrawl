@@ -10,7 +10,6 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
-  PlaygroundProvider,
   usePlaygroundActionsSelector,
   usePlaygroundCoreSelector,
 } from '@/hooks/playground/playground-context';
@@ -156,21 +155,5 @@ export const PlaygroundOperationClientContent = ({
         </PromptInput>
       </div>
     </PageContainer>
-  );
-};
-
-// Main exported component with Provider wrapper
-export const PlaygroundOperationClient = ({
-  className,
-  defaultOperation = 'getMarkdown',
-  defaultUrl = '',
-}: PlaygroundOperationClientProps) => {
-  return (
-    <PlaygroundProvider
-      defaultOperation={defaultOperation}
-      defaultUrl={defaultUrl}
-    >
-      <PlaygroundOperationClientContent className={className} />
-    </PlaygroundProvider>
   );
 };
