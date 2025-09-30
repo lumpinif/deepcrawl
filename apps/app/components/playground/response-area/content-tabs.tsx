@@ -69,7 +69,9 @@ export function ContentTabs({
   const hasTree = selectedOperation === 'extractLinks' && Boolean(treeData);
   const hasMarkdown =
     selectedOperation === 'readUrl' ||
-    (selectedOperation === 'getMarkdown' && Boolean(markdownContent));
+    (response.operation === 'readUrl' && Boolean(markdownContent)) ||
+    (selectedOperation === 'getMarkdown' && Boolean(markdownContent)) ||
+    (response.operation === 'getMarkdown' && Boolean(markdownContent));
 
   const apiResponse = response?.data;
 
@@ -99,12 +101,15 @@ export function ContentTabs({
               <TabsTriggerText>Links Tree</TabsTriggerText>
             </VariantTrigger>
           )}
-          <VariantTrigger value="raw">
-            <TabsTriggerIcon>
-              <Code2 />
-            </TabsTriggerIcon>
-            <TabsTriggerText>JSON</TabsTriggerText>
-          </VariantTrigger>
+          {selectedOperation !== 'getMarkdown' ||
+            (response.operation !== 'getMarkdown' && (
+              <VariantTrigger value="raw">
+                <TabsTriggerIcon>
+                  <Code2 />
+                </TabsTriggerIcon>
+                <TabsTriggerText>JSON</TabsTriggerText>
+              </VariantTrigger>
+            ))}
         </TabsList>
         {/* Action Buttons */}
         <ActionButtons

@@ -50,7 +50,9 @@ export function ActionButtons({
   };
 
   const buttonCopyLabel =
-    activeTab === 'markdown' ? 'Copy as Markdown' : 'Copy as JSON';
+    activeTab === 'markdown' || response.operation === 'getMarkdown'
+      ? 'Copy as Markdown'
+      : 'Copy as JSON';
 
   return (
     <div className="flex items-center gap-2">
