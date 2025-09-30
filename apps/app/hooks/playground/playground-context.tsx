@@ -29,8 +29,8 @@ import type {
   UsePlaygroundOptionsReturn,
   UsePlaygroundReturn,
 } from './types';
+import { usePlaygroundOperations } from './use-playground-operations';
 import { usePlaygroundState } from './use-playground-state';
-import { useTaskInputOperations } from './use-task-input-operations';
 
 /* ------------------------------------------------------------------------------------ */
 /* CONTEXT DEFINITIONS */
@@ -60,7 +60,7 @@ export function PlaygroundProvider({
   });
 
   // Operations hook for API calls
-  const op = useTaskInputOperations({
+  const op = usePlaygroundOperations({
     requestUrl: s.requestUrl,
     getAnyOperationState: s.getAnyOperationState,
     activeRequestsRef: s.activeRequestsRef,

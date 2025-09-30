@@ -14,7 +14,7 @@ import {
 import { useDeepcrawlClient } from './use-deepcrawl-client';
 import { useExecutionTimer } from './use-execution-timer';
 
-interface UseTaskInputOperationsProps {
+interface UsePlaygroundOperationsProps {
   requestUrl: string;
   getAnyOperationState: GetAnyOperationState;
   activeRequestsRef: React.RefObject<Set<string>>;
@@ -32,13 +32,13 @@ interface UseTaskInputOperationsProps {
 const API_KEY =
   process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY || 'demo-key-for-playground';
 
-export function useTaskInputOperations({
+export function usePlaygroundOperations({
   requestUrl,
   getAnyOperationState,
   activeRequestsRef,
   setIsExecuting,
   setResponses,
-}: UseTaskInputOperationsProps) {
+}: UsePlaygroundOperationsProps) {
   // Initialize SDK client with custom hook
   const {
     client: sdkClient,
