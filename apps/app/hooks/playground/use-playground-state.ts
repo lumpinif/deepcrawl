@@ -21,7 +21,7 @@ import { useExtractLinksOptions } from './use-extractlinks-options';
 import { useGetMarkdownOptions } from './use-getmarkdown-options';
 import { useReadUrlOptions } from './use-readurl-options';
 
-interface UseEnhancedTaskInputStateProps {
+interface UsePlaygroundStateProps {
   defaultOperation?: DeepcrawlOperations;
   defaultUrl?: string;
 }
@@ -34,7 +34,7 @@ const operations: readonly DeepcrawlOperations[] = [
 ] as const;
 
 /**
- * Enhanced task input state management hook.
+ * Playground state management hook.
  *
  * Features:
  * - Operation-specific state management with URL sync
@@ -57,7 +57,7 @@ const operations: readonly DeepcrawlOperations[] = [
  *   currentState,
  *   getOptionValue,
  *   operationStates
- * } = useEnhancedTaskInputState({
+ * } = usePlaygroundState({
  *   defaultOperation: 'getMarkdown',
  *   defaultUrl: ''
  * });
@@ -73,10 +73,10 @@ const operations: readonly DeepcrawlOperations[] = [
  * readUrlState.setOptions({ markdown: false });
  * ```
  */
-export function useEnhancedTaskInputState({
+export function usePlaygroundState({
   defaultOperation = 'getMarkdown',
   defaultUrl = '',
-}: UseEnhancedTaskInputStateProps = {}) {
+}: UsePlaygroundStateProps = {}) {
   // Core URL and operation state management
   const [requestUrl, setRequestUrl] = useQueryState(
     'url',
@@ -209,6 +209,4 @@ export function useEnhancedTaskInputState({
 }
 
 // Type export for components
-export type UseEnhancedTaskInputStateReturn = ReturnType<
-  typeof useEnhancedTaskInputState
->;
+export type UsePlaygroundStateReturn = ReturnType<typeof usePlaygroundState>;

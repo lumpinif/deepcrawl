@@ -29,7 +29,7 @@ import type {
   UsePlaygroundOptionsReturn,
   UsePlaygroundReturn,
 } from './types';
-import { useEnhancedTaskInputState } from './use-enhanced-task-input-state';
+import { usePlaygroundState } from './use-playground-state';
 import { useTaskInputOperations } from './use-task-input-operations';
 
 /* ------------------------------------------------------------------------------------ */
@@ -54,7 +54,7 @@ export function PlaygroundProvider({
   defaultUrl = '',
 }: PlaygroundProviderProps) {
   // state management hook
-  const s = useEnhancedTaskInputState({
+  const s = usePlaygroundState({
     defaultOperation,
     defaultUrl,
   });
