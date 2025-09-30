@@ -1,5 +1,6 @@
 import {
   LinksOptionsSchema,
+  LinksSuccessResponse,
   LinksSuccessResponseSchema,
 } from '@deepcrawl/types';
 import { oc } from '@orpc/contract';
@@ -39,4 +40,7 @@ export const linksPOSTContract = linksOC
   .output(LinksSuccessResponseSchema);
 
 export type ExtractLinksOptions = Inputs['links']['extractLinks'];
+/**
+ * @description Tree is in discriminated union check {@link LinksSuccessResponse} or {@link LinksSuccessResponseSchema} to see details of type narrowing
+ */
 export type ExtractLinksResponse = Outputs['links']['extractLinks'];
