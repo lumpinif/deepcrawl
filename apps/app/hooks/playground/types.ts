@@ -105,7 +105,7 @@ export type GetAnyOperationState = <K extends keyof OperationToOptions>(
 /* ------------------------------------------------------------------------------------ */
 
 // Response types for API operations
-export type DCResponseData =
+export type APIResponseData =
   | GetMarkdownResponse
   | ReadUrlResponse
   | ExtractLinksResponse;
@@ -126,16 +126,54 @@ export interface PlaygroundResponseMetadata {
   userMessage?: string;
 }
 
-export type PlaygroundResponse = PlaygroundResponseMetadata & {
-  data?: DCResponseData;
+// Base response type (for error handler - operation discriminant added later)
+export type PlaygroundResponseBase = PlaygroundResponseMetadata & {
+  data?: APIResponseData;
   error?: string;
   status?: number;
   targetUrl?: string;
   timestamp?: string;
 };
 
+// Discriminated union types for operation-specific responses
+export type GetMarkdownPlaygroundResponse = PlaygroundResponseMetadata & {
+  operation: 'getMarkdown';
+  data?: GetMarkdownResponse;
+  error?: string;
+  status?: number;
+  targetUrl?: string;
+  timestamp?: string;
+};
+
+export type ReadUrlPlaygroundResponse = PlaygroundResponseMetadata & {
+  operation: 'readUrl';
+  data?: ReadUrlResponse;
+  error?: string;
+  status?: number;
+  targetUrl?: string;
+  timestamp?: string;
+};
+
+export type ExtractLinksPlaygroundResponse = PlaygroundResponseMetadata & {
+  operation: 'extractLinks';
+  data?: ExtractLinksResponse;
+  error?: string;
+  status?: number;
+  targetUrl?: string;
+  timestamp?: string;
+};
+
+// Discriminated union of all operation responses
+export type PlaygroundOperationResponse =
+  | GetMarkdownPlaygroundResponse
+  | ReadUrlPlaygroundResponse
+  | ExtractLinksPlaygroundResponse;
+
+// Strongly-typed map with discriminated unions
 export type PlaygroundResponses = {
-  [K in DeepcrawlOperations]?: PlaygroundResponse;
+  getMarkdown?: GetMarkdownPlaygroundResponse;
+  readUrl?: ReadUrlPlaygroundResponse;
+  extractLinks?: ExtractLinksPlaygroundResponse;
 };
 
 /* ------------------------------------------------------------------------------------ */

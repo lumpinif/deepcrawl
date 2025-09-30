@@ -7,7 +7,7 @@ import {
 import { toast } from 'sonner';
 import type {
   DeepcrawlOperations,
-  PlaygroundResponse,
+  PlaygroundResponseBase,
 } from '@/hooks/playground/types';
 
 export interface ErrorHandlerOptions {
@@ -20,7 +20,7 @@ export interface ErrorHandlerOptions {
 export const handlePlaygroundError = (
   error: unknown,
   options: ErrorHandlerOptions,
-): PlaygroundResponse => {
+): PlaygroundResponseBase => {
   if (error instanceof DeepcrawlError) {
     return handleDeepcrawlError(error, options);
   }
@@ -31,7 +31,7 @@ export const handlePlaygroundError = (
 const handleDeepcrawlError = (
   error: DeepcrawlError,
   options: ErrorHandlerOptions,
-): PlaygroundResponse => {
+): PlaygroundResponseBase => {
   const { operation, label, executionTime, onRetry } = options;
 
   // Handle specific error types first
@@ -76,8 +76,8 @@ const handleReadError = (
   operation: DeepcrawlOperations,
   label: string,
   onRetry: (operation: DeepcrawlOperations, label: string) => void,
-): PlaygroundResponse => {
-  const response: PlaygroundResponse = {
+): PlaygroundResponseBase => {
+  const response: PlaygroundResponseBase = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -104,8 +104,8 @@ const handleLinksError = (
   operation: DeepcrawlOperations,
   label: string,
   onRetry: (operation: DeepcrawlOperations, label: string) => void,
-): PlaygroundResponse => {
-  const response: PlaygroundResponse = {
+): PlaygroundResponseBase => {
+  const response: PlaygroundResponseBase = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -133,8 +133,8 @@ const handleRateLimitError = (
   operation: DeepcrawlOperations,
   label: string,
   onRetry: (operation: DeepcrawlOperations, label: string) => void,
-): PlaygroundResponse => {
-  const response: PlaygroundResponse = {
+): PlaygroundResponseBase => {
+  const response: PlaygroundResponseBase = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -162,8 +162,8 @@ const handleRateLimitError = (
 const handleAuthError = (
   error: DeepcrawlError,
   executionTime: number,
-): PlaygroundResponse => {
-  const response: PlaygroundResponse = {
+): PlaygroundResponseBase => {
+  const response: PlaygroundResponseBase = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -182,8 +182,8 @@ const handleAuthError = (
 const handleValidationError = (
   error: DeepcrawlError,
   executionTime: number,
-): PlaygroundResponse => {
-  const response: PlaygroundResponse = {
+): PlaygroundResponseBase => {
+  const response: PlaygroundResponseBase = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -205,8 +205,8 @@ const handleNetworkError = (
   operation: DeepcrawlOperations,
   label: string,
   onRetry: (operation: DeepcrawlOperations, label: string) => void,
-): PlaygroundResponse => {
-  const response: PlaygroundResponse = {
+): PlaygroundResponseBase => {
+  const response: PlaygroundResponseBase = {
     error: error.message,
     userMessage: error.userMessage,
     status: error.status,
@@ -230,11 +230,11 @@ const handleServerError = (
   error: DeepcrawlError,
   executionTime: number,
   label: string,
-): PlaygroundResponse => {
+): PlaygroundResponseBase => {
   const isNetworkError = error.isNetwork();
   const isRateLimitError = error.isRateLimit();
 
-  const response: PlaygroundResponse = {
+  const response: PlaygroundResponseBase = {
     error: error.message,
     userMessage: error.userMessage || error.message,
     status: error.status,
@@ -254,9 +254,9 @@ const handleGenericError = (
   error: unknown,
   executionTime: number,
   label: string,
-): PlaygroundResponse => {
+): PlaygroundResponseBase => {
   const errorMessage = error instanceof Error ? error.message : String(error);
-  const response: PlaygroundResponse = {
+  const response: PlaygroundResponseBase = {
     error: errorMessage,
     userMessage: errorMessage,
     status: 500,

@@ -2,12 +2,12 @@ import { toast } from 'sonner';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import {
-  type DCResponseData,
+  type APIResponseData,
   type DeepcrawlOperations,
   type GetAnyOperationState,
   GetMarkdownOptionsSchemaWithoutUrl,
   LinksOptionsSchemaWithoutUrl,
-  type PlaygroundResponse,
+  type PlaygroundOperationResponse,
   type PlaygroundResponses,
   ReadUrlOptionsSchemaWithoutUrl,
 } from './types';
@@ -67,13 +67,15 @@ export function useTaskInputOperations({
     operation: DeepcrawlOperations,
     label: string,
     executionTime: number,
-  ): PlaygroundResponse => {
-    return handlePlaygroundError(error, {
+  ): PlaygroundOperationResponse => {
+    const baseError = handlePlaygroundError(error, {
       operation,
       label,
       executionTime,
       onRetry: executeApiCall,
     });
+    // Add operation discriminant field
+    return { ...baseError, operation } as PlaygroundOperationResponse;
   };
 
   const executeApiCall = async (
@@ -158,14 +160,15 @@ export function useTaskInputOperations({
       setResponses((prev) => ({
         ...prev,
         [operation]: {
-          data: result as DCResponseData,
+          operation,
+          data: result as APIResponseData,
           status: 200,
           executionTime,
           targetUrl,
           timestamp: new Date().toISOString(),
           errorType: undefined,
           retryable: false,
-        },
+        } as PlaygroundOperationResponse,
       }));
 
       toast.success(
