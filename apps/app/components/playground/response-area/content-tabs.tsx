@@ -21,10 +21,11 @@ import { Code2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type {
-  APIResponseData,
   DeepcrawlOperations,
+  PlaygroundOperationResponse,
 } from '@/hooks/playground/types';
 import { formatResponseData } from '@/utils/playground/formatter';
+import { ActionButtons } from './action-buttons';
 
 interface ContentTabsProps {
   selectedOperation: DeepcrawlOperations;
@@ -32,7 +33,8 @@ interface ContentTabsProps {
   onTabChange: (value: 'markdown' | 'tree' | 'raw') => void;
   markdownContent?: string;
   treeData?: LinksTree;
-  apiResponse?: APIResponseData;
+  onRetry?: () => void;
+  response: PlaygroundOperationResponse;
 }
 
 const VariantTrigger = ({
@@ -61,12 +63,15 @@ export function ContentTabs({
   onTabChange,
   markdownContent,
   treeData,
-  apiResponse,
+  onRetry,
+  response,
 }: ContentTabsProps) {
   const hasTree = selectedOperation === 'extractLinks' && Boolean(treeData);
   const hasMarkdown =
     selectedOperation === 'readUrl' ||
     (selectedOperation === 'getMarkdown' && Boolean(markdownContent));
+
+  const apiResponse = response?.data;
 
   return (
     <Tabs
@@ -76,30 +81,39 @@ export function ContentTabs({
       }
       value={activeTab}
     >
-      <TabsList>
-        {hasMarkdown && (
-          <VariantTrigger value="markdown">
+      <div className="flex items-center justify-between gap-2">
+        <TabsList>
+          {hasMarkdown && (
+            <VariantTrigger value="markdown">
+              <TabsTriggerIcon>
+                <MarkdownIcon size={16} />
+              </TabsTriggerIcon>
+              <TabsTriggerText>Markdown</TabsTriggerText>
+            </VariantTrigger>
+          )}
+          {hasTree && (
+            <VariantTrigger value="tree">
+              <TabsTriggerIcon>
+                <ListTreeIcon size={16} />
+              </TabsTriggerIcon>
+              <TabsTriggerText>Links Tree</TabsTriggerText>
+            </VariantTrigger>
+          )}
+          <VariantTrigger value="raw">
             <TabsTriggerIcon>
-              <MarkdownIcon size={16} />
+              <Code2 />
             </TabsTriggerIcon>
-            <TabsTriggerText>Markdown</TabsTriggerText>
+            <TabsTriggerText>JSON</TabsTriggerText>
           </VariantTrigger>
-        )}
-        {hasTree && (
-          <VariantTrigger value="tree">
-            <TabsTriggerIcon>
-              <ListTreeIcon size={16} />
-            </TabsTriggerIcon>
-            <TabsTriggerText>Links Tree</TabsTriggerText>
-          </VariantTrigger>
-        )}
-        <VariantTrigger value="raw">
-          <TabsTriggerIcon>
-            <Code2 />
-          </TabsTriggerIcon>
-          <TabsTriggerText>JSON</TabsTriggerText>
-        </VariantTrigger>
-      </TabsList>
+        </TabsList>
+        {/* Action Buttons */}
+        <ActionButtons
+          activeTab={activeTab}
+          markdownContent={markdownContent}
+          onRetry={onRetry}
+          response={response}
+        />
+      </div>
 
       {/* Markdown View Tab */}
       {hasMarkdown && (

@@ -178,20 +178,15 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
 
         {/* Success State - Content Cards with Tabs */}
         {!response.error && hasResponseData && (
-          <>
-            <div className="flex items-center justify-between">
-              <ActionButtons onRetry={onRetry} response={response} />
-            </div>
-
-            <ContentTabs
-              activeTab={activeTab}
-              apiResponse={response.data}
-              markdownContent={markdownContent}
-              onTabChange={setActiveTab}
-              selectedOperation={selectedOP}
-              treeData={treeData}
-            />
-          </>
+          <ContentTabs
+            activeTab={activeTab}
+            markdownContent={markdownContent}
+            onRetry={onRetry}
+            onTabChange={setActiveTab}
+            response={response}
+            selectedOperation={selectedOP}
+            treeData={treeData}
+          />
         )}
       </div>
     </div>
