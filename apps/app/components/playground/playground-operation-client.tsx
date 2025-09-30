@@ -103,14 +103,14 @@ export const PlaygroundOperationClientContent = ({
   return (
     <PageContainer
       className={cn(
-        'h-full scroll-mt-24',
+        'h-full',
         hasResponseData &&
           'min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.14)-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
       )}
       id={PLAYGROUND_SECTION_ID}
     >
       <PageTitle
-        className="mx-auto mt-28 mb-10 w-full text-center sm:mb-12 md:mt-[20svh]"
+        className="mx-auto mt-28 mb-10 w-full text-center md:mt-[18svh]"
         description="API Playground for Deepcrawl"
         desPos="top"
         title="What would you like to see?"
