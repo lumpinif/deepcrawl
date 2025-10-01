@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
+import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import type { PageMetadata } from 'deepcrawl';
 
 /**
@@ -47,37 +48,42 @@ export function PageMetadataCard({
   }
 
   return (
-    <Card>
+    <Card className="h-full overflow-hidden">
       {/* <CardHeader>
         <CardTitle>Page Metadata</CardTitle>
         <CardDescription>
           Extracted metadata from the target page
         </CardDescription>
       </CardHeader> */}
-      <CardContent className="space-y-4">
-        {/* <MetadataItem label="Title" value={metadata.title} /> */}
-        {/* <MetadataItem label="Description" value={metadata.description} /> */}
-        <MetadataItem label="Language" value={metadata.language} />
-        <MetadataItem label="Author" value={metadata.author} />
-        <MetadataItem label="Keywords" value={metadata.keywords} />
-        <MetadataItem label="Canonical URL" value={metadata.canonical} />
-        <MetadataItem label="Robots" value={metadata.robots} />
-        {metadata.ogTitle && (
-          <MetadataItem label="OG Title" value={metadata.ogTitle} />
-        )}
-        {metadata.ogDescription && (
-          <MetadataItem label="OG Description" value={metadata.ogDescription} />
-        )}
-        {metadata.ogImage && (
-          <MetadataItem label="OG Image" value={metadata.ogImage} />
-        )}
-        {metadata.twitterCard && (
-          <MetadataItem label="Twitter Card" value={metadata.twitterCard} />
-        )}
-        {metadata.favicon && (
-          <MetadataItem label="Favicon" value={metadata.favicon} />
-        )}
-      </CardContent>
+      <ScrollArea className="h-full min-h-0">
+        <CardContent className="space-y-4">
+          {/* <MetadataItem label="Title" value={metadata.title} /> */}
+          {/* <MetadataItem label="Description" value={metadata.description} /> */}
+          <MetadataItem label="Language" value={metadata.language} />
+          <MetadataItem label="Author" value={metadata.author} />
+          <MetadataItem label="Keywords" value={metadata.keywords} />
+          <MetadataItem label="Canonical URL" value={metadata.canonical} />
+          <MetadataItem label="Robots" value={metadata.robots} />
+          {metadata.ogTitle && (
+            <MetadataItem label="OG Title" value={metadata.ogTitle} />
+          )}
+          {metadata.ogDescription && (
+            <MetadataItem
+              label="OG Description"
+              value={metadata.ogDescription}
+            />
+          )}
+          {metadata.ogImage && (
+            <MetadataItem label="OG Image" value={metadata.ogImage} />
+          )}
+          {metadata.twitterCard && (
+            <MetadataItem label="Twitter Card" value={metadata.twitterCard} />
+          )}
+          {metadata.favicon && (
+            <MetadataItem label="Favicon" value={metadata.favicon} />
+          )}
+        </CardContent>
+      </ScrollArea>
     </Card>
   );
 }

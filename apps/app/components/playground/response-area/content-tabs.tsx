@@ -27,16 +27,6 @@ import type {
 import { formatResponseData } from '@/utils/playground/formatter';
 import { ActionButtons } from './action-buttons';
 
-interface ContentTabsProps {
-  selectedOperation: DeepcrawlOperations;
-  activeTab: 'markdown' | 'tree' | 'raw';
-  onTabChange: (value: 'markdown' | 'tree' | 'raw') => void;
-  markdownContent?: string;
-  treeData?: LinksTree;
-  onRetry?: () => void;
-  response: PlaygroundOperationResponse;
-}
-
 const VariantTrigger = ({
   value,
   children,
@@ -53,6 +43,92 @@ const VariantTrigger = ({
     </TabsTrigger>
   );
 };
+
+type MarkdownCardProps = {
+  value: 'markdown';
+  content: string;
+};
+
+type TreeCardProps = {
+  value: 'tree';
+  content: LinksTree;
+};
+
+type JsonCardProps = {
+  value: 'raw';
+  content: PlaygroundOperationResponse['data'];
+};
+
+type ContentScrollAreaCardProps =
+  | MarkdownCardProps
+  | TreeCardProps
+  | JsonCardProps;
+
+function ContentScrollAreaCard({ value, content }: ContentScrollAreaCardProps) {
+  let header: React.ReactNode | null = null;
+  let children: React.ReactNode | null = null;
+  if (value === 'markdown') {
+    children = (
+      <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:border prose-table:border prose-td:border prose-th:border prose-blockquote:border-muted-foreground prose-blockquote:border-l-4 prose-pre:bg-muted prose-th:bg-muted prose-blockquote:pl-4 prose-headings:font-semibold prose-a:text-primary prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:no-underline hover:prose-a:underline">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+      </div>
+    );
+  }
+  if (value === 'tree') {
+    header = (
+      <>
+        <CardTitle>Links Tree</CardTitle>
+        <CardDescription>Site structure with extracted links</CardDescription>
+      </>
+    );
+    children = (
+      <pre className="whitespace-pre-wrap font-mono text-xs">
+        {formatResponseData(content)}
+      </pre>
+    );
+  }
+  if (value === 'raw') {
+    header = (
+      <>
+        <CardTitle>API Response Data</CardTitle>
+        <CardDescription>Complete JSON response from the API</CardDescription>
+      </>
+    );
+    children = (
+      <pre className="whitespace-pre-wrap font-mono text-xs">
+        {formatResponseData(content)}
+      </pre>
+    );
+  }
+
+  return (
+    <TabsContent
+      className="m-0 flex min-h-0 flex-1 flex-col space-y-6 overflow-hidden p-0 pt-6"
+      value={value}
+    >
+      {children && (
+        <>
+          {header && <CardHeader className="border-b">{header}</CardHeader>}
+          {children && (
+            <ScrollArea className="h-full min-h-0 flex-1">
+              <CardContent>{children}</CardContent>
+            </ScrollArea>
+          )}
+        </>
+      )}
+    </TabsContent>
+  );
+}
+
+interface ContentTabsProps {
+  selectedOperation: DeepcrawlOperations;
+  activeTab: 'markdown' | 'tree' | 'raw';
+  onTabChange: (value: 'markdown' | 'tree' | 'raw') => void;
+  markdownContent?: string;
+  treeData?: LinksTree;
+  onRetry?: () => void;
+  response: PlaygroundOperationResponse;
+}
 
 /**
  * ContentTabs component for displaying response content in different formats
@@ -76,8 +152,9 @@ export function ContentTabs({
   const apiResponse = response?.data;
 
   return (
-    <Card>
+    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
       <Tabs
+        className="flex h-full min-h-0 flex-col"
         defaultValue="markdown"
         onValueChange={(value) =>
           onTabChange(value as 'markdown' | 'tree' | 'raw')
@@ -121,53 +198,17 @@ export function ContentTabs({
         </CardHeader>
 
         {/* Markdown View Tab */}
-        {hasMarkdown && (
-          <TabsContent value="markdown">
-            {markdownContent && (
-              <ScrollArea className="h-[800px]">
-                <CardContent>
-                  <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:border prose-table:border prose-td:border prose-th:border prose-blockquote:border-muted-foreground prose-blockquote:border-l-4 prose-pre:bg-muted prose-th:bg-muted prose-blockquote:pl-4 prose-headings:font-semibold prose-a:text-primary prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:no-underline hover:prose-a:underline">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {markdownContent}
-                    </ReactMarkdown>
-                  </div>
-                </CardContent>
-              </ScrollArea>
-            )}
-          </TabsContent>
+        {hasMarkdown && markdownContent && (
+          <ContentScrollAreaCard content={markdownContent} value="markdown" />
         )}
 
         {/* Tree View Tab */}
-        {hasTree && (
-          <TabsContent value="tree">
-            <CardHeader>
-              <CardTitle>Links Tree</CardTitle>
-              <CardDescription>
-                Site structure with extracted links
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <pre className="max-h-[600px] overflow-auto whitespace-pre-wrap font-mono text-xs">
-                {formatResponseData(treeData)}
-              </pre>
-            </CardContent>
-          </TabsContent>
+        {hasTree && treeData && (
+          <ContentScrollAreaCard content={treeData} value="tree" />
         )}
 
         {/* Raw JSON View Tab */}
-        <TabsContent value="raw">
-          <CardHeader>
-            <CardTitle>API Response Data</CardTitle>
-            <CardDescription>
-              Complete JSON response from the API
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <pre className="max-h-[600px] overflow-auto whitespace-pre-wrap rounded-lg bg-muted p-4 font-mono text-xs">
-              {formatResponseData(apiResponse)}
-            </pre>
-          </CardContent>
-        </TabsContent>
+        <ContentScrollAreaCard content={apiResponse} value="raw" />
       </Tabs>
     </Card>
   );

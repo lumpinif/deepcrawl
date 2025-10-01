@@ -118,7 +118,9 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         'flex min-h-[calc(100svh-theme(spacing.16))] flex-col group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
       )}
       id={RESPONSE_SECTION_ID}
+      style={{}}
     >
+      {/* Response Area Header */}
       <PageHeader
         containerClassName="flex w-full items-center justify-between"
         description={selectedOPConfig.description}
@@ -159,21 +161,15 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       <div
         className={cn(
           baseContainerCN,
-          'grid h-full gap-2 sm:gap-4 md:grid-cols-4',
+          'grid min-h-0 gap-2 sm:gap-4 md:h-[calc(80svh)] md:grid-cols-4',
           'pb-6 xl:pb-8 2xl:pb-10',
           className,
         )}
       >
-        {/* Title */}
-        <TitleDescriptionDisplay
-          description={metadata?.description}
-          title={metadata?.title}
-        />
-
         {/* Main content */}
         <div
           className={cn(
-            'md:col-span-3 md:h-full',
+            'h-full min-h-0 md:col-span-3',
             !response.error && response.operation !== 'getMarkdown'
               ? 'md:row-span-3'
               : '',
@@ -200,18 +196,27 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
           )}
         </div>
 
-        {/* Metrics */}
-        <MetricsDisplay
-          apiMetrics={metrics}
-          executionTime={response.executionTime}
-          formatTime={formatTime}
-          operationMethod={operationMethod}
-          response={response}
-          timestamp={response.timestamp}
-        />
+        {/* Right Side Cards Container */}
+        <div className="flex h-full min-h-0 flex-col gap-2 sm:gap-4 md:col-span-1 md:row-span-3">
+          {/* Title */}
+          <TitleDescriptionDisplay
+            description={metadata?.description}
+            title={metadata?.title}
+          />
 
-        {/* Page Metadata Card */}
-        <PageMetadataCard metadata={metadata} />
+          {/* Metrics */}
+          <MetricsDisplay
+            apiMetrics={metrics}
+            executionTime={response.executionTime}
+            formatTime={formatTime}
+            operationMethod={operationMethod}
+            response={response}
+            timestamp={response.timestamp}
+          />
+
+          {/* Page Metadata Card */}
+          <PageMetadataCard metadata={metadata} />
+        </div>
       </div>
     </div>
   );

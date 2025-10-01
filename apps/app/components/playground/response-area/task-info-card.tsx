@@ -1,5 +1,7 @@
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
+import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import type { ExtractLinksResponse, ReadUrlResponse } from 'deepcrawl';
 import {
   AlertTriangle,
@@ -103,7 +105,6 @@ export function TitleDescriptionDisplay({
   return (
     <BentoDisplayCard className={className}>
       <MetadataItem label="Title" value={title} />
-
       <MetadataItem
         icon={<MessageCircle className="h-3 w-3" />}
         label="Description"
@@ -121,8 +122,10 @@ export function BentoDisplayCard({
   children?: React.ReactNode;
 }) {
   return (
-    <Card className={className}>
-      <CardContent className="overflow-hidden">{children}</CardContent>
+    <Card className={cn(className, 'h-full overflow-hidden')}>
+      <ScrollArea className="min-h-0">
+        <CardContent>{children}</CardContent>
+      </ScrollArea>
     </Card>
   );
 }
