@@ -9,6 +9,8 @@
 @source "../../../../apps/**/*.{ts,tsx}";
 @source "../../../../packages/**/*.{ts,tsx}";
 
+@source "../node_modules/streamdown/dist/index.js";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
