@@ -178,14 +178,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         )}
       >
         {/* Main content */}
-        <div
-          className={cn(
-            'h-full min-h-0 md:col-span-3',
-            !response.error && response.operation !== 'getMarkdown'
-              ? 'md:row-span-3'
-              : '',
-          )}
-        >
+        <div className="h-full min-h-0 md:col-span-3 md:row-span-3">
           {/* Error State */}
           <ErrorCard
             activeTab={activeTab}
@@ -209,16 +202,13 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
 
         {/* Right Side Cards Container */}
         <div className="flex h-full min-h-0 flex-col gap-2 sm:gap-4 md:col-span-1 md:row-span-3">
-          {/* Title */}
-          <DescriptionDisplay
-            className="!h-fit min-h-fit"
-            description={metadata?.description}
-          />
-
           {/* Metrics */}
           <MetricsDisplay
             apiMetrics={metrics}
-            className="!h-fit min-h-fit"
+            className={cn(
+              '!flex-none !h-1/6',
+              response.operation === 'getMarkdown' && '!h-full flex-auto',
+            )}
             executionTime={response.executionTime}
             formatTime={formatTime}
             operationMethod={operationMethod}
@@ -226,8 +216,14 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
             timestamp={response.timestamp}
           />
 
+          {/* Description */}
+          <DescriptionDisplay
+            className="max-h-1/2 min-h-1/6"
+            description={metadata?.description}
+          />
+
           {/* Page Metadata Card */}
-          <PageMetadataCard metadata={metadata} />
+          <PageMetadataCard className="flex-auto" metadata={metadata} />
         </div>
       </div>
     </div>

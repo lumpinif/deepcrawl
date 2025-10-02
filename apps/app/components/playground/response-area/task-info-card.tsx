@@ -103,15 +103,17 @@ export function DescriptionDisplay({
 
 export function BentoDisplayCard({
   className,
+  contentClassName,
   children,
 }: {
   className?: string;
+  contentClassName?: string;
   children?: React.ReactNode;
 }) {
   return (
-    <Card className={cn(className, 'h-full overflow-hidden')}>
+    <Card className={cn(className, 'overflow-hidden')}>
       <ScrollArea className="min-h-0">
-        <CardContent>{children}</CardContent>
+        <CardContent className={contentClassName}>{children}</CardContent>
       </ScrollArea>
     </Card>
   );
