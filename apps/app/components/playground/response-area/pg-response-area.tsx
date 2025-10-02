@@ -145,16 +145,17 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
             </Badge>
             {response.operation !== 'getMarkdown' && (
               <a
-                className="cursor-pointer"
+                className="max-w-md cursor-pointer"
                 href={targetUrl}
                 rel="noopener"
                 target="_blank"
               >
                 <Badge
-                  className="-translate-x-0.5 inline-flex select-none items-center gap-1 text-muted-foreground text-sm hover:text-foreground hover:underline"
+                  className="-translate-x-0.5 inline-flex select-none items-center gap-1 overflow-hidden text-ellipsis text-nowrap text-muted-foreground text-sm hover:text-foreground hover:underline"
                   variant="outline"
                 >
-                  {targetUrl} <ExternalLink className="mt-0.5 size-2" />
+                  <span className="truncate">{targetUrl}</span>{' '}
+                  <ExternalLink className="mt-0.5 size-2 flex-shrink-0" />
                 </Badge>
               </a>
             )}
@@ -163,16 +164,18 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         title={
           (selectedOP === 'getMarkdown' ? (
             <a
-              className="inline-flex cursor-pointer items-center gap-2 hover:underline"
+              className="inline-flex max-w-2xl cursor-pointer items-center gap-2 overflow-hidden hover:underline"
               href={normalizedTargetUrl}
               rel="noopener"
               target="_blank"
             >
-              {metadata?.title ?? targetUrl}
-              <ExternalLink className="mt-1 size-6" />
+              <span className="truncate">{targetUrl}</span>
+              <ExternalLink className="mt-1 size-6 flex-shrink-0" />
             </a>
           ) : (
-            (metadata?.title ?? (targetUrl as string))
+            <span className="truncate">
+              {metadata?.title ?? (targetUrl as string)}
+            </span>
           )) as unknown as string
         }
       >
