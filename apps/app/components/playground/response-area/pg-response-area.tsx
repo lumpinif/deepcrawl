@@ -133,7 +133,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       {/* Response Area Header */}
       <PageHeader
         className="border-t"
-        containerClassName="flex w-full items-center justify-between"
+        containerClassName="flex-col md:flex-row flex w-full items-center md:justify-between gap-y-4 md:gap-y-0 gap-x-2"
         description={`${selectedOPConfig.description}`}
         label={
           <div className="flex items-center gap-2">
@@ -164,22 +164,22 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         title={
           (selectedOP === 'getMarkdown' ? (
             <a
-              className="inline-flex max-w-2xl cursor-pointer items-center gap-2 overflow-hidden hover:underline"
+              className="flex cursor-pointer items-center gap-2 overflow-hidden hover:underline md:max-w-lg lg:max-w-2xl 2xl:max-w-5xl"
               href={normalizedTargetUrl}
               rel="noopener"
               target="_blank"
             >
-              <span className="truncate">{targetUrl}</span>
-              <ExternalLink className="mt-1 size-6 flex-shrink-0" />
+              <span className="text-wrap md:truncate">{targetUrl}</span>
+              <ExternalLink className="mt-1 hidden size-6 flex-shrink-0 md:flex" />
             </a>
           ) : (
-            <span className="truncate">
+            <span className="text-wrap md:truncate">
               {metadata?.title ?? (targetUrl as string)}
             </span>
           )) as unknown as string
         }
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 max-md:ml-auto">
           <IconHoverButton
             aria-label="Share"
             className="text-muted-foreground hover:text-foreground"
@@ -214,7 +214,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       <div
         className={cn(
           'size-full flex-1',
-          'flex flex-col gap-2 max-sm:flex-col-reverse sm:gap-4 md:flex-row',
+          'flex flex-col gap-2 max-md:flex-col-reverse sm:gap-4 md:flex-row',
           baseContainerCN,
           'md:overflow-hidden',
           'pb-6 xl:pb-8 2xl:pb-10',
