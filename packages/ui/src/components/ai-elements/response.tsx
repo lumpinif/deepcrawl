@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { type ComponentProps, memo } from 'react';
+import { type ComponentProps, type ImgHTMLAttributes, memo } from 'react';
 import { Streamdown } from 'streamdown';
 
 type ResponseProps = ComponentProps<typeof Streamdown>;
@@ -10,10 +10,7 @@ const CustomImage = ({
   src,
   alt,
   ...props
-}: {
-  src?: string;
-  alt?: string;
-}) => (
+}: ImgHTMLAttributes<HTMLImageElement>) => (
   <span className="group relative inline-block" data-streamdown="image-wrapper">
     <img alt={alt} src={src} {...props} />
     <span className="pointer-events-none absolute inset-0 hidden rounded-lg bg-black/10 group-hover:block" />
