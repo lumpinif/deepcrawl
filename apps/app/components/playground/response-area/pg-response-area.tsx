@@ -5,6 +5,7 @@ import {
   IconHoverButtonIcon,
   IconHoverButtonText,
 } from '@deepcrawl/ui/components/annui/icon-hover-button';
+import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type {
   ExtractLinksResponse,
@@ -26,7 +27,7 @@ import { useScrollToAnchor } from '../use-scroll-to-anchor';
 import { ContentTabs } from './content-tabs';
 import { ErrorCard } from './error-card';
 import { PageMetadataCard } from './page-metadata-card';
-import { MetricsDisplay, TitleDescriptionDisplay } from './task-info-card';
+import { DescriptionDisplay, MetricsDisplay } from './task-info-card';
 
 export interface PGResponseAreaProps {
   className?: string;
@@ -36,6 +37,7 @@ export interface PGResponseAreaProps {
  * Main component for displaying playground API response
  */
 export function PGResponseArea({ className }: PGResponseAreaProps) {
+  const requestUrl = usePlaygroundCoreSelector('requestUrl');
   const selectedOP = usePlaygroundCoreSelector('selectedOperation');
   const responses = usePlaygroundCoreSelector('responses');
   const formatTime = usePlaygroundActionsSelector('formatTime');
@@ -115,16 +117,25 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
   return (
     <div
       className={cn(
-        'flex min-h-[calc(100svh-theme(spacing.16))] flex-col group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
+        '-scroll-mt-0.5 flex min-h-[calc(100svh-theme(spacing.16))] flex-col group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
       )}
       id={RESPONSE_SECTION_ID}
       style={{}}
     >
       {/* Response Area Header */}
       <PageHeader
+        className="border-t"
         containerClassName="flex w-full items-center justify-between"
-        description={selectedOPConfig.description}
-        title={`${selectedOPConfig.label} Result - ${response.targetUrl}`}
+        description={`${selectedOPConfig.description}`}
+        label={
+          <Badge
+            className="-translate-x-0.5 select-none text-muted-foreground text-sm hover:text-foreground"
+            variant="outline"
+          >
+            {selectedOPConfig.label}
+          </Badge>
+        }
+        title={metadata?.title ?? requestUrl}
       >
         <div className="flex items-center gap-2">
           <IconHoverButton
@@ -199,14 +210,15 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         {/* Right Side Cards Container */}
         <div className="flex h-full min-h-0 flex-col gap-2 sm:gap-4 md:col-span-1 md:row-span-3">
           {/* Title */}
-          <TitleDescriptionDisplay
+          <DescriptionDisplay
+            className="!h-fit min-h-fit"
             description={metadata?.description}
-            title={metadata?.title}
           />
 
           {/* Metrics */}
           <MetricsDisplay
             apiMetrics={metrics}
+            className="!h-fit min-h-fit"
             executionTime={response.executionTime}
             formatTime={formatTime}
             operationMethod={operationMethod}

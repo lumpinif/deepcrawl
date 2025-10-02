@@ -57,21 +57,26 @@ export function PageHeader({
   description,
   titleClassName,
   containerClassName,
+  label,
 }: {
   title: string;
   description?: string;
   titleClassName?: string;
   children?: React.ReactNode;
   containerClassName?: string;
+  label?: string | React.ReactNode;
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn('mb-8 border-b py-8 md:mb-10 md:py-10', className)}>
       <div className={cn(baseContainerCN, containerClassName)}>
-        <PageTitle
-          className={cn('my-0', titleClassName)}
-          description={description}
-          title={title}
-        />
+        <div className="[&:has(>:nth-child(2))]:flex [&:has(>:nth-child(2))]:flex-col [&:has(>:nth-child(2))]:gap-1">
+          {label && label}
+          <PageTitle
+            className={cn('my-0', titleClassName)}
+            description={description}
+            title={title}
+          />
+        </div>
         {children}
       </div>
     </div>

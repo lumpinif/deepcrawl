@@ -3,13 +3,7 @@ import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { ExtractLinksResponse, ReadUrlResponse } from 'deepcrawl';
-import {
-  AlertTriangle,
-  Clock,
-  MessageCircle,
-  RefreshCw,
-  Zap,
-} from 'lucide-react';
+import { AlertTriangle, Clock, RefreshCw, Zap } from 'lucide-react';
 import type { PlaygroundOperationResponse } from '@/hooks/playground/types';
 import { formatTimestamp } from '@/utils/playground/formatter';
 import { MetadataItem } from './page-metadata-card';
@@ -87,29 +81,22 @@ export function MetricsDisplay({
 }
 
 /**
- * TitleDescriptionDisplay
+ * DescriptionDisplay
  */
-export function TitleDescriptionDisplay({
+export function DescriptionDisplay({
   className,
-  title,
   description,
 }: {
   className?: string;
-  title?: string;
   description?: string;
 }) {
-  if (!(title || description)) {
+  if (!description) {
     return null;
   }
 
   return (
     <BentoDisplayCard className={className}>
-      <MetadataItem label="Title" value={title} />
-      <MetadataItem
-        icon={<MessageCircle className="h-3 w-3" />}
-        label="Description"
-        value={description}
-      />
+      <MetadataItem label="Description" value={description} />
     </BentoDisplayCard>
   );
 }

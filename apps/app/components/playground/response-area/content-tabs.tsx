@@ -68,6 +68,12 @@ function ContentScrollAreaCard({ value, content }: ContentScrollAreaCardProps) {
   let header: React.ReactNode | null = null;
   let children: React.ReactNode | null = null;
   if (value === 'markdown') {
+    header = (
+      <>
+        <CardTitle>Markdown</CardTitle>
+        <CardDescription>Extracted markdown content</CardDescription>
+      </>
+    );
     children = (
       <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:border prose-table:border prose-td:border prose-th:border prose-blockquote:border-muted-foreground prose-blockquote:border-l-4 prose-pre:bg-muted prose-th:bg-muted prose-blockquote:pl-4 prose-headings:font-semibold prose-a:text-primary prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:no-underline hover:prose-a:underline">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
@@ -103,15 +109,17 @@ function ContentScrollAreaCard({ value, content }: ContentScrollAreaCardProps) {
 
   return (
     <TabsContent
-      className="m-0 flex min-h-0 flex-1 flex-col space-y-6 overflow-hidden p-0 pt-6"
+      className="m-0 flex min-h-0 flex-1 flex-col overflow-hidden p-0"
       value={value}
     >
       {children && (
         <>
-          {header && <CardHeader className="border-b">{header}</CardHeader>}
+          {header && (
+            <CardHeader className="border-b pt-6">{header}</CardHeader>
+          )}
           {children && (
             <ScrollArea className="h-full min-h-0 flex-1">
-              <CardContent>{children}</CardContent>
+              <CardContent className="py-6">{children}</CardContent>
             </ScrollArea>
           )}
         </>
@@ -161,6 +169,11 @@ export function ContentTabs({
         }
         value={activeTab}
       >
+        {/* <CardHeader className="border-b">
+          <CardTitle>API Response Data</CardTitle>
+          <CardDescription>Complete JSON response from the API</CardDescription>
+        </CardHeader> */}
+
         <CardHeader className="flex items-center justify-between gap-2 border-b">
           <TabsList>
             {hasMarkdown && (
