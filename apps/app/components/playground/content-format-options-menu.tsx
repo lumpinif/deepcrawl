@@ -688,7 +688,9 @@ export const ContentFormatOptionsMenu = memo(
                     return (
                       <div className="group/metadata space-y-2" key={optionKey}>
                         {/* Main metadata toggle */}
-                        <Tooltip open={isMetadataSubOpen ? false : undefined}>
+                        <Tooltip
+                          delayDuration={isMetadataSubOpen ? 999999 : undefined}
+                        >
                           <TooltipTrigger asChild>
                             <div className="flex w-full items-center space-x-2">
                               <Switch
@@ -814,7 +816,9 @@ export const ContentFormatOptionsMenu = memo(
                     return (
                       <div className="group/tree space-y-2" key={optionKey}>
                         {/* Main tree toggle */}
-                        <Tooltip open={isTreeSubOpen ? false : undefined}>
+                        <Tooltip
+                          delayDuration={isTreeSubOpen ? 999999 : undefined}
+                        >
                           <TooltipTrigger asChild>
                             <div className="flex w-full items-center space-x-2">
                               <Switch
@@ -1017,7 +1021,9 @@ export const ContentFormatOptionsMenu = memo(
                     return (
                       <div className="group/markdown space-y-2" key={optionKey}>
                         {/* Main markdown toggle */}
-                        <Tooltip open={isMarkdownSubOpen ? false : undefined}>
+                        <Tooltip
+                          delayDuration={isMarkdownSubOpen ? 999999 : undefined}
+                        >
                           <TooltipTrigger asChild>
                             <div className="flex w-full items-center space-x-2">
                               <Switch
