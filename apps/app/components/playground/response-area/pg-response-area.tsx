@@ -37,7 +37,6 @@ export interface PGResponseAreaProps {
  * Main component for displaying playground API response
  */
 export function PGResponseArea({ className }: PGResponseAreaProps) {
-  const requestUrl = usePlaygroundCoreSelector('requestUrl');
   const selectedOP = usePlaygroundCoreSelector('selectedOperation');
   const responses = usePlaygroundCoreSelector('responses');
   const formatTime = usePlaygroundActionsSelector('formatTime');
@@ -100,7 +99,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
     readUrlResponseData?.targetUrl ||
     extractedLinksResponseData?.targetUrl ||
     response.targetUrl ||
-    requestUrl;
+    '';
 
   const normalizedTargetUrl = normalizeUrl(targetUrl);
 
@@ -168,11 +167,11 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
               rel="noopener"
               target="_blank"
             >
-              {metadata?.title ?? requestUrl}
+              {metadata?.title ?? targetUrl}
               <ExternalLink className="mt-1 size-6" />
             </a>
           ) : (
-            (metadata?.title ?? (requestUrl as string))
+            (metadata?.title ?? (targetUrl as string))
           )) as unknown as string
         }
       >
