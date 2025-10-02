@@ -3,9 +3,10 @@ import NumberFlow, {
   continuous,
   type NumberFlowProps,
 } from '@number-flow/react';
+import { memo, useMemo } from 'react';
 import type { PlaygroundActions } from '@/hooks/playground/types';
 
-export function MetricsNumber({
+export const MetricsNumber = memo(function MetricsNumber({
   value,
   className,
   formatTime,
@@ -16,24 +17,40 @@ export function MetricsNumber({
   formatTime: PlaygroundActions['formatTime'];
   options?: NumberFlowProps;
 }) {
+  // Memoize format configuration to prevent recreation
+  const format = useMemo(
+    () => ({
+      style: 'decimal' as const,
+      signDisplay: 'auto' as const,
+      maximumFractionDigits: value > 1000 ? 2 : 0,
+    }),
+    [value],
+  );
+
+  // Memoize suffix to prevent recreation
+  const suffix = useMemo(() => (value > 1000 ? ' s' : ' ms'), [value]);
+
+  // Memoize formatted value
+  const formattedValue = useMemo(
+    () => formatTime(value, false) as number,
+    [formatTime, value],
+  );
+
+  // Memoize className
+  const mergedClassName = useMemo(
+    () => cn('pointer-events-none', options?.className, className),
+    [options?.className, className],
+  );
+
   return (
     <NumberFlow
+      className={mergedClassName}
+      format={format}
       plugins={[continuous]}
+      suffix={suffix}
+      value={formattedValue}
       willChange={true}
       {...options}
-      className={cn('pointer-events-none', options?.className, className)}
-      format={{
-        style: 'decimal',
-        signDisplay: 'auto',
-        maximumFractionDigits: value > 1000 ? 2 : 0,
-      }}
-      suffix={value > 1000 ? ' s' : ' ms'}
-      value={
-        formatTime(
-          value,
-          false, // asString = false
-        ) as number
-      }
     />
   );
-}
+});
