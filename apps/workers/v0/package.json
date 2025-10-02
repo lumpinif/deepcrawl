@@ -7,6 +7,7 @@
     "dev:remote": "pnpm run clean && wrangler dev --remote --port=8080",
     "dev:prod": "wrangler dev --remote --env=production",
     "deploy": "pnpm check && wrangler secret bulk --env=production .dev.vars.production && wrangler deploy --env=production --minify",
+    "startup": "pnpm wrangler check startup --env=production --args=\"--minify\"",
     "clean": "rimraf .wrangler .turbo",
     "antFu:lint": "eslint .",
     "typecheck": "tsc --noEmit",
