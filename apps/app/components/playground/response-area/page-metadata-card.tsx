@@ -29,7 +29,7 @@ export function MetadataItem({
         {icon}
         <span className="font-medium">{label}</span>
       </div>
-      <div className="text-foreground text-sm">{displayValue}</div>
+      <div className="break-words text-foreground text-sm">{displayValue}</div>
     </div>
   );
 }

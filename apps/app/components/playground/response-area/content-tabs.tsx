@@ -1,3 +1,4 @@
+import { Response } from '@deepcrawl/ui/components/ai-elements/response';
 import {
   Tabs,
   TabsContent,
@@ -22,8 +23,7 @@ import type {
   ReadUrlResponse,
 } from 'deepcrawl';
 import { Code2 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+
 import type {
   DeepcrawlOperations,
   PlaygroundActions,
@@ -81,8 +81,8 @@ function ContentScrollAreaCard({ value, content }: ContentScrollAreaCardProps) {
     //   </>
     // );
     children = (
-      <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:border prose-table:border prose-td:border prose-th:border prose-blockquote:border-muted-foreground prose-blockquote:border-l-4 prose-pre:bg-muted prose-th:bg-muted prose-blockquote:pl-4 prose-headings:font-semibold prose-a:text-primary prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-a:no-underline hover:prose-a:underline">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+      <div className="px-6" suppressHydrationWarning>
+        <Response>{content}</Response>
       </div>
     );
   }

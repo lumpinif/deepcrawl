@@ -216,7 +216,9 @@ export function BentoDisplayCard({
   return (
     <Card className={cn(className, 'overflow-hidden')} ref={ref}>
       <ScrollArea className="min-h-0">
-        <CardContent className={contentClassName}>{children}</CardContent>
+        <CardContent className={cn('break-words', contentClassName)}>
+          {children}
+        </CardContent>
       </ScrollArea>
     </Card>
   );
