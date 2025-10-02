@@ -1,6 +1,5 @@
 import { PromptInputBody } from '@deepcrawl/ui/components/ai-elements/prompt-input';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import NumberFlow, { continuous } from '@number-flow/react';
 import { Zap } from 'lucide-react';
 import {
   usePlaygroundActionsSelector,
@@ -8,6 +7,7 @@ import {
 } from '@/hooks/playground/playground-context';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { SpinnerButton } from '../spinner-button';
+import { MetricsNumber } from './metrics-number';
 import { UrlInput } from './url-input';
 
 type PlaygroundUrlInputProps = {
@@ -67,25 +67,10 @@ export function PlaygroundUrlInput({
         errorElement={<span>Try again</span>}
         isLoading={isExecuting[selectedOperation]}
         loadingElement={
-          <NumberFlow
+          <MetricsNumber
             className="text-primary-foreground transition-all duration-200 ease-out group-data-[loading=true]/spinner-button:scale-110 group-data-[loading=true]/spinner-button:animate-pulse"
-            format={{
-              style: 'decimal',
-              signDisplay: 'auto',
-              maximumFractionDigits:
-                getCurrentExecutionTime(selectedOperation) > 1000 ? 2 : 0,
-            }}
-            plugins={[continuous]}
-            suffix={
-              getCurrentExecutionTime(selectedOperation) > 1000 ? ' s' : ' ms'
-            }
-            value={
-              formatTime(
-                getCurrentExecutionTime(selectedOperation),
-                false, // asString = false
-              ) as number
-            }
-            willChange={true}
+            formatTime={formatTime}
+            value={getCurrentExecutionTime(selectedOperation)}
           />
         }
         successElement={

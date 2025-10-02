@@ -12,7 +12,7 @@ import type {
   GetMarkdownResponse,
   ReadUrlResponse,
 } from 'deepcrawl';
-import { ChevronUp, Share } from 'lucide-react';
+import { ChevronUp, ExternalLink, Share } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -96,6 +96,14 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       ? (response.data as ExtractLinksResponse)
       : undefined;
 
+  const targetUrl =
+    readUrlResponseData?.targetUrl ||
+    extractedLinksResponseData?.targetUrl ||
+    response.targetUrl ||
+    requestUrl;
+
+  const normalizedTargetUrl = normalizeUrl(targetUrl);
+
   const treeData =
     extractedLinksResponseData && 'tree' in extractedLinksResponseData
       ? extractedLinksResponseData.tree
@@ -128,14 +136,45 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         containerClassName="flex w-full items-center justify-between"
         description={`${selectedOPConfig.description}`}
         label={
-          <Badge
-            className="-translate-x-0.5 select-none text-muted-foreground text-sm hover:text-foreground"
-            variant="outline"
-          >
-            {selectedOPConfig.label}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge
+              className="-translate-x-0.5 select-none text-muted-foreground text-sm hover:text-foreground"
+              variant="outline"
+            >
+              {selectedOPConfig.label}
+            </Badge>
+            {response.operation !== 'getMarkdown' && (
+              <a
+                className="cursor-pointer"
+                href={targetUrl}
+                rel="noopener"
+                target="_blank"
+              >
+                <Badge
+                  className="-translate-x-0.5 inline-flex select-none items-center gap-1 text-muted-foreground text-sm hover:text-foreground hover:underline"
+                  variant="outline"
+                >
+                  {targetUrl} <ExternalLink className="mt-0.5 size-2" />
+                </Badge>
+              </a>
+            )}
+          </div>
         }
-        title={metadata?.title ?? requestUrl}
+        title={
+          (selectedOP === 'getMarkdown' ? (
+            <a
+              className="inline-flex cursor-pointer items-center gap-2 hover:underline"
+              href={normalizedTargetUrl}
+              rel="noopener"
+              target="_blank"
+            >
+              {metadata?.title ?? requestUrl}
+              <ExternalLink className="mt-1 size-6" />
+            </a>
+          ) : (
+            (metadata?.title ?? (requestUrl as string))
+          )) as unknown as string
+        }
       >
         <div className="flex items-center gap-2">
           <IconHoverButton
@@ -171,8 +210,11 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       {/* Main Response Area Bento Grid*/}
       <div
         className={cn(
+          'min-h-0 md:h-[calc(80svh)]',
+          response.operation === 'getMarkdown'
+            ? 'md:!grid-cols-full'
+            : 'grid gap-2 sm:gap-4 md:grid-cols-4',
           baseContainerCN,
-          'grid min-h-0 gap-2 sm:gap-4 md:h-[calc(80svh)] md:grid-cols-4',
           'pb-6 xl:pb-8 2xl:pb-10',
           className,
         )}
@@ -190,9 +232,12 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
           {!response.error && hasResponseData && (
             <ContentTabs
               activeTab={activeTab}
+              apiMetrics={metrics}
+              formatTime={formatTime}
               markdownContent={markdownContent}
               onRetry={onRetry}
               onTabChange={setActiveTab}
+              operationMethod={operationMethod}
               response={response}
               selectedOperation={selectedOP}
               treeData={treeData}
@@ -201,12 +246,17 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         </div>
 
         {/* Right Side Cards Container */}
-        <div className="flex h-full min-h-0 flex-col gap-2 sm:gap-4 md:col-span-1 md:row-span-3">
+        <div
+          className={cn(
+            'flex h-full min-h-0 flex-col gap-2 sm:gap-4 md:col-span-1 md:row-span-3',
+            response.operation === 'getMarkdown' && 'hidden',
+          )}
+        >
           {/* Metrics */}
           <MetricsDisplay
             apiMetrics={metrics}
             className={cn(
-              '!flex-none !h-1/6',
+              '!flex-none',
               response.operation === 'getMarkdown' && '!h-full flex-auto',
             )}
             executionTime={response.executionTime}
@@ -228,4 +278,16 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       </div>
     </div>
   );
+}
+
+function normalizeUrl(targetUrl: string) {
+  try {
+    if (targetUrl.startsWith('http')) {
+      return new URL(targetUrl).toString();
+    }
+
+    return new URL(`https://${targetUrl}`).toString();
+  } catch (error) {
+    return targetUrl;
+  }
 }

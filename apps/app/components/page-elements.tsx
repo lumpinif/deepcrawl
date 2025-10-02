@@ -1,5 +1,11 @@
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { HTMLAttributes, PropsWithChildren } from 'react';
+import {
+  cloneElement,
+  type HTMLAttributes,
+  isValidElement,
+  type PropsWithChildren,
+  type ReactElement,
+} from 'react';
 
 export const baseContainerCN = 'container mx-auto px-6 2xl:px-[6rem]' as const;
 
@@ -31,18 +37,42 @@ export function PageTitle({
   titleSize,
   desPos = 'bottom',
 }: {
-  title: string;
+  title:
+    | string
+    | ReactElement
+    | React.ReactElement<React.HTMLAttributes<HTMLElement | HTMLAnchorElement>>;
   description?: string;
   desPos?: 'top' | 'bottom';
   titleSize?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 } & React.HTMLAttributes<HTMLDivElement>) {
   const titleSizeCN = titleSize ? `text-${titleSize}` : 'text-3xl';
+
+  const renderTitle = () => {
+    if (typeof title === 'string') {
+      return <h1 className={cn('font-semibold', titleSizeCN)}>{title}</h1>;
+    }
+
+    const el = title as ReactElement<
+      React.HTMLAttributes<HTMLElement | HTMLAnchorElement>
+    >;
+
+    if (isValidElement(title)) {
+      return cloneElement<
+        React.HTMLAttributes<HTMLElement | HTMLAnchorElement>
+      >(el, {
+        className: cn('font-semibold', titleSizeCN, el.props.className),
+      });
+    }
+
+    return title;
+  };
+
   return (
     <div className={cn('my-2 w-full', className)}>
       {description && desPos === 'top' && (
         <p className="text-muted-foreground">{description}</p>
       )}
-      <h1 className={cn('font-semibold', titleSizeCN)}>{title}</h1>
+      {renderTitle()}
       {description && desPos === 'bottom' && (
         <p className="text-muted-foreground">{description}</p>
       )}
@@ -59,7 +89,10 @@ export function PageHeader({
   containerClassName,
   label,
 }: {
-  title: string;
+  title:
+    | string
+    | ReactElement
+    | React.ReactElement<React.HTMLAttributes<HTMLElement | HTMLAnchorElement>>;
   description?: string;
   titleClassName?: string;
   children?: React.ReactNode;
