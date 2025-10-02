@@ -62,7 +62,7 @@ export function MetricsDisplay({
     response.operation !== 'getMarkdown' ? response.data : undefined;
 
   return (
-    <Card className={cn(className, '!min-h-fit')} ref={metricsRef}>
+    <Card className={cn(className)} ref={metricsRef}>
       <CardContent className={cn('flex flex-col gap-2', contentClassName)}>
         <div
           className={cn(
@@ -137,7 +137,7 @@ export function MetricsDisplay({
                     />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="right">
+                <TooltipContent side="top">
                   <p>Time taken of playground execution</p>
                 </TooltipContent>
               </Tooltip>
@@ -156,7 +156,7 @@ export function MetricsDisplay({
                     />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="right">
+                <TooltipContent side="top">
                   <p>Time taken of Real API execution</p>
                 </TooltipContent>
               </Tooltip>
@@ -214,12 +214,10 @@ export function BentoDisplayCard({
   ref?: React.RefObject<HTMLDivElement | null>;
 }) {
   return (
-    <Card className={cn(className, 'overflow-hidden')} ref={ref}>
-      <ScrollArea className="min-h-0">
-        <CardContent className={cn('break-words', contentClassName)}>
-          {children}
-        </CardContent>
-      </ScrollArea>
+    <Card className={cn(className)} ref={ref}>
+      <CardContent className={cn('overflow-hidden', contentClassName)}>
+        <ScrollArea className="size-full min-h-0">{children}</ScrollArea>
+      </CardContent>
     </Card>
   );
 }

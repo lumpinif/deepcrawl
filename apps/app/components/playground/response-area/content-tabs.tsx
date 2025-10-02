@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
-import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
+// import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import type {
   ExtractLinksResponse,
   LinksTree,
@@ -74,14 +74,8 @@ function ContentScrollAreaCard({ value, content }: ContentScrollAreaCardProps) {
   let header: React.ReactNode | null = null;
   let children: React.ReactNode | null = null;
   if (value === 'markdown') {
-    // header = (
-    //   <>
-    //     <CardTitle>Markdown</CardTitle>
-    //     <CardDescription>Extracted markdown content</CardDescription>
-    //   </>
-    // );
     children = (
-      <div className="px-6" suppressHydrationWarning>
+      <div className="[&_pre]:scrollbar-thin px-6" suppressHydrationWarning>
         <Response>{content}</Response>
       </div>
     );
@@ -115,7 +109,7 @@ function ContentScrollAreaCard({ value, content }: ContentScrollAreaCardProps) {
 
   return (
     <TabsContent
-      className="m-0 flex min-h-0 flex-1 flex-col overflow-hidden p-0"
+      className="m-0 flex size-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-0"
       value={value}
     >
       {children && (
@@ -124,9 +118,11 @@ function ContentScrollAreaCard({ value, content }: ContentScrollAreaCardProps) {
             <CardHeader className="border-b pt-6">{header}</CardHeader>
           )}
           {children && (
-            <ScrollArea className="h-full min-h-0 flex-1">
-              <CardContent className="py-6">{children}</CardContent>
-            </ScrollArea>
+            <CardContent className="scrollbar-thin scrollbar-thumb-rounded-full size-full min-h-0 flex-1 overflow-auto py-6">
+              {/* <ScrollArea className="size-full min-h-0"> */}
+              {children}
+              {/* </ScrollArea> */}
+            </CardContent>
           )}
         </>
       )}
@@ -172,9 +168,9 @@ export function ContentTabs({
   const apiResponse = response?.data;
 
   return (
-    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+    <Card className="flex size-full min-h-0 flex-col">
       <Tabs
-        className="flex h-full min-h-0 flex-col"
+        className="flex size-full flex-col"
         defaultValue="markdown"
         onValueChange={(value) =>
           onTabChange(value as 'markdown' | 'tree' | 'raw')

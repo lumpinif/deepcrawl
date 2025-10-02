@@ -124,10 +124,11 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
   return (
     <div
       className={cn(
-        '-scroll-mt-0.5 flex min-h-[calc(100svh-theme(spacing.16))] flex-col group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
+        '-scroll-mt-0.5',
+        'flex flex-col',
+        'md:h-[calc(100svh-theme(spacing.16))] md:group-data-[nav-mode=header]/header-nav-layout:h-[calc(100svh-theme(spacing.12))] md:group-has-data-[collapsible=icon]/sidebar-wrapper:h-[calc(100svh-theme(spacing.12))]',
       )}
       id={RESPONSE_SECTION_ID}
-      style={{}}
     >
       {/* Response Area Header */}
       <PageHeader
@@ -209,17 +210,16 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       {/* Main Response Area Bento Grid*/}
       <div
         className={cn(
-          'min-h-0 md:h-[calc(80svh)]',
-          response.operation === 'getMarkdown'
-            ? 'md:!grid-cols-full'
-            : 'grid gap-2 sm:gap-4 md:grid-cols-4',
+          'size-full flex-1',
+          'flex flex-col gap-2 max-sm:flex-col-reverse sm:gap-4 md:flex-row',
           baseContainerCN,
+          'md:overflow-hidden',
           'pb-6 xl:pb-8 2xl:pb-10',
           className,
         )}
       >
         {/* Main content */}
-        <div className="h-full min-h-0 md:col-span-3 md:row-span-3">
+        <div className="size-full flex-1 md:max-w-3/4">
           {/* Error State */}
           <ErrorCard
             activeTab={activeTab}
@@ -243,21 +243,17 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
             />
           )}
         </div>
-
         {/* Right Side Cards Container */}
         <div
           className={cn(
-            'flex h-full min-h-0 flex-col gap-2 sm:gap-4 md:col-span-1 md:row-span-3',
+            'flex size-full flex-col gap-2 sm:gap-4 md:max-w-1/4',
             response.operation === 'getMarkdown' && 'hidden',
           )}
         >
           {/* Metrics */}
           <MetricsDisplay
             apiMetrics={metrics}
-            className={cn(
-              '!flex-none',
-              response.operation === 'getMarkdown' && '!h-full flex-auto',
-            )}
+            className="h-fit flex-none"
             executionTime={response.executionTime}
             formatTime={formatTime}
             operationMethod={operationMethod}
@@ -267,12 +263,15 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
 
           {/* Description */}
           <DescriptionDisplay
-            className="max-h-1/2 min-h-1/6"
+            className="!max-h-1/2 h-fit min-h-0"
             description={metadata?.description}
           />
 
           {/* Page Metadata Card */}
-          <PageMetadataCard className="flex-auto" metadata={metadata} />
+          <PageMetadataCard
+            className="max-h-2/3 min-h-0 w-full flex-1"
+            metadata={metadata}
+          />
         </div>
       </div>
     </div>

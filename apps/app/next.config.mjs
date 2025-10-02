@@ -7,6 +7,7 @@ const config = {
   /* config options here */
   devIndicators: false,
   reactStrictMode: true,
+  transpilePackages: ['shiki'],
   images: {
     remotePatterns: [
       {

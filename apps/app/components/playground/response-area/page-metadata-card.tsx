@@ -1,5 +1,6 @@
+import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
+
 import type { PageMetadata } from 'deepcrawl';
-import { BentoDisplayCard } from './task-info-card';
 
 /**
  * MetadataItem component for displaying key-value pairs
@@ -24,12 +25,14 @@ export function MetadataItem({
       : value;
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex w-full flex-col gap-1">
       <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
         {icon}
         <span className="font-medium">{label}</span>
       </div>
-      <div className="break-words text-foreground text-sm">{displayValue}</div>
+      <div className="w-full whitespace-normal text-pretty break-words text-muted-foreground text-sm transition-all duration-200 ease-out hover:text-foreground">
+        {displayValue}
+      </div>
     </div>
   );
 }
@@ -48,30 +51,47 @@ export function PageMetadataCard({
     return null;
   }
 
+  const {
+    language,
+    author,
+    keywords,
+    canonical,
+    robots,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    twitterCard,
+    favicon,
+  } = metadata;
+
   return (
-    <BentoDisplayCard className={className} contentClassName="space-y-4">
-      {/* <MetadataItem label="Title" value={metadata.title} /> */}
-      {/* <MetadataItem label="Description" value={metadata.description} /> */}
-      <MetadataItem label="Language" value={metadata.language} />
-      <MetadataItem label="Author" value={metadata.author} />
-      <MetadataItem label="Keywords" value={metadata.keywords} />
-      <MetadataItem label="Canonical URL" value={metadata.canonical} />
-      <MetadataItem label="Robots" value={metadata.robots} />
-      {metadata.ogTitle && (
-        <MetadataItem label="OG Title" value={metadata.ogTitle} />
-      )}
-      {metadata.ogDescription && (
-        <MetadataItem label="OG Description" value={metadata.ogDescription} />
-      )}
-      {metadata.ogImage && (
-        <MetadataItem label="OG Image" value={metadata.ogImage} />
-      )}
-      {metadata.twitterCard && (
-        <MetadataItem label="Twitter Card" value={metadata.twitterCard} />
-      )}
-      {metadata.favicon && (
-        <MetadataItem label="Favicon" value={metadata.favicon} />
-      )}
-    </BentoDisplayCard>
+    <Card className={className}>
+      {/* <CardHeader>
+        <CardTitle className="text-muted-foreground text-xs">
+          Page Metadata
+        </CardTitle>
+      </CardHeader> */}
+      <CardContent className="scrollbar-thin scrollbar-thumb-rounded-full min-w-0 space-y-4 overflow-auto">
+        {/* <ScrollArea
+          className="w-full"
+          viewportClassName="whitespace-normal break-words overflow-x-hidden"
+        > */}
+        <MetadataItem label="Language" value={language} />
+        <MetadataItem label="Author" value={author} />
+        <MetadataItem label="Keywords" value={keywords} />
+        <MetadataItem label="Canonical URL" value={canonical} />
+        <MetadataItem label="Robots" value={robots} />
+        {ogDescription && (
+          <MetadataItem label="OG Description" value={ogDescription} />
+        )}
+        {ogImage && <MetadataItem label="OG Image" value={ogImage} />}
+
+        {twitterCard && (
+          <MetadataItem label="Twitter Card" value={twitterCard} />
+        )}
+        {favicon && <MetadataItem label="Favicon" value={favicon} />}
+        {/* </ScrollArea> */}
+      </CardContent>
+    </Card>
   );
 }
