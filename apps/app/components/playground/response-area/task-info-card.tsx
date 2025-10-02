@@ -11,7 +11,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import type { ExtractLinksResponse, ReadUrlResponse } from 'deepcrawl';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { useInView } from 'motion/react';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import type { PlaygroundOperationResponse } from '@/hooks/playground/types';
 import { MetricsNumber } from '../metrics-number';
 import { MetadataItem } from './page-metadata-card';
@@ -19,7 +19,7 @@ import { MetadataItem } from './page-metadata-card';
 /**
  * MetricsDisplay component for showing timing metrics
  */
-export function MetricsDisplay({
+export const MetricsDisplay = memo(function MetricsDisplay({
   className,
   formatTime,
   contentClassName,
@@ -179,12 +179,12 @@ export function MetricsDisplay({
       </CardContent>
     </Card>
   );
-}
+});
 
 /**
  * DescriptionDisplay
  */
-export function DescriptionDisplay({
+export const DescriptionDisplay = memo(function DescriptionDisplay({
   className,
   description,
 }: {
@@ -200,9 +200,9 @@ export function DescriptionDisplay({
       <MetadataItem label="Description" value={description} />
     </BentoDisplayCard>
   );
-}
+});
 
-export function BentoDisplayCard({
+export const BentoDisplayCard = memo(function BentoDisplayCard({
   className,
   contentClassName,
   children,
@@ -220,7 +220,7 @@ export function BentoDisplayCard({
       </CardContent>
     </Card>
   );
-}
+});
 
 const getErrorIcon = (errorType?: string) => {
   switch (errorType) {

@@ -33,7 +33,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import type { ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 import {
   usePlaygroundActionsSelector,
   usePlaygroundCoreSelector,
@@ -549,7 +549,11 @@ const DETAILED_OPTIONS_CONFIG: OptionGroup[] = [
   },
 ];
 
-export function DetailedOptions({ className }: { className?: string }) {
+export const DetailedOptions = memo(function DetailedOptions({
+  className,
+}: {
+  className?: string;
+}) {
   const requestUrl = usePlaygroundCoreSelector('requestUrl');
   const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
   const currentOptions = usePlaygroundOptionsSelector('currentOptions');
@@ -648,4 +652,4 @@ export function DetailedOptions({ className }: { className?: string }) {
       })}
     </div>
   );
-}
+});

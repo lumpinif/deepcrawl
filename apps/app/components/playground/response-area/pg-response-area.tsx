@@ -219,7 +219,12 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         )}
       >
         {/* Main content */}
-        <div className="size-full flex-1 md:max-w-3/4">
+        <div
+          className={cn(
+            'size-full flex-1 md:max-w-3/4',
+            response.operation === 'getMarkdown' && '!max-w-full',
+          )}
+        >
           {/* Error State */}
           <ErrorCard
             activeTab={activeTab}

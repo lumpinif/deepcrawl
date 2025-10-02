@@ -63,6 +63,7 @@ import type { ElementType, ReactElement } from 'react';
 import {
   cloneElement,
   isValidElement,
+  memo,
   useCallback,
   useRef,
   useState,
@@ -383,713 +384,396 @@ const getFilteredContentFormatOptions = <
   ) as Pick<ContentFormatOptions, T['availableOptions'][number]>;
 };
 
-export function ContentFormatOptionsMenu() {
-  // Get state and actions from context
-  const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
-  const currentOpts = usePlaygroundOptionsSelector('currentOptions');
-  const selectSetOptions = useCallback(
-    (state: PlaygroundOptionsContextValue) =>
-      state.currentQueryState.setOptions,
-    [],
-  );
-  const setOptions = usePlaygroundOptionsSelector(selectSetOptions);
-
-  // Extract all the data that was previously passed as props
-  const op = selectedOperation;
-
-  const contentFormatOptions = {
-    metadata: 'metadata' in currentOpts ? currentOpts.metadata : undefined,
-    markdown:
-      'markdown' in currentOpts
-        ? currentOpts.markdown
-        : selectedOperation === 'getMarkdown', // always true for getMarkdown
-    cleanedHtml:
-      'cleanedHtml' in currentOpts ? currentOpts.cleanedHtml : undefined,
-    rawHtml: 'rawHtml' in currentOpts ? currentOpts.rawHtml : undefined,
-    robots: 'robots' in currentOpts ? currentOpts.robots : undefined,
-    tree: 'tree' in currentOpts ? currentOpts.tree : undefined,
-    sitemapXML:
-      'sitemapXML' in currentOpts ? currentOpts.sitemapXML : undefined,
-  } as ContentFormatOptions;
-
-  const metadataOptions =
-    'metadataOptions' in currentOpts ? currentOpts.metadataOptions : undefined;
-  const treeOptions =
-    'folderFirst' in currentOpts && selectedOperation === 'extractLinks'
-      ? {
-          folderFirst: currentOpts.folderFirst,
-          linksOrder: currentOpts.linksOrder,
-          extractedLinks: currentOpts.extractedLinks,
-          subdomainAsRootUrl: currentOpts.subdomainAsRootUrl,
-          isPlatformUrl: currentOpts.isPlatformUrl,
-        }
-      : undefined;
-  const markdownOptions =
-    'markdownConverterOptions' in currentOpts
-      ? currentOpts.markdownConverterOptions
-      : undefined;
-
-  // Create change handlers that use context
-  const onContentFormatOptionsChange = (
-    contentFormatOptions: ContentFormatOptions,
-  ) => {
-    setOptions(
-      getFilteredContentFormatOptions(contentFormatOptions, operationConfig),
+export const ContentFormatOptionsMenu = memo(
+  function ContentFormatOptionsMenu() {
+    // Get state and actions from context
+    const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
+    const currentOpts = usePlaygroundOptionsSelector('currentOptions');
+    const selectSetOptions = useCallback(
+      (state: PlaygroundOptionsContextValue) =>
+        state.currentQueryState.setOptions,
+      [],
     );
-  };
+    const setOptions = usePlaygroundOptionsSelector(selectSetOptions);
 
-  const onMetadataOptionsChange = (metadataOptions: MetadataOptionsInput) => {
-    setOptions({
-      metadataOptions: {
-        ...('metadataOptions' in currentOpts
-          ? currentOpts.metadataOptions
-          : {}),
-        ...metadataOptions,
-      },
-    });
-  };
+    // Extract all the data that was previously passed as props
+    const op = selectedOperation;
 
-  const onTreeOptionsChange = (treeOptions: TreeOptionsInput) => {
-    // Only allow tree options for extractLinks operation
-    if (op !== 'extractLinks') {
-      return;
-    }
+    const contentFormatOptions = {
+      metadata: 'metadata' in currentOpts ? currentOpts.metadata : undefined,
+      markdown:
+        'markdown' in currentOpts
+          ? currentOpts.markdown
+          : selectedOperation === 'getMarkdown', // always true for getMarkdown
+      cleanedHtml:
+        'cleanedHtml' in currentOpts ? currentOpts.cleanedHtml : undefined,
+      rawHtml: 'rawHtml' in currentOpts ? currentOpts.rawHtml : undefined,
+      robots: 'robots' in currentOpts ? currentOpts.robots : undefined,
+      tree: 'tree' in currentOpts ? currentOpts.tree : undefined,
+      sitemapXML:
+        'sitemapXML' in currentOpts ? currentOpts.sitemapXML : undefined,
+    } as ContentFormatOptions;
 
-    const treeOptionsToSet = {
-      ...TREE_OPTION_FIELDS.reduce(
-        (acc, field) => {
-          if (field.key in currentOpts) {
-            acc[field.key] = currentOpts[field.key as keyof typeof currentOpts];
+    const metadataOptions =
+      'metadataOptions' in currentOpts
+        ? currentOpts.metadataOptions
+        : undefined;
+    const treeOptions =
+      'folderFirst' in currentOpts && selectedOperation === 'extractLinks'
+        ? {
+            folderFirst: currentOpts.folderFirst,
+            linksOrder: currentOpts.linksOrder,
+            extractedLinks: currentOpts.extractedLinks,
+            subdomainAsRootUrl: currentOpts.subdomainAsRootUrl,
+            isPlatformUrl: currentOpts.isPlatformUrl,
           }
-          return acc;
-        },
-        {} as Record<string, unknown>,
-      ),
-      ...treeOptions,
+        : undefined;
+    const markdownOptions =
+      'markdownConverterOptions' in currentOpts
+        ? currentOpts.markdownConverterOptions
+        : undefined;
+
+    // Create change handlers that use context
+    const onContentFormatOptionsChange = (
+      contentFormatOptions: ContentFormatOptions,
+    ) => {
+      setOptions(
+        getFilteredContentFormatOptions(contentFormatOptions, operationConfig),
+      );
     };
 
-    setOptions(treeOptionsToSet);
-  };
+    const onMetadataOptionsChange = (metadataOptions: MetadataOptionsInput) => {
+      setOptions({
+        metadataOptions: {
+          ...('metadataOptions' in currentOpts
+            ? currentOpts.metadataOptions
+            : {}),
+          ...metadataOptions,
+        },
+      });
+    };
 
-  const onMarkdownOptionsChange = (
-    markdownOptions: MarkdownConverterOptionsInput,
-  ) => {
-    // Only allow markdown options for readUrl and getMarkdown operations
-    if (op !== 'readUrl' && op !== 'getMarkdown') {
-      return;
+    const onTreeOptionsChange = (treeOptions: TreeOptionsInput) => {
+      // Only allow tree options for extractLinks operation
+      if (op !== 'extractLinks') {
+        return;
+      }
+
+      const treeOptionsToSet = {
+        ...TREE_OPTION_FIELDS.reduce(
+          (acc, field) => {
+            if (field.key in currentOpts) {
+              acc[field.key] =
+                currentOpts[field.key as keyof typeof currentOpts];
+            }
+            return acc;
+          },
+          {} as Record<string, unknown>,
+        ),
+        ...treeOptions,
+      };
+
+      setOptions(treeOptionsToSet);
+    };
+
+    const onMarkdownOptionsChange = (
+      markdownOptions: MarkdownConverterOptionsInput,
+    ) => {
+      // Only allow markdown options for readUrl and getMarkdown operations
+      if (op !== 'readUrl' && op !== 'getMarkdown') {
+        return;
+      }
+
+      setOptions({
+        markdownConverterOptions: {
+          ...('markdownConverterOptions' in currentOpts
+            ? currentOpts.markdownConverterOptions
+            : {}),
+          ...markdownOptions,
+        },
+      });
+    };
+    const [isOpen, setIsOpen] = useState(false);
+    const [isMetadataSubOpen, setIsMetadataSubOpen] = useState(false);
+    const [isTreeSubOpen, setIsTreeSubOpen] = useState(false);
+    const [isMarkdownSubOpen, setIsMarkdownSubOpen] = useState(false);
+    const iconRef = useRef<{
+      startAnimation: () => void;
+      stopAnimation: () => void;
+    }>(null);
+
+    // Get operation-specific configuration
+    const operationConfig =
+      OPERATION_CONFIGS[op as keyof typeof OPERATION_CONFIGS];
+
+    // Skip rendering if operation doesn't have content options
+    if (!operationConfig) {
+      return null;
     }
 
-    setOptions({
-      markdownConverterOptions: {
-        ...('markdownConverterOptions' in currentOpts
-          ? currentOpts.markdownConverterOptions
-          : {}),
-        ...markdownOptions,
-      },
-    });
-  };
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMetadataSubOpen, setIsMetadataSubOpen] = useState(false);
-  const [isTreeSubOpen, setIsTreeSubOpen] = useState(false);
-  const [isMarkdownSubOpen, setIsMarkdownSubOpen] = useState(false);
-  const iconRef = useRef<{
-    startAnimation: () => void;
-    stopAnimation: () => void;
-  }>(null);
+    const resetToDefaults = () => {
+      onContentFormatOptionsChange(operationConfig.defaults);
 
-  // Get operation-specific configuration
-  const operationConfig =
-    OPERATION_CONFIGS[op as keyof typeof OPERATION_CONFIGS];
+      // Also reset metadata options
+      resetMetadataToDefaults();
 
-  // Skip rendering if operation doesn't have content options
-  if (!operationConfig) {
-    return null;
-  }
+      // Also reset tree options
+      resetTreeToDefaults();
 
-  const resetToDefaults = () => {
-    onContentFormatOptionsChange(operationConfig.defaults);
+      // Also reset markdown options
+      resetMarkdownToDefaults();
+    };
 
-    // Also reset metadata options
-    resetMetadataToDefaults();
+    // Metadata options helpers
+    const resetMetadataToDefaults = () => {
+      onMetadataOptionsChange({
+        title: DEFAULT_METADATA_OPTIONS.title,
+        description: DEFAULT_METADATA_OPTIONS.description,
+        language: DEFAULT_METADATA_OPTIONS.language,
+        canonical: DEFAULT_METADATA_OPTIONS.canonical,
+        robots: DEFAULT_METADATA_OPTIONS.robots,
+        author: DEFAULT_METADATA_OPTIONS.author,
+        keywords: DEFAULT_METADATA_OPTIONS.keywords,
+        favicon: DEFAULT_METADATA_OPTIONS.favicon,
+        openGraph: DEFAULT_METADATA_OPTIONS.openGraph,
+        twitter: DEFAULT_METADATA_OPTIONS.twitter,
+      });
+    };
 
-    // Also reset tree options
-    resetTreeToDefaults();
+    // Tree options helpers
+    const resetTreeToDefaults = () => {
+      onTreeOptionsChange({
+        folderFirst: DEFAULT_TREE_OPTIONS.folderFirst,
+        linksOrder: DEFAULT_TREE_OPTIONS.linksOrder,
+        extractedLinks: DEFAULT_TREE_OPTIONS.extractedLinks,
+        subdomainAsRootUrl: DEFAULT_TREE_OPTIONS.subdomainAsRootUrl,
+        isPlatformUrl: DEFAULT_TREE_OPTIONS.isPlatformUrl,
+      });
+    };
 
-    // Also reset markdown options
-    resetMarkdownToDefaults();
-  };
+    // Markdown options helpers
+    const resetMarkdownToDefaults = () => {
+      onMarkdownOptionsChange({
+        preferNativeParser:
+          DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
+        bulletMarker: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker,
+        codeBlockStyle: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle,
+        maxConsecutiveNewlines:
+          DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
+        keepDataImages: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
+        useInlineLinks: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
+        useLinkReferenceDefinitions:
+          DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
+      });
+    };
 
-  // Metadata options helpers
-  const resetMetadataToDefaults = () => {
-    onMetadataOptionsChange({
-      title: DEFAULT_METADATA_OPTIONS.title,
-      description: DEFAULT_METADATA_OPTIONS.description,
-      language: DEFAULT_METADATA_OPTIONS.language,
-      canonical: DEFAULT_METADATA_OPTIONS.canonical,
-      robots: DEFAULT_METADATA_OPTIONS.robots,
-      author: DEFAULT_METADATA_OPTIONS.author,
-      keywords: DEFAULT_METADATA_OPTIONS.keywords,
-      favicon: DEFAULT_METADATA_OPTIONS.favicon,
-      openGraph: DEFAULT_METADATA_OPTIONS.openGraph,
-      twitter: DEFAULT_METADATA_OPTIONS.twitter,
-    });
-  };
+    // Check if metadata extraction is enabled
+    const isMetadataEnabled = Boolean(
+      contentFormatOptions?.metadata ??
+        ('metadata' in operationConfig.defaults
+          ? operationConfig.defaults.metadata
+          : false),
+    );
 
-  // Tree options helpers
-  const resetTreeToDefaults = () => {
-    onTreeOptionsChange({
-      folderFirst: DEFAULT_TREE_OPTIONS.folderFirst,
-      linksOrder: DEFAULT_TREE_OPTIONS.linksOrder,
-      extractedLinks: DEFAULT_TREE_OPTIONS.extractedLinks,
-      subdomainAsRootUrl: DEFAULT_TREE_OPTIONS.subdomainAsRootUrl,
-      isPlatformUrl: DEFAULT_TREE_OPTIONS.isPlatformUrl,
-    });
-  };
+    // Check if tree is enabled (only for extractLinks operation)
+    const isTreeEnabled = Boolean(
+      contentFormatOptions?.tree ??
+        (op === 'extractLinks' ? DEFAULT_LINKS_OPTIONS.tree : false),
+    );
 
-  // Markdown options helpers
-  const resetMarkdownToDefaults = () => {
-    onMarkdownOptionsChange({
-      preferNativeParser: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
-      bulletMarker: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker,
-      codeBlockStyle: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle,
-      maxConsecutiveNewlines:
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
-      keepDataImages: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
-      useInlineLinks: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
-      useLinkReferenceDefinitions:
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
-    });
-  };
+    // Check if markdown is enabled (for readUrl and getMarkdown operations)
+    const isMarkdownEnabled = Boolean(
+      contentFormatOptions?.markdown ??
+        (op === 'readUrl'
+          ? DEFAULT_READ_OPTIONS.markdown
+          : op === 'getMarkdown'),
+    );
 
-  // Check if metadata extraction is enabled
-  const isMetadataEnabled = Boolean(
-    contentFormatOptions?.metadata ??
-      ('metadata' in operationConfig.defaults
-        ? operationConfig.defaults.metadata
-        : false),
-  );
+    // Check if metadata options have been customized
+    const hasCustomMetadataSettings =
+      metadataOptions &&
+      METADATA_FIELDS.some(({ key }) => {
+        const currentValue = metadataOptions[key];
+        const defaultValue = DEFAULT_METADATA_OPTIONS[key];
+        return currentValue !== undefined && currentValue !== defaultValue;
+      });
 
-  // Check if tree is enabled (only for extractLinks operation)
-  const isTreeEnabled = Boolean(
-    contentFormatOptions?.tree ??
-      (op === 'extractLinks' ? DEFAULT_LINKS_OPTIONS.tree : false),
-  );
+    // Check if tree options have been customized
+    const hasCustomTreeSettings =
+      treeOptions &&
+      TREE_OPTION_FIELDS.some(({ key }) => {
+        const currentValue = treeOptions[key];
+        const defaultValue = DEFAULT_TREE_OPTIONS[key];
+        return currentValue !== undefined && currentValue !== defaultValue;
+      });
 
-  // Check if markdown is enabled (for readUrl and getMarkdown operations)
-  const isMarkdownEnabled = Boolean(
-    contentFormatOptions?.markdown ??
-      (op === 'readUrl' ? DEFAULT_READ_OPTIONS.markdown : op === 'getMarkdown'),
-  );
+    // Check if markdown options have been customized
+    const hasCustomMarkdownSettings =
+      markdownOptions &&
+      MARKDOWN_OPTION_FIELDS.some(({ key }) => {
+        const currentValue = markdownOptions[key];
+        const defaultValue = DEFAULT_MARKDOWN_CONVERTER_OPTIONS[key];
+        return currentValue !== undefined && currentValue !== defaultValue;
+      });
 
-  // Check if metadata options have been customized
-  const hasCustomMetadataSettings =
-    metadataOptions &&
-    METADATA_FIELDS.some(({ key }) => {
-      const currentValue = metadataOptions[key];
-      const defaultValue = DEFAULT_METADATA_OPTIONS[key];
-      return currentValue !== undefined && currentValue !== defaultValue;
-    });
+    const hasCustomSettings =
+      hasCustomMetadataSettings ||
+      hasCustomTreeSettings ||
+      hasCustomMarkdownSettings ||
+      operationConfig.availableOptions.some((optionKey) => {
+        const currentValue =
+          contentFormatOptions?.[optionKey as keyof ContentFormatOptions];
+        const defaultValue =
+          operationConfig.defaults[
+            optionKey as keyof typeof operationConfig.defaults
+          ];
+        return currentValue !== undefined && currentValue !== defaultValue;
+      });
 
-  // Check if tree options have been customized
-  const hasCustomTreeSettings =
-    treeOptions &&
-    TREE_OPTION_FIELDS.some(({ key }) => {
-      const currentValue = treeOptions[key];
-      const defaultValue = DEFAULT_TREE_OPTIONS[key];
-      return currentValue !== undefined && currentValue !== defaultValue;
-    });
-
-  // Check if markdown options have been customized
-  const hasCustomMarkdownSettings =
-    markdownOptions &&
-    MARKDOWN_OPTION_FIELDS.some(({ key }) => {
-      const currentValue = markdownOptions[key];
-      const defaultValue = DEFAULT_MARKDOWN_CONVERTER_OPTIONS[key];
-      return currentValue !== undefined && currentValue !== defaultValue;
-    });
-
-  const hasCustomSettings =
-    hasCustomMetadataSettings ||
-    hasCustomTreeSettings ||
-    hasCustomMarkdownSettings ||
-    operationConfig.availableOptions.some((optionKey) => {
-      const currentValue =
-        contentFormatOptions?.[optionKey as keyof ContentFormatOptions];
-      const defaultValue =
-        operationConfig.defaults[
-          optionKey as keyof typeof operationConfig.defaults
-        ];
-      return currentValue !== undefined && currentValue !== defaultValue;
-    });
-
-  return (
-    <Tooltip>
-      <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
-        <TooltipTrigger asChild>
-          <PromptInputActionMenuTrigger
-            className="cursor-help"
-            data-customized={hasCustomSettings ? 'true' : 'false'}
-            data-state={isOpen ? 'open' : 'closed'}
-            onMouseEnter={() => iconRef.current?.startAnimation()}
-            onMouseLeave={() => iconRef.current?.stopAnimation()}
+    return (
+      <Tooltip>
+        <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
+          <TooltipTrigger asChild>
+            <PromptInputActionMenuTrigger
+              className="cursor-help"
+              data-customized={hasCustomSettings ? 'true' : 'false'}
+              data-state={isOpen ? 'open' : 'closed'}
+              onMouseEnter={() => iconRef.current?.startAnimation()}
+              onMouseLeave={() => iconRef.current?.stopAnimation()}
+            >
+              <FilePenLineIcon
+                className={cn(
+                  'group-hover:!text-metadata group-data-[customized=true]:text-metadata',
+                )}
+                ref={iconRef}
+              />
+            </PromptInputActionMenuTrigger>
+          </TooltipTrigger>
+          <PromptInputActionMenuContent
+            alignOffset={-4}
+            className="w-fit overflow-visible p-0"
+            onCloseAutoFocus={(e) => e.preventDefault()}
+            sideOffset={10}
           >
-            <FilePenLineIcon
-              className={cn(
-                'group-hover:!text-metadata group-data-[customized=true]:text-metadata',
-              )}
-              ref={iconRef}
-            />
-          </PromptInputActionMenuTrigger>
-        </TooltipTrigger>
-        <PromptInputActionMenuContent
-          alignOffset={-4}
-          className="w-fit overflow-visible p-0"
-          onCloseAutoFocus={(e) => e.preventDefault()}
-          sideOffset={10}
-        >
-          <div className="min-w-80 space-y-4 p-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-sm">Content Format Options</h3>
-              <Button
-                className="text-xs"
-                onClick={resetToDefaults}
-                size="sm"
-                variant="outline"
-              >
-                Reset
-              </Button>
-            </div>
+            <div className="min-w-80 space-y-4 p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium text-sm">Content Format Options</h3>
+                <Button
+                  className="text-xs"
+                  onClick={resetToDefaults}
+                  size="sm"
+                  variant="outline"
+                >
+                  Reset
+                </Button>
+              </div>
 
-            <div className="space-y-4">
-              {operationConfig.availableOptions.map((optionKey) => {
-                const optionDef =
-                  OPTION_DEFINITIONS[
-                    optionKey as keyof typeof OPTION_DEFINITIONS
-                  ];
-                const defaultValue =
-                  operationConfig.defaults[
-                    optionKey as keyof typeof operationConfig.defaults
-                  ];
-                const currentValue =
-                  contentFormatOptions?.[
-                    optionKey as keyof ContentFormatOptions
-                  ] ?? defaultValue;
+              <div className="space-y-4">
+                {operationConfig.availableOptions.map((optionKey) => {
+                  const optionDef =
+                    OPTION_DEFINITIONS[
+                      optionKey as keyof typeof OPTION_DEFINITIONS
+                    ];
+                  const defaultValue =
+                    operationConfig.defaults[
+                      optionKey as keyof typeof operationConfig.defaults
+                    ];
+                  const currentValue =
+                    contentFormatOptions?.[
+                      optionKey as keyof ContentFormatOptions
+                    ] ?? defaultValue;
 
-                // Special handling for metadata option - add sub-menu
-                if (optionKey === 'metadata') {
-                  return (
-                    <div className="group/metadata space-y-2" key={optionKey}>
-                      {/* Main metadata toggle */}
-                      <Tooltip open={isMetadataSubOpen ? false : undefined}>
-                        <TooltipTrigger asChild>
-                          <div className="flex w-full items-center space-x-2">
-                            <Switch
-                              checked={Boolean(currentValue)}
-                              id={`content-format-${optionKey}`}
-                              onCheckedChange={(checked) =>
-                                onContentFormatOptionsChange({
-                                  [optionKey]: Boolean(checked),
-                                })
-                              }
-                            />
-                            <Label
-                              className="flex-1 cursor-pointer text-sm"
-                              htmlFor={`content-format-${optionKey}`}
-                            >
-                              {renderIcon(optionDef.icon, 'h-4 w-4')}
-                              {optionDef.label}
-                              {hasCustomMetadataSettings && (
-                                <div className="ml-1 inline-flex h-2 w-2 rounded-full bg-orange-500" />
-                              )}
-                              {'badge' in optionDef && optionDef.badge}
-                              {!isMetadataEnabled && (
-                                <Badge
-                                  className="ml-auto text-muted-foreground text-xs uppercase"
-                                  variant="outline"
-                                >
-                                  Default: {defaultValue ? 'On' : 'Off'}
-                                </Badge>
-                              )}
-                            </Label>
-
-                            {/* Metadata sub-menu - only show when metadata is enabled */}
-                            {isMetadataEnabled && (
-                              <DropdownMenuSub
-                                onOpenChange={setIsMetadataSubOpen}
+                  // Special handling for metadata option - add sub-menu
+                  if (optionKey === 'metadata') {
+                    return (
+                      <div className="group/metadata space-y-2" key={optionKey}>
+                        {/* Main metadata toggle */}
+                        <Tooltip open={isMetadataSubOpen ? false : undefined}>
+                          <TooltipTrigger asChild>
+                            <div className="flex w-full items-center space-x-2">
+                              <Switch
+                                checked={Boolean(currentValue)}
+                                id={`content-format-${optionKey}`}
+                                onCheckedChange={(checked) =>
+                                  onContentFormatOptionsChange({
+                                    [optionKey]: Boolean(checked),
+                                  })
+                                }
+                              />
+                              <Label
+                                className="flex-1 cursor-pointer text-sm"
+                                htmlFor={`content-format-${optionKey}`}
                               >
-                                <DropdownMenuSubTrigger
-                                  className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/metadata:bg-muted group-hover/metadata:text-foreground"
-                                  icon={<Settings2 className="size-3" />}
-                                >
-                                  <span className="font-medium text-xs uppercase">
-                                    Configure
-                                  </span>
-                                </DropdownMenuSubTrigger>
-                                <DropdownMenuPortal>
-                                  <DropdownMenuSubContent
-                                    className="min-w-80 p-4"
-                                    sideOffset={25}
+                                {renderIcon(optionDef.icon, 'h-4 w-4')}
+                                {optionDef.label}
+                                {hasCustomMetadataSettings && (
+                                  <div className="ml-1 inline-flex h-2 w-2 rounded-full bg-orange-500" />
+                                )}
+                                {'badge' in optionDef && optionDef.badge}
+                                {!isMetadataEnabled && (
+                                  <Badge
+                                    className="ml-auto text-muted-foreground text-xs uppercase"
+                                    variant="outline"
                                   >
-                                    <div className="space-y-4">
-                                      <div className="flex items-center justify-between">
-                                        <h4 className="font-medium text-sm">
-                                          Metadata Fields
-                                        </h4>
-                                        <Button
-                                          className="text-xs"
-                                          onClick={resetMetadataToDefaults}
-                                          size="sm"
-                                          variant="outline"
-                                        >
-                                          Reset
-                                        </Button>
-                                      </div>
-                                      <div className="grid grid-cols-2 gap-3">
-                                        {METADATA_FIELDS.map(
-                                          ({ key, label, tooltip }) => (
-                                            <Tooltip key={key}>
-                                              <TooltipTrigger asChild>
-                                                <div className="flex w-fit items-center space-x-2">
-                                                  <Checkbox
-                                                    checked={Boolean(
-                                                      metadataOptions?.[key] ??
-                                                        DEFAULT_METADATA_OPTIONS[
-                                                          key
-                                                        ],
-                                                    )}
-                                                    id={`metadata-${key}`}
-                                                    onCheckedChange={(
-                                                      checked,
-                                                    ) =>
-                                                      onMetadataOptionsChange?.(
-                                                        {
-                                                          [key]:
-                                                            Boolean(checked),
-                                                        },
-                                                      )
-                                                    }
-                                                  />
-                                                  <Label
-                                                    className="cursor-pointer text-sm"
-                                                    htmlFor={`metadata-${key}`}
-                                                  >
-                                                    {label}
-                                                  </Label>
-                                                </div>
-                                              </TooltipTrigger>
-                                              <TooltipContent side="right">
-                                                <p>{tooltip}</p>
-                                              </TooltipContent>
-                                            </Tooltip>
-                                          ),
-                                        )}
-                                      </div>
-                                    </div>
-                                  </DropdownMenuSubContent>
-                                </DropdownMenuPortal>
-                              </DropdownMenuSub>
-                            )}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent align="start" side="bottom">
-                          <p>{optionDef.tooltip}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  );
-                }
+                                    Default: {defaultValue ? 'On' : 'Off'}
+                                  </Badge>
+                                )}
+                              </Label>
 
-                // Special handling for tree option - add sub-menu
-                if (optionKey === 'tree') {
-                  return (
-                    <div className="group/tree space-y-2" key={optionKey}>
-                      {/* Main tree toggle */}
-                      <Tooltip open={isTreeSubOpen ? false : undefined}>
-                        <TooltipTrigger asChild>
-                          <div className="flex w-full items-center space-x-2">
-                            <Switch
-                              checked={Boolean(currentValue)}
-                              id={`content-format-${optionKey}`}
-                              onCheckedChange={(checked) =>
-                                onContentFormatOptionsChange({
-                                  [optionKey]: Boolean(checked),
-                                })
-                              }
-                            />
-                            <Label
-                              className="flex-1 cursor-pointer text-sm"
-                              htmlFor={`content-format-${optionKey}`}
-                            >
-                              {renderIcon(optionDef.icon, 'h-4 w-4')}
-                              {optionDef.label}
-                              {hasCustomTreeSettings && (
-                                <div className="ml-1 inline-flex h-2 w-2 rounded-full bg-orange-500" />
-                              )}
-                              {'badge' in optionDef && optionDef.badge}
-                              {!isTreeEnabled && (
-                                <Badge
-                                  className="ml-auto text-muted-foreground text-xs uppercase"
-                                  variant="outline"
+                              {/* Metadata sub-menu - only show when metadata is enabled */}
+                              {isMetadataEnabled && (
+                                <DropdownMenuSub
+                                  onOpenChange={setIsMetadataSubOpen}
                                 >
-                                  Default: {defaultValue ? 'On' : 'Off'}
-                                </Badge>
-                              )}
-                            </Label>
-
-                            {/* Tree sub-menu - only show when tree is enabled */}
-                            {isTreeEnabled && (
-                              <DropdownMenuSub onOpenChange={setIsTreeSubOpen}>
-                                <DropdownMenuSubTrigger
-                                  className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/tree:bg-muted group-hover/tree:text-foreground"
-                                  icon={<Settings2 className="size-3" />}
-                                >
-                                  <span className="font-medium text-xs uppercase">
-                                    Configure
-                                  </span>
-                                </DropdownMenuSubTrigger>
-                                <DropdownMenuPortal>
-                                  <DropdownMenuSubContent
-                                    className="min-w-80 p-4"
-                                    sideOffset={25}
+                                  <DropdownMenuSubTrigger
+                                    className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/metadata:bg-muted group-hover/metadata:text-foreground"
+                                    icon={<Settings2 className="size-3" />}
                                   >
-                                    <div className="space-y-4">
-                                      <div className="flex items-center justify-between">
-                                        <h4 className="font-medium text-sm">
-                                          Tree Options
-                                        </h4>
-                                        <Button
-                                          className="text-xs"
-                                          onClick={resetTreeToDefaults}
-                                          size="sm"
-                                          variant="outline"
-                                        >
-                                          Reset
-                                        </Button>
-                                      </div>
-                                      <div className="space-y-3">
-                                        {TREE_OPTION_FIELDS.map(
-                                          ({
-                                            key,
-                                            label,
-                                            tooltip,
-                                            type,
-                                            options,
-                                          }) => (
-                                            <Tooltip key={key}>
-                                              <TooltipTrigger asChild>
-                                                <div className="flex w-full items-center space-x-2">
-                                                  {type === 'switch' ? (
-                                                    <>
-                                                      <Switch
-                                                        checked={Boolean(
-                                                          treeOptions?.[key] ??
-                                                            DEFAULT_TREE_OPTIONS[
-                                                              key
-                                                            ],
-                                                        )}
-                                                        id={`tree-${key}`}
-                                                        onCheckedChange={(
-                                                          checked,
-                                                        ) =>
-                                                          onTreeOptionsChange?.(
-                                                            {
-                                                              [key]:
-                                                                Boolean(
-                                                                  checked,
-                                                                ),
-                                                            },
-                                                          )
-                                                        }
-                                                      />
-                                                      <Label
-                                                        className="flex-1 cursor-pointer text-sm"
-                                                        htmlFor={`tree-${key}`}
-                                                      >
-                                                        {label}
-                                                      </Label>
-                                                    </>
-                                                  ) : (
-                                                    <div className="w-full space-y-2">
-                                                      <Separator />
-                                                      <div className="flex w-full items-center justify-between gap-x-2">
-                                                        <Label
-                                                          className="min-w-0 flex-1 text-sm"
-                                                          htmlFor={`tree-${key}`}
-                                                        >
-                                                          {label}
-                                                        </Label>
-                                                        <Select
-                                                          onValueChange={(
-                                                            value,
-                                                          ) =>
-                                                            onTreeOptionsChange?.(
-                                                              {
-                                                                [key]: value,
-                                                              },
-                                                            )
-                                                          }
-                                                          value={
-                                                            (treeOptions?.[
-                                                              key
-                                                            ] as string) ??
-                                                            (DEFAULT_TREE_OPTIONS[
-                                                              key
-                                                            ] as string)
-                                                          }
-                                                        >
-                                                          <SelectTrigger
-                                                            className="w-auto min-w-fit"
-                                                            id={`tree-${key}`}
-                                                          >
-                                                            <SelectValue />
-                                                          </SelectTrigger>
-                                                          <SelectContent>
-                                                            {options?.map(
-                                                              (option) => (
-                                                                <SelectItem
-                                                                  key={
-                                                                    option.value
-                                                                  }
-                                                                  title={
-                                                                    option.tooltip
-                                                                  }
-                                                                  value={
-                                                                    option.value
-                                                                  }
-                                                                >
-                                                                  {option.label}
-                                                                </SelectItem>
-                                                              ),
-                                                            )}
-                                                          </SelectContent>
-                                                        </Select>
-                                                      </div>
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              </TooltipTrigger>
-                                              <TooltipContent side="right">
-                                                <p>{tooltip}</p>
-                                              </TooltipContent>
-                                            </Tooltip>
-                                          ),
-                                        )}
-                                      </div>
-                                    </div>
-                                  </DropdownMenuSubContent>
-                                </DropdownMenuPortal>
-                              </DropdownMenuSub>
-                            )}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent align="start" side="bottom">
-                          <p>{optionDef.tooltip}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  );
-                }
-
-                // Special handling for markdown option - add sub-menu
-                if (optionKey === 'markdown') {
-                  // For getMarkdown operation, markdown is displayed as a standalone option menu
-                  if (op === 'getMarkdown') {
-                    return null;
-                  }
-
-                  // For readUrl operation, markdown is toggleable
-                  return (
-                    <div className="group/markdown space-y-2" key={optionKey}>
-                      {/* Main markdown toggle */}
-                      <Tooltip open={isMarkdownSubOpen ? false : undefined}>
-                        <TooltipTrigger asChild>
-                          <div className="flex w-full items-center space-x-2">
-                            <Switch
-                              checked={Boolean(currentValue)}
-                              id={`content-format-${optionKey}`}
-                              onCheckedChange={(checked) =>
-                                onContentFormatOptionsChange({
-                                  [optionKey]: Boolean(checked),
-                                })
-                              }
-                            />
-                            <Label
-                              className="flex-1 cursor-pointer text-sm"
-                              htmlFor={`content-format-${optionKey}`}
-                            >
-                              {renderIcon(optionDef.icon, 'h-4 w-4')}
-                              {optionDef.label}
-                              {hasCustomMarkdownSettings && (
-                                <div className="ml-1 inline-flex h-2 w-2 rounded-full bg-purple-500" />
-                              )}
-                              {'badge' in optionDef && optionDef.badge}
-                              {!isMarkdownEnabled && (
-                                <Badge
-                                  className="ml-auto text-muted-foreground text-xs uppercase"
-                                  variant="outline"
-                                >
-                                  Default: {defaultValue ? 'On' : 'Off'}
-                                </Badge>
-                              )}
-                            </Label>
-
-                            {/* Markdown sub-menu - only show when markdown is enabled */}
-                            {isMarkdownEnabled && (
-                              <DropdownMenuSub
-                                onOpenChange={setIsMarkdownSubOpen}
-                              >
-                                <DropdownMenuSubTrigger
-                                  className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/markdown:bg-muted group-hover/markdown:text-foreground"
-                                  icon={<Settings2 className="size-3" />}
-                                >
-                                  <span className="font-medium text-xs uppercase">
-                                    Configure
-                                  </span>
-                                </DropdownMenuSubTrigger>
-                                <DropdownMenuPortal>
-                                  <DropdownMenuSubContent
-                                    className="min-w-80 p-4"
-                                    sideOffset={25}
-                                  >
-                                    <div className="space-y-4">
-                                      <div className="flex items-center justify-between">
-                                        <h4 className="font-medium text-sm">
-                                          Markdown Options
-                                        </h4>
-                                        <Button
-                                          className="text-xs"
-                                          onClick={resetMarkdownToDefaults}
-                                          size="sm"
-                                          variant="outline"
-                                        >
-                                          Reset
-                                        </Button>
-                                      </div>
+                                    <span className="font-medium text-xs uppercase">
+                                      Configure
+                                    </span>
+                                  </DropdownMenuSubTrigger>
+                                  <DropdownMenuPortal>
+                                    <DropdownMenuSubContent
+                                      className="min-w-80 p-4"
+                                      sideOffset={25}
+                                    >
                                       <div className="space-y-4">
-                                        {MARKDOWN_OPTION_FIELDS.map((field) => {
-                                          const fieldCurrentValue =
-                                            markdownOptions?.[field.key] ??
-                                            DEFAULT_MARKDOWN_CONVERTER_OPTIONS[
-                                              field.key
-                                            ];
-                                          const fieldId = `markdown-${field.key}`;
-
-                                          if (field.type === 'switch') {
-                                            return (
-                                              <Tooltip key={field.key}>
+                                        <div className="flex items-center justify-between">
+                                          <h4 className="font-medium text-sm">
+                                            Metadata Fields
+                                          </h4>
+                                          <Button
+                                            className="text-xs"
+                                            onClick={resetMetadataToDefaults}
+                                            size="sm"
+                                            variant="outline"
+                                          >
+                                            Reset
+                                          </Button>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                          {METADATA_FIELDS.map(
+                                            ({ key, label, tooltip }) => (
+                                              <Tooltip key={key}>
                                                 <TooltipTrigger asChild>
                                                   <div className="flex w-fit items-center space-x-2">
-                                                    <Switch
+                                                    <Checkbox
                                                       checked={Boolean(
-                                                        fieldCurrentValue,
+                                                        metadataOptions?.[
+                                                          key
+                                                        ] ??
+                                                          DEFAULT_METADATA_OPTIONS[
+                                                            key
+                                                          ],
                                                       )}
-                                                      id={fieldId}
+                                                      id={`metadata-${key}`}
                                                       onCheckedChange={(
                                                         checked,
                                                       ) =>
-                                                        onMarkdownOptionsChange?.(
+                                                        onMetadataOptionsChange?.(
                                                           {
-                                                            [field.key]:
+                                                            [key]:
                                                               Boolean(checked),
                                                           },
                                                         )
@@ -1097,254 +781,595 @@ export function ContentFormatOptionsMenu() {
                                                     />
                                                     <Label
                                                       className="cursor-pointer text-sm"
-                                                      htmlFor={fieldId}
+                                                      htmlFor={`metadata-${key}`}
                                                     >
-                                                      {field.label}
+                                                      {label}
                                                     </Label>
                                                   </div>
                                                 </TooltipTrigger>
                                                 <TooltipContent side="right">
-                                                  <p>{field.tooltip}</p>
+                                                  <p>{tooltip}</p>
                                                 </TooltipContent>
                                               </Tooltip>
-                                            );
-                                          }
+                                            ),
+                                          )}
+                                        </div>
+                                      </div>
+                                    </DropdownMenuSubContent>
+                                  </DropdownMenuPortal>
+                                </DropdownMenuSub>
+                              )}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent align="start" side="bottom">
+                            <p>{optionDef.tooltip}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    );
+                  }
 
-                                          if (field.type === 'select') {
-                                            return (
-                                              <Tooltip key={field.key}>
+                  // Special handling for tree option - add sub-menu
+                  if (optionKey === 'tree') {
+                    return (
+                      <div className="group/tree space-y-2" key={optionKey}>
+                        {/* Main tree toggle */}
+                        <Tooltip open={isTreeSubOpen ? false : undefined}>
+                          <TooltipTrigger asChild>
+                            <div className="flex w-full items-center space-x-2">
+                              <Switch
+                                checked={Boolean(currentValue)}
+                                id={`content-format-${optionKey}`}
+                                onCheckedChange={(checked) =>
+                                  onContentFormatOptionsChange({
+                                    [optionKey]: Boolean(checked),
+                                  })
+                                }
+                              />
+                              <Label
+                                className="flex-1 cursor-pointer text-sm"
+                                htmlFor={`content-format-${optionKey}`}
+                              >
+                                {renderIcon(optionDef.icon, 'h-4 w-4')}
+                                {optionDef.label}
+                                {hasCustomTreeSettings && (
+                                  <div className="ml-1 inline-flex h-2 w-2 rounded-full bg-orange-500" />
+                                )}
+                                {'badge' in optionDef && optionDef.badge}
+                                {!isTreeEnabled && (
+                                  <Badge
+                                    className="ml-auto text-muted-foreground text-xs uppercase"
+                                    variant="outline"
+                                  >
+                                    Default: {defaultValue ? 'On' : 'Off'}
+                                  </Badge>
+                                )}
+                              </Label>
+
+                              {/* Tree sub-menu - only show when tree is enabled */}
+                              {isTreeEnabled && (
+                                <DropdownMenuSub
+                                  onOpenChange={setIsTreeSubOpen}
+                                >
+                                  <DropdownMenuSubTrigger
+                                    className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/tree:bg-muted group-hover/tree:text-foreground"
+                                    icon={<Settings2 className="size-3" />}
+                                  >
+                                    <span className="font-medium text-xs uppercase">
+                                      Configure
+                                    </span>
+                                  </DropdownMenuSubTrigger>
+                                  <DropdownMenuPortal>
+                                    <DropdownMenuSubContent
+                                      className="min-w-80 p-4"
+                                      sideOffset={25}
+                                    >
+                                      <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                          <h4 className="font-medium text-sm">
+                                            Tree Options
+                                          </h4>
+                                          <Button
+                                            className="text-xs"
+                                            onClick={resetTreeToDefaults}
+                                            size="sm"
+                                            variant="outline"
+                                          >
+                                            Reset
+                                          </Button>
+                                        </div>
+                                        <div className="space-y-3">
+                                          {TREE_OPTION_FIELDS.map(
+                                            ({
+                                              key,
+                                              label,
+                                              tooltip,
+                                              type,
+                                              options,
+                                            }) => (
+                                              <Tooltip key={key}>
                                                 <TooltipTrigger asChild>
-                                                  <div className="w-full space-y-2">
-                                                    <Separator />
-                                                    <div className="flex w-full items-center justify-between gap-x-2">
-                                                      <Label
-                                                        className="min-w-0 flex-1 text-sm"
-                                                        htmlFor={fieldId}
-                                                      >
-                                                        {field.label}
-                                                      </Label>
-                                                      <Select
-                                                        onValueChange={(
-                                                          value,
-                                                        ) =>
-                                                          onMarkdownOptionsChange?.(
-                                                            {
-                                                              [field.key]:
-                                                                value,
-                                                            },
-                                                          )
-                                                        }
-                                                        value={
-                                                          typeof fieldCurrentValue ===
-                                                          'string'
-                                                            ? fieldCurrentValue
-                                                            : String(
-                                                                DEFAULT_MARKDOWN_CONVERTER_OPTIONS[
-                                                                  field.key
-                                                                ],
-                                                              )
-                                                        }
-                                                      >
-                                                        <SelectTrigger
-                                                          className="w-auto min-w-fit"
-                                                          id={fieldId}
-                                                        >
-                                                          <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                          {field.options?.map(
-                                                            (option) => (
-                                                              <SelectItem
-                                                                key={
-                                                                  option.value
-                                                                }
-                                                                value={
-                                                                  option.value
-                                                                }
-                                                              >
-                                                                {option.label}
-                                                              </SelectItem>
-                                                            ),
+                                                  <div className="flex w-full items-center space-x-2">
+                                                    {type === 'switch' ? (
+                                                      <>
+                                                        <Switch
+                                                          checked={Boolean(
+                                                            treeOptions?.[
+                                                              key
+                                                            ] ??
+                                                              DEFAULT_TREE_OPTIONS[
+                                                                key
+                                                              ],
                                                           )}
-                                                        </SelectContent>
-                                                      </Select>
-                                                    </div>
+                                                          id={`tree-${key}`}
+                                                          onCheckedChange={(
+                                                            checked,
+                                                          ) =>
+                                                            onTreeOptionsChange?.(
+                                                              {
+                                                                [key]:
+                                                                  Boolean(
+                                                                    checked,
+                                                                  ),
+                                                              },
+                                                            )
+                                                          }
+                                                        />
+                                                        <Label
+                                                          className="flex-1 cursor-pointer text-sm"
+                                                          htmlFor={`tree-${key}`}
+                                                        >
+                                                          {label}
+                                                        </Label>
+                                                      </>
+                                                    ) : (
+                                                      <div className="w-full space-y-2">
+                                                        <Separator />
+                                                        <div className="flex w-full items-center justify-between gap-x-2">
+                                                          <Label
+                                                            className="min-w-0 flex-1 text-sm"
+                                                            htmlFor={`tree-${key}`}
+                                                          >
+                                                            {label}
+                                                          </Label>
+                                                          <Select
+                                                            onValueChange={(
+                                                              value,
+                                                            ) =>
+                                                              onTreeOptionsChange?.(
+                                                                {
+                                                                  [key]: value,
+                                                                },
+                                                              )
+                                                            }
+                                                            value={
+                                                              (treeOptions?.[
+                                                                key
+                                                              ] as string) ??
+                                                              (DEFAULT_TREE_OPTIONS[
+                                                                key
+                                                              ] as string)
+                                                            }
+                                                          >
+                                                            <SelectTrigger
+                                                              className="w-auto min-w-fit"
+                                                              id={`tree-${key}`}
+                                                            >
+                                                              <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                              {options?.map(
+                                                                (option) => (
+                                                                  <SelectItem
+                                                                    key={
+                                                                      option.value
+                                                                    }
+                                                                    title={
+                                                                      option.tooltip
+                                                                    }
+                                                                    value={
+                                                                      option.value
+                                                                    }
+                                                                  >
+                                                                    {
+                                                                      option.label
+                                                                    }
+                                                                  </SelectItem>
+                                                                ),
+                                                              )}
+                                                            </SelectContent>
+                                                          </Select>
+                                                        </div>
+                                                      </div>
+                                                    )}
                                                   </div>
                                                 </TooltipTrigger>
                                                 <TooltipContent side="right">
-                                                  <p>{field.tooltip}</p>
+                                                  <p>{tooltip}</p>
                                                 </TooltipContent>
                                               </Tooltip>
-                                            );
-                                          }
+                                            ),
+                                          )}
+                                        </div>
+                                      </div>
+                                    </DropdownMenuSubContent>
+                                  </DropdownMenuPortal>
+                                </DropdownMenuSub>
+                              )}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent align="start" side="bottom">
+                            <p>{optionDef.tooltip}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    );
+                  }
 
-                                          if (field.type === 'number') {
-                                            return (
-                                              <Tooltip key={field.key}>
-                                                <TooltipTrigger asChild>
-                                                  <div className="w-full space-y-2">
-                                                    <Separator />
-                                                    <div className="space-y-2">
-                                                      <Label
-                                                        className="text-sm"
-                                                        htmlFor={fieldId}
-                                                      >
-                                                        {field.label}
-                                                      </Label>
-                                                      <Input
-                                                        className="font-mono text-xs"
-                                                        id={fieldId}
-                                                        max={field.max?.toString()}
-                                                        min={field.min?.toString()}
-                                                        onBlur={(e) => {
-                                                          const newValue = e
-                                                            .target.value
-                                                            ? Number(
-                                                                e.target.value,
-                                                              )
-                                                            : undefined;
+                  // Special handling for markdown option - add sub-menu
+                  if (optionKey === 'markdown') {
+                    // For getMarkdown operation, markdown is displayed as a standalone option menu
+                    if (op === 'getMarkdown') {
+                      return null;
+                    }
 
-                                                          // Enforce minimum and maximum values when user finishes typing
-                                                          if (
-                                                            newValue !==
-                                                            undefined
-                                                          ) {
-                                                            let correctedValue =
-                                                              newValue;
+                    // For readUrl operation, markdown is toggleable
+                    return (
+                      <div className="group/markdown space-y-2" key={optionKey}>
+                        {/* Main markdown toggle */}
+                        <Tooltip open={isMarkdownSubOpen ? false : undefined}>
+                          <TooltipTrigger asChild>
+                            <div className="flex w-full items-center space-x-2">
+                              <Switch
+                                checked={Boolean(currentValue)}
+                                id={`content-format-${optionKey}`}
+                                onCheckedChange={(checked) =>
+                                  onContentFormatOptionsChange({
+                                    [optionKey]: Boolean(checked),
+                                  })
+                                }
+                              />
+                              <Label
+                                className="flex-1 cursor-pointer text-sm"
+                                htmlFor={`content-format-${optionKey}`}
+                              >
+                                {renderIcon(optionDef.icon, 'h-4 w-4')}
+                                {optionDef.label}
+                                {hasCustomMarkdownSettings && (
+                                  <div className="ml-1 inline-flex h-2 w-2 rounded-full bg-purple-500" />
+                                )}
+                                {'badge' in optionDef && optionDef.badge}
+                                {!isMarkdownEnabled && (
+                                  <Badge
+                                    className="ml-auto text-muted-foreground text-xs uppercase"
+                                    variant="outline"
+                                  >
+                                    Default: {defaultValue ? 'On' : 'Off'}
+                                  </Badge>
+                                )}
+                              </Label>
 
-                                                            if (
-                                                              field.min &&
-                                                              newValue <
-                                                                field.min
-                                                            ) {
-                                                              correctedValue =
-                                                                field.min;
-                                                            } else if (
-                                                              field.max &&
-                                                              newValue >
-                                                                field.max
-                                                            ) {
-                                                              correctedValue =
-                                                                field.max;
-                                                            }
+                              {/* Markdown sub-menu - only show when markdown is enabled */}
+                              {isMarkdownEnabled && (
+                                <DropdownMenuSub
+                                  onOpenChange={setIsMarkdownSubOpen}
+                                >
+                                  <DropdownMenuSubTrigger
+                                    className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/markdown:bg-muted group-hover/markdown:text-foreground"
+                                    icon={<Settings2 className="size-3" />}
+                                  >
+                                    <span className="font-medium text-xs uppercase">
+                                      Configure
+                                    </span>
+                                  </DropdownMenuSubTrigger>
+                                  <DropdownMenuPortal>
+                                    <DropdownMenuSubContent
+                                      className="min-w-80 p-4"
+                                      sideOffset={25}
+                                    >
+                                      <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                          <h4 className="font-medium text-sm">
+                                            Markdown Options
+                                          </h4>
+                                          <Button
+                                            className="text-xs"
+                                            onClick={resetMarkdownToDefaults}
+                                            size="sm"
+                                            variant="outline"
+                                          >
+                                            Reset
+                                          </Button>
+                                        </div>
+                                        <div className="space-y-4">
+                                          {MARKDOWN_OPTION_FIELDS.map(
+                                            (field) => {
+                                              const fieldCurrentValue =
+                                                markdownOptions?.[field.key] ??
+                                                DEFAULT_MARKDOWN_CONVERTER_OPTIONS[
+                                                  field.key
+                                                ];
+                                              const fieldId = `markdown-${field.key}`;
 
-                                                            if (
-                                                              correctedValue !==
-                                                              newValue
-                                                            ) {
+                                              if (field.type === 'switch') {
+                                                return (
+                                                  <Tooltip key={field.key}>
+                                                    <TooltipTrigger asChild>
+                                                      <div className="flex w-fit items-center space-x-2">
+                                                        <Switch
+                                                          checked={Boolean(
+                                                            fieldCurrentValue,
+                                                          )}
+                                                          id={fieldId}
+                                                          onCheckedChange={(
+                                                            checked,
+                                                          ) =>
+                                                            onMarkdownOptionsChange?.(
+                                                              {
+                                                                [field.key]:
+                                                                  Boolean(
+                                                                    checked,
+                                                                  ),
+                                                              },
+                                                            )
+                                                          }
+                                                        />
+                                                        <Label
+                                                          className="cursor-pointer text-sm"
+                                                          htmlFor={fieldId}
+                                                        >
+                                                          {field.label}
+                                                        </Label>
+                                                      </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="right">
+                                                      <p>{field.tooltip}</p>
+                                                    </TooltipContent>
+                                                  </Tooltip>
+                                                );
+                                              }
+
+                                              if (field.type === 'select') {
+                                                return (
+                                                  <Tooltip key={field.key}>
+                                                    <TooltipTrigger asChild>
+                                                      <div className="w-full space-y-2">
+                                                        <Separator />
+                                                        <div className="flex w-full items-center justify-between gap-x-2">
+                                                          <Label
+                                                            className="min-w-0 flex-1 text-sm"
+                                                            htmlFor={fieldId}
+                                                          >
+                                                            {field.label}
+                                                          </Label>
+                                                          <Select
+                                                            onValueChange={(
+                                                              value,
+                                                            ) =>
                                                               onMarkdownOptionsChange?.(
                                                                 {
                                                                   [field.key]:
-                                                                    correctedValue,
+                                                                    value,
+                                                                },
+                                                              )
+                                                            }
+                                                            value={
+                                                              typeof fieldCurrentValue ===
+                                                              'string'
+                                                                ? fieldCurrentValue
+                                                                : String(
+                                                                    DEFAULT_MARKDOWN_CONVERTER_OPTIONS[
+                                                                      field.key
+                                                                    ],
+                                                                  )
+                                                            }
+                                                          >
+                                                            <SelectTrigger
+                                                              className="w-auto min-w-fit"
+                                                              id={fieldId}
+                                                            >
+                                                              <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                              {field.options?.map(
+                                                                (option) => (
+                                                                  <SelectItem
+                                                                    key={
+                                                                      option.value
+                                                                    }
+                                                                    value={
+                                                                      option.value
+                                                                    }
+                                                                  >
+                                                                    {
+                                                                      option.label
+                                                                    }
+                                                                  </SelectItem>
+                                                                ),
+                                                              )}
+                                                            </SelectContent>
+                                                          </Select>
+                                                        </div>
+                                                      </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="right">
+                                                      <p>{field.tooltip}</p>
+                                                    </TooltipContent>
+                                                  </Tooltip>
+                                                );
+                                              }
+
+                                              if (field.type === 'number') {
+                                                return (
+                                                  <Tooltip key={field.key}>
+                                                    <TooltipTrigger asChild>
+                                                      <div className="w-full space-y-2">
+                                                        <Separator />
+                                                        <div className="space-y-2">
+                                                          <Label
+                                                            className="text-sm"
+                                                            htmlFor={fieldId}
+                                                          >
+                                                            {field.label}
+                                                          </Label>
+                                                          <Input
+                                                            className="font-mono text-xs"
+                                                            id={fieldId}
+                                                            max={field.max?.toString()}
+                                                            min={field.min?.toString()}
+                                                            onBlur={(e) => {
+                                                              const newValue = e
+                                                                .target.value
+                                                                ? Number(
+                                                                    e.target
+                                                                      .value,
+                                                                  )
+                                                                : undefined;
+
+                                                              // Enforce minimum and maximum values when user finishes typing
+                                                              if (
+                                                                newValue !==
+                                                                undefined
+                                                              ) {
+                                                                let correctedValue =
+                                                                  newValue;
+
+                                                                if (
+                                                                  field.min &&
+                                                                  newValue <
+                                                                    field.min
+                                                                ) {
+                                                                  correctedValue =
+                                                                    field.min;
+                                                                } else if (
+                                                                  field.max &&
+                                                                  newValue >
+                                                                    field.max
+                                                                ) {
+                                                                  correctedValue =
+                                                                    field.max;
+                                                                }
+
+                                                                if (
+                                                                  correctedValue !==
+                                                                  newValue
+                                                                ) {
+                                                                  onMarkdownOptionsChange?.(
+                                                                    {
+                                                                      [field.key]:
+                                                                        correctedValue,
+                                                                    },
+                                                                  );
+                                                                }
+                                                              }
+                                                            }}
+                                                            onChange={(e) => {
+                                                              const newValue = e
+                                                                .target.value
+                                                                ? Number(
+                                                                    e.target
+                                                                      .value,
+                                                                  )
+                                                                : undefined;
+                                                              onMarkdownOptionsChange?.(
+                                                                {
+                                                                  [field.key]:
+                                                                    newValue,
                                                                 },
                                                               );
+                                                            }}
+                                                            placeholder={`Default: ${DEFAULT_MARKDOWN_CONVERTER_OPTIONS[field.key]}`}
+                                                            type="number"
+                                                            value={
+                                                              fieldCurrentValue?.toString() ||
+                                                              ''
                                                             }
-                                                          }
-                                                        }}
-                                                        onChange={(e) => {
-                                                          const newValue = e
-                                                            .target.value
-                                                            ? Number(
-                                                                e.target.value,
-                                                              )
-                                                            : undefined;
-                                                          onMarkdownOptionsChange?.(
-                                                            {
-                                                              [field.key]:
-                                                                newValue,
-                                                            },
-                                                          );
-                                                        }}
-                                                        placeholder={`Default: ${DEFAULT_MARKDOWN_CONVERTER_OPTIONS[field.key]}`}
-                                                        type="number"
-                                                        value={
-                                                          fieldCurrentValue?.toString() ||
-                                                          ''
-                                                        }
-                                                      />
-                                                    </div>
-                                                  </div>
-                                                </TooltipTrigger>
-                                                <TooltipContent side="right">
-                                                  <p>{field.tooltip}</p>
-                                                </TooltipContent>
-                                              </Tooltip>
-                                            );
-                                          }
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="right">
+                                                      <p>{field.tooltip}</p>
+                                                    </TooltipContent>
+                                                  </Tooltip>
+                                                );
+                                              }
 
-                                          return null;
-                                        })}
+                                              return null;
+                                            },
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  </DropdownMenuSubContent>
-                                </DropdownMenuPortal>
-                              </DropdownMenuSub>
-                            )}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent align="start" side="bottom">
-                          <p>{optionDef.tooltip}</p>
-                        </TooltipContent>
-                      </Tooltip>
+                                    </DropdownMenuSubContent>
+                                  </DropdownMenuPortal>
+                                </DropdownMenuSub>
+                              )}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent align="start" side="bottom">
+                            <p>{optionDef.tooltip}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    );
+                  }
+
+                  // Standard option rendering for non-metadata, non-tree, and non-markdown options
+                  const content = (
+                    <div
+                      className="flex w-full items-center space-x-2"
+                      key={optionKey}
+                    >
+                      <Switch
+                        checked={Boolean(currentValue)}
+                        id={`content-format-${optionKey}`}
+                        onCheckedChange={(checked) =>
+                          onContentFormatOptionsChange({
+                            [optionKey]: Boolean(checked),
+                          })
+                        }
+                      />
+                      <Label
+                        className="flex-1 cursor-pointer text-sm"
+                        htmlFor={`content-format-${optionKey}`}
+                      >
+                        {renderIcon(optionDef.icon, 'h-4 w-4')}
+                        {optionDef.label}
+                        {'badge' in optionDef && optionDef.badge}
+                        <Badge
+                          className="ml-auto text-muted-foreground text-xs uppercase"
+                          variant="outline"
+                        >
+                          Default: {defaultValue ? 'On' : 'Off'}
+                        </Badge>
+                      </Label>
                     </div>
                   );
-                }
 
-                // Standard option rendering for non-metadata, non-tree, and non-markdown options
-                const content = (
-                  <div
-                    className="flex w-full items-center space-x-2"
-                    key={optionKey}
-                  >
-                    <Switch
-                      checked={Boolean(currentValue)}
-                      id={`content-format-${optionKey}`}
-                      onCheckedChange={(checked) =>
-                        onContentFormatOptionsChange({
-                          [optionKey]: Boolean(checked),
-                        })
-                      }
-                    />
-                    <Label
-                      className="flex-1 cursor-pointer text-sm"
-                      htmlFor={`content-format-${optionKey}`}
-                    >
-                      {renderIcon(optionDef.icon, 'h-4 w-4')}
-                      {optionDef.label}
-                      {'badge' in optionDef && optionDef.badge}
-                      <Badge
-                        className="ml-auto text-muted-foreground text-xs uppercase"
-                        variant="outline"
-                      >
-                        Default: {defaultValue ? 'On' : 'Off'}
-                      </Badge>
-                    </Label>
-                  </div>
-                );
+                  return (
+                    <Tooltip key={optionKey}>
+                      <TooltipTrigger asChild>{content}</TooltipTrigger>
+                      <TooltipContent align="end" side="bottom">
+                        <p>{optionDef.tooltip}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
+              </div>
 
-                return (
-                  <Tooltip key={optionKey}>
-                    <TooltipTrigger asChild>{content}</TooltipTrigger>
-                    <TooltipContent align="end" side="bottom">
-                      <p>{optionDef.tooltip}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              })}
+              <div className="border-t pt-3">
+                <p className="text-muted-foreground text-xs">
+                  * Content format settings control what data is extracted from
+                  the page
+                </p>
+              </div>
             </div>
-
-            <div className="border-t pt-3">
-              <p className="text-muted-foreground text-xs">
-                * Content format settings control what data is extracted from
-                the page
-              </p>
-            </div>
-          </div>
-        </PromptInputActionMenuContent>
-        <TooltipContent align="start" side="bottom">
-          <p>Configure content extraction and format options</p>
-        </TooltipContent>
-      </PromptInputActionMenu>
-    </Tooltip>
-  );
-}
+          </PromptInputActionMenuContent>
+          <TooltipContent align="start" side="bottom">
+            <p>Configure content extraction and format options</p>
+          </TooltipContent>
+        </PromptInputActionMenu>
+      </Tooltip>
+    );
+  },
+);
