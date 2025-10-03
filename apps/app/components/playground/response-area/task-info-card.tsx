@@ -107,7 +107,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
                       <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
                         Root URL
                       </span>
-                      <span className="font-medium text-muted-foreground text-sm group-hover:text-foreground">
+                      <span className="truncate break-words font-medium text-muted-foreground text-sm group-hover:text-foreground">
                         {rootUrl}
                       </span>
                     </div>
