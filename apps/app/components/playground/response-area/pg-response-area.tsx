@@ -133,7 +133,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       {/* Response Area Header */}
       <PageHeader
         className="border-t"
-        containerClassName="flex-col md:flex-row flex w-full items-start md:items-center md:justify-between gap-y-4 md:gap-y-0 gap-x-2"
+        containerClassName="flex-col lg:flex-row flex w-full items-start lg:items-center lg:justify-between gap-y-4 lg:gap-y-0 gap-x-2"
         description={`${selectedOPConfig.description}`}
         label={
           <div className="flex w-full flex-wrap items-center gap-2">
@@ -178,9 +178,9 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
             </span>
           )) as unknown as string
         }
-        titleClassName="md:max-w-xl lg:max-w-4xl 2xl:max-w-[68rem]"
+        titleClassName="max-w-full lg:max-w-3xl xl:max-w-5xl"
       >
-        <div className="flex items-center gap-2 max-md:ml-auto">
+        <div className="flex items-center gap-2 max-lg:ml-auto">
           <IconHoverButton
             aria-label="Share"
             className="text-muted-foreground hover:text-foreground"
