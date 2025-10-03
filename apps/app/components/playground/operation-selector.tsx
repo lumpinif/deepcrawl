@@ -150,7 +150,7 @@ export function OperationSelector({
                   variant="ghost"
                 >
                   <IconHoverButtonIcon>
-                    {hasErrorResponse ? (
+                    {responses[feat.operation]?.error ? (
                       <CircleX className="text-destructive" />
                     ) : (
                       <CircleCheck className="text-green-600" />
