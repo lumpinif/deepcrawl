@@ -18,7 +18,7 @@ import {
   type TreeDataItem,
   TreeView,
 } from '@deepcrawl/ui/components/tree-view';
-import { Button, buttonVariants } from '@deepcrawl/ui/components/ui/button';
+import { buttonVariants } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -72,7 +72,7 @@ const CopyButton = React.memo(
     return (
       <div className="flex items-center gap-0 rounded-full border bg-border/80 backdrop-blur-[2px]">
         {title && (
-          <span className="truncate pl-2 text-muted-foreground text-xs">
+          <span className="truncate pr-1 pl-2 font-medium text-xs">
             {title}
           </span>
         )}
