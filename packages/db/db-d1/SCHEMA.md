@@ -1,155 +1,224 @@
 # Deepcrawl D1 Database Schema
 
-This document describes the D1 database schema for storing API activity logs and analytics data.
+This document describes the D1 database schema for storing API activity logs and response data with content deduplication.
 
 ## Overview
 
-The database uses a **schema-mirrored design** that exactly mirrors the Zod schemas from `@deepcrawl/types`, ensuring perfect consistency between API responses and database structure.
+The database uses a **two-table architecture** that separates activity logging from response storage:
+
+1. **`activity_log`**: Tracks all API requests with metadata, performance metrics, and references to response data
+2. **`response_record`**: Stores deduplicated response content indexed by hash for efficient storage and retrieval
+
+This design optimizes for:
+- Fast activity queries and analytics
+- Efficient storage through response deduplication
+- Flexible response metadata handling
+- Performance tracking across all endpoints
 
 ## Tables
 
-### `read_response`
+### `activity_log`
 
-Stores activity logs for both `/read` endpoint methods (`getMarkdown` and `readUrl`). Handles both successful responses and errors in a unified table.
-
-**Schema Alignment**: Mirrors `ReadSuccessResponseSchema` and `ReadErrorResponseSchema`
+Unified activity log tracking all API requests across endpoints. This lightweight table enables fast activity tracking and analytics without storing large response payloads.
 
 #### Complete Field List:
 
-**Metadata & Identification:**
+**Primary Identification:**
 - `id`: Primary key (text)
 - `userId`: User identifier (text, nullable)
-- `method`: `'getMarkdown'` or `'readUrl'` (text, required)
 
-**Common Fields:**
+**Request Metadata:**
+- `path`: Endpoint path identifier (text, required)
+  - Format: `{endpoint}-{method}` (e.g., `'read-getMarkdown'`, `'links-extractLinks'`)
 - `success`: Boolean indicating success/failure (integer with boolean mode, required)
-- `targetUrl`: The target URL being processed (text, required)
-- `requestUrl`: The actual request URL used (text, required)
-- `requestOptions`: JSON field mirroring `ReadOptionsSchema` (text with JSON mode)
+- `cached`: Whether response was cached (integer with boolean mode, nullable)
+- `requestTimestamp`: Request timestamp (text, required)
 
-**Success Response Fields (null for errors):**
-- `cached`: Whether response was cached (integer with boolean mode)
-- `timestamp`: Response timestamp (text)
-- `title`: Page title (text)
-- `description`: Page description (text)
-- `markdown`: Plain string for getMarkdown, structured data for readUrl (text)
-- `rawHtml`: Original HTML content (text)
-- `cleanedHtml`: Cleaned HTML content (text)
-- `metadata`: JSON field mirroring `PageMetadataSchema` (text with JSON mode)
-- `metaFiles`: JSON field mirroring `MetaFilesSchema` (text with JSON mode)
-- `metrics`: JSON field mirroring `MetricsSchema` (text with JSON mode)
+**URL and Options:**
+- `requestUrl`: Original URL before normalization (text, required)
+- `requestOptions`: Full options JSON for reference (text with JSON mode, nullable)
 
-**Error Response Fields (null for success):**
-- `error`: Error message from BaseErrorResponseSchema (text)
+**Performance Metrics:**
+- `executionTimeMs`: Execution time in fractional milliseconds (real, nullable)
 
-**Performance & Timestamps:**
-- `executionTimeMs`: Execution time in milliseconds (integer)
+**Response References:**
+- `responseHash`: Foreign key to `response_record.responseHash` (text, nullable)
+  - References the full response content
+  - `onDelete: 'set null'`, `onUpdate: 'cascade'`
+- `responseMetadata`: Response metadata or full error response if success is false (text with JSON mode, nullable)
+  - For successful requests: Contains metrics or other lightweight metadata
+  - For failed requests: Contains full error response object
+
+**Error Handling:**
+- `error`: Error information (text with JSON mode, nullable)
+  - NULL if `success = true`
+
+**Timestamps:**
 - `createdAt`: Record creation timestamp (text, auto-generated)
-- `updatedAt`: Record update timestamp (text, auto-generated)
 
 #### Usage Examples:
+
 ```sql
 -- User activity timeline
-SELECT method, success, target_url, created_at 
-FROM read_response 
-WHERE user_id = ? 
-ORDER BY created_at DESC;
+SELECT path, success, request_url, request_timestamp, execution_time_ms
+FROM activity_log
+WHERE user_id = ?
+ORDER BY request_timestamp DESC
+LIMIT 50;
 
--- Success rate by method
-SELECT method, 
+-- Success rate by endpoint
+SELECT path,
        COUNT(*) as total_calls,
        SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successful_calls,
-       AVG(CASE WHEN success = 1 THEN execution_time_ms END) as avg_execution_time
-FROM read_response 
-WHERE user_id = ? AND created_at > ?
-GROUP BY method;
+       ROUND(AVG(CASE WHEN success = 1 THEN execution_time_ms END), 2) as avg_execution_time_ms
+FROM activity_log
+WHERE user_id = ? AND request_timestamp > ?
+GROUP BY path
+ORDER BY total_calls DESC;
+
+-- Performance distribution analysis
+SELECT
+  CASE
+    WHEN execution_time_ms <= 100 THEN 'Fast (<100ms)'
+    WHEN execution_time_ms <= 500 THEN 'Medium (100-500ms)'
+    WHEN execution_time_ms <= 1000 THEN 'Slow (500-1000ms)'
+    ELSE 'Very Slow (>1000ms)'
+  END as performance_bucket,
+  COUNT(*) as count,
+  ROUND(AVG(execution_time_ms), 2) as avg_ms
+FROM activity_log
+WHERE success = 1 AND execution_time_ms IS NOT NULL
+GROUP BY performance_bucket
+ORDER BY avg_ms;
+
+-- Cache hit rate analysis
+SELECT
+  path,
+  COUNT(*) as total_requests,
+  SUM(CASE WHEN cached = 1 THEN 1 ELSE 0 END) as cache_hits,
+  ROUND(100.0 * SUM(CASE WHEN cached = 1 THEN 1 ELSE 0 END) / COUNT(*), 2) as cache_hit_rate
+FROM activity_log
+WHERE success = 1
+GROUP BY path;
+
+-- Error analysis
+SELECT
+  path,
+  COUNT(*) as error_count,
+  json_extract(error, '$.message') as error_message
+FROM activity_log
+WHERE success = 0 AND error IS NOT NULL
+GROUP BY path, error_message
+ORDER BY error_count DESC;
 ```
 
-### `links_response`
+### `response_record`
 
-Stores activity logs for both `/links` endpoint methods (`getLinks` and `extractLinks`). Handles both successful responses and errors in a unified table.
-
-**Schema Alignment**: Mirrors `LinksSuccessResponseSchema` and `LinksErrorResponseSchema`
+Stores deduplicated response content indexed by hash. This table contains the actual response payloads that are referenced by `activity_log` entries.
 
 #### Complete Field List:
 
-**Metadata & Identification:**
-- `id`: Primary key (text)
-- `userId`: User identifier (text, nullable)
-- `method`: `'getLinks'` or `'extractLinks'` (text, required)
+**Primary Key:**
+- `responseHash`: Primary key - content hash for deduplication (text)
 
-**Common Fields:**
-- `success`: Boolean indicating success/failure (integer with boolean mode, required)
-- `targetUrl`: The target URL being processed (text, required)
-- `timestamp`: Response timestamp (text, required for links endpoints)
-- `requestUrl`: The actual request URL used (text, required)
-- `requestOptions`: JSON field mirroring `LinksOptionsSchema` (text with JSON mode)
+**Request Identification:**
+- `path`: Endpoint path identifier (text, required)
+  - Format: `{endpoint}-{method}` (e.g., `'read-getMarkdown'`, `'links-extractLinks'`)
+- `optionsHash`: Hash of request options for cache lookup (text, required)
+- `updatedBy`: User identifier who last updated this record (text, nullable)
 
-**Success Response Fields (null for errors):**
-- `cached`: Whether response was cached (integer with boolean mode)
-- `title`: Page title (text)
-- `description`: Page description (text)
-- `cleanedHtml`: Cleaned HTML content (text)
-- `metadata`: JSON field mirroring `PageMetadataSchema` (text with JSON mode)
-- `metaFiles`: JSON field mirroring `MetaFilesSchema` (text with JSON mode)
-- `ancestors`: JSON array of parent URLs (text with JSON mode)
-- `skippedUrls`: JSON field mirroring `SkippedLinksSchema` (text with JSON mode)
-- `extractedLinks`: JSON field mirroring `ExtractedLinksSchema` (text with JSON mode)
-- `tree`: JSON field mirroring `LinksTreeSchema` - can be partial on error (text with JSON mode)
+**Response Content:**
+- `responseContent`: Full response payload (text with JSON mode, nullable)
+  - Contains the complete API response object
+  - Stored as JSON for flexible querying
 
-**Error Response Fields (null for success):**
-- `error`: Error message from BaseErrorResponseSchema (text)
+**Content Management:**
+- `responseSize`: Size of response content in bytes (integer, nullable)
+  - Useful for storage analytics and optimization
 
-**Performance & Timestamps:**
-- `executionTimeMs`: Execution time in milliseconds (integer)
-- `totalUrls`: Total URLs extracted from tree for quick access (integer)
+**Timestamps:**
 - `createdAt`: Record creation timestamp (text, auto-generated)
 - `updatedAt`: Record update timestamp (text, auto-generated)
 
 #### Usage Examples:
-```sql
--- Sites with most extracted links
-SELECT target_url, total_urls, execution_time_ms
-FROM links_response 
-WHERE success = 1 AND total_urls > 100
-ORDER BY total_urls DESC;
 
--- Performance analysis by tree size
-SELECT 
-  CASE 
-    WHEN total_urls <= 10 THEN 'Small (1-10)'
-    WHEN total_urls <= 50 THEN 'Medium (11-50)'
-    ELSE 'Large (50+)'
-  END as tree_size,
-  AVG(execution_time_ms) as avg_execution_time,
-  COUNT(*) as count
-FROM links_response 
-WHERE success = 1 AND total_urls IS NOT NULL
-GROUP BY tree_size;
+```sql
+-- Get full response content for an activity log entry
+SELECT ar.response_content
+FROM activity_log al
+JOIN response_record ar ON al.response_hash = ar.response_hash
+WHERE al.id = ?;
+
+-- Storage usage analysis by endpoint
+SELECT
+  path,
+  COUNT(*) as unique_responses,
+  SUM(response_size) as total_bytes,
+  ROUND(AVG(response_size), 2) as avg_response_size
+FROM response_record
+WHERE response_size IS NOT NULL
+GROUP BY path
+ORDER BY total_bytes DESC;
+
+-- Find recently updated responses
+SELECT
+  response_hash,
+  path,
+  updated_by,
+  updated_at,
+  response_size
+FROM response_record
+ORDER BY updated_at DESC
+LIMIT 20;
+
+-- Deduplication effectiveness
+SELECT
+  path,
+  COUNT(DISTINCT options_hash) as unique_request_combinations,
+  COUNT(*) as unique_responses,
+  ROUND(100.0 * COUNT(*) / COUNT(DISTINCT options_hash), 2) as dedup_ratio
+FROM response_record
+GROUP BY path;
 ```
 
 ## Performance Indexes
 
-Optimized indexes are defined directly in the schema for common analytics queries:
+Optimized indexes are defined directly in the schema for common analytics and lookup queries:
 
-### `read_response` Indexes:
-- `idx_read_response_user_created`: `(user_id, created_at)` - Dashboard timeline queries
-- `idx_read_response_success`: `(success)` - Success rate analytics  
-- `idx_read_response_method`: `(method)` - Method-specific analytics
-- `idx_read_response_target_url`: `(target_url)` - URL pattern analysis
-- `idx_read_response_execution_time`: `(execution_time_ms)` - Performance monitoring (conditional)
-- `idx_read_response_user_success_method`: `(user_id, success, method)` - User success rate analysis
-- `idx_read_response_timestamp`: `(timestamp)` - Timestamp-based analytics (conditional)
+### `activity_log` Indexes:
 
-### `links_response` Indexes:
-- `idx_links_response_user_created`: `(user_id, created_at)` - Dashboard timeline queries
-- `idx_links_response_success`: `(success)` - Success rate analytics
-- `idx_links_response_method`: `(method)` - Method-specific analytics  
-- `idx_links_response_target_url`: `(target_url)` - URL pattern analysis
-- `idx_links_response_execution_time`: `(execution_time_ms)` - Performance monitoring (conditional)
-- `idx_links_response_total_urls`: `(total_urls)` - Tree size analytics (conditional)
-- `idx_links_response_user_success_method`: `(user_id, success, method)` - User success rate analysis
-- `idx_links_response_timestamp`: `(timestamp)` - Timestamp-based analytics
+- `idx_activity_user_timestamp`: `(user_id, request_timestamp)` - Dashboard timeline queries
+- `idx_activity_path_success`: `(path, success)` - Endpoint-specific success analytics
+- `idx_activity_execution_time`: `(execution_time_ms)` - Performance monitoring (conditional, only non-null)
+- `idx_activity_request_url`: `(request_url)` - URL-based lookups
+- `idx_activity_user_success`: `(user_id, success, path)` - User success rate analysis
+- `idx_activity_request_options`: `(request_options)` - Options-based queries
+
+### `response_record` Indexes:
+
+- `idx_response_record_response_hash`: `(response_hash)` - Primary lookup by hash
+- `idx_response_record_updated_by`: `(updated_by)` - User-based queries
+- `idx_response_record_options`: `(options_hash)` - Cache lookup by options
+- `idx_response_record_path`: `(path)` - Endpoint-specific queries
+- `idx_response_record_updated_at`: `(updated_at)` - Time-based analytics
+- `idx_response_record_created_at`: `(created_at)` - Creation time queries
+
+## Architecture Benefits
+
+### Deduplication Strategy
+
+The two-table design provides efficient content deduplication:
+
+1. **Activity Tracking**: Every API request creates an `activity_log` entry
+2. **Response Storage**: Unique responses are stored once in `response_record` by hash
+3. **Reference Linking**: Activity logs reference responses via `responseHash`
+4. **Storage Efficiency**: Identical responses (same content) are stored only once
+
+### Query Performance
+
+- **Fast Activity Queries**: Lightweight `activity_log` table enables quick timeline and analytics queries
+- **Efficient Joins**: Only fetch full response content when needed via JOIN
+- **Optimized Indexes**: Separate indexes for activity patterns and response lookup
 
 ## JSON Data Storage
 
@@ -174,54 +243,79 @@ This schema uses `text('column_name', { mode: 'json' })` for JSON data rather th
 **Example:**
 ```typescript
 // Schema definition
-metadata: text('metadata', { mode: 'json' }).$type<PageMetadata>()
+requestOptions: text('request_options', { mode: 'json' })
 
 // Drizzle automatically handles:
-await db.insert(readResponse).values({
-  metadata: { title: "Page Title", lang: "en" } // Object → JSON string
+await db.insert(activityLog).values({
+  requestOptions: { maxDepth: 2, includeMetadata: true } // Object → JSON string
 });
 
-const result = await db.select().from(readResponse);
-// result[0].metadata is already a parsed JavaScript object
+const result = await db.select().from(activityLog);
+// result[0].requestOptions is already a parsed JavaScript object
 ```
 
 This approach follows Drizzle's official recommendation for JSON storage in SQLite and provides the best balance of functionality, performance, and type safety.
 
 ## Type Safety
 
-The database schema leverages existing Zod schemas for validation:
+The database schema provides TypeScript type safety through Drizzle ORM:
 
 ```typescript
-import { 
-  ReadOptionsSchema, 
-  ReadSuccessResponseSchema,
-  LinksOptionsSchema,
-  LinksSuccessResponseSchema 
-} from '@deepcrawl/types';
-import { readResponse, linksResponse } from '@deepcrawl/db-d1';
+import { activityLog, responseRecord } from '@deepcrawl/db-d1';
+import type { ActivityLog, NewActivityLog, ResponseRecord, NewResponseRecord } from '@deepcrawl/db-d1';
 
-// Validate before inserting
-const requestOptions = ReadOptionsSchema.parse(input);
-const responseData = ReadSuccessResponseSchema.parse(response);
+// Type-safe inserts
+const newActivity: NewActivityLog = {
+  id: 'unique-id',
+  userId: 'user-123',
+  path: 'read-getMarkdown',
+  success: true,
+  cached: false,
+  requestTimestamp: new Date().toISOString(),
+  requestUrl: 'https://example.com',
+  requestOptions: { maxDepth: 2 },
+  executionTimeMs: 123.45,
+  responseHash: 'hash-abc123',
+};
 
-await db.insert(readResponse).values({
-  requestOptions: JSON.stringify(requestOptions),
-  // ... other fields mapped from responseData
-});
+await db.insert(activityLog).values(newActivity);
+
+// Type-safe queries
+const activities: ActivityLog[] = await db.select().from(activityLog)
+  .where(eq(activityLog.userId, 'user-123'))
+  .orderBy(desc(activityLog.requestTimestamp))
+  .limit(10);
 ```
 
 ## Migration Notes
 
-This schema replaces the previous arbitrary tables:
-- ❌ `scraped_data` (removed)
-- ❌ `extracted_links` (removed)
-- ✅ `read_response` (new, schema-aligned)
-- ✅ `links_response` (new, schema-aligned)
+This schema represents a complete redesign from the previous approach:
+
+### Previous Schema (Removed):
+- ❌ `scraped_data` - Stored arbitrary scraping results
+- ❌ `extracted_links` - Stored link extraction data
+- ❌ `read_response` - Endpoint-specific activity logs
+- ❌ `links_response` - Endpoint-specific activity logs
+
+### Current Schema (Active):
+- ✅ `activity_log` - Unified activity tracking across all endpoints
+- ✅ `response_record` - Deduplicated response storage
+
+### Key Improvements:
+
+1. **Unified Design**: Single activity table for all endpoints instead of separate tables per endpoint
+2. **Deduplication**: Response content stored once and referenced by hash
+3. **Scalability**: Lightweight activity logs with optional response content fetching
+4. **Flexibility**: Generic `path` field supports any endpoint/method combination
+5. **Performance**: Optimized indexes for common query patterns
+6. **Storage Efficiency**: Fractional milliseconds (real) for precise performance tracking
 
 ## Benefits
 
-1. **Schema Consistency**: Database columns exactly match API response fields
-2. **Type Safety**: Drizzle types align perfectly with existing Zod types
-3. **Analytics Ready**: Unified tables enable complex analytics queries
-4. **Future Proof**: Schema evolution matches API evolution automatically
-5. **Performance Optimized**: Indexes designed for dashboard and analytics use cases
+1. **Deduplication**: Identical responses stored once, saving storage space
+2. **Fast Analytics**: Lightweight activity table enables quick queries
+3. **Type Safety**: Full TypeScript support through Drizzle ORM
+4. **Flexible Querying**: JSON storage allows deep field access with SQLite JSON functions
+5. **Performance Optimized**: Strategic indexes for common dashboard and analytics use cases
+6. **Scalable**: Separation of concerns between activity tracking and response storage
+7. **Future Proof**: Generic design supports new endpoints without schema changes
