@@ -268,12 +268,18 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
           />
 
           {response.operation === 'extractLinks' ? (
-            <MetricsDisplay
-              className="h-fit flex-none"
-              operationMethod={operationMethod}
-              response={response}
-              variant="extractLinks"
-            />
+            <>
+              <MetricsDisplay
+                className="h-fit flex-none"
+                operationMethod={operationMethod}
+                response={response}
+                variant="extractLinks"
+              />
+              <DescriptionDisplay
+                className="!max-h-1/2 h-fit min-h-0"
+                description={metadata?.description}
+              />
+            </>
           ) : (
             <DescriptionDisplay
               className="!max-h-1/2 h-fit min-h-0"
