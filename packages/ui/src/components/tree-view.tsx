@@ -92,12 +92,29 @@ const TreeView = React.forwardRef<HTMLDivElement, TreeProps>(
     );
 
     const expandedItemIds = React.useMemo(() => {
+      const ids: string[] = [];
+
+      // If expandAll is true, collect all node IDs
+      if (expandAll) {
+        function collectAllNodeIds(items: TreeDataItem[] | TreeDataItem) {
+          const itemArray = Array.isArray(items) ? items : [items];
+          for (const item of itemArray) {
+            if (item.children && item.children.length > 0) {
+              ids.push(item.id);
+              collectAllNodeIds(item.children);
+            }
+          }
+        }
+        collectAllNodeIds(data);
+        return ids;
+      }
+
+      // If no initialSelectedItemId, return empty array
       if (!initialSelectedItemId) {
         return [] as string[];
       }
 
-      const ids: string[] = [];
-
+      // Find path to selected item
       function walkTreeItems(
         items: TreeDataItem[] | TreeDataItem,
         targetId: string,
@@ -106,14 +123,12 @@ const TreeView = React.forwardRef<HTMLDivElement, TreeProps>(
           for (let i = 0; i < items.length; i++) {
             ids.push(items[i]?.id ?? '');
             // biome-ignore lint/style/noNonNullAssertion: <expected>
-            if (walkTreeItems(items[i]!, targetId) && !expandAll) {
+            if (walkTreeItems(items[i]!, targetId)) {
               return true;
             }
-            if (!expandAll) {
-              ids.pop();
-            }
+            ids.pop();
           }
-        } else if (!expandAll && items.id === targetId) {
+        } else if (items.id === targetId) {
           return true;
         } else if (items.children) {
           return walkTreeItems(items.children, targetId);
