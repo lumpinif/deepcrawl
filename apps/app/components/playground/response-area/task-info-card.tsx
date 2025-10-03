@@ -53,7 +53,9 @@ export const MetricsDisplay = memo(function MetricsDisplay({
   const timestamp = response.timestamp ?? '';
 
   const isGetMarkdownResponse = response.operation === 'getMarkdown';
+
   const responseData = isGetMarkdownResponse ? undefined : response.data;
+  const isExtractLinksResponse = response.operation === 'extractLinks';
   const treeData =
     responseData && 'tree' in responseData ? responseData.tree : undefined;
 
@@ -68,19 +70,15 @@ export const MetricsDisplay = memo(function MetricsDisplay({
   }, [inView, playgroundDuration, apiDuration]);
 
   useEffect(() => {
-    if (!inView || response.operation !== 'extractLinks') {
+    if (!inView || isExtractLinksResponse) {
       return;
     }
     setTimeout(() => {
       setTotalUrls(treeData?.totalUrls ?? 0);
     }, 500);
-  }, [inView, treeData]);
+  }, [inView, treeData, isExtractLinksResponse]);
 
-  if (
-    variant === 'extractLinks' &&
-    response.operation === 'extractLinks' &&
-    responseData
-  ) {
+  if (variant === 'extractLinks' && isExtractLinksResponse && responseData) {
     const rootUrl = treeData?.url;
     const lastUpdated = treeData?.lastUpdated;
 
