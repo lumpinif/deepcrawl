@@ -7,8 +7,18 @@ import {
   TabsTriggerIcon,
   TabsTriggerText,
 } from '@deepcrawl/ui/components/annui/focus-tabs';
+import {
+  IconHoverButton,
+  IconHoverButtonIcon,
+  IconHoverButtonText,
+} from '@deepcrawl/ui/components/annui/icon-hover-button';
 import { ListTreeIcon } from '@deepcrawl/ui/components/icons/list-tree-icon';
 import { MarkdownIcon } from '@deepcrawl/ui/components/icons/markdown';
+import {
+  type TreeDataItem,
+  TreeView,
+} from '@deepcrawl/ui/components/tree-view';
+import { Button, buttonVariants } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -16,39 +26,113 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
+import { cn } from '@deepcrawl/ui/lib/utils';
 // import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import type {
   ExtractLinksResponse,
   LinksTree,
   ReadUrlResponse,
 } from 'deepcrawl';
-import { Code2 } from 'lucide-react';
-
+import {
+  Code2,
+  Copy,
+  CopyMinus,
+  ExternalLink,
+  Folder,
+  FolderOpen,
+  ListChevronsUpDown,
+} from 'lucide-react';
+import React from 'react';
+import { toast } from 'sonner';
 import type {
   DeepcrawlOperations,
   PlaygroundActions,
   PlaygroundOperationResponse,
 } from '@/hooks/playground/types';
+import { copyToClipboard } from '@/utils/clipboard';
 import { formatResponseData } from '@/utils/playground/formatter';
 import { ActionButtons } from './action-buttons';
 import { MetricsDisplay } from './task-info-card';
 
-const VariantTrigger = ({
-  value,
-  children,
-}: {
-  value: string;
-  children?: React.ReactNode;
-}) => {
-  return (
-    <TabsTrigger
-      className="select-none data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-      value={value}
-    >
-      {children}
-    </TabsTrigger>
+/**
+ * Memoized copy button component to avoid recreating on every render
+ */
+const CopyButton = React.memo(({ url }: { url: string }) => {
+  const handleCopy = React.useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      await copyToClipboard(url);
+      toast.success('URL copied to clipboard');
+    },
+    [url],
   );
-};
+
+  return (
+    <div className="flex items-center gap-0">
+      <a
+        className={cn(
+          buttonVariants({
+            variant: 'ghost',
+            size: 'icon',
+            className: 'size-8 text-muted-foreground',
+          }),
+        )}
+        href={url}
+        rel="noopener noreferrer"
+        target="_blank"
+        title="Open the link in new tab"
+      >
+        <ExternalLink className="size-3" />
+      </a>
+      <Button
+        className="size-8 text-muted-foreground"
+        onClick={handleCopy}
+        size="icon"
+        title="Copy the URL"
+        variant="ghost"
+      >
+        <Copy className="size-3" />
+      </Button>
+    </div>
+  );
+});
+CopyButton.displayName = 'CopyButton';
+
+/**
+ * Transform LinksTree to TreeDataItem format for TreeView component
+ * Optimized to avoid creating new functions/objects on every render
+ */
+function transformLinksTreeToTreeData(
+  tree: LinksTree,
+  enableCopyOnClick = false,
+): TreeDataItem {
+  const hasChildren = tree.children && tree.children.length > 0;
+
+  return {
+    id: tree.url,
+    name: tree.url,
+    icon: hasChildren ? Folder : undefined,
+    openIcon: hasChildren ? FolderOpen : undefined,
+    actions: enableCopyOnClick ? <CopyButton url={tree.url} /> : undefined,
+    children: tree.children?.map((child) =>
+      transformLinksTreeToTreeData(child, enableCopyOnClick),
+    ),
+  };
+}
+
+const VariantTrigger = React.memo(
+  ({ value, children }: { value: string; children?: React.ReactNode }) => {
+    return (
+      <TabsTrigger
+        className="select-none data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+        value={value}
+      >
+        {children}
+      </TabsTrigger>
+    );
+  },
+);
+VariantTrigger.displayName = 'VariantTrigger';
 
 type MarkdownCardProps = {
   value: 'markdown';
@@ -70,65 +154,122 @@ type ContentScrollAreaCardProps =
   | TreeCardProps
   | JsonCardProps;
 
-function ContentScrollAreaCard({ value, content }: ContentScrollAreaCardProps) {
-  let header: React.ReactNode | null = null;
-  let children: React.ReactNode | null = null;
-  if (value === 'markdown') {
-    children = (
-      <div className="[&_pre]:scrollbar-thin px-6" suppressHydrationWarning>
-        <Response>{content}</Response>
-      </div>
-    );
-  }
-  if (value === 'tree') {
-    header = (
-      <>
-        <CardTitle>Links Tree</CardTitle>
-        <CardDescription>Site structure with extracted links</CardDescription>
-      </>
-    );
-    children = (
-      <pre className="whitespace-pre-wrap font-mono text-xs">
-        {formatResponseData(content)}
-      </pre>
-    );
-  }
-  if (value === 'raw') {
-    header = (
-      <>
-        <CardTitle>API Response Data</CardTitle>
-        <CardDescription>Complete JSON response from the API</CardDescription>
-      </>
-    );
-    children = (
-      <pre className="whitespace-pre-wrap font-mono text-xs">
-        {formatResponseData(content)}
-      </pre>
-    );
-  }
+const TreeViewCard = React.memo(({ content }: { content: LinksTree }) => {
+  const [expandKey, setExpandKey] = React.useState(0);
+  const [expandAll, setExpandAll] = React.useState(true);
+  const [enableCopyOnClick] = React.useState(true);
+
+  const linksTreeData = content;
+
+  const treeData = React.useMemo(
+    () => transformLinksTreeToTreeData(linksTreeData, enableCopyOnClick),
+    [linksTreeData, enableCopyOnClick],
+  );
+
+  const handleExpandAll = React.useCallback(() => {
+    setExpandAll(true);
+    setExpandKey((prev) => prev + 1);
+  }, []);
+
+  const handleCollapseAll = React.useCallback(() => {
+    setExpandAll(false);
+    setExpandKey((prev) => prev + 1);
+  }, []);
 
   return (
-    <TabsContent
-      className="m-0 flex size-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-0"
-      value={value}
-    >
-      {children && (
-        <>
-          {header && (
-            <CardHeader className="border-b pt-6">{header}</CardHeader>
-          )}
-          {children && (
-            <CardContent className="scrollbar-thin scrollbar-thumb-rounded-full size-full min-h-0 flex-1 overflow-auto py-6">
-              {/* <ScrollArea className="size-full min-h-0"> */}
-              {children}
-              {/* </ScrollArea> */}
-            </CardContent>
-          )}
-        </>
-      )}
-    </TabsContent>
+    <>
+      <CardHeader className="border-b pt-6">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <CardTitle>Links Tree</CardTitle>
+            <CardDescription>
+              Extracted links tree map for AI Agents
+            </CardDescription>
+          </div>
+          <div className="flex gap-1">
+            <IconHoverButton
+              onClick={handleExpandAll}
+              size="sm"
+              variant="ghost"
+            >
+              <IconHoverButtonIcon>
+                <ListChevronsUpDown className="h-4 w-4" />
+              </IconHoverButtonIcon>
+              <IconHoverButtonText>Expand All</IconHoverButtonText>
+            </IconHoverButton>
+            <IconHoverButton
+              onClick={handleCollapseAll}
+              size="sm"
+              variant="ghost"
+            >
+              <IconHoverButtonIcon>
+                <CopyMinus className="h-4 w-4" />
+              </IconHoverButtonIcon>
+              <IconHoverButtonText>Collapse All</IconHoverButtonText>
+            </IconHoverButton>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="scrollbar-thin scrollbar-thumb-rounded-full size-full min-h-0 flex-1 overflow-auto px-2 py-6">
+        <TreeView data={treeData} expandAll={expandAll} key={expandKey} />
+      </CardContent>
+    </>
   );
-}
+});
+TreeViewCard.displayName = 'TreeViewCard';
+
+const ContentScrollAreaCard = React.memo(
+  ({ value, content }: ContentScrollAreaCardProps) => {
+    let header: React.ReactNode | null = null;
+    let children: React.ReactNode | null = null;
+    if (value === 'markdown') {
+      children = (
+        <div className="[&_pre]:scrollbar-thin px-6" suppressHydrationWarning>
+          <Response>{content}</Response>
+        </div>
+      );
+    }
+    if (value === 'tree') {
+      children = <TreeViewCard content={content} />;
+    }
+    if (value === 'raw') {
+      header = (
+        <>
+          <CardTitle>API Response Data</CardTitle>
+          <CardDescription>Complete JSON response from the API</CardDescription>
+        </>
+      );
+      children = (
+        <pre className="whitespace-pre-wrap font-mono text-xs">
+          {formatResponseData(content)}
+        </pre>
+      );
+    }
+
+    return (
+      <TabsContent
+        className="m-0 flex size-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-0"
+        value={value}
+      >
+        {children && (
+          <>
+            {header && (
+              <CardHeader className="border-b pt-6">{header}</CardHeader>
+            )}
+            {children && (
+              <CardContent className="scrollbar-thin scrollbar-thumb-rounded-full size-full min-h-0 flex-1 overflow-auto py-6">
+                {/* <ScrollArea className="size-full min-h-0"> */}
+                {children}
+                {/* </ScrollArea> */}
+              </CardContent>
+            )}
+          </>
+        )}
+      </TabsContent>
+    );
+  },
+);
+ContentScrollAreaCard.displayName = 'ContentScrollAreaCard';
 
 interface ContentTabsProps {
   selectedOperation: DeepcrawlOperations;
@@ -158,14 +299,21 @@ export function ContentTabs({
   formatTime,
   operationMethod,
 }: ContentTabsProps) {
-  const hasTree = selectedOperation === 'extractLinks' && Boolean(treeData);
-  const hasMarkdown =
-    selectedOperation === 'readUrl' ||
-    (response.operation === 'readUrl' && Boolean(markdownContent)) ||
-    (selectedOperation === 'getMarkdown' && Boolean(markdownContent)) ||
-    (response.operation === 'getMarkdown' && Boolean(markdownContent));
+  const hasTree = React.useMemo(
+    () => selectedOperation === 'extractLinks' && Boolean(treeData),
+    [selectedOperation, treeData],
+  );
 
-  const apiResponse = response?.data;
+  const hasMarkdown = React.useMemo(
+    () =>
+      selectedOperation === 'readUrl' ||
+      (response.operation === 'readUrl' && Boolean(markdownContent)) ||
+      (selectedOperation === 'getMarkdown' && Boolean(markdownContent)) ||
+      (response.operation === 'getMarkdown' && Boolean(markdownContent)),
+    [selectedOperation, response.operation, markdownContent],
+  );
+
+  const apiResponse = React.useMemo(() => response?.data, [response?.data]);
 
   return (
     <Card className="flex size-full min-h-0 flex-col">
@@ -245,7 +393,12 @@ export function ContentTabs({
 
         {/* Tree View Tab */}
         {hasTree && treeData && (
-          <ContentScrollAreaCard content={treeData} value="tree" />
+          <TabsContent
+            className="m-0 flex size-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden p-0"
+            value="tree"
+          >
+            <TreeViewCard content={treeData} />
+          </TabsContent>
         )}
 
         {/* Raw JSON View Tab */}

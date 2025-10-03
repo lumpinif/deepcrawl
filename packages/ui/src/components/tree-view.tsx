@@ -9,11 +9,11 @@ import { ChevronRight } from 'lucide-react';
 import React from 'react';
 
 const treeVariants = cva(
-  'group hover:before:opacity-100 before:absolute before:rounded-lg before:left-0 px-2 before:w-full before:opacity-0 before:bg-accent/70 before:h-[2rem] before:-z-10',
+  'group hover:before:opacity-100 before:absolute before:rounded-lg before:left-0 px-2 before:w-full before:opacity-0 before:bg-accent/70 before:h-[2rem] before:-z-10 text-primary/75 hover:text-primary transition-colors duration-150 ease-out hover:underline hover:underline-offset-1',
 );
 
 const selectedTreeVariants = cva(
-  'before:opacity-100 before:bg-accent/70 text-accent-foreground',
+  'before:opacity-100 before:bg-accent/70 text-primary underline underline-offset-1',
 );
 
 const dragOverVariants = cva(
