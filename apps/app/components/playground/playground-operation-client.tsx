@@ -118,6 +118,7 @@ export const PlaygroundOperationClientContent = ({
           className={cn('relative w-full', className)}
           onSubmit={(_, event) => {
             event.preventDefault();
+            hasAutoScrolledRef.current[selectedOperation] = false;
             handleSubmit();
           }}
         >
