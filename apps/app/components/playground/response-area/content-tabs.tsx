@@ -7,18 +7,13 @@ import {
   TabsTriggerIcon,
   TabsTriggerText,
 } from '@deepcrawl/ui/components/annui/focus-tabs';
-import {
-  IconHoverButton,
-  IconHoverButtonIcon,
-  IconHoverButtonText,
-} from '@deepcrawl/ui/components/annui/icon-hover-button';
 import { ListTreeIcon } from '@deepcrawl/ui/components/icons/list-tree-icon';
 import { MarkdownIcon } from '@deepcrawl/ui/components/icons/markdown';
 import {
   type TreeDataItem,
   TreeView,
 } from '@deepcrawl/ui/components/tree-view';
-import { buttonVariants } from '@deepcrawl/ui/components/ui/button';
+import { Button, buttonVariants } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
   CardContent,
@@ -26,6 +21,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
 // import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import type {
@@ -208,29 +208,33 @@ const TreeViewCard = React.memo(({ content }: { content: LinksTree }) => {
               Extracted links tree map for AI Agents
             </CardDescription>
           </div>
-          <div className="flex gap-1">
-            <IconHoverButton
-              className="text-muted-foreground"
-              onClick={handleExpandAll}
-              size="sm"
-              variant="ghost"
-            >
-              <IconHoverButtonIcon>
-                <ListChevronsUpDown className="h-4 w-4" />
-              </IconHoverButtonIcon>
-              <IconHoverButtonText>Expand All</IconHoverButtonText>
-            </IconHoverButton>
-            <IconHoverButton
-              className="text-muted-foreground"
-              onClick={handleCollapseAll}
-              size="sm"
-              variant="ghost"
-            >
-              <IconHoverButtonIcon>
-                <CopyMinus className="h-4 w-4" />
-              </IconHoverButtonIcon>
-              <IconHoverButtonText>Collapse All</IconHoverButtonText>
-            </IconHoverButton>
+          <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="text-muted-foreground"
+                  onClick={handleExpandAll}
+                  size="icon"
+                  variant="ghost"
+                >
+                  <ListChevronsUpDown className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Expand all links</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="text-muted-foreground"
+                  onClick={handleCollapseAll}
+                  size="icon"
+                  variant="ghost"
+                >
+                  <CopyMinus className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Collapse all links</TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </CardHeader>
@@ -252,9 +256,6 @@ const ContentScrollAreaCard = React.memo(
           <Response>{content}</Response>
         </div>
       );
-    }
-    if (value === 'tree') {
-      children = <TreeViewCard content={content} />;
     }
     if (value === 'raw') {
       header = (
