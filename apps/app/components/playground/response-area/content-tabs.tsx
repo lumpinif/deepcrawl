@@ -56,46 +56,66 @@ import { MetricsDisplay } from './task-info-card';
 
 /**
  * Memoized copy button component to avoid recreating on every render
+ * Using div instead of button to avoid nested button error in TreeView
  */
-const CopyButton = React.memo(({ url }: { url: string }) => {
-  const handleCopy = React.useCallback(
-    async (e: React.MouseEvent) => {
-      e.stopPropagation();
-      await copyToClipboard(url);
-      toast.success('URL copied to clipboard');
-    },
-    [url],
-  );
+const CopyButton = React.memo(
+  ({ url, title }: { url: string; title?: string }) => {
+    const handleCopy = React.useCallback(
+      async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        await copyToClipboard(url);
+        toast.success('URL copied to clipboard');
+      },
+      [url],
+    );
 
-  return (
-    <div className="flex items-center gap-0">
-      <a
-        className={cn(
-          buttonVariants({
-            variant: 'ghost',
-            size: 'icon',
-            className: 'size-8 text-muted-foreground',
-          }),
+    return (
+      <div className="flex items-center gap-0 rounded-full border bg-border/80 backdrop-blur-[2px]">
+        {title && (
+          <span className="truncate pl-2 text-muted-foreground text-xs">
+            {title}
+          </span>
         )}
-        href={url}
-        rel="noopener noreferrer"
-        target="_blank"
-        title="Open the link in new tab"
-      >
-        <ExternalLink className="size-3" />
-      </a>
-      <Button
-        className="size-8 text-muted-foreground"
-        onClick={handleCopy}
-        size="icon"
-        title="Copy the URL"
-        variant="ghost"
-      >
-        <Copy className="size-3" />
-      </Button>
-    </div>
-  );
-});
+        <a
+          className={cn(
+            buttonVariants({
+              variant: 'ghost',
+              size: 'icon',
+              className: '!bg-transparent size-8 cursor-pointer',
+            }),
+          )}
+          href={url}
+          rel="noopener noreferrer"
+          target="_blank"
+          title="Open the link in new tab"
+        >
+          <ExternalLink className="size-3" />
+        </a>
+        <div
+          className={cn(
+            buttonVariants({
+              variant: 'ghost',
+              size: 'icon',
+              className: '!bg-transparent size-8 cursor-pointer',
+            }),
+          )}
+          onClick={handleCopy}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleCopy(e as unknown as React.MouseEvent);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          title="Copy the URL"
+        >
+          <Copy className="size-3" />
+        </div>
+      </div>
+    );
+  },
+);
 CopyButton.displayName = 'CopyButton';
 
 /**
@@ -113,7 +133,9 @@ function transformLinksTreeToTreeData(
     name: tree.url,
     icon: hasChildren ? Folder : undefined,
     openIcon: hasChildren ? FolderOpen : undefined,
-    actions: enableCopyOnClick ? <CopyButton url={tree.url} /> : undefined,
+    actions: enableCopyOnClick ? (
+      <CopyButton title={tree.name} url={tree.url} />
+    ) : undefined,
     children: tree.children?.map((child) =>
       transformLinksTreeToTreeData(child, enableCopyOnClick),
     ),
@@ -188,6 +210,7 @@ const TreeViewCard = React.memo(({ content }: { content: LinksTree }) => {
           </div>
           <div className="flex gap-1">
             <IconHoverButton
+              className="text-muted-foreground"
               onClick={handleExpandAll}
               size="sm"
               variant="ghost"
@@ -198,6 +221,7 @@ const TreeViewCard = React.memo(({ content }: { content: LinksTree }) => {
               <IconHoverButtonText>Expand All</IconHoverButtonText>
             </IconHoverButton>
             <IconHoverButton
+              className="text-muted-foreground"
               onClick={handleCollapseAll}
               size="sm"
               variant="ghost"
