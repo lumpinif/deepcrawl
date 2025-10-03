@@ -133,10 +133,10 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       {/* Response Area Header */}
       <PageHeader
         className="border-t"
-        containerClassName="flex-col md:flex-row flex w-full items-center md:justify-between gap-y-4 md:gap-y-0 gap-x-2"
+        containerClassName="flex-col md:flex-row flex w-full items-start md:items-center md:justify-between gap-y-4 md:gap-y-0 gap-x-2"
         description={`${selectedOPConfig.description}`}
         label={
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2">
             <Badge
               className="-translate-x-0.5 select-none text-muted-foreground text-sm hover:text-foreground"
               variant="outline"
@@ -145,7 +145,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
             </Badge>
             {response.operation !== 'getMarkdown' && (
               <a
-                className="max-w-md cursor-pointer"
+                className="max-w-full cursor-pointer sm:max-w-md"
                 href={targetUrl}
                 rel="noopener"
                 target="_blank"
@@ -164,20 +164,21 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         title={
           (selectedOP === 'getMarkdown' ? (
             <a
-              className="flex cursor-pointer items-center gap-2 overflow-hidden hover:underline md:max-w-lg lg:max-w-2xl 2xl:max-w-5xl"
+              className="flex cursor-pointer items-center gap-2 hover:underline"
               href={normalizedTargetUrl}
               rel="noopener"
               target="_blank"
             >
-              <span className="text-wrap md:truncate">{targetUrl}</span>
+              <span className="break-words">{targetUrl}</span>
               <ExternalLink className="mt-1 hidden size-6 flex-shrink-0 md:flex" />
             </a>
           ) : (
-            <span className="text-wrap md:truncate">
+            <span className="break-words">
               {metadata?.title ?? (targetUrl as string)}
             </span>
           )) as unknown as string
         }
+        titleClassName="md:max-w-xl lg:max-w-3xl 2xl:max-w-4xl"
       >
         <div className="flex items-center gap-2 max-md:ml-auto">
           <IconHoverButton
@@ -213,8 +214,8 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       {/* Main Response Area Bento Grid*/}
       <div
         className={cn(
-          'size-full flex-1',
-          'flex flex-col gap-2 max-md:flex-col-reverse sm:gap-4 md:flex-row',
+          'size-full flex-1 max-sm:max-w-screen',
+          'flex flex-col gap-4 max-md:flex-col-reverse md:flex-row',
           baseContainerCN,
           'md:overflow-hidden',
           'pb-6 xl:pb-8 2xl:pb-10',
@@ -228,14 +229,12 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
             response.operation === 'getMarkdown' && '!max-w-full',
           )}
         >
-          {/* Error State */}
           <ErrorCard
             activeTab={activeTab}
             onRetry={onRetry}
             response={response}
           />
 
-          {/* Success State - Content Cards with Tabs */}
           {!response.error && hasResponseData && (
             <ContentTabs
               activeTab={activeTab}

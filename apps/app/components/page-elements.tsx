@@ -45,11 +45,17 @@ export function PageTitle({
   desPos?: 'top' | 'bottom';
   titleSize?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const titleSizeCN = titleSize ? `text-${titleSize}` : 'text-3xl';
+  const titleSizeCN = titleSize
+    ? `text-${titleSize}`
+    : 'text-3xl max-sm:text-2xl';
 
   const renderTitle = () => {
     if (typeof title === 'string') {
-      return <h1 className={cn('font-semibold', titleSizeCN)}>{title}</h1>;
+      return (
+        <h1 className={cn('text-wrap break-words font-semibold', titleSizeCN)}>
+          {title}
+        </h1>
+      );
     }
 
     const el = title as ReactElement<
@@ -60,7 +66,11 @@ export function PageTitle({
       return cloneElement<
         React.HTMLAttributes<HTMLElement | HTMLAnchorElement>
       >(el, {
-        className: cn('font-semibold', titleSizeCN, el.props.className),
+        className: cn(
+          'text-wrap break-words font-semibold',
+          titleSizeCN,
+          el.props.className,
+        ),
       });
     }
 
