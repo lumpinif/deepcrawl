@@ -70,7 +70,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
   }, [inView, playgroundDuration, apiDuration]);
 
   useEffect(() => {
-    if (!inView || isExtractLinksResponse) {
+    if (!(inView || isExtractLinksResponse)) {
       return;
     }
     setTimeout(() => {
