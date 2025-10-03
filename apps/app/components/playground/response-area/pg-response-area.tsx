@@ -126,7 +126,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       className={cn(
         '-scroll-mt-0.5',
         'flex flex-col',
-        'md:h-[calc(100svh-theme(spacing.16))] md:group-data-[nav-mode=header]/header-nav-layout:h-[calc(100svh-theme(spacing.12))] md:group-has-data-[collapsible=icon]/sidebar-wrapper:h-[calc(100svh-theme(spacing.12))]',
+        'lg:h-[calc(100svh-theme(spacing.16))] lg:group-data-[nav-mode=header]/header-nav-layout:h-[calc(100svh-theme(spacing.12))] lg:group-has-data-[collapsible=icon]/sidebar-wrapper:h-[calc(100svh-theme(spacing.12))]',
       )}
       id={RESPONSE_SECTION_ID}
     >
@@ -178,7 +178,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
             </span>
           )) as unknown as string
         }
-        titleClassName="md:max-w-xl lg:max-w-3xl 2xl:max-w-4xl"
+        titleClassName="md:max-w-xl lg:max-w-4xl 2xl:max-w-[68rem]"
       >
         <div className="flex items-center gap-2 max-md:ml-auto">
           <IconHoverButton
@@ -215,7 +215,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
       <div
         className={cn(
           'size-full flex-1 max-sm:max-w-screen',
-          'flex flex-col gap-4 max-md:flex-col-reverse md:flex-row',
+          'flex flex-col gap-4 max-lg:flex-col-reverse lg:flex-row',
           baseContainerCN,
           'md:overflow-hidden',
           'pb-6 xl:pb-8 2xl:pb-10',
@@ -225,7 +225,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         {/* Main content */}
         <div
           className={cn(
-            'size-full flex-1 md:max-w-3/4',
+            'size-full flex-1 lg:max-w-3/4',
             response.operation === 'getMarkdown' && '!max-w-full',
           )}
         >
@@ -253,7 +253,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
         {/* Right Side Cards Container */}
         <div
           className={cn(
-            'flex size-full flex-col gap-2 sm:gap-4 md:max-w-1/4',
+            'flex size-full flex-col gap-2 sm:gap-4 lg:max-w-1/4',
             response.operation === 'getMarkdown' && 'hidden',
           )}
         >
