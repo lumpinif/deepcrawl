@@ -22,7 +22,7 @@ export const DeepcrawlFeatures: OperationConfig[] = [
     icon: GetMarkdownGridIcon,
     endpoint: '/read',
     method: 'GET',
-    description: 'Extract markdown content from the URL',
+    description: 'Turn URL into LLM-friendly markdown',
   },
   {
     label: 'Read URL',
@@ -30,7 +30,7 @@ export const DeepcrawlFeatures: OperationConfig[] = [
     icon: ReadUrlGridIcon,
     endpoint: '/read',
     method: 'POST',
-    description: 'Get full result object with metadata',
+    description: 'Return rich object with markdown',
   },
   {
     label: 'Extract Links',
@@ -38,7 +38,7 @@ export const DeepcrawlFeatures: OperationConfig[] = [
     icon: ExtractLinksGridIcon,
     endpoint: '/links',
     method: 'POST',
-    description: 'Extract all links and sitemap data',
+    description: 'Extract links tree for AI Agents',
   },
 ] as const;
 
