@@ -25,28 +25,34 @@ export const MetricsDisplay = memo(function MetricsDisplay({
   contentClassName,
   response,
   operationMethod,
-  executionTime,
   apiMetrics,
-  timestamp,
   badgeVariant = 'flex',
+  variant = 'default',
 }: {
   className?: string;
   contentClassName?: string;
   formatTime: (ms: number, asString?: boolean) => number | string;
   response: PlaygroundOperationResponse;
   operationMethod: string;
-  executionTime?: number;
-  timestamp?: string;
   apiMetrics?: ReadUrlResponse['metrics'] | ExtractLinksResponse['metrics'];
   badgeVariant?: 'inline' | 'flex';
+  variant?: 'default' | 'extractLinks';
 }) {
   const metricsRef = useRef<HTMLDivElement>(null);
   const [PGDuration, setPGDuration] = useState(0);
   const [APIDuration, setAPIDuration] = useState(0);
+  const [totalUrls, setTotalUrls] = useState(0);
+
   const inView = useInView(metricsRef, { once: true });
 
-  const playgroundDuration = executionTime ?? 0;
+  const playgroundDuration = response.executionTime ?? 0;
   const apiDuration = apiMetrics?.durationMs ?? 0;
+  const timestamp = response.timestamp ?? '';
+
+  const responseData =
+    response.operation !== 'getMarkdown' ? response.data : undefined;
+  const treeData =
+    responseData && 'tree' in responseData ? responseData.tree : undefined;
 
   useEffect(() => {
     if (!inView) {
@@ -58,8 +64,96 @@ export const MetricsDisplay = memo(function MetricsDisplay({
     }, 500);
   }, [inView, playgroundDuration, apiDuration]);
 
-  const responseData =
-    response.operation !== 'getMarkdown' ? response.data : undefined;
+  useEffect(() => {
+    if (!inView || response.operation !== 'extractLinks') {
+      return;
+    }
+    setTimeout(() => {
+      setTotalUrls(treeData?.totalUrls ?? 0);
+    }, 500);
+  }, [inView, treeData]);
+
+  if (
+    variant === 'extractLinks' &&
+    response.operation === 'extractLinks' &&
+    responseData
+  ) {
+    const rootUrl = treeData?.url;
+    const lastVisited = treeData?.lastVisited;
+
+    return (
+      <Card className={cn(className)} ref={metricsRef}>
+        <CardContent className={cn('flex flex-col gap-2', contentClassName)}>
+          <div
+            className={cn(
+              badgeVariant === 'flex'
+                ? 'flex flex-col gap-2'
+                : 'inline-flex items-center justify-between gap-2',
+            )}
+          >
+            <div className="flex flex-col gap-0">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="group flex items-center justify-between gap-1 text-nowrap">
+                    <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                      Total URLs Extracted
+                    </span>
+                    <MetricsNumber
+                      className="font-semibold text-2xl group-hover:text-foreground"
+                      options={{
+                        suffix: undefined,
+                        format: undefined,
+                      }}
+                      value={totalUrls}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Total URLs extracted from the url</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {rootUrl && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div
+                      className={cn(
+                        'group flex items-center justify-between gap-1 text-nowrap',
+                        badgeVariant === 'inline' && 'gap-2',
+                      )}
+                    >
+                      <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                        Root URL
+                      </span>
+                      <span className="font-medium text-muted-foreground text-sm group-hover:text-foreground">
+                        {rootUrl}
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Root URL of the request url</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+          </div>
+
+          {/* Timestamp */}
+          {lastVisited && (
+            <div className="flex cursor-default items-center justify-between gap-1 text-muted-foreground text-xs">
+              <span>{format(lastVisited, 'MMM d, yyyy h:mm a')}</span>
+              <span>
+                {formatDistanceToNow(lastVisited, {
+                  includeSeconds: true,
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className={cn(className)} ref={metricsRef}>
@@ -118,49 +212,45 @@ export const MetricsDisplay = memo(function MetricsDisplay({
           </div>
           {/* Metrics */}
           <div className="flex flex-col gap-0">
-            {executionTime && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div
-                    className={cn(
-                      'group flex items-center justify-between gap-1 text-nowrap',
-                      badgeVariant === 'inline' && 'gap-2',
-                    )}
-                  >
-                    <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
-                      Current Playground
-                    </span>
-                    <MetricsNumber
-                      className="font-medium text-muted-foreground text-sm group-hover:text-foreground"
-                      formatTime={formatTime}
-                      value={PGDuration}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Time taken of playground execution</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-            {apiMetrics?.durationMs && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="group flex items-center justify-between gap-1 text-nowrap">
-                    <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
-                      API Response
-                    </span>
-                    <MetricsNumber
-                      className="font-semibold text-2xl group-hover:text-foreground"
-                      formatTime={formatTime}
-                      value={APIDuration}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Time taken of Real API execution</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={cn(
+                    'group flex items-center justify-between gap-1 text-nowrap',
+                    badgeVariant === 'inline' && 'gap-2',
+                  )}
+                >
+                  <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                    Current Playground
+                  </span>
+                  <MetricsNumber
+                    className="font-medium text-muted-foreground text-sm group-hover:text-foreground"
+                    formatTime={formatTime}
+                    value={PGDuration}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Time taken of playground execution</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="group flex items-center justify-between gap-1 text-nowrap">
+                  <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                    API Response
+                  </span>
+                  <MetricsNumber
+                    className="font-semibold text-2xl group-hover:text-foreground"
+                    formatTime={formatTime}
+                    value={APIDuration}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Time taken of Real API execution</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
 

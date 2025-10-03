@@ -14,8 +14,8 @@ export const MetricsNumber = memo(function MetricsNumber({
 }: {
   value: number;
   className?: string;
-  formatTime: PlaygroundActions['formatTime'];
-  options?: NumberFlowProps;
+  formatTime?: PlaygroundActions['formatTime'];
+  options?: Omit<NumberFlowProps, 'value'>;
 }) {
   // Memoize format configuration to prevent recreation
   const format = useMemo(
@@ -32,7 +32,7 @@ export const MetricsNumber = memo(function MetricsNumber({
 
   // Memoize formatted value
   const formattedValue = useMemo(
-    () => formatTime(value, false) as number,
+    () => formatTime?.(value, false) as number,
     [formatTime, value],
   );
 
@@ -48,9 +48,9 @@ export const MetricsNumber = memo(function MetricsNumber({
       format={format}
       plugins={[continuous]}
       suffix={suffix}
-      value={formattedValue}
       willChange={true}
       {...options}
+      value={formatTime ? formattedValue : value}
     />
   );
 });
