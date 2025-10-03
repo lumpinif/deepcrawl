@@ -50,8 +50,8 @@ export const PlaygroundOperationClientContent = ({
   const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
   const setRequestUrl = usePlaygroundActionsSelector('setRequestUrl');
   const executeApiCall = usePlaygroundActionsSelector('executeApiCall');
-
-  const response = usePlaygroundCoreSelector('responses')[selectedOperation];
+  const responses = usePlaygroundCoreSelector('responses');
+  const response = responses[selectedOperation];
   const hasResponseData =
     response?.data !== undefined && response?.data !== null;
   const hasResponseReady = hasResponseData || Boolean(response?.error);
@@ -62,25 +62,22 @@ export const PlaygroundOperationClientContent = ({
   }, [requestUrl]);
 
   const scrollToAnchor = useScrollToAnchor();
-  const lastAutoScrolledResponseRef = useRef<typeof response>(undefined);
+  const hasAutoScrolledRef = useRef<Record<DeepcrawlOperations, boolean>>(
+    {} as Record<DeepcrawlOperations, boolean>,
+  );
 
   useEffect(() => {
     if (!(response && hasResponseReady)) {
-      lastAutoScrolledResponseRef.current = undefined;
       return;
     }
 
-    if (lastAutoScrolledResponseRef.current === response) {
+    if (hasAutoScrolledRef.current[selectedOperation]) {
       return;
     }
 
-    lastAutoScrolledResponseRef.current = response;
+    hasAutoScrolledRef.current[selectedOperation] = true;
     scrollToAnchor(RESPONSE_SECTION_ID);
-  }, [hasResponseReady, response, scrollToAnchor]);
-
-  useEffect(() => {
-    lastAutoScrolledResponseRef.current = undefined;
-  }, [selectedOperation]);
+  }, [hasResponseReady, response, scrollToAnchor, selectedOperation]);
 
   const handleSubmit = () => {
     if (!isUrlValid) {

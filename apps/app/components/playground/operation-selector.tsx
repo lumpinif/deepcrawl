@@ -13,24 +13,28 @@ import {
   CardTitle,
 } from '@deepcrawl/ui/components/ui/card';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { CircleCheck } from 'lucide-react';
+import { CircleCheck, CircleX } from 'lucide-react';
 import { useState } from 'react';
 import {
   usePlaygroundActionsSelector,
   usePlaygroundCoreSelector,
 } from '@/hooks/playground/playground-context';
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
-import { DeepcrawlFeatures } from '@/lib/playground/operations-config';
+import {
+  DeepcrawlFeatures,
+  type OperationConfig,
+} from '@/lib/playground/operations-config';
 import { RESPONSE_SECTION_ID } from './scroll-anchors';
 import { useScrollToAnchor } from './use-scroll-to-anchor';
 
 export function OperationSelector({
   className,
-  hasResponseData,
+  hasResponseData: hasResponseDataForCurrentOP,
 }: {
   className?: string;
   hasResponseData?: boolean;
 }) {
+  const responses = usePlaygroundCoreSelector('responses');
   const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
   const isExecuting = usePlaygroundCoreSelector('isExecuting');
   const setSelectedOperation = usePlaygroundActionsSelector(
@@ -40,9 +44,48 @@ export function OperationSelector({
 
   const [hoveredOperation, setHoveredOperation] =
     useState<DeepcrawlOperations | null>(null);
+  const [readyToScrollOperation, setReadyToScrollOperation] =
+    useState<DeepcrawlOperations | null>(null);
 
-  const onOperationChange = (operation: DeepcrawlOperations) => {
-    setSelectedOperation(operation);
+  const responseOperations = Object.keys(responses) as DeepcrawlOperations[];
+  const hasSuccessResponse = Object.values(responses).some(
+    (response) => response.data && !response.error,
+  );
+  const hasErrorResponse = Object.values(responses).some(
+    (response) => response.error,
+  );
+
+  const handleClickToScroll = (
+    e: React.MouseEvent<HTMLDivElement>,
+    feat: OperationConfig,
+  ) => {
+    e.stopPropagation();
+
+    const hasResponseForThisOperation = responseOperations.includes(
+      feat.operation,
+    );
+
+    // Second click: if operation is ready to scroll, scroll and reset
+    if (
+      hasResponseForThisOperation &&
+      readyToScrollOperation === feat.operation
+    ) {
+      scrollToAnchor(RESPONSE_SECTION_ID);
+      setReadyToScrollOperation(null);
+      return;
+    }
+
+    // First click: mark as ready to scroll (works for both switching and clicking same operation)
+    if (hasResponseForThisOperation) {
+      setReadyToScrollOperation(feat.operation);
+    } else {
+      setReadyToScrollOperation(null);
+    }
+
+    // Change operation if different
+    if (selectedOperation !== feat.operation) {
+      setSelectedOperation(feat.operation);
+    }
   };
 
   const isLoading = isExecuting[selectedOperation];
@@ -63,16 +106,12 @@ export function OperationSelector({
           )}
           key={feat.operation}
           onClick={(e) => {
-            e.stopPropagation();
-            onOperationChange(feat.operation);
-            if (hasResponseData && selectedOperation === feat.operation) {
-              scrollToAnchor(RESPONSE_SECTION_ID);
-            }
+            handleClickToScroll(e, feat);
           }}
           onMouseEnter={() => setHoveredOperation(feat.operation)}
           onMouseLeave={() => setHoveredOperation(null)}
           title={
-            hasResponseData && selectedOperation === feat.operation
+            hasResponseDataForCurrentOP && selectedOperation === feat.operation
               ? 'Click to scroll'
               : undefined
           }
@@ -97,31 +136,34 @@ export function OperationSelector({
             </Badge>
           </div>
 
-          {hasResponseData && selectedOperation === feat.operation && (
-            <div className="absolute top-2 right-2">
-              <IconHoverButton
-                aria-label="Scroll to results"
-                className="!bg-transparent ml-auto h-2 p-0 text-muted-foreground hover:text-foreground"
-                forceHover={
-                  hoveredOperation === feat.operation ? true : undefined
-                }
-                onClick={(e) => {
-                  e.stopPropagation();
-                  scrollToAnchor(RESPONSE_SECTION_ID);
-                }}
-                title="Click to scroll"
-                type="button"
-                variant="ghost"
-              >
-                <IconHoverButtonIcon>
-                  <CircleCheck className="text-green-600" />
-                </IconHoverButtonIcon>
-                <IconHoverButtonText className="text-muted-foreground text-xs">
-                  Scroll to results
-                </IconHoverButtonText>
-              </IconHoverButton>
-            </div>
-          )}
+          {(hasErrorResponse || hasSuccessResponse) &&
+            responseOperations.includes(feat.operation) && (
+              <div className="absolute top-2 right-2">
+                <IconHoverButton
+                  aria-label="Scroll to results"
+                  className="!bg-transparent ml-auto h-2 p-0 text-muted-foreground hover:text-foreground"
+                  forceHover={
+                    hoveredOperation === feat.operation ? true : undefined
+                  }
+                  title="Scroll to results"
+                  type="button"
+                  variant="ghost"
+                >
+                  <IconHoverButtonIcon>
+                    {hasErrorResponse ? (
+                      <CircleX className="text-destructive" />
+                    ) : (
+                      <CircleCheck className="text-green-600" />
+                    )}
+                  </IconHoverButtonIcon>
+                  <IconHoverButtonText className="text-muted-foreground text-xs">
+                    {readyToScrollOperation === feat.operation
+                      ? 'Click to scroll'
+                      : 'Ready'}
+                  </IconHoverButtonText>
+                </IconHoverButton>
+              </div>
+            )}
 
           <div className="flex items-center justify-center">
             <feat.icon

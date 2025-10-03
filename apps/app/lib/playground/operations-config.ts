@@ -17,20 +17,20 @@ export interface OperationConfig {
 // Operations configuration - matches playground-client pattern
 export const DeepcrawlFeatures: OperationConfig[] = [
   {
-    label: 'Read URL',
-    operation: 'readUrl',
-    icon: ReadUrlGridIcon,
-    endpoint: '/read',
-    method: 'POST',
-    description: 'Get full result object with metadata',
-  },
-  {
     label: 'Get Markdown',
     operation: 'getMarkdown',
     icon: GetMarkdownGridIcon,
     endpoint: '/read',
     method: 'GET',
     description: 'Extract markdown content from the URL',
+  },
+  {
+    label: 'Read URL',
+    operation: 'readUrl',
+    icon: ReadUrlGridIcon,
+    endpoint: '/read',
+    method: 'POST',
+    description: 'Get full result object with metadata',
   },
   {
     label: 'Extract Links',

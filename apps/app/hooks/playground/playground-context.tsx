@@ -50,7 +50,7 @@ const PlaygroundActionsContext =
 
 export function PlaygroundProvider({
   children,
-  defaultOperation = 'getMarkdown',
+  defaultOperation = 'readUrl',
   defaultUrl = '',
 }: PlaygroundProviderProps) {
   // state management hook
