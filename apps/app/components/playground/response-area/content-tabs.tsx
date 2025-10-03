@@ -403,11 +403,9 @@ export function ContentTabs({
                   badgeVariant="inline"
                   className="w-full border-none p-0"
                   contentClassName="w-full border-none p-0"
-                  executionTime={response.executionTime}
                   formatTime={formatTime}
                   operationMethod={operationMethod}
                   response={response}
-                  timestamp={response.timestamp}
                 />
               </CardHeader>
             )}
