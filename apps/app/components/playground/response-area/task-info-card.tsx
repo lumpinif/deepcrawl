@@ -94,28 +94,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
                 : 'inline-flex items-center justify-between gap-2',
             )}
           >
-            <div className="flex flex-col gap-0">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="group flex items-center justify-between gap-1 text-nowrap">
-                    <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
-                      Total URLs Extracted
-                    </span>
-                    <MetricsNumber
-                      className="font-semibold text-2xl group-hover:text-foreground"
-                      options={{
-                        suffix: undefined,
-                        format: undefined,
-                      }}
-                      value={totalUrls}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Total URLs extracted from the url</p>
-                </TooltipContent>
-              </Tooltip>
-
+            <div className="flex flex-col gap-2">
               {rootUrl && (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -138,6 +117,27 @@ export const MetricsDisplay = memo(function MetricsDisplay({
                   </TooltipContent>
                 </Tooltip>
               )}
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="group flex items-center justify-between gap-1 text-nowrap">
+                    <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                      Total URLs Extracted
+                    </span>
+                    <MetricsNumber
+                      className="font-semibold text-2xl group-hover:text-foreground"
+                      options={{
+                        suffix: undefined,
+                        format: undefined,
+                      }}
+                      value={totalUrls}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Total URLs extracted from the url</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
