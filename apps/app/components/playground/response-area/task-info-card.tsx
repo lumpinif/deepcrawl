@@ -52,8 +52,8 @@ export const MetricsDisplay = memo(function MetricsDisplay({
   const apiDuration = apiMetrics?.durationMs ?? 0;
   const timestamp = response.timestamp ?? '';
 
-  const responseData =
-    response.operation !== 'getMarkdown' ? response.data : undefined;
+  const isGetMarkdownResponse = response.operation === 'getMarkdown';
+  const responseData = isGetMarkdownResponse ? undefined : response.data;
   const treeData =
     responseData && 'tree' in responseData ? responseData.tree : undefined;
 
@@ -235,23 +235,25 @@ export const MetricsDisplay = memo(function MetricsDisplay({
                 <p>Time taken of playground execution</p>
               </TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="group flex items-center justify-between gap-1 text-nowrap">
-                  <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
-                    API Response
-                  </span>
-                  <MetricsNumber
-                    className="font-semibold text-2xl group-hover:text-foreground"
-                    formatTime={formatTime}
-                    value={APIDuration}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>Time taken of Real API execution</p>
-              </TooltipContent>
-            </Tooltip>
+            {!isGetMarkdownResponse && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="group flex items-center justify-between gap-1 text-nowrap">
+                    <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                      API Response
+                    </span>
+                    <MetricsNumber
+                      className="font-semibold text-2xl group-hover:text-foreground"
+                      formatTime={formatTime}
+                      value={APIDuration}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Time taken of Real API execution</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         </div>
 
