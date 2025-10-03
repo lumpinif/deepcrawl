@@ -82,7 +82,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
     responseData
   ) {
     const rootUrl = treeData?.url;
-    const lastVisited = treeData?.lastVisited;
+    const lastUpdated = treeData?.lastUpdated;
 
     return (
       <Card className={cn(className)} ref={metricsRef}>
@@ -142,15 +142,13 @@ export const MetricsDisplay = memo(function MetricsDisplay({
           </div>
 
           {/* Timestamp */}
-          {lastVisited && (
-            <div className="flex cursor-default items-center justify-between gap-1 text-muted-foreground text-xs">
-              <span>{format(lastVisited, 'MMM d, yyyy h:mm a')}</span>
-              <span>
-                {formatDistanceToNow(lastVisited, {
-                  includeSeconds: true,
-                  addSuffix: true,
-                })}
-              </span>
+          {lastUpdated && (
+            <div
+              className="flex cursor-default items-center justify-between gap-1 text-muted-foreground text-xs"
+              title={format(lastUpdated, 'MMM d, yyyy h:mm a')}
+            >
+              <span>Last Updated</span>
+              <span>{format(lastUpdated, 'MMM d, yyyy H:mm:ss.SSS')}</span>
             </div>
           )}
         </CardContent>
@@ -260,7 +258,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
         {/* Timestamp */}
         {timestamp && (
           <div className="flex cursor-default items-center justify-between gap-1 text-muted-foreground text-xs">
-            <span>{format(timestamp, 'MMM d, yyyy h:mm a')}</span>
+            <span>{format(timestamp, 'MMM d, yyyy H:mm:ss')}</span>
             <span>
               {formatDistanceToNow(timestamp, {
                 includeSeconds: true,
