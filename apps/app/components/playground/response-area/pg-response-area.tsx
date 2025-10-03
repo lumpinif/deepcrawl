@@ -269,9 +269,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
 
           {response.operation === 'extractLinks' ? (
             <MetricsDisplay
-              apiMetrics={metrics}
               className="h-fit flex-none"
-              formatTime={formatTime}
               operationMethod={operationMethod}
               response={response}
               variant="extractLinks"

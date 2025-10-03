@@ -12,7 +12,10 @@ import type { ExtractLinksResponse, ReadUrlResponse } from 'deepcrawl';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { useInView } from 'motion/react';
 import { memo, useEffect, useRef, useState } from 'react';
-import type { PlaygroundOperationResponse } from '@/hooks/playground/types';
+import type {
+  PlaygroundActions,
+  PlaygroundOperationResponse,
+} from '@/hooks/playground/types';
 import { MetricsNumber } from '../metrics-number';
 import { MetadataItem } from './page-metadata-card';
 
@@ -31,7 +34,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
 }: {
   className?: string;
   contentClassName?: string;
-  formatTime: (ms: number, asString?: boolean) => number | string;
+  formatTime?: PlaygroundActions['formatTime'];
   response: PlaygroundOperationResponse;
   operationMethod: string;
   apiMetrics?: ReadUrlResponse['metrics'] | ExtractLinksResponse['metrics'];
