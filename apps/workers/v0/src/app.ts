@@ -52,6 +52,7 @@ const routes = [
   { path: '/openapi', methods: ['GET'] },
   { path: '/read', methods: ['GET', 'POST', 'OPTIONS'] },
   { path: '/links', methods: ['GET', 'POST', 'OPTIONS'] },
+  { path: '/logs', methods: ['GET', 'OPTIONS', 'DELETE'] },
 ] as const;
 
 for (const route of routes) {

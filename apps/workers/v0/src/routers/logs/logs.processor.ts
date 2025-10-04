@@ -1,3 +1,4 @@
+import type { GetLogsOptions, GetLogsResponse } from '@deepcrawl/contracts';
 import type { ActivityLog, ResponseRecord } from '@deepcrawl/db-d1';
 import {
   activityLog,
@@ -8,19 +9,14 @@ import {
   lte,
   responseRecord,
 } from '@deepcrawl/db-d1';
-import type {
-  ActivityLogEntry,
-  GetLogsInput,
-  GetLogsOutput,
-} from '@deepcrawl/types/routers/logs';
+import type { ActivityLogEntry } from '@deepcrawl/types/routers/logs';
 import type { ORPCContext } from '@/lib/context';
-import type { AnyRequestsOptions } from '@/utils/tail-jobs/post-processing';
 import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
 
 export async function getLogsWithReconstruction(
   c: ORPCContext,
-  options: GetLogsInput,
-): Promise<GetLogsOutput> {
+  options: GetLogsOptions,
+): Promise<GetLogsResponse> {
   const { limit = 20, offset = 0, path, success, startDate, endDate } = options;
 
   // Get user ID from session
