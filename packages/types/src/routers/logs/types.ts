@@ -82,7 +82,7 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * Unique identifier for the activity log entry
      */
     id: z.string().meta({
-      description: 'Unique identifier for the activity log entry',
+      description: 'Unique identifier (request ID) for the activity log entry',
     }),
     /**
      * Request path discriminator for `read-getMarkdown` endpoint
@@ -239,10 +239,10 @@ export const GetManyLogsResponseSchema = z.object({
  */
 export const GetOneLogOptionsSchema = z.object({
   /**
-   * Unique identifier for the activity log entry
+   * Unique identifier (request ID) for the activity log entry
    */
   id: z.string().meta({
-    description: 'Unique identifier for the activity log entry',
+    description: 'Unique identifier (request ID) for the activity log entry',
   }),
 });
 
