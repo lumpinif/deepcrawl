@@ -204,6 +204,7 @@ export async function processReadRequest(
             parsedResponse.metrics = undefined;
           }
 
+          parsedResponse.requestId = c.var.requestId;
           parsedResponse.timestamp = timestamp;
 
           return parsedResponse;
