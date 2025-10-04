@@ -178,7 +178,24 @@ export function extractDynamicsForHash(
   }
 }
 
-// Helpers mirrored from post-processing to avoid import cycles
+/**
+ * Extracts dynamic/temporal data from a LinksTree for separate storage.
+ *
+ * **Extraction Logic:**
+ * 1. **Root dynamics**: Captures `lastUpdated` and `lastVisited` from the root node
+ * 2. **Children timestamps**: Traverses all child nodes (BFS) to collect unique `lastUpdated` values
+ * 3. **Most common timestamp**: Identifies the most frequently occurring `lastUpdated` across children
+ *    - This becomes `childrenLastUpdated` for efficient storage (avoids repetition)
+ * 4. **Visited nodes**: Tracks URLs and their `lastVisited` timestamps for nodes that were visited
+ *
+ * **Why extract dynamics?**
+ * - Enables consistent hashing by comparing stable tree structure
+ * - Reduces storage by extracting redundant temporal data
+ * - Allows reconstruction of original tree with `lastUpdated`/`lastVisited` fields
+ *
+ * @param tree - The complete LinksTree with all dynamic fields
+ * @returns Tree dynamics containing root metadata, common child timestamp, and visited node map
+ */
 function extractTreeDynamics(tree: LinksTree): LinksDynamics['treeDynamics'] {
   const treeDynamics: LinksDynamics['treeDynamics'] = {
     root: {
@@ -241,6 +258,21 @@ export type LinksTreeWithoutDynamics = Omit<
   'lastVisited' | 'lastUpdated' | 'children'
 > & { children?: LinksTreeWithoutDynamics[] };
 
+/**
+ * Type representing a Links response with tree structure but without dynamic fields.
+ *
+ * **Purpose:**
+ * - Used for content-based hashing to detect actual content changes
+ * - Excludes temporal fields that change without affecting stable content
+ * - The tree contains only stable fields (url, title, description, etc.) without lastUpdated/lastVisited
+ *
+ * **Removed fields:**
+ * - `timestamp`: Request timestamp (always different)
+ * - `metrics`: Performance metrics (varies by execution)
+ * - `requestId`: Unique request identifier (always different)
+ * - `tree.lastUpdated`: Temporal field on all nodes (extracted separately)
+ * - `tree.lastVisited`: Temporal field on visited nodes (extracted separately)
+ */
 export type LinksStableWithTree = Omit<
   LinksSuccessResponseWithTree,
   'timestamp' | 'metrics' | 'tree' | 'requestId'
@@ -248,6 +280,22 @@ export type LinksStableWithTree = Omit<
   tree?: LinksTreeWithoutDynamics;
 };
 
+/**
+ * Strips all dynamic/temporal fields from a Links response with tree structure.
+ *
+ * **Stripping Logic:**
+ * 1. **Root-level stripping**: Removes `timestamp`, `metrics`, and `requestId`
+ * 2. **Tree node stripping**: Recursively removes `lastUpdated` and `lastVisited` from all nodes
+ * 3. **Preserves structure**: Maintains all stable fields (url, title, description, children, etc.)
+ *
+ * **Result (LinksStableWithTree):**
+ * - Contains only stable, content-based fields
+ * - Can be hashed consistently to detect content changes
+ * - Paired with extracted dynamics for full reconstruction
+ *
+ * @param response - Complete Links response with tree and all dynamic fields
+ * @returns Stripped response containing only stable fields for content hashing
+ */
 function stripLinksTreeDynamics(
   response: LinksSuccessResponseWithTree,
 ): LinksStableWithTree {

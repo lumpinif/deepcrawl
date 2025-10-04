@@ -15,6 +15,7 @@ import type {
   LinksDynamics,
   LinksStableWithoutTree,
   LinksStableWithTree,
+  LinksTreeWithoutDynamics,
   ReadDynamics,
   ReadSuccessResponseWithoutDynamics,
 } from './dynamics-handling';
@@ -97,7 +98,7 @@ export function reconstructResponse(
 
     // Has tree - need to restore tree dynamics
     const treeDynamics = linksDynamics?.treeDynamics;
-    const strippedTree = (responseContent as { tree?: LinksTree }).tree;
+    const strippedTree = (responseContent as LinksStableWithTree).tree;
 
     if (!strippedTree) {
       throw new Error('Expected tree in response content but found none');
@@ -118,57 +119,94 @@ export function reconstructResponse(
 }
 
 /**
- * Restores dynamic fields to tree nodes using the extracted treeDynamics
- * This reverses the stripLinksTreeDynamics function
+ * Restores dynamic/temporal fields to a stripped LinksTree using extracted dynamics.
+ *
+ * **Restoration Logic:**
+ * 1. **Root node restoration**:
+ *    - Adds `lastUpdated` from `treeDynamics.root.lastUpdated`
+ *    - Conditionally adds `lastVisited` from `treeDynamics.root.lastVisited` (only if exists)
+ * 2. **Children restoration**: Recursively processes all child nodes via `restoreChildNode()`
+ * 3. **Preserves exact structure**: Only adds fields that existed in the original response
+ *
+ * **Critical behavior:**
+ * - `lastVisited` is only added when it exists in treeDynamics (optional field)
+ * - This ensures the restored tree exactly matches the original structure
+ * - Avoids adding `lastVisited: undefined` to nodes that were never visited
+ *
+ * @param strippedTree - Tree with only stable fields (no lastUpdated/lastVisited)
+ * @param treeDynamics - Extracted dynamics containing timestamps and visited node metadata
+ * @returns Complete LinksTree with all dynamic fields restored, or original if no dynamics
  */
 function restoreTreeDynamics(
-  strippedTree: LinksTree,
+  strippedTree: LinksTreeWithoutDynamics,
   treeDynamics?: LinksDynamics['treeDynamics'],
-): LinksTree {
+): LinksTree | LinksTreeWithoutDynamics {
   if (!treeDynamics) {
     return strippedTree;
   }
 
-  // Restore root dynamics
+  // Restore children first if present
+  const restoredChildren: LinksTree[] | undefined = strippedTree.children
+    ? strippedTree.children.map((child) =>
+        restoreChildNode(child, treeDynamics),
+      )
+    : undefined;
+
+  // Restore root dynamics with properly typed children
   const restoredRoot: LinksTree = {
     ...strippedTree,
     lastUpdated: treeDynamics.root.lastUpdated,
-    lastVisited: treeDynamics.root.lastVisited,
+    children: restoredChildren,
   };
 
-  // Restore children dynamics if present
-  if (strippedTree.children && strippedTree.children.length > 0) {
-    restoredRoot.children = strippedTree.children.map((child) =>
-      restoreChildNode(child, treeDynamics),
-    );
+  // Only add lastVisited to root if it exists in treeDynamics
+  if (treeDynamics.root.lastVisited !== undefined) {
+    restoredRoot.lastVisited = treeDynamics.root.lastVisited;
   }
 
   return restoredRoot;
 }
 
 /**
- * Recursively restore dynamics to child nodes
+ * Recursively restores dynamic fields to child nodes in the tree hierarchy.
+ *
+ * **Restoration Logic for Children:**
+ * 1. **Recursive traversal**: Processes children depth-first before restoring current node
+ * 2. **Common timestamp**: Uses `treeDynamics.childrenLastUpdated` for all children's `lastUpdated`
+ *    - This is the most common timestamp extracted during dynamics extraction
+ *    - Reduces storage by avoiding repetitive timestamp data
+ * 3. **Visited node lookup**: Checks if node's URL exists in `treeDynamics.visitedNodes`
+ *    - Only adds `lastVisited` when the URL is present in the visited nodes map
+ *    - Preserves exact structure where unvisited nodes don't have `lastVisited` field
+ *
+ * **Critical data integrity:**
+ * - Does NOT add `lastVisited` to unvisited nodes (avoids `lastVisited: undefined`)
+ * - Ensures restored tree matches original response exactly
+ * - Handles null values correctly (some visited nodes may have `lastVisited: null`)
+ *
+ * @param node - Stripped child node without dynamic fields
+ * @param treeDynamics - Extracted dynamics with common child timestamp and visited node map
+ * @returns Complete LinksTree node with all dynamic fields restored
  */
 function restoreChildNode(
-  node: LinksTree,
+  node: LinksTreeWithoutDynamics,
   treeDynamics: NonNullable<LinksDynamics['treeDynamics']>,
 ): LinksTree {
+  // Recursively restore children first
+  const restoredChildren: LinksTree[] | undefined = node.children
+    ? node.children.map((child) => restoreChildNode(child, treeDynamics))
+    : undefined;
+
+  // Build the base restored node with required fields
   const restoredNode: LinksTree = {
     ...node,
-    // Use the most common timestamp as default for children
     lastUpdated: treeDynamics.childrenLastUpdated ?? '',
+    children: restoredChildren,
   };
 
-  // Restore lastVisited if this node's URL is in visitedNodes
+  // Only add lastVisited if this node's URL is in visitedNodes
   if (node.url && treeDynamics.visitedNodes?.[node.url] !== undefined) {
     restoredNode.lastVisited = treeDynamics.visitedNodes[node.url];
-  }
-
-  // Recursively restore children
-  if (node.children && node.children.length > 0) {
-    restoredNode.children = node.children.map((child) =>
-      restoreChildNode(child, treeDynamics),
-    );
   }
 
   return restoredNode;
