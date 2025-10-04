@@ -143,7 +143,7 @@ export const MetadataOptionsSchema = z
  * ```
  *
  * @description This is the output type for the `MetadataOptions` schema.
- * If you wish to use this type as input which contains both string and boolean for smartbool, you can use the Input types re-exported from the `@deepcrawl/contracts` package for each endpoint such as `ReadUrlOptions['metadataOptions']`.
+ * You can use the Input types re-exported from the `@deepcrawl/contracts` package for each endpoint such as `ReadUrlOptions['metadataOptions']`.
  */
 export type MetadataOptions = z.infer<typeof MetadataOptionsSchema>;
 
