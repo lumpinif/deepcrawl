@@ -11,7 +11,13 @@ import type {
   ReadStringResponse,
   ReadSuccessResponse,
 } from '@deepcrawl/types/routers/read/types';
-import type { LinksDynamics, ReadDynamics } from './dynamics-handling';
+import type {
+  LinksDynamics,
+  LinksStableWithoutTree,
+  LinksStableWithTree,
+  ReadDynamics,
+  ReadSuccessResponseWithoutDynamics,
+} from './dynamics-handling';
 
 /**
  * Reconstructs the original response by combining data from response_record and activity_log
@@ -54,10 +60,7 @@ export function reconstructResponse(
 
   // Handle readUrl endpoint
   if (path === 'read-readUrl') {
-    const baseResponse = responseContent as Omit<
-      ReadSuccessResponse,
-      'metrics' | 'timestamp' | 'requestId'
-    >;
+    const baseResponse = responseContent as ReadSuccessResponseWithoutDynamics;
     const readDynamics = dynamics as ReadDynamics | undefined;
 
     return {
@@ -70,10 +73,9 @@ export function reconstructResponse(
 
   // Handle links endpoints (getLinks and extractLinks)
   if (path === 'links-getLinks' || path === 'links-extractLinks') {
-    const baseResponse = responseContent as Omit<
-      LinksSuccessResponse,
-      'timestamp' | 'metrics' | 'tree'
-    >;
+    const baseResponse = responseContent as
+      | LinksStableWithoutTree
+      | LinksStableWithTree;
     const linksDynamics = dynamics as LinksDynamics | undefined;
 
     // Check if response has tree data
@@ -87,6 +89,7 @@ export function reconstructResponse(
       // No tree - simple reconstruction
       return {
         ...baseResponse,
+        requestId: activityLog.id, // put back requestId which is the same as the activity log id
         timestamp: linksDynamics?.timestamp ?? new Date().toISOString(),
         metrics: linksDynamics?.metrics,
       } as LinksSuccessResponse;
@@ -104,6 +107,7 @@ export function reconstructResponse(
 
     return {
       ...baseResponse,
+      requestId: activityLog.id, // put back requestId which is the same as the activity log id
       tree: restoredTree,
       timestamp: linksDynamics?.timestamp ?? new Date().toISOString(),
       metrics: linksDynamics?.metrics,

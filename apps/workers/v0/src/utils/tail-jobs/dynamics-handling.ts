@@ -38,16 +38,17 @@ export interface ReadDynamics extends DynamicsBase {
 
 export type Dynamics = ReadDynamics | LinksDynamics | null;
 
-type ReadSuccessResponseWithoutDynamics = Omit<
+export type ReadSuccessResponseWithoutDynamics = Omit<
   ReadSuccessResponse,
   'metrics' | 'timestamp' | 'requestId'
 >;
 
-type LinksSuccessResponseWithoutRootDynamics = Omit<
+export type LinksSuccessResponseWithoutRootDynamics = Omit<
   LinksSuccessResponse,
   'timestamp' | 'metrics' | 'requestId'
 >;
-type LinksStableWithoutTree = Omit<
+
+export type LinksStableWithoutTree = Omit<
   LinksSuccessResponseWithoutRootDynamics,
   'tree'
 >;
@@ -235,14 +236,14 @@ function extractTreeDynamics(tree: LinksTree): LinksDynamics['treeDynamics'] {
   return treeDynamics;
 }
 
-type LinksTreeWithoutDynamics = Omit<
+export type LinksTreeWithoutDynamics = Omit<
   LinksTree,
   'lastVisited' | 'lastUpdated' | 'children'
 > & { children?: LinksTreeWithoutDynamics[] };
 
-type LinksStableWithTree = Omit<
+export type LinksStableWithTree = Omit<
   LinksSuccessResponseWithTree,
-  'timestamp' | 'metrics' | 'tree'
+  'timestamp' | 'metrics' | 'tree' | 'requestId'
 > & {
   tree?: LinksTreeWithoutDynamics;
 };
