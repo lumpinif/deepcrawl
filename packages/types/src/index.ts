@@ -32,6 +32,8 @@ export * from './metrics/types';
 // Type-only exports for better IDE support
 export * from './routers/links';
 export * from './routers/links/types';
+export * from './routers/logs';
+export * from './routers/logs/types';
 export * from './routers/read';
 export * from './services/cache';
 export * from './services/cache/types';

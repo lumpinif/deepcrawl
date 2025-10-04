@@ -18,8 +18,8 @@
     "./routers/read": {
       "types": "./src/routers/read/index.ts"
     },
-    "./routers/browse": {
-      "types": "./src/routers/browse/index.ts"
+    "./routers/logs": {
+      "types": "./src/routers/logs/index.ts"
     },
     "./services/scrape": {
       "types": "./src/services/scrape/index.ts"
