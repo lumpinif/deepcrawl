@@ -52,7 +52,7 @@ const RATE_LIMIT_RULES: Record<
       window: '60 s',
     },
   },
-  getLogs: {
+  getMany: {
     free: {
       limit: 30,
       window: '60 s',
@@ -62,7 +62,7 @@ const RATE_LIMIT_RULES: Record<
       window: '60 s',
     },
   },
-  getLog: {
+  getOne: {
     free: {
       limit: 50,
       window: '60 s',
