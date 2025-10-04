@@ -4,6 +4,7 @@ import type {
 } from '@orpc/contract';
 import { oc } from '@orpc/contract';
 import { linksGETContract, linksPOSTContract } from './links';
+import { getLogsContract } from './logs';
 import { readGETContract, readPOSTContract } from './read';
 
 export const contract = oc.router({
@@ -15,6 +16,9 @@ export const contract = oc.router({
     getLinks: linksGETContract,
     extractLinks: linksPOSTContract,
   }),
+  logs: oc.prefix('/logs').router({
+    getLogs: getLogsContract,
+  }),
 });
 
 export type Inputs = InferContractRouterInputs<typeof contract>;
@@ -22,4 +26,5 @@ export type Outputs = InferContractRouterOutputs<typeof contract>;
 
 export * from './errors';
 export * from './links';
+export * from './logs';
 export * from './read';
