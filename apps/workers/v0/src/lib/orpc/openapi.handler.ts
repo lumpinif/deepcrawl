@@ -3,6 +3,8 @@ import {
   CacheOptionsSchema,
   ExtractedLinksSchema,
   FetchOptionsSchema,
+  GetLogsOptionsSchema,
+  GetLogsResponseSchema,
   HTMLRewriterOptionsSchema,
   LinkExtractionOptionsSchema,
   LinksErrorResponseSchema,
@@ -132,6 +134,12 @@ export const OpenAPISpecGenerateOptions = {
     },
     UndefinedError: {
       error: 'UndefinedError',
+    },
+    GetLogsOptions: {
+      schema: GetLogsOptionsSchema,
+    },
+    GetLogsResponse: {
+      schema: GetLogsResponseSchema,
     },
   },
   components: {
