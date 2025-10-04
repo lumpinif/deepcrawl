@@ -715,6 +715,11 @@ const PartialScrapedDataSchema = ScrapedDataSchema.partial().omit({
 
 // Base success response fields that are always present
 const LinksSuccessResponseBaseSchema = LinksResponseBaseSchema.extend({
+  /* Unique identifier (request ID) for the activity log entry */
+  requestId: z.string().meta({
+    description: 'Unique identifier (request ID) for the activity log entry',
+    examples: ['123e4567-e89b-12d3-a456-426614174000'],
+  }),
   /* Indicates that the operation was successful */
   success: z.literal(true).meta({
     description: 'Indicates that the operation was successful',
@@ -793,6 +798,7 @@ export const LinksSuccessResponseSchema = z
     examples: [
       // Example with tree (content in tree root)
       {
+        requestId: '123e4567-e89b-12d3-a456-426614174000',
         success: true,
         cached: false,
         targetUrl: 'https://example.com',
@@ -839,6 +845,7 @@ export const LinksSuccessResponseSchema = z
       },
       // Example without tree (content in response root)
       {
+        requestId: '123e4567-e89b-12d3-a456-426614174000',
         success: true,
         cached: false,
         targetUrl: 'https://example.com',
@@ -999,6 +1006,7 @@ export type VisitedUrl = z.infer<typeof VisitedUrlSchema>;
  * @example With tree (content in tree root):
  * ```typescript
  * const responseWithTree: LinksSuccessResponseWithTree = {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: true,
  *   cached: false,
  *   targetUrl: "https://example.com",
@@ -1031,6 +1039,7 @@ export type LinksSuccessResponseWithTree = z.infer<
  * @example Without tree (content in response root):
  * ```typescript
  * const responseWithoutTree: LinksSuccessResponseWithoutTree = {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: true,
  *   cached: false,
  *   targetUrl: "https://example.com",
@@ -1078,6 +1087,7 @@ export type LinksSuccessResponse = z.infer<typeof LinksSuccessResponseSchema>;
  * Represents an error response from a links POST route.
  * Contains information about what went wrong.
  *
+ * @property requestId - Unique identifier (request ID) for the activity log entry
  * @property success - Whether the operation was successful
  * @property [requestUrl] - URL, raw url, that was requested to be processed and might be different from the target url
  * @property targetUrl - The URL that was requested to be scraped
@@ -1088,6 +1098,7 @@ export type LinksSuccessResponse = z.infer<typeof LinksSuccessResponseSchema>;
  * @example
  * ```typescript
  * const errorResponse: LinksErrorResponse = {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: false,
  *   requestUrl: "https://example.com/article#fragment",
  *   targetUrl: "https://example.com",

@@ -220,6 +220,7 @@ async function processNonTreeRequest({
 
     // Build response for non-tree case - content fields are at response root level
     const response: LinksSuccessResponseWithoutTree = {
+      requestId: c.var.requestId,
       success: true,
       cached: false, // Always false for non-tree requests (no cache operations)
       targetUrl,
@@ -930,6 +931,7 @@ export async function processLinksRequest(
     if (withTree && finalTree) {
       // Response with tree - content fields are in tree root, not response root
       const responseWithTree: LinksSuccessResponseWithTree = {
+        requestId: c.var.requestId,
         success: true,
         cached: linksCacheIsFresh,
         targetUrl,
@@ -941,6 +943,7 @@ export async function processLinksRequest(
     } else {
       // Response without finalTree - content fields are at response root level
       const responseWithoutTree: LinksSuccessResponseWithoutTree = {
+        requestId: c.var.requestId,
         success: true,
         cached: linksCacheIsFresh,
         targetUrl,

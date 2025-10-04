@@ -116,7 +116,7 @@ export function schedulePostProcessing(
         // log activity
         await activityLogger.logActivity({
           path: joinedPath,
-          requestId: c.var.requestId,
+          requestId: c.var.requestId, // requestId is the same as the activity log id, use this instead of response.requestId since getMarkdown response doesn't have requestId
           success,
           cached: c.cacheHit,
           requestTimestamp: dynamics?.timestamp ?? requestTimestamp,

@@ -40,12 +40,12 @@ export type Dynamics = ReadDynamics | LinksDynamics | null;
 
 type ReadSuccessResponseWithoutDynamics = Omit<
   ReadSuccessResponse,
-  'metrics' | 'timestamp'
+  'metrics' | 'timestamp' | 'requestId'
 >;
 
 type LinksSuccessResponseWithoutRootDynamics = Omit<
   LinksSuccessResponse,
-  'timestamp' | 'metrics'
+  'timestamp' | 'metrics' | 'requestId'
 >;
 type LinksStableWithoutTree = Omit<
   LinksSuccessResponseWithoutRootDynamics,
@@ -141,7 +141,7 @@ export function extractDynamicsForHash(
       const r = params.response as LinksSuccessResponse;
       if (isLinksResponseWithoutTree(r)) {
         // links without tree: simple timestamp stripping
-        const { timestamp, metrics, ...rest } = r;
+        const { timestamp, metrics, requestId: _ignored, ...rest } = r;
         return {
           responseForHash: rest as LinksStableWithoutTree,
           dynamics: { timestamp, metrics },
@@ -266,7 +266,12 @@ function stripLinksTreeDynamics(
     return sanitized;
   }
 
-  const { timestamp: _ts, metrics: _metrics, ...rootRest } = response; // top-level timestamp and metrics are not needed for hashing
+  const {
+    timestamp: _ts,
+    metrics: _metrics,
+    requestId: _ignored,
+    ...rootRest
+  } = response; // top-level timestamp and metrics are not needed for hashing
 
   const sanitizedTree = response.tree ? sanitizeNode(response.tree) : undefined;
 
