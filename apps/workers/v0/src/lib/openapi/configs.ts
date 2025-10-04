@@ -1,4 +1,3 @@
-import { env } from 'cloudflare:workers';
 import {
   CacheOptionsSchema,
   ExtractedLinksSchema,
@@ -23,26 +22,17 @@ import {
   SkippedUrlSchema,
   VisitedUrlSchema,
 } from '@deepcrawl/types';
-import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from '@orpc/json-schema';
 import type {
   ConditionalSchemaConverter,
   OpenAPIGeneratorGenerateOptions,
 } from '@orpc/openapi';
-import { OpenAPIHandler } from '@orpc/openapi/fetch';
-import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
-import { onError } from '@orpc/server';
-import { CORSPlugin } from '@orpc/server/plugins';
 import { ZodToJsonSchemaConverter } from '@orpc/zod/zod4';
-import { CORS_OPTIONS } from '@/middlewares/cors.hono';
 
-import { router } from '@/routers';
 import packageJSON from '../../../package.json' with { type: 'json' };
 
-export const SchemaConverters: ConditionalSchemaConverter[] = [
-  new ZodToJsonSchemaConverter(),
-] satisfies ConditionalSchemaConverter[];
+const API_URL = 'https://api.deepcrawl.dev';
 
-export const OpenAPISpecGenerateOptions = {
+export const OpenAPISpecBaseOptions = {
   info: {
     title: 'Deepcrawl',
     version: packageJSON.version,
@@ -50,14 +40,7 @@ export const OpenAPISpecGenerateOptions = {
   security: [{ bearerAuth: [] }],
   servers: [
     {
-      // url: 'https://api.deepcrawl.dev',
-      url: (() => {
-        try {
-          return new URL(env.API_URL).toString();
-        } catch {
-          return new URL(`https://${env.API_URL}`).toString();
-        }
-      })(),
+      url: API_URL,
       description: 'Deepcrawl Official API server',
     },
   ],
@@ -152,38 +135,6 @@ export const OpenAPISpecGenerateOptions = {
   },
 } satisfies OpenAPIGeneratorGenerateOptions;
 
-export const openAPIHandler = new OpenAPIHandler(router, {
-  interceptors: [
-    onError((error) => {
-      console.error('❌ OpenAPIHandler error', error);
-    }),
-  ],
-  plugins: [
-    new CORSPlugin({
-      origin: (origin) => origin, // Allow all origins (same as Hono)
-      credentials: CORS_OPTIONS.credentials,
-      maxAge: CORS_OPTIONS.maxAge,
-      allowMethods: CORS_OPTIONS.allowMethods,
-      allowHeaders: CORS_OPTIONS.allowHeaders,
-      exposeHeaders: CORS_OPTIONS.exposeHeaders,
-    }),
-    new SmartCoercionPlugin({
-      schemaConverters: SchemaConverters,
-    }),
-    new OpenAPIReferencePlugin({
-      schemaConverters: SchemaConverters,
-      specGenerateOptions: OpenAPISpecGenerateOptions,
-      docsConfig: {
-        authentication: {
-          securitySchemes: {
-            bearerAuth: {
-              token: 'dc-YOUR_API_KEY',
-            },
-          },
-        },
-      },
-      specPath: '/openapi',
-      docsPath: '/docs',
-    }),
-  ],
-});
+export const SchemaConverters: ConditionalSchemaConverter[] = [
+  new ZodToJsonSchemaConverter(),
+] satisfies ConditionalSchemaConverter[];

@@ -1,21 +1,26 @@
 import { writeFileSync } from 'node:fs';
 import { contract } from '@deepcrawl/contracts';
-import { OpenAPIGenerator } from '@orpc/openapi';
+import {
+  OpenAPIGenerator,
+  type OpenAPIGeneratorGenerateOptions,
+} from '@orpc/openapi';
 import * as yaml from 'js-yaml';
 import {
-  OpenAPISpecGenerateOptions,
+  OpenAPISpecBaseOptions,
   SchemaConverters,
-} from './openapi.handler';
-
-// NOTE: REQUIRE COMMENT OUT env FROM cloudflare:workers IN openapi.handler.ts TO GENERATE OPENAPI YAML
+} from '@/lib/openapi/configs';
 
 const openAPIGenerator = new OpenAPIGenerator({
   schemaConverters: SchemaConverters,
 });
 
+const OpenAPISpecGenOptions = {
+  ...OpenAPISpecBaseOptions,
+} satisfies OpenAPIGeneratorGenerateOptions;
+
 async function generateOpenAPI() {
   const specFromContract = await openAPIGenerator.generate(contract, {
-    ...OpenAPISpecGenerateOptions,
+    ...OpenAPISpecGenOptions,
   });
 
   const yamlString = yaml.dump(specFromContract);

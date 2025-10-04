@@ -2,7 +2,7 @@ import { getRuntimeKey } from 'hono/adapter';
 import { getConnInfo } from 'hono/cloudflare-workers';
 import { createContext } from '@/lib/context';
 import createHonoApp from '@/lib/hono/create-hono-app';
-import { openAPIHandler } from '@/lib/orpc/openapi.handler';
+import { openAPIHandler } from '@/lib/openapi/openapi.handler';
 import { rpcHandler } from '@/lib/orpc/rpc.handler';
 
 // Preload heavy modules during worker initialization to reduce cold start time
