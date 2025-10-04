@@ -42,7 +42,7 @@ export const ActivityLogEntrySchema = z.object({
 /**
  * Input schema for fetching activity logs
  */
-export const GetLogsInputSchema = z.object({
+export const GetLogsOptionsSchema = z.object({
   limit: z.number().int().min(1).max(100).default(20).optional().meta({
     description: 'Maximum number of logs to return',
   }),
@@ -67,7 +67,7 @@ export const GetLogsInputSchema = z.object({
 /**
  * Output schema for activity logs response
  */
-export const GetLogsOutputSchema = z.object({
+export const GetLogsResponseSchema = z.object({
   logs: z.array(ActivityLogEntrySchema).meta({
     description: 'Array of activity log entries with reconstructed responses',
   }),
@@ -81,17 +81,9 @@ export type ActivityLogEntry = z.infer<typeof ActivityLogEntrySchema>;
 /**
  * Type for get logs input
  */
-export type GetLogsInput = z.infer<typeof GetLogsInputSchema>;
+export type GetLogsOptions = z.infer<typeof GetLogsOptionsSchema>;
 
 /**
  * Type for get logs output
  */
-export type GetLogsOutput = z.infer<typeof GetLogsOutputSchema>;
-
-/**
- * Union type for all possible reconstructed responses
- */
-export type ReconstructedResponse =
-  | ReadStringResponse
-  | ReadPostResponse
-  | LinksResponse;
+export type GetLogsResponse = z.infer<typeof GetLogsResponseSchema>;
