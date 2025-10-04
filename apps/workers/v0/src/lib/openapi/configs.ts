@@ -4,6 +4,8 @@ import {
   FetchOptionsSchema,
   GetManyLogsOptionsSchema,
   GetManyLogsResponseSchema,
+  GetOneLogOptionsSchema,
+  GetOneLogResponseSchema,
   HTMLRewriterOptionsSchema,
   LinkExtractionOptionsSchema,
   LinksErrorResponseSchema,
@@ -118,10 +120,16 @@ export const OpenAPISpecBaseOptions = {
     UndefinedError: {
       error: 'UndefinedError',
     },
-    GetLogsOptions: {
+    GetOneLogOptions: {
+      schema: GetOneLogOptionsSchema,
+    },
+    GetOneLogResponse: {
+      schema: GetOneLogResponseSchema,
+    },
+    GetManyLogsOptions: {
       schema: GetManyLogsOptionsSchema,
     },
-    GetLogsResponse: {
+    GetManyLogsResponse: {
       schema: GetManyLogsResponseSchema,
     },
   },

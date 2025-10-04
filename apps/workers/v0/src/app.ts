@@ -46,29 +46,44 @@ app.use('/rpc/*', async (c, next) => {
   await next();
 });
 
-// Handle API routes - all routes from contract
-const routes = [
-  { path: '/docs', methods: ['GET'] },
-  { path: '/openapi', methods: ['GET'] },
-  { path: '/read', methods: ['GET', 'POST', 'OPTIONS'] },
-  { path: '/links', methods: ['GET', 'POST', 'OPTIONS'] },
-  { path: '/logs', methods: ['POST', 'OPTIONS'] },
-  { path: '/logs/:id', methods: ['GET', 'OPTIONS'] },
-] as const;
+// Handle all other routes with OpenAPI handler
+app.all('*', async (c) => {
+  const context = await createContext({ context: c });
+  const { matched, response } = await openAPIHandler.handle(c.req.raw, {
+    context,
+  });
 
-for (const route of routes) {
-  for (const method of route.methods) {
-    app.on(method, route.path, async (c) => {
-      const context = await createContext({ context: c });
-      const { matched, response } = await openAPIHandler.handle(c.req.raw, {
-        context,
-      });
-
-      if (matched && response) {
-        return c.newResponse(response.body, response);
-      }
-    });
+  if (matched && response) {
+    return c.newResponse(response.body, response);
   }
-}
+
+  return c.text('Not Found', 404);
+});
+
+// @deprecated old workaround approach
+// Handle API routes - all routes from contract
+// const routes = [
+//   { path: '/docs', methods: ['GET'] },
+//   { path: '/openapi', methods: ['GET'] },
+//   { path: '/read', methods: ['GET', 'POST', 'OPTIONS'] },
+//   { path: '/links', methods: ['GET', 'POST', 'OPTIONS'] },
+//   { path: '/logs', methods: ['POST', 'OPTIONS'] },
+//   { path: '/logs/:id', methods: ['GET', 'OPTIONS'] },
+// ] as const;
+
+// for (const route of routes) {
+//   for (const method of route.methods) {
+//     app.on(method, route.path, async (c) => {
+//       const context = await createContext({ context: c });
+//       const { matched, response } = await openAPIHandler.handle(c.req.raw, {
+//         context,
+//       });
+
+//       if (matched && response) {
+//         return c.newResponse(response.body, response);
+//       }
+//     });
+//   }
+// }
 
 export default app;
