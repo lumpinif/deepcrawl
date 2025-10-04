@@ -77,13 +77,3 @@ export const GetLogsResponseSchema = z.object({
  * Type for a single activity log entry
  */
 export type ActivityLogEntry = z.infer<typeof ActivityLogEntrySchema>;
-
-/**
- * Type for get logs input
- */
-export type GetLogsOptions = z.infer<typeof GetLogsOptionsSchema>;
-
-/**
- * Type for get logs output
- */
-export type GetLogsResponse = z.infer<typeof GetLogsResponseSchema>;
