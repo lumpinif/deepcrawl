@@ -54,6 +54,7 @@ export const linksGETHandler = authed
       } else {
         // If the error is not a LinksProcessingError, create a generic LinksErrorResponse
         linksErrorResponse = createLinksErrorResponse({
+          requestId: c.var.requestId,
           targetUrl: url,
           error: err,
           withTree: false,
@@ -120,6 +121,7 @@ export const linksPOSTHandler = authed
       } else {
         // If the error is not a LinksProcessingError, create a generic LinksErrorResponse
         linksErrorResponse = createLinksErrorResponse({
+          requestId: c.var.requestId,
           targetUrl: url,
           error: err,
           withTree: false,

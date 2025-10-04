@@ -243,6 +243,7 @@ export const ReadResponseBaseSchema = z.object({
  * Schema for error responses from read operations.
  * Inherits from BaseErrorResponseSchema with error details and status codes.
  *
+ * @property {string} requestId - Unique identifier (request ID) for the activity log entry
  * @property {false} success - Always false for error responses
  * @property {string} error - Error message describing what went wrong
  * @property {string} [requestUrl] - URL, raw url, that was requested to be processed and might be different from the target url
@@ -254,6 +255,7 @@ export const ReadResponseBaseSchema = z.object({
  * @example
  * ```typescript
  * {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: false,
  *   error: 'Failed to fetch URL',
  *   requestUrl: 'https://example.com/article#fragment', // optional

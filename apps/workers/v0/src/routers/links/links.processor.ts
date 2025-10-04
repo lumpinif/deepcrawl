@@ -299,12 +299,14 @@ async function processNonTreeRequest({
 }
 
 export function createLinksErrorResponse({
+  requestId,
   targetUrl,
   error = 'Failed to scrape target URL. The URL may be unreachable, a placeholder URL, or returning an error status.',
   withTree,
   existingTree,
   tree,
 }: {
+  requestId: string;
   targetUrl: string;
   withTree: boolean;
   error?: string;
@@ -312,6 +314,7 @@ export function createLinksErrorResponse({
   tree: LinksTree | undefined;
 }): LinksErrorResponse {
   return {
+    requestId,
     success: false,
     targetUrl,
     error,
@@ -512,6 +515,7 @@ export async function processLinksRequest(
         // create a links post error response and return it
         const linksPostErrorResponse: LinksErrorResponse =
           createLinksErrorResponse({
+            requestId: c.var.requestId,
             targetUrl,
             withTree,
             existingTree,

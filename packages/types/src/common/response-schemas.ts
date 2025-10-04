@@ -4,6 +4,7 @@ import * as z from 'zod/v4';
  * Common error response schema used across all endpoints.
  * Provides a standardized error response structure.
  *
+ * @property {string} requestId - Unique identifier (request ID) for the activity log entry
  * @property {false} success - Always false for error responses
  * @property {string} targetUrl - URL that was being processed when error occurred
  * @property {string} [requestUrl] - URL, raw url, that was requested to be processed and might be different from the target url
@@ -13,6 +14,7 @@ import * as z from 'zod/v4';
  * @example
  * ```typescript
  * const errorResponse = {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: false,
  *   requestUrl: 'https://example.com/article#fragment',
  *   targetUrl: 'https://example.com/article',
@@ -23,6 +25,10 @@ import * as z from 'zod/v4';
  */
 export const BaseErrorResponseSchema = z
   .object({
+    requestId: z.string().meta({
+      description: 'Unique identifier (request ID) for the activity log entry',
+      examples: ['123e4567-e89b-12d3-a456-426614174000'],
+    }),
     /* Indicates that the operation failed */
     success: z.literal(false).meta({
       description: 'Indicates that the operation failed',

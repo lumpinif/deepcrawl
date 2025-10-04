@@ -44,6 +44,7 @@ export const readGETHandler = authed
       const targetUrl = targetUrlHelper(url, true); // normalized target url for the `targetUrl` and response hash
 
       const readErrorResponse: ReadErrorResponse = {
+        requestId: c.var.requestId,
         success: false,
         requestUrl: url,
         targetUrl: targetUrl,
@@ -103,6 +104,7 @@ export const readPOSTHandler = authed
       const targetUrl = targetUrlHelper(url, true); // normalized target url for the `targetUrl` and response hash
 
       const readErrorResponse: ReadErrorResponse = {
+        requestId: c.var.requestId,
         success: false,
         requestUrl: url,
         targetUrl: targetUrl,

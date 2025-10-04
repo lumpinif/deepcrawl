@@ -882,6 +882,7 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
   description: 'Error response from the links extraction operation',
   examples: [
     {
+      requestId: '123e4567-e89b-12d3-a456-426614174000',
       success: false,
       requestUrl: 'https://example.com/article#fragment',
       targetUrl: 'https://example.com',
