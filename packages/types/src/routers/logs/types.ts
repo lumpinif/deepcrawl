@@ -191,7 +191,7 @@ export type ActivityLogEntry = z.infer<typeof ActivityLogEntrySchema>;
 /**
  * Input schema for fetching activity logs
  */
-export const GetLogsOptionsSchema = z.object({
+export const GetManyLogsOptionsSchema = z.object({
   limit: z.number().int().min(1).max(100).default(20).optional().meta({
     description: 'Maximum number of logs to return',
   }),
@@ -216,7 +216,7 @@ export const GetLogsOptionsSchema = z.object({
 /**
  * Output schema for activity logs response
  */
-export const GetLogsResponseSchema = z.object({
+export const GetManyLogsResponseSchema = z.object({
   logs: z.array(ActivityLogEntrySchema).meta({
     description: 'Array of activity log entries with responses',
   }),
@@ -225,19 +225,19 @@ export const GetLogsResponseSchema = z.object({
 /** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
  * Type for get logs options (input)
  */
-// export type GetLogsOptions = z.infer<typeof GetLogsOptionsSchema>;
+// export type GetManyLogsOptions = z.infer<typeof GetManyLogsOptionsSchema>;
 
 /** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
  * Type for get logs response (output)
  */
-// export type GetLogsResponse = z.infer<typeof GetLogsResponseSchema>;
+// export type GetManyLogsResponse = z.infer<typeof GetManyLogsResponseSchema>;
 
 /* ----------------------------------------------GET-LOG---(Get single log)------------------------------------------------------- */
 
 /**
  * Input schema for fetching a single activity log entry
  */
-export const GetLogOptionsSchema = z.object({
+export const GetOneLogOptionsSchema = z.object({
   /**
    * Unique identifier for the activity log entry
    */
@@ -249,16 +249,16 @@ export const GetLogOptionsSchema = z.object({
 /**
  * Output schema for a single activity log entry response
  */
-export const GetLogResponseSchema = ActivityLogEntrySchema.meta({
+export const GetOneLogResponseSchema = ActivityLogEntrySchema.meta({
   description: 'Activity log entry with the response',
 });
 
 /** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
  * Type for get log options (input)
  */
-// export type GetLogOptions = z.infer<typeof GetLogOptionsSchema>;
+// export type GetOneLogOptions = z.infer<typeof GetOneLogOptionsSchema>;
 
 /** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
  * Type for get log response (output)
  */
-// export type GetLogResponse = z.infer<typeof GetLogResponseSchema>;
+// export type GetOneLogResponse = z.infer<typeof GetOneLogResponseSchema>;

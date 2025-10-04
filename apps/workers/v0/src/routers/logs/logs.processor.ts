@@ -1,9 +1,9 @@
 import type {
-  GetLogOptions,
-  GetLogResponse,
-  GetLogsOptions,
-  GetLogsResponse,
+  GetManyLogsOptions,
+  GetManyLogsResponse,
   GetMarkdownOptions,
+  GetOneLogOptions,
+  GetOneLogResponse,
 } from '@deepcrawl/contracts';
 import type { ActivityLog, ResponseRecord } from '@deepcrawl/db-d1';
 import {
@@ -79,10 +79,10 @@ function reconstructLogEntry(
 /**
  * Fetch multiple activity logs with pagination and filtering
  */
-export async function getMultipleLogsWithReconstruction(
+export async function getManyLogsWithReconstruction(
   c: ORPCContext,
-  options: GetLogsOptions,
-): Promise<GetLogsResponse> {
+  options: GetManyLogsOptions,
+): Promise<GetManyLogsResponse> {
   const { limit = 20, offset = 0, path, success, startDate, endDate } = options;
 
   // Get user ID from session
@@ -144,10 +144,10 @@ export async function getMultipleLogsWithReconstruction(
 /**
  * Fetch a single activity log by ID
  */
-export async function getSingleLogWithReconstruction(
+export async function getOneLogWithReconstruction(
   c: ORPCContext,
-  options: GetLogOptions,
-): Promise<GetLogResponse> {
+  options: GetOneLogOptions,
+): Promise<GetOneLogResponse> {
   const { id } = options;
 
   // Get user ID from session

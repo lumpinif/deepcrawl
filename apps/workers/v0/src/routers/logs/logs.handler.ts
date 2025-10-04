@@ -1,18 +1,18 @@
 import { rateLimitMiddleware } from '@/middlewares/rate-limit.orpc';
 import { authed } from '@/orpc';
 import {
-  getMultipleLogsWithReconstruction as getMultipleLogs,
-  getSingleLogWithReconstruction as getSingleLog,
+  getManyLogsWithReconstruction as getManyLogs,
+  getOneLogWithReconstruction as getSingleLog,
 } from './logs.processor';
 
-export const getMultipleLogsHandler = authed
-  .use(rateLimitMiddleware({ operation: 'getLogs' }))
-  .logs.getLogs.handler(async ({ input, context: c }) => {
-    return getMultipleLogs(c, input);
+export const logsPOSTHandler = authed
+  .use(rateLimitMiddleware({ operation: 'getMany' }))
+  .logs.getMany.handler(async ({ input, context: c }) => {
+    return getManyLogs(c, input);
   });
 
-export const getSingleLogHandler = authed
-  .use(rateLimitMiddleware({ operation: 'getLog' }))
-  .logs.getLog.handler(async ({ input, context: c }) => {
+export const logsGETHandler = authed
+  .use(rateLimitMiddleware({ operation: 'getOne' }))
+  .logs.getOne.handler(async ({ input, context: c }) => {
     return getSingleLog(c, input);
   });

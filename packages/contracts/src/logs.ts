@@ -1,8 +1,8 @@
 import {
-  GetLogOptionsSchema,
-  GetLogResponseSchema,
-  GetLogsOptionsSchema,
-  GetLogsResponseSchema,
+  GetManyLogsOptionsSchema,
+  GetManyLogsResponseSchema,
+  GetOneLogOptionsSchema,
+  GetOneLogResponseSchema,
 } from '@deepcrawl/types/routers/logs';
 import { oc } from '@orpc/contract';
 import type { Inputs, Outputs } from '.';
@@ -17,37 +17,37 @@ const logsOC = oc.errors({
 /* ----------------------------------------------GET-LOGS---(Get multiple logs)------------------------------------------------------- */
 
 /**
- * Get multiple activity logs
+ * Get multiple activity logs - POST method for complex query parameters
  */
-export const getLogsContract = logsOC
+export const getManyLogsContract = logsOC
   .route({
     tags,
     path: '/',
-    method: 'GET',
+    method: 'POST',
     summary: 'Get activity logs',
-    description: `Endpoint: GET \`api.deepcrawl.dev/logs\`\n\nRetrieve activity logs with original responses with request options. Returns paginated results with optional filtering by path, success status, and date range.`,
+    description: `Endpoint: POST \`api.deepcrawl.dev/logs\`\n\nRetrieve activity logs with original responses with request options. Returns paginated results with optional filtering by path, success status, and date range.`,
   })
-  .input(GetLogsOptionsSchema)
-  .output(GetLogsResponseSchema);
+  .input(GetManyLogsOptionsSchema)
+  .output(GetManyLogsResponseSchema);
 
-export type GetLogsOptions = Inputs['logs']['getLogs'];
-export type GetLogsResponse = Outputs['logs']['getLogs'];
+export type GetManyLogsOptions = Inputs['logs']['getMany'];
+export type GetManyLogsResponse = Outputs['logs']['getMany'];
 
 /* ----------------------------------------------GET-LOG---(Get single log)------------------------------------------------------- */
 
 /**
- * Get a single activity log
+ * Get a single activity log by ID - GET method with path parameter
  */
-export const getLogContract = logsOC
+export const getOneLogContract = logsOC
   .route({
     tags,
-    path: '/',
+    path: '/{id}',
     method: 'GET',
     summary: 'Get a single activity log',
-    description: `Endpoint: GET \`api.deepcrawl.dev/logs/log\`\n\nRetrieve a single activity log with original response.`,
+    description: `Endpoint: GET \`api.deepcrawl.dev/logs/{id}\`\n\nRetrieve a single activity log with original response by ID.`,
   })
-  .input(GetLogOptionsSchema)
-  .output(GetLogResponseSchema);
+  .input(GetOneLogOptionsSchema)
+  .output(GetOneLogResponseSchema);
 
-export type GetLogOptions = Inputs['logs']['getLog'];
-export type GetLogResponse = Outputs['logs']['getLog'];
+export type GetOneLogOptions = Inputs['logs']['getOne'];
+export type GetOneLogResponse = Outputs['logs']['getOne'];

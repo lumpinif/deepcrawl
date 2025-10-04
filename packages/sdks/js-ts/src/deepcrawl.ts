@@ -3,12 +3,12 @@ import type {
   contract,
   ExtractLinksOptions,
   ExtractLinksResponse,
-  GetLogOptions,
-  GetLogResponse,
-  GetLogsOptions,
-  GetLogsResponse,
+  GetManyLogsOptions,
+  GetManyLogsResponse,
   GetMarkdownOptions,
   GetMarkdownResponse,
+  GetOneLogOptions,
+  GetOneLogResponse,
   ReadUrlOptions,
   ReadUrlResponse,
 } from '@deepcrawl/contracts';
@@ -662,13 +662,13 @@ export class DeepcrawlApp {
     }
   }
 
-  /* Logs GET */
+  /* Logs POST */
   /**
    * ---
    *
-   * @method async `getLogs()` - Retrieve activity logs with reconstructed responses and full type safety through discriminated unions.
-   * @returns {Promise<GetLogsResponse>} Promise<{@link GetLogsResponse}> - Array of {@link ActivityLogEntry} with discriminated union type safety.
-   * @param options getLogs({@link GetLogsOptions options?: GetLogsOptions}) - Optional filters for logs retrieval
+   * @method async `getManyLogs()` - Retrieve activity logs with reconstructed responses and full type safety through discriminated unions.
+   * @returns {Promise<GetManyLogsResponse>} Promise<{@link GetManyLogsResponse}> - Array of {@link ActivityLogEntry} with discriminated union type safety.
+   * @param options getManyLogsOptions ({@link GetManyLogsOptions options?: GetManyLogOptions}) - Optional filters for logs retrieval
    *
    * Each log entry uses a discriminated union based on the `path` field, enabling precise type narrowing:
    *
@@ -690,15 +690,15 @@ export class DeepcrawlApp {
    *
    * @example Basic usage
    * ```typescript
-   * import { DeepcrawlApp, GetLogsResponse } from 'deepcrawl';
+   * import { DeepcrawlApp, GetManyLogsResponse } from 'deepcrawl';
    *
    * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
    *
    * // Get recent logs (default: 20)
-   * const logs: GetLogsResponse = await dc.getLogs();
+   * const logs: GetManyLogsResponse = await dc.getManyLogs();
    *
    * // With filters
-   * const filteredLogs: GetLogsResponse = await dc.getLogs({
+   * const filteredLogs: GetManyLogsResponse = await dc.getManyLogs({
    *   limit: 50,
    *   offset: 0,
    *   path: 'read-getMarkdown',
@@ -710,7 +710,7 @@ export class DeepcrawlApp {
    *
    * @example Type narrowing with discriminated union
    * ```typescript
-   * const { logs } = await dc.getLogs();
+   * const { logs } = await dc.getManyLogs();
    *
    * for (const log of logs) {
    *   // TypeScript automatically narrows types based on path
@@ -743,22 +743,24 @@ export class DeepcrawlApp {
    * @throws `DeepcrawlRateLimitError` Rate limit exceeded - {@link DeepcrawlRateLimitError}
    *
    */
-  async getLogs(options?: GetLogsOptions): Promise<GetLogsResponse> {
-    const [error, data] = await this.safeClient.logs.getLogs(options || {});
+  async getManyLogs(
+    options?: GetManyLogsOptions,
+  ): Promise<GetManyLogsResponse> {
+    const [error, data] = await this.safeClient.logs.getMany(options || {});
 
     if (error) {
       handleDeepcrawlError(error, 'read', 'Failed to fetch logs');
     }
 
-    return data as GetLogsResponse;
+    return data as GetManyLogsResponse;
   }
 
   /**
    * ---
    *
-   * @method async `getLog()` - Retrieve a single activity log entry by ID with full type safety through discriminated unions.
-   * @returns {Promise<GetLogResponse>} Promise<{@link GetLogResponse}> - Single {@link ActivityLogEntry} with discriminated union type safety.
-   * @param options getLog({@link GetLogOptions options: GetLogOptions}) - Log ID (Request ID) to retrieve
+   * @method async `getOneLog()` - Retrieve a single activity log entry by ID with full type safety through discriminated unions.
+   * @returns {Promise<GetOneLogResponse>} Promise<{@link GetOneLogResponse}> - Single {@link ActivityLogEntry} with discriminated union type safety.
+   * @param options getOneLogOptions ({@link GetOneLogOptions options: GetOneLogOptions}) - Log ID (Request ID) to retrieve
    *
    * The returned log entry uses a discriminated union based on the `path` field, enabling precise type narrowing:
    *
@@ -780,17 +782,17 @@ export class DeepcrawlApp {
    *
    * @example Basic usage
    * ```typescript
-   * import { DeepcrawlApp, GetLogResponse } from 'deepcrawl';
+   * import { DeepcrawlApp, GetOneLogResponse } from 'deepcrawl';
    *
    * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
    *
    * // Get a specific log by ID
-   * const log: GetLogResponse = await dc.getLog({ id: 'log-123' });
+   * const log: GetOneLogResponse = await dc.getOneLog({ id: 'log-123' });
    * ```
    *
    * @example Type narrowing with discriminated union
    * ```typescript
-   * const log = await dc.getLog({ id: 'log-123' });
+   * const log = await dc.getOneLog({ id: 'log-123' });
    *
    * // TypeScript automatically narrows types based on path
    * if (log.path === 'read-getMarkdown') {
@@ -822,14 +824,14 @@ export class DeepcrawlApp {
    * @throws `DeepcrawlRateLimitError` Rate limit exceeded - {@link DeepcrawlRateLimitError}
    *
    */
-  async getLog(options: GetLogOptions): Promise<GetLogResponse> {
-    const [error, data] = await this.safeClient.logs.getLog(options);
+  async getOneLog(options: GetOneLogOptions): Promise<GetOneLogResponse> {
+    const [error, data] = await this.safeClient.logs.getOne(options);
 
     if (error) {
       handleDeepcrawlError(error, 'read', 'Failed to fetch log');
     }
 
-    return data as GetLogResponse;
+    return data as GetOneLogResponse;
   }
 }
 
