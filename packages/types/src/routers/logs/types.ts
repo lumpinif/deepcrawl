@@ -231,3 +231,34 @@ export const GetLogsResponseSchema = z.object({
  * Type for get logs response (output)
  */
 // export type GetLogsResponse = z.infer<typeof GetLogsResponseSchema>;
+
+/* ----------------------------------------------GET-LOG---(Get single log)------------------------------------------------------- */
+
+/**
+ * Input schema for fetching a single activity log entry
+ */
+export const GetLogOptionsSchema = z.object({
+  /**
+   * Unique identifier for the activity log entry
+   */
+  id: z.string().meta({
+    description: 'Unique identifier for the activity log entry',
+  }),
+});
+
+/**
+ * Output schema for a single activity log entry response
+ */
+export const GetLogResponseSchema = ActivityLogEntrySchema.meta({
+  description: 'Activity log entry with the response',
+});
+
+/** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
+ * Type for get log options (input)
+ */
+// export type GetLogOptions = z.infer<typeof GetLogOptionsSchema>;
+
+/** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
+ * Type for get log response (output)
+ */
+// export type GetLogResponse = z.infer<typeof GetLogResponseSchema>;

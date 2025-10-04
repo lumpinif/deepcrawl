@@ -1,4 +1,6 @@
 import {
+  GetLogOptionsSchema,
+  GetLogResponseSchema,
   GetLogsOptionsSchema,
   GetLogsResponseSchema,
 } from '@deepcrawl/types/routers/logs';
@@ -12,6 +14,11 @@ const logsOC = oc.errors({
   RATE_LIMITED: errorSpec.RATE_LIMITED,
 });
 
+/* ----------------------------------------------GET-LOGS---(Get multiple logs)------------------------------------------------------- */
+
+/**
+ * Get multiple activity logs
+ */
 export const getLogsContract = logsOC
   .route({
     tags,
@@ -25,3 +32,22 @@ export const getLogsContract = logsOC
 
 export type GetLogsOptions = Inputs['logs']['getLogs'];
 export type GetLogsResponse = Outputs['logs']['getLogs'];
+
+/* ----------------------------------------------GET-LOG---(Get single log)------------------------------------------------------- */
+
+/**
+ * Get a single activity log
+ */
+export const getLogContract = logsOC
+  .route({
+    tags,
+    path: '/',
+    method: 'GET',
+    summary: 'Get a single activity log',
+    description: `Endpoint: GET \`api.deepcrawl.dev/logs/log\`\n\nRetrieve a single activity log with original response.`,
+  })
+  .input(GetLogOptionsSchema)
+  .output(GetLogResponseSchema);
+
+export type GetLogOptions = Inputs['logs']['getLog'];
+export type GetLogResponse = Outputs['logs']['getLog'];

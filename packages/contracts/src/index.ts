@@ -4,7 +4,7 @@ import type {
 } from '@orpc/contract';
 import { oc } from '@orpc/contract';
 import { linksGETContract, linksPOSTContract } from './links';
-import { getLogsContract } from './logs';
+import { getLogContract, getLogsContract } from './logs';
 import { readGETContract, readPOSTContract } from './read';
 
 export const contract = oc.router({
@@ -18,6 +18,7 @@ export const contract = oc.router({
   }),
   logs: oc.prefix('/logs').router({
     getLogs: getLogsContract,
+    getLog: getLogContract,
   }),
 });
 
