@@ -52,6 +52,16 @@ const RATE_LIMIT_RULES: Record<
       window: '60 s',
     },
   },
+  getLogs: {
+    free: {
+      limit: 30,
+      window: '60 s',
+    },
+    pro: {
+      limit: 100,
+      window: '60 s',
+    },
+  },
 } as const;
 
 // Create rate limiters at module level to reuse across requests

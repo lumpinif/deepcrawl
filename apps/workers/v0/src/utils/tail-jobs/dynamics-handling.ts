@@ -16,11 +16,11 @@ import {
   isLinksResponseWithTree,
 } from '@/routers/links/links.processor';
 
-interface DynamicsBase {
+export interface DynamicsBase {
   timestamp: string;
 }
 
-interface LinksDynamics extends DynamicsBase {
+export interface LinksDynamics extends DynamicsBase {
   metrics?: LinksSuccessResponse['metrics'];
   treeDynamics?: {
     root: {
@@ -32,11 +32,11 @@ interface LinksDynamics extends DynamicsBase {
   };
 }
 
-interface ReadDynamics extends DynamicsBase {
+export interface ReadDynamics extends DynamicsBase {
   metrics?: ReadSuccessResponse['metrics'];
 }
 
-type Dynamics = ReadDynamics | LinksDynamics | null;
+export type Dynamics = ReadDynamics | LinksDynamics | null;
 
 type ReadSuccessResponseWithoutDynamics = Omit<
   ReadSuccessResponse,
