@@ -1,6 +1,6 @@
 import {
-  GetLogsInputSchema,
-  GetLogsOutputSchema,
+  GetLogsOptionsSchema,
+  GetLogsResponseSchema,
 } from '@deepcrawl/types/routers/logs';
 import { oc } from '@orpc/contract';
 import type { Inputs, Outputs } from '.';
@@ -20,8 +20,8 @@ export const getLogsContract = logsOC
     summary: 'Get activity logs',
     description: `Endpoint: GET \`api.deepcrawl.dev/logs\`\n\nRetrieve activity logs with original responses with request options. Returns paginated results with optional filtering by path, success status, and date range.`,
   })
-  .input(GetLogsInputSchema)
-  .output(GetLogsOutputSchema);
+  .input(GetLogsOptionsSchema)
+  .output(GetLogsResponseSchema);
 
-export type GetLogsInput = Inputs['logs']['getLogs'];
-export type GetLogsOutput = Outputs['logs']['getLogs'];
+export type GetLogsOptions = Inputs['logs']['getLogs'];
+export type GetLogsResponse = Outputs['logs']['getLogs'];
