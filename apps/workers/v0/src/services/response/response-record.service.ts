@@ -1,6 +1,6 @@
 import { eq, type NewResponseRecord, responseRecord } from '@deepcrawl/db-d1';
 import type { LinksSuccessResponse } from '@deepcrawl/types/routers/links/types';
-
+import type { JoinedRequestPath } from '@deepcrawl/types/routers/logs';
 import type { AppVariables, ORPCContext } from '@/lib/context';
 import {
   isLinksResponseWithoutTree,
@@ -21,7 +21,7 @@ interface CreateRequestOptionsHashParams {
 }
 
 interface CreateStableResponseHashParams {
-  path: string;
+  joinedPath: JoinedRequestPath;
   requestUrl: string;
   optionsHash: string;
   response: ExtractedDynamicsForHashResult['responseForHash'];
@@ -29,7 +29,7 @@ interface CreateStableResponseHashParams {
 }
 
 interface StoreResponseRecordParams {
-  path: string;
+  joinedPath: JoinedRequestPath;
   requestUrl: string;
   responseContent: ExtractedDynamicsForHashResult['responseForHash'];
   optionsHash: string;
@@ -67,8 +67,9 @@ export class ResponseRecordService {
   async createStableResponseHash(
     params: CreateStableResponseHashParams,
   ): Promise<string> {
-    const { path, optionsHash, requestUrl, response, linksRootKey } = params;
-    if (path.startsWith('links-') && linksRootKey) {
+    const { joinedPath, optionsHash, requestUrl, response, linksRootKey } =
+      params;
+    if (joinedPath.startsWith('links-') && linksRootKey) {
       // links without tree (isTree=false) → response already canonicalized upstream
       if (
         typeof response === 'object' &&
@@ -111,8 +112,13 @@ export class ResponseRecordService {
    * store response record with deduplication
    */
   async storeResponseRecord(params: StoreResponseRecordParams): Promise<void> {
-    const { path, responseContent, requestUrl, optionsHash, responseHash } =
-      params;
+    const {
+      joinedPath,
+      responseContent,
+      requestUrl,
+      optionsHash,
+      responseHash,
+    } = params;
 
     try {
       // Check if response already exists
@@ -143,7 +149,7 @@ export class ResponseRecordService {
       } else {
         // New response - insert with deduplication
         const newResponse: NewResponseRecord = {
-          path,
+          path: joinedPath,
           responseContent,
           responseHash,
           optionsHash,

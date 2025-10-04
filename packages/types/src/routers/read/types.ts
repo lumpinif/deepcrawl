@@ -143,6 +143,34 @@ export const ReadOptionsSchema = z
   });
 
 /**
+ * @name GetMarkdownOptionsSchema || ReadGETInputSchema
+ * @description Input schema for the GET endpoint
+ * @note Only includes:
+ * - `url` - The webpage URL to convert to markdown
+ * - `cacheOptions` - Cache settings
+ * - `markdownConverterOptions` - Markdown conversion settings
+ * from {@link ReadOptionsSchema}
+ *
+ * @param {string} [url] - The webpage URL to convert to markdown
+ * @param {object} [cacheOptions] - Cache settings
+ * @param {string} [cleaningProcessor] - HTML cleaning processor
+ * @param {object} [markdownConverterOptions] - Markdown conversion settings
+ */
+export const GetMarkdownOptionsSchema = ReadOptionsSchema.pick({
+  url: true,
+  cacheOptions: true,
+  cleaningProcessor: true,
+  markdownConverterOptions: true,
+});
+/**@description Same as {@link GetMarkdownOptionsSchema} */
+export const ReadGETInputSchema = ReadOptionsSchema.pick({
+  url: true,
+  cacheOptions: true,
+  cleaningProcessor: true,
+  markdownConverterOptions: true,
+});
+
+/**
  * Base response schema containing common fields for all read operation responses.
  * Provides fundamental information about the operation status and target.
  *

@@ -8,6 +8,7 @@ import type {
   LinksErrorResponse,
   LinksSuccessResponse,
 } from '@deepcrawl/types/routers/links/types';
+import type { JoinedRequestPath } from '@deepcrawl/types/routers/logs';
 import type {
   ReadErrorResponse,
   ReadStringResponse,
@@ -68,7 +69,7 @@ export function schedulePostProcessing(
     requestTimestamp,
   } = params;
 
-  const joinedPath = path.join('-'); // such as [ 'read', 'getMarkdown' ] => 'read-getMarkdown'
+  const joinedPath = path.join('-') as JoinedRequestPath; // such as [ 'read', 'getMarkdown' ] => 'read-getMarkdown'
 
   const activityLogger = createActivityLogger(c);
   const responseRecordService = createResponseRecordService(c);
@@ -94,7 +95,7 @@ export function schedulePostProcessing(
         // create response hash (stable strategy for links)
         const responseHash =
           await responseRecordService.createStableResponseHash({
-            path: joinedPath,
+            joinedPath,
             optionsHash,
             requestUrl,
             response: isGetMarkdown ? response : responseForHash,
@@ -104,7 +105,7 @@ export function schedulePostProcessing(
         // store response record only if success is true
         if (success) {
           await responseRecordService.storeResponseRecord({
-            path: joinedPath,
+            joinedPath,
             optionsHash,
             requestUrl,
             responseHash,

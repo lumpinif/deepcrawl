@@ -1,4 +1,8 @@
-import type { GetLogsOptions, GetLogsResponse } from '@deepcrawl/contracts';
+import type {
+  GetLogsOptions,
+  GetLogsResponse,
+  GetMarkdownOptions,
+} from '@deepcrawl/contracts';
 import type { ActivityLog, ResponseRecord } from '@deepcrawl/db-d1';
 import {
   activityLog,
@@ -9,6 +13,14 @@ import {
   lte,
   responseRecord,
 } from '@deepcrawl/db-d1';
+import type {
+  LinksErrorResponse,
+  LinksOptions,
+  LinksSuccessResponse,
+  ReadErrorResponse,
+  ReadOptions,
+  ReadSuccessResponse,
+} from '@deepcrawl/types';
 import type { ActivityLogEntry } from '@deepcrawl/types/routers/logs';
 import type { ORPCContext } from '@/lib/context';
 import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
@@ -70,14 +82,46 @@ export async function getLogsWithReconstruction(
     }) => {
       const activity = log.activityLog;
       const record = log.responseRecord;
-
       const reconstructedResponse = reconstructResponse(record, activity);
 
-      return {
-        id: activity.id,
-        requestOptions: activity.requestOptions,
-        response: reconstructedResponse,
-      };
+      switch (activity.path) {
+        case 'read-getMarkdown':
+          return {
+            id: activity.id,
+            path: 'read-getMarkdown',
+            requestOptions: activity.requestOptions as GetMarkdownOptions, // ensure this matches GetMarkdownOptionsSchema
+            response: reconstructedResponse as string, // ensure this is string
+          };
+        case 'read-readUrl':
+          return {
+            id: activity.id,
+            path: 'read-readUrl',
+            requestOptions: activity.requestOptions as ReadOptions, // ensure this matches ReadOptionsSchema
+            response: reconstructedResponse as
+              | ReadSuccessResponse
+              | ReadErrorResponse, // ensure this matches ReadSuccessResponseSchema | ReadErrorResponseSchema
+          };
+        case 'links-getLinks':
+          return {
+            id: activity.id,
+            path: 'links-getLinks',
+            requestOptions: activity.requestOptions as LinksOptions, // ensure this matches LinksOptionsSchema
+            response: reconstructedResponse as
+              | LinksSuccessResponse
+              | LinksErrorResponse, // ensure this matches LinksSuccessResponseSchema | LinksErrorResponseSchema
+          };
+        case 'links-extractLinks':
+          return {
+            id: activity.id,
+            path: 'links-extractLinks',
+            requestOptions: activity.requestOptions as LinksOptions, // ensure this matches LinksOptionsSchema
+            response: reconstructedResponse as
+              | LinksSuccessResponse
+              | LinksErrorResponse, // ensure this matches LinksSuccessResponseSchema | LinksErrorResponseSchema
+          };
+        default:
+          throw new Error(`Unknown path: ${activity.path}`);
+      }
     },
   );
 

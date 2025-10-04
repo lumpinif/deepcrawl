@@ -1,43 +1,192 @@
-import type {
-  LinksResponse,
-  ReadPostResponse,
-  ReadStringResponse,
-} from '@deepcrawl/types';
 import { z } from 'zod/v4';
+import {
+  LinksErrorResponseSchema,
+  LinksOptionsSchema,
+  LinksSuccessResponseSchema,
+} from '../links';
+import {
+  GetMarkdownOptionsSchema,
+  ReadErrorResponseSchema,
+  ReadOptionsSchema,
+  ReadSuccessResponseSchema,
+} from '../read';
 
 /**
- * Schema for a single activity log entry with reconstructed response
- * Contains minimal fields needed for UI rendering:
- * - id: unique identifier for the log entry
- * - requestOptions: original request parameters
- * - response: the fully reconstructed original response (one of the API response types)
+ * Schema for a joined request path
+ * - read-getMarkdown
+ * - read-readUrl
+ * - links-getLinks
+ * - links-extractLinks
  */
-export const ActivityLogEntrySchema = z.object({
-  /**
-   * Unique identifier for the activity log entry
-   */
-  id: z.string().meta({
-    description: 'Unique identifier for the activity log entry',
-  }),
+export const JoinedRequestPathSchema = z
+  .enum([
+    'read-getMarkdown',
+    'read-readUrl',
+    'links-getLinks',
+    'links-extractLinks',
+  ])
+  .meta({
+    description: 'Joined request path',
+    examples: [
+      'read-getMarkdown',
+      'read-readUrl',
+      'links-getLinks',
+      'links-extractLinks',
+    ],
+  });
 
-  /**
-   * Original request options/parameters
-   */
-  requestOptions: z.unknown().meta({
-    description: 'Original request options/parameters',
-  }),
+export type JoinedRequestPath = z.infer<typeof JoinedRequestPathSchema>;
 
-  /**
-   * Reconstructed original response - can be any of the API response types:
-   * - ReadStringResponse (string) - from getMarkdown
-   * - ReadPostResponse (ReadSuccessResponse | ReadErrorResponse) - from readUrl
-   * - LinksResponse (LinksSuccessResponse | LinksErrorResponse) - from getLinks/extractLinks
-   */
-  response: z.unknown().meta({
-    description:
-      'Reconstructed original response - ReadStringResponse | ReadPostResponse | LinksResponse',
+/**
+ * Discriminated union schema for activity log entries with full type safety
+ *
+ * The `path` field serves as the discriminator, enabling precise type narrowing
+ * for both `requestOptions` and `response` based on the API endpoint:
+ *
+ * - **`read-getMarkdown`**: Returns markdown content as a string
+ *   - `requestOptions`: {@link GetMarkdownOptionsSchema GetMarkdownOptions}
+ *   - `response`: `string` (markdown content)
+ *
+ * - **`read-readUrl`**: Returns structured page content with metadata
+ *   - `requestOptions`: {@link ReadOptionsSchema ReadOptions}
+ *   - `response`: {@link ReadSuccessResponseSchema ReadSuccessResponse} | {@link ReadErrorResponseSchema ReadErrorResponse}
+ *
+ * - **`links-getLinks`**: Extracts links from a page (GET request)
+ *   - `requestOptions`: {@link LinksOptionsSchema LinksOptions}
+ *   - `response`: {@link LinksSuccessResponseSchema LinksSuccessResponse} | {@link LinksErrorResponseSchema LinksErrorResponse}
+ *
+ * - **`links-extractLinks`**: Extracts links from a page (POST request)
+ *   - `requestOptions`: {@link LinksOptionsSchema LinksOptions}
+ *   - `response`: {@link LinksSuccessResponseSchema LinksSuccessResponse} | {@link LinksErrorResponseSchema LinksErrorResponse}
+ *
+ * @example Type narrowing with discriminated union
+ * ```typescript
+ * const log: ActivityLogEntry = await getLog(logId);
+ *
+ * // TypeScript narrows types based on path
+ * if (log.path === 'read-getMarkdown') {
+ *   log.response // Type: string
+ *   log.requestOptions.url // Type: string (GetMarkdownOptions)
+ * } else if (log.path === 'read-readUrl') {
+ *   log.response // Type: ReadSuccessResponse | ReadErrorResponse
+ *   log.requestOptions.markdown // Type: boolean | undefined (ReadOptions)
+ * } else if (log.path === 'links-getLinks' || log.path === 'links-extractLinks') {
+ *   log.response // Type: LinksSuccessResponse | LinksErrorResponse
+ *   log.requestOptions.tree // Type: boolean | undefined (LinksOptions)
+ * }
+ * ```
+ */
+export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
+  z.object({
+    /**
+     * Unique identifier for the activity log entry
+     */
+    id: z.string().meta({
+      description: 'Unique identifier for the activity log entry',
+    }),
+    /**
+     * Request path discriminator for `read-getMarkdown` endpoint
+     *
+     * When path is `'read-getMarkdown'`:
+     * - `requestOptions` will be typed as {@link GetMarkdownOptionsSchema GetMarkdownOptions}
+     * - `response` will be typed as `string` (markdown content)
+     */
+    path: z.literal('read-getMarkdown'),
+    /**
+     * Original request options for the `getMarkdown` endpoint
+     * @type {GetMarkdownOptions}
+     */
+    requestOptions: GetMarkdownOptionsSchema,
+    /**
+     * Reconstructed markdown response (string content)
+     * @type {string}
+     */
+    response: z.string(),
   }),
-});
+  z.object({
+    /**
+     * Unique identifier for the activity log entry
+     */
+    id: z.string().meta({
+      description: 'Unique identifier for the activity log entry',
+    }),
+    /**
+     * Request path discriminator for `read-readUrl` endpoint
+     *
+     * When path is `'read-readUrl'`:
+     * - `requestOptions` will be typed as {@link ReadOptionsSchema ReadOptions}
+     * - `response` will be typed as {@link ReadSuccessResponseSchema ReadSuccessResponse} | {@link ReadErrorResponseSchema ReadErrorResponse}
+     */
+    path: z.literal('read-readUrl'),
+    /**
+     * Original request options for the `readUrl` endpoint
+     * @type {ReadOptions}
+     */
+    requestOptions: ReadOptionsSchema,
+    /**
+     * Reconstructed response for `readUrl` endpoint (success or error)
+     * @type {ReadSuccessResponse | ReadErrorResponse}
+     */
+    response: z.union([ReadSuccessResponseSchema, ReadErrorResponseSchema]),
+  }),
+  z.object({
+    /**
+     * Unique identifier for the activity log entry
+     */
+    id: z.string().meta({
+      description: 'Unique identifier for the activity log entry',
+    }),
+    /**
+     * Request path discriminator for `links-getLinks` endpoint
+     *
+     * When path is `'links-getLinks'`:
+     * - `requestOptions` will be typed as {@link LinksOptionsSchema LinksOptions}
+     * - `response` will be typed as {@link LinksSuccessResponseSchema LinksSuccessResponse} | {@link LinksErrorResponseSchema LinksErrorResponse}
+     */
+    path: z.literal('links-getLinks'),
+    /**
+     * Original request options for the `getLinks` endpoint
+     * @type {LinksOptions}
+     */
+    requestOptions: LinksOptionsSchema,
+    /**
+     * Reconstructed response for `getLinks` endpoint (success or error)
+     * @type {LinksSuccessResponse | LinksErrorResponse}
+     */
+    response: z.union([LinksSuccessResponseSchema, LinksErrorResponseSchema]),
+  }),
+  z.object({
+    /**
+     * Unique identifier for the activity log entry
+     */
+    id: z.string().meta({
+      description: 'Unique identifier for the activity log entry',
+    }),
+    /**
+     * Request path discriminator for `links-extractLinks` endpoint
+     *
+     * When path is `'links-extractLinks'`:
+     * - `requestOptions` will be typed as {@link LinksOptionsSchema LinksOptions}
+     * - `response` will be typed as {@link LinksSuccessResponseSchema LinksSuccessResponse} | {@link LinksErrorResponseSchema LinksErrorResponse}
+     */
+    path: z.literal('links-extractLinks'),
+    /**
+     * Original request options for the `extractLinks` endpoint
+     * @type {LinksOptions}
+     */
+    requestOptions: LinksOptionsSchema,
+    /**
+     * Reconstructed response for `extractLinks` endpoint (success or error)
+     * @type {LinksSuccessResponse | LinksErrorResponse}
+     */
+    response: z.union([LinksSuccessResponseSchema, LinksErrorResponseSchema]),
+  }),
+]);
+
+/**
+ * Type for a single activity log entry
+ */
+export type ActivityLogEntry = z.infer<typeof ActivityLogEntrySchema>;
 
 /**
  * Input schema for fetching activity logs
@@ -69,11 +218,16 @@ export const GetLogsOptionsSchema = z.object({
  */
 export const GetLogsResponseSchema = z.object({
   logs: z.array(ActivityLogEntrySchema).meta({
-    description: 'Array of activity log entries with reconstructed responses',
+    description: 'Array of activity log entries with responses',
   }),
 });
 
-/**
- * Type for a single activity log entry
+/** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
+ * Type for get logs options (input)
  */
-export type ActivityLogEntry = z.infer<typeof ActivityLogEntrySchema>;
+// export type GetLogsOptions = z.infer<typeof GetLogsOptionsSchema>;
+
+/** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
+ * Type for get logs response (output)
+ */
+// export type GetLogsResponse = z.infer<typeof GetLogsResponseSchema>;
