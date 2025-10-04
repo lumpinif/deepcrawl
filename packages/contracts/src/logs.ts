@@ -41,10 +41,10 @@ export type GetManyLogsResponse = Outputs['logs']['getMany'];
 export const getOneLogContract = logsOC
   .route({
     tags,
-    path: '/{id}',
+    path: '/',
     method: 'GET',
     summary: 'Get a single activity log',
-    description: `Endpoint: GET \`api.deepcrawl.dev/logs/{id}\`\n\nRetrieve a single activity log with original response by ID.`,
+    description: `Endpoint: GET \`api.deepcrawl.dev/logs?id={requestId}\`\n\nRetrieve a single activity log with original response by ID.`,
   })
   .input(GetOneLogOptionsSchema)
   .output(GetOneLogResponseSchema);
