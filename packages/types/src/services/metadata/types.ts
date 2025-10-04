@@ -1,4 +1,4 @@
-import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+import { OptionalBoolWithDefault } from '@deepcrawl/types/common/shared-schemas';
 import { DEFAULT_METADATA_OPTIONS } from '@deepcrawl/types/configs';
 import { z } from 'zod/v4';
 
@@ -43,52 +43,52 @@ const {
  */
 export const MetadataOptionsSchema = z
   .object({
-    title: smartboolOptionalWithDefault(title).meta({
+    title: OptionalBoolWithDefault(title).meta({
       description: 'Extract page title from title tag or meta title',
       default: title,
       examples: [title, !title],
     }),
-    description: smartboolOptionalWithDefault(description).meta({
+    description: OptionalBoolWithDefault(description).meta({
       description: 'Extract meta description content',
       default: description,
       examples: [description, !description],
     }),
-    language: smartboolOptionalWithDefault(language).meta({
+    language: OptionalBoolWithDefault(language).meta({
       description: 'Extract page language from html lang attribute',
       default: language,
       examples: [language, !language],
     }),
-    canonical: smartboolOptionalWithDefault(canonical).meta({
+    canonical: OptionalBoolWithDefault(canonical).meta({
       description: 'Extract canonical URL from link rel="canonical"',
       default: canonical,
       examples: [canonical, !canonical],
     }),
-    robots: smartboolOptionalWithDefault(robots).meta({
+    robots: OptionalBoolWithDefault(robots).meta({
       description: 'Extract robots directives from meta robots',
       default: robots,
       examples: [robots, !robots],
     }),
-    author: smartboolOptionalWithDefault(author).meta({
+    author: OptionalBoolWithDefault(author).meta({
       description: 'Extract author information from meta author',
       default: author,
       examples: [author, !author],
     }),
-    keywords: smartboolOptionalWithDefault(keywords).meta({
+    keywords: OptionalBoolWithDefault(keywords).meta({
       description: 'Extract meta keywords and convert to array',
       default: keywords,
       examples: [keywords, !keywords],
     }),
-    favicon: smartboolOptionalWithDefault(favicon).meta({
+    favicon: OptionalBoolWithDefault(favicon).meta({
       description: 'Extract favicon URL from link rel="icon" or similar',
       default: favicon,
       examples: [favicon, !favicon],
     }),
-    openGraph: smartboolOptionalWithDefault(openGraph).meta({
+    openGraph: OptionalBoolWithDefault(openGraph).meta({
       description: 'Extract Open Graph metadata (og:* properties)',
       default: openGraph,
       examples: [openGraph, !openGraph],
     }),
-    twitter: smartboolOptionalWithDefault(twitter).meta({
+    twitter: OptionalBoolWithDefault(twitter).meta({
       description: 'Extract Twitter Card metadata (twitter:* properties)',
       default: twitter,
       examples: [twitter, !twitter],
@@ -147,11 +147,12 @@ export const MetadataOptionsSchema = z
  */
 export type MetadataOptions = z.infer<typeof MetadataOptionsSchema>;
 
-/**
- * @description This is the input type for the `MetadataOptions` schema.
- * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
- */
-export type MetadataOptionsInput = z.input<typeof MetadataOptionsSchema>;
+// @DEPRECATED AS WE REMOVED SMARTBOOL
+// /**
+//  * @description This is the input type for the `MetadataOptions` schema.
+//  * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+//  */
+// export type MetadataOptionsInput = z.input<typeof MetadataOptionsSchema>;
 
 /**
  * Schema for page metadata extracted from a webpage.

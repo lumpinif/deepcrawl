@@ -23,7 +23,7 @@ export type { LinksTree as Tree };
 
 export * from './common';
 export * from './common/response-schemas';
-export * from './common/smart-schemas';
+export * from './common/shared-schemas';
 
 export * from './configs';
 export * from './configs/default';

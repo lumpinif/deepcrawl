@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { CacheOptionsInput } from 'deepcrawl';
+import type { CacheOptions } from 'deepcrawl';
 import { useCallback, useRef, useState } from 'react';
 import { usePlaygroundOptionsSelector } from '@/hooks/playground/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
@@ -40,7 +40,7 @@ export function CacheOptionsMenu() {
     'cacheOptions' in currentOpts ? currentOpts.cacheOptions : undefined;
 
   // Create change handler that uses context
-  const onCacheOptionsChange = (cacheOptions: CacheOptionsInput) => {
+  const onCacheOptionsChange = (cacheOptions: CacheOptions) => {
     setOptions({ cacheOptions });
   };
   const [isOpen, setIsOpen] = useState(false);

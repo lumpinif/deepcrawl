@@ -1,4 +1,4 @@
-import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+import { OptionalBoolWithDefault } from '@deepcrawl/types/common/shared-schemas';
 import { DEFAULT_LINK_EXTRACTION_OPTIONS } from '@deepcrawl/types/configs';
 import { z } from 'zod/v4';
 
@@ -25,12 +25,12 @@ const { includeExternal, includeMedia, removeQueryParams } =
  */
 export const LinkExtractionOptionsSchema = z
   .object({
-    includeExternal: smartboolOptionalWithDefault(includeExternal).meta({
+    includeExternal: OptionalBoolWithDefault(includeExternal).meta({
       description: `Whether to include links from other domains. Default: ${includeExternal}`,
       default: includeExternal,
       examples: [includeExternal, !includeExternal],
     }),
-    includeMedia: smartboolOptionalWithDefault(includeMedia).meta({
+    includeMedia: OptionalBoolWithDefault(includeMedia).meta({
       description: `Whether to include media files (images, videos, docs). Default: ${includeMedia}`,
       default: includeMedia,
       examples: [includeMedia, !includeMedia],
@@ -42,7 +42,7 @@ export const LinkExtractionOptionsSchema = z
         description: 'Array of regex patterns to exclude URLs',
         examples: [['^/admin/', '\\.pdf$', '/private/']],
       }),
-    removeQueryParams: smartboolOptionalWithDefault(removeQueryParams).meta({
+    removeQueryParams: OptionalBoolWithDefault(removeQueryParams).meta({
       description: `Whether to remove query parameters from URLs. Default: ${removeQueryParams}`,
       default: removeQueryParams,
       examples: [removeQueryParams, !removeQueryParams],

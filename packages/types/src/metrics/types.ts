@@ -1,5 +1,5 @@
 import { z } from 'zod/v4';
-import { smartboolOptionalWithDefault } from '../common/smart-schemas';
+import { OptionalBoolWithDefault } from '../common/shared-schemas';
 import { DEFAULT_METRICS_OPTIONS } from '../configs/default';
 
 const { enable } = DEFAULT_METRICS_OPTIONS;
@@ -19,7 +19,7 @@ const { enable } = DEFAULT_METRICS_OPTIONS;
  */
 export const MetricsOptionsSchema = z
   .object({
-    enable: smartboolOptionalWithDefault(enable).meta({
+    enable: OptionalBoolWithDefault(enable).meta({
       description: 'Whether to enable metrics.',
       default: enable,
       examples: [enable, !enable],
@@ -45,11 +45,12 @@ export const MetricsOptionsSchema = z
  */
 export type MetricsOptions = z.infer<typeof MetricsOptionsSchema>;
 
-/**
- * @description This is the input type for the `MetricsOptions` schema.
- * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
- */
-export type MetricsOptionsInput = z.input<typeof MetricsOptionsSchema>;
+// @DEPRECATED AS WE REMOVED SMARTBOOL
+// /**
+//  * @description This is the input type for the `MetricsOptions` schema.
+//  * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+//  */
+// export type MetricsOptionsInput = z.input<typeof MetricsOptionsSchema>;
 
 /**
  * Performance metrics schema for tracking operation timing data.

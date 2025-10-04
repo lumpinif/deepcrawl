@@ -1,5 +1,5 @@
 import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
-import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+import { OptionalBoolWithDefault } from '@deepcrawl/types/common/shared-schemas';
 import {
   DEFAULT_CACHE_OPTIONS,
   DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
@@ -69,7 +69,7 @@ export const ReadOptionsSchema = z
      * @example true // Returns markdown content
      * @example false // Skips markdown extraction
      */
-    markdown: smartboolOptionalWithDefault(markdown).meta({
+    markdown: OptionalBoolWithDefault(markdown).meta({
       description: 'Whether to extract markdown from the page.',
       examples: [markdown, !markdown],
     }),
@@ -82,7 +82,7 @@ export const ReadOptionsSchema = z
      * @example true // Includes raw HTML in response
      * @example false // Excludes raw HTML
      */
-    rawHtml: smartboolOptionalWithDefault(rawHtml).meta({
+    rawHtml: OptionalBoolWithDefault(rawHtml).meta({
       description: 'Whether to return raw HTML.',
       examples: [rawHtml, !rawHtml],
     }),
@@ -454,11 +454,12 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
  */
 export type ReadOptions = z.infer<typeof ReadOptionsSchema>;
 
-/**
- * @description This is the input type for the `ReadOptions` schema.
- * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
- */
-export type ReadOptionsInput = z.input<typeof ReadOptionsSchema>;
+// @DEPRECATED AS WE REMOVED SMARTBOOL
+// /**
+//  * @description This is the input type for the `ReadOptions` schema.
+//  * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+//  */
+// export type ReadOptionsInput = z.input<typeof ReadOptionsSchema>;
 
 /**
  * Base type for all read operation responses.

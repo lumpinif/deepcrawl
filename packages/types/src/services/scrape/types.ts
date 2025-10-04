@@ -1,4 +1,5 @@
-import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+import { OptionalBoolWithDefault } from '@deepcrawl/types/common/shared-schemas';
+
 import {
   COMMON_HEADERS,
   DEFAULT_FETCH_OPTIONS,
@@ -399,6 +400,7 @@ export type FetchOptions = z.infer<typeof FetchOptionsSchema>;
 
 const { metadata, cleanedHtml, robots, sitemapXML, cleaningProcessor } =
   DEFAULT_SCRAPE_OPTIONS;
+
 /**
  * Schema for scraping operation configuration options.
  * Controls how the scraping operation is performed and what data is extracted.
@@ -429,22 +431,22 @@ const { metadata, cleanedHtml, robots, sitemapXML, cleaningProcessor } =
  */
 export const ScrapeOptionsSchema = z
   .object({
-    metadata: smartboolOptionalWithDefault(metadata).meta({
+    metadata: OptionalBoolWithDefault(metadata).meta({
       description: 'Whether to extract metadata from the page.',
       default: metadata,
       examples: [metadata, !metadata],
     }),
-    cleanedHtml: smartboolOptionalWithDefault(cleanedHtml).meta({
+    cleanedHtml: OptionalBoolWithDefault(cleanedHtml).meta({
       description: 'Whether to return cleaned HTML.',
       default: cleanedHtml,
       examples: [cleanedHtml, !cleanedHtml],
     }),
-    robots: smartboolOptionalWithDefault(robots).meta({
+    robots: OptionalBoolWithDefault(robots).meta({
       description: 'Whether to fetch and parse robots.txt.',
       default: robots,
       examples: [robots, !robots],
     }),
-    sitemapXML: smartboolOptionalWithDefault(sitemapXML).meta({
+    sitemapXML: OptionalBoolWithDefault(sitemapXML).meta({
       description:
         '( NOTE: sitemapXML is not stable yet, please use with caution. It may not work as expected. ) Whether to fetch and parse sitemap.xml.',
       default: sitemapXML,
@@ -555,28 +557,29 @@ export const ScrapeOptionsSchema = z
  */
 export type ScrapeOptions = z.infer<typeof ScrapeOptionsSchema>;
 
-/**
- * Input type for ScrapeOptions that accepts both string and boolean values for smart boolean fields.
- * This type allows for flexible input where boolean options can be provided as strings ('true'/'false') or booleans.
- *
- * @property {boolean | string} [metadata] - Whether to extract metadata (accepts 'true'/'false' or boolean)
- * @property {boolean | string} [cleanedHtml] - Whether to return cleaned HTML (accepts 'true'/'false' or boolean)
- * @property {boolean | string} [robots] - Whether to fetch robots.txt (accepts 'true'/'false' or boolean)
- * @property {boolean | string} [sitemapXML] - Whether to fetch sitemap.xml (accepts 'true'/'false' or boolean)
- * @property {MetadataOptions} [metadataOptions] - Options for metadata extraction
- * @property {'cheerio-reader' | 'html-rewriter'} [cleaningProcessor] - The cleaning processor to use
- * @property {HTMLRewriterOptions} [htmlRewriterOptions] - Options for HTML cleaning with html-rewriter
- * @property {ReaderCleaningOptions} [readerCleaningOptions] - Options for HTML cleaning with cheerio-reader
- * @property {FetchOptions} [fetchOptions] - Options for the fetch request
- *
- * @example
- * ```typescript
- * const options: ScrapeOptionsInput = {
- *   metadata: 'true',     // String boolean
- *   cleanedHtml: true,    // Regular boolean
- *   robots: 'false',      // String boolean
- *   cleaningProcessor: 'cheerio-reader'
- * };
- * ```
- */
-export type ScrapeOptionsInput = z.input<typeof ScrapeOptionsSchema>;
+// @DEPRECATED AS WE REMOVED SMARTBOOL
+// /**
+//  * Input type for ScrapeOptions that accepts both string and boolean values for smart boolean fields.
+//  * This type allows for flexible input where boolean options can be provided as strings ('true'/'false') or booleans.
+//  *
+//  * @property {boolean | string} [metadata] - Whether to extract metadata (accepts 'true'/'false' or boolean)
+//  * @property {boolean | string} [cleanedHtml] - Whether to return cleaned HTML (accepts 'true'/'false' or boolean)
+//  * @property {boolean | string} [robots] - Whether to fetch robots.txt (accepts 'true'/'false' or boolean)
+//  * @property {boolean | string} [sitemapXML] - Whether to fetch sitemap.xml (accepts 'true'/'false' or boolean)
+//  * @property {MetadataOptions} [metadataOptions] - Options for metadata extraction
+//  * @property {'cheerio-reader' | 'html-rewriter'} [cleaningProcessor] - The cleaning processor to use
+//  * @property {HTMLRewriterOptions} [htmlRewriterOptions] - Options for HTML cleaning with html-rewriter
+//  * @property {ReaderCleaningOptions} [readerCleaningOptions] - Options for HTML cleaning with cheerio-reader
+//  * @property {FetchOptions} [fetchOptions] - Options for the fetch request
+//  *
+//  * @example
+//  * ```typescript
+//  * const options: ScrapeOptionsInput = {
+//  *   metadata: 'true',     // String boolean
+//  *   cleanedHtml: true,    // Regular boolean
+//  *   robots: 'false',      // String boolean
+//  *   cleaningProcessor: 'cheerio-reader'
+//  * };
+//  * ```
+//  */
+// export type ScrapeOptions = z.input<typeof ScrapeOptionsSchema>;

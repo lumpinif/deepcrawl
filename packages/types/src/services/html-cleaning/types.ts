@@ -1,4 +1,4 @@
-import { smartboolTrue } from '@deepcrawl/types/common/smart-schemas';
+import { OptionalBoolWithDefault } from '@deepcrawl/types/common/shared-schemas';
 import {
   DEFAULT_HTML_REWRITER_OPTIONS,
   DEFAULT_READER_CLEANING_OPTIONS,
@@ -505,13 +505,13 @@ export const HTMLRewriterOptionsSchema = z
         description: 'If disallowedHTMLTags is specified, remove matching tags',
         examples: ['script', 'style', 'iframe', 'form', 'button'],
       }),
-    extractMainContent: smartboolTrue().meta({
+    extractMainContent: OptionalBoolWithDefault(extractMainContent).meta({
       description:
         'Whether to extract only the main content area, removing navigation, footers, etc. Default: true',
       default: extractMainContent,
       examples: [extractMainContent],
     }),
-    removeBase64Images: smartboolTrue().meta({
+    removeBase64Images: OptionalBoolWithDefault(removeBase64Images).meta({
       description:
         'Whether to remove base64 encoded images to reduce payload size. Default: true',
       default: removeBase64Images,

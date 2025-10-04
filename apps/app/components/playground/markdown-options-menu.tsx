@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { MarkdownConverterOptionsInput } from 'deepcrawl';
+import type { MarkdownConverterOptions } from 'deepcrawl';
 import { useCallback, useRef, useState } from 'react';
 import {
   usePlaygroundCoreSelector,
@@ -56,7 +56,7 @@ export function MarkdownOptionsMenu() {
 
   // Create change handler that uses context
   const onMarkdownOptionsChange = (
-    markdownConverterOptions: MarkdownConverterOptionsInput,
+    markdownConverterOptions: MarkdownConverterOptions,
   ) => {
     setOptions({ markdownConverterOptions });
   };

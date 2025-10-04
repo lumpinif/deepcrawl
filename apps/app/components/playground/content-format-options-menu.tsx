@@ -1,13 +1,12 @@
 'use client';
 
 import type {
-  LinksOptionsInput,
-  MarkdownConverterOptionsInput,
+  LinksOptions,
+  MarkdownConverterOptions,
   MetadataOptions,
-  MetadataOptionsInput,
-  ReadOptionsInput,
+  ReadOptions,
+  ScrapeOptions,
   TreeOptions,
-  TreeOptionsInput,
 } from '@deepcrawl/types';
 import {
   DEFAULT_LINKS_OPTIONS,
@@ -16,7 +15,6 @@ import {
   DEFAULT_READ_OPTIONS,
   DEFAULT_TREE_OPTIONS,
 } from '@deepcrawl/types/configs';
-import type { ScrapeOptionsInput } from '@deepcrawl/types/services/scrape/types';
 import {
   PromptInputActionMenu,
   PromptInputActionMenuContent,
@@ -85,11 +83,11 @@ import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 //   rawHtml?: boolean;
 // };
 type ContentFormatOptions = Pick<
-  ScrapeOptionsInput,
+  ScrapeOptions,
   'metadata' | 'cleanedHtml' | 'robots' | 'sitemapXML'
 > &
-  Pick<LinksOptionsInput, 'tree'> &
-  Pick<ReadOptionsInput, 'markdown' | 'rawHtml'> & {};
+  Pick<LinksOptions, 'tree'> &
+  Pick<ReadOptions, 'markdown' | 'rawHtml'> & {};
 
 // Configuration for different operations
 const OPERATION_CONFIGS = {
@@ -442,7 +440,7 @@ export const ContentFormatOptionsMenu = memo(
       );
     };
 
-    const onMetadataOptionsChange = (metadataOptions: MetadataOptionsInput) => {
+    const onMetadataOptionsChange = (metadataOptions: MetadataOptions) => {
       setOptions({
         metadataOptions: {
           ...('metadataOptions' in currentOpts
@@ -453,7 +451,7 @@ export const ContentFormatOptionsMenu = memo(
       });
     };
 
-    const onTreeOptionsChange = (treeOptions: TreeOptionsInput) => {
+    const onTreeOptionsChange = (treeOptions: TreeOptions) => {
       // Only allow tree options for extractLinks operation
       if (op !== 'extractLinks') {
         return;
@@ -477,7 +475,7 @@ export const ContentFormatOptionsMenu = memo(
     };
 
     const onMarkdownOptionsChange = (
-      markdownOptions: MarkdownConverterOptionsInput,
+      markdownOptions: MarkdownConverterOptions,
     ) => {
       // Only allow markdown options for readUrl and getMarkdown operations
       if (op !== 'readUrl' && op !== 'getMarkdown') {

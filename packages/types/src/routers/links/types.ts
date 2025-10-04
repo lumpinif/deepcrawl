@@ -1,5 +1,6 @@
 import { BaseErrorResponseSchema } from '@deepcrawl/types/common/response-schemas';
-import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+import { OptionalBoolWithDefault } from '@deepcrawl/types/common/shared-schemas';
+
 import {
   DEFAULT_CACHE_OPTIONS,
   DEFAULT_LINK_EXTRACTION_OPTIONS,
@@ -70,7 +71,7 @@ export const TreeOptionsSchema = z
      * Whether to place folders before leaf nodes in the tree.
      * Default: true
      */
-    folderFirst: smartboolOptionalWithDefault(folderFirst).meta({
+    folderFirst: OptionalBoolWithDefault(folderFirst).meta({
       description: `Whether to place folders before leaf nodes in the tree. Default: ${folderFirst}`,
       default: folderFirst,
       examples: [folderFirst, !folderFirst],
@@ -92,7 +93,7 @@ export const TreeOptionsSchema = z
      * Whether to include extracted links for each node in the tree.
      * Default: true
      */
-    extractedLinks: smartboolOptionalWithDefault(extractedLinks).meta({
+    extractedLinks: OptionalBoolWithDefault(extractedLinks).meta({
       description: `Whether to include extracted links for each node in the tree. Default: ${extractedLinks}`,
       default: extractedLinks,
       examples: [extractedLinks, !extractedLinks],
@@ -103,7 +104,7 @@ export const TreeOptionsSchema = z
      * Default: true
      * e.g., if false: rootUrl: https://swr.vercel.app -> https://vercel.app
      */
-    subdomainAsRootUrl: smartboolOptionalWithDefault(subdomainAsRootUrl).meta({
+    subdomainAsRootUrl: OptionalBoolWithDefault(subdomainAsRootUrl).meta({
       description: `Whether to treat subdomain as root URL. If false, subdomain will be excluded from root URL. e.g., if false: rootUrl: \`https://swr.vercel.app\` -> \`https://vercel.app\`. Default: ${subdomainAsRootUrl}`,
       default: subdomainAsRootUrl,
       examples: [subdomainAsRootUrl, !subdomainAsRootUrl],
@@ -115,7 +116,7 @@ export const TreeOptionsSchema = z
      * e.g., if the root URL is a platform URL, e.g., like github.com
      * This will be used to determine the root URL of the website. For example, if the root URL is a platform URL, e.g., like github.com, the targetUrl will be the platform URL such as `https://github.com/lumpinif`. If the root URL is not a platform URL, the targetUrl will be the root URL.
      */
-    isPlatformUrl: smartboolOptionalWithDefault(isPlatformUrl).meta({
+    isPlatformUrl: OptionalBoolWithDefault(isPlatformUrl).meta({
       description: `Whether the URL is a platform URL. If true, the targetUrl will be the platform URL. e.g., if true: targetUrl: \`https://github.com\` -> \`https://github.com/lumpinif\`. Default: ${isPlatformUrl}`,
       default: isPlatformUrl,
       examples: [isPlatformUrl, !isPlatformUrl],
@@ -145,11 +146,12 @@ export const TreeOptionsSchema = z
  */
 export type TreeOptions = z.infer<typeof TreeOptionsSchema>;
 
-/**
- * @description This is the input type for the `TreeOptions` schema.
- * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
- */
-export type TreeOptionsInput = z.input<typeof TreeOptionsSchema>;
+// @DEPRECATED AS WE REMOVED SMARTBOOL
+// /**
+//  * @description This is the input type for the `TreeOptions` schema.
+//  * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+//  */
+// export type TreeOptionsInput = z.input<typeof TreeOptionsSchema>;
 
 const { tree, metricsOptions } = DEFAULT_LINKS_OPTIONS;
 
@@ -205,7 +207,7 @@ export const LinksOptionsSchema = z
      * Whether to build a site map tree.
      * Default: true
      */
-    tree: smartboolOptionalWithDefault(tree).meta({
+    tree: OptionalBoolWithDefault(tree).meta({
       description: `Whether to build a site map tree. Default: ${tree}`,
       default: tree,
       examples: [tree, !tree],
@@ -933,11 +935,12 @@ export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
  */
 export type LinksOptions = z.infer<typeof LinksOptionsSchema>;
 
-/**
- * @description This is the input type for the `LinksOptions` schema.
- * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
- */
-export type LinksOptionsInput = z.input<typeof LinksOptionsSchema>;
+// @DEPRECATED AS WE REMOVED SMARTBOOL
+// /**
+//  * @description This is the input type for the `LinksOptions` schema.
+//  * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+//  */
+// export type LinksOptionsInput = z.input<typeof LinksOptionsSchema>;
 
 /**
  * Represents a URL that was skipped during scraping.

@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { MetricsOptionsInput } from 'deepcrawl';
+import type { MetricsOptions } from 'deepcrawl';
 import { useCallback, useRef, useState } from 'react';
 import {
   usePlaygroundCoreSelector,
@@ -48,7 +48,7 @@ export function MetricsOptionsMenu() {
     'metricsOptions' in currentOpts ? currentOpts.metricsOptions : undefined;
 
   // Create change handler that uses context
-  const onMetricsOptionsChange = (metricsOptions: MetricsOptionsInput) => {
+  const onMetricsOptionsChange = (metricsOptions: MetricsOptions) => {
     setOptions({ metricsOptions });
   };
 

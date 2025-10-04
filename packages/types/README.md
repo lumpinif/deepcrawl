@@ -16,7 +16,7 @@
 src/
 ├── common/
 │   ├── response-schemas.ts    # Base error/success response schemas
-│   ├── smart-schemas.ts       # Boolean schema helpers
+│   ├── shared-schemas.ts       # Boolean schema helpers
 │   └── index.ts
 ├── routers/
 │   ├── read/                  # Read operation types & schemas

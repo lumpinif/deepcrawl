@@ -5,7 +5,7 @@
  * Handles URL synchronization and local state preservation.
  */
 
-import { ReadGETInputSchema } from '@deepcrawl/contracts/read';
+import { GetMarkdownOptionsSchema } from 'deepcrawl';
 import { DEFAULT_GET_MARKDOWN_OPTIONS_FOR_HOOK } from './defaults';
 import type { GetMarkdownOptionsWithoutUrl } from './types';
 import { useOperationOptions } from './use-operation-options';
@@ -56,8 +56,8 @@ export function useGetMarkdownOptions({
   active,
   initialValues,
 }: UseGetMarkdownOptionsProps) {
-  // Use the ReadGETInputSchema which already excludes url for GET endpoint
-  const schemaForHook = ReadGETInputSchema.omit({ url: true });
+  // Use the GetMarkdownOptionsSchema which already excludes url for GET endpoint
+  const schemaForHook = GetMarkdownOptionsSchema.omit({ url: true });
 
   return useOperationOptions({
     active,

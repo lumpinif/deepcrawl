@@ -1,2 +1,2 @@
 export * from './response-schemas';
-export * from './smart-schemas';
+export * from './shared-schemas';

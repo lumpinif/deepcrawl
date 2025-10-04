@@ -1,3 +1,4 @@
+import { OptionalBoolWithDefault } from '@deepcrawl/types/common/shared-schemas';
 import { DEFAULT_MARKDOWN_CONVERTER_OPTIONS } from '@deepcrawl/types/configs';
 import { z } from 'zod/v4';
 
@@ -52,26 +53,22 @@ export const MarkdownConverterOptionsSchema = z
   .object({
     /**
      * Use native window DOMParser when available
-     * @default false - @see {@link DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser}
+     * @default {preferNativeParser} - @see {@link DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser}
      */
-    preferNativeParser: z
-      .boolean()
-      .optional()
-      .default(preferNativeParser)
-      .meta({
-        title: 'Prefer Native Parser',
-        description: `Use native window DOMParser when available instead of fallback parser (default: ${preferNativeParser})`,
-        examples: [false, true],
-        default: preferNativeParser,
-      }),
+    preferNativeParser: OptionalBoolWithDefault(preferNativeParser).meta({
+      title: 'Prefer Native Parser',
+      description: `Use native window DOMParser when available instead of fallback parser (default: ${preferNativeParser})`,
+      examples: [false, true],
+      default: preferNativeParser,
+    }),
     /**
      * Code block fence
      * @default {codeFence} - @see {@link DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeFence}
      */
     codeFence: z
       .string()
-      .optional()
       .default(codeFence)
+      .optional()
       .meta({
         title: 'Code Fence',
         description: `Characters used to wrap code blocks (default: "${codeFence}")`,
@@ -84,8 +81,8 @@ export const MarkdownConverterOptionsSchema = z
      */
     bulletMarker: z
       .string()
-      .optional()
       .default(bulletMarker)
+      .optional()
       .meta({
         title: 'Bullet Marker',
         description: 'Character used for unordered list items',
@@ -98,8 +95,8 @@ export const MarkdownConverterOptionsSchema = z
      */
     codeBlockStyle: z
       .enum(['indented', 'fenced'])
-      .optional()
       .default(codeBlockStyle)
+      .optional()
       .meta({
         title: 'Code Block Style',
         description:
@@ -113,8 +110,8 @@ export const MarkdownConverterOptionsSchema = z
      */
     emDelimiter: z
       .string()
-      .optional()
       .default(emDelimiter)
+      .optional()
       .meta({
         title: 'Emphasis Delimiter',
         description: `Characters used to wrap emphasized (italic) text (default: ${emDelimiter})`,
@@ -127,8 +124,8 @@ export const MarkdownConverterOptionsSchema = z
      */
     strongDelimiter: z
       .string()
-      .optional()
       .default(strongDelimiter)
+      .optional()
       .meta({
         title: 'Strong Delimiter',
         description: `Characters used to wrap strong (bold) text (default: ${strongDelimiter})`,
@@ -141,8 +138,8 @@ export const MarkdownConverterOptionsSchema = z
      */
     strikeDelimiter: z
       .string()
-      .optional()
       .default(strikeDelimiter)
+      .optional()
       .meta({
         title: 'Strike Delimiter',
         description: `Characters used to wrap strikethrough text (default: ${strikeDelimiter})`,
@@ -188,8 +185,8 @@ export const MarkdownConverterOptionsSchema = z
     maxConsecutiveNewlines: z
       .int()
       .positive()
-      .optional()
       .default(maxConsecutiveNewlines)
+      .optional()
       .meta({
         title: 'Max Consecutive Newlines',
         description:
@@ -250,16 +247,12 @@ export const MarkdownConverterOptionsSchema = z
      * <img src="data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSK......0o/">
      * @default false - @see {@link DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages}
      */
-    keepDataImages: z
-      .boolean()
-      .optional()
-      .default(keepDataImages)
-      .meta({
-        title: 'Keep Data Images',
-        description: `Whether to preserve images with data: URIs (can be up to 1MB each) (default: ${keepDataImages})`,
-        examples: [false, true],
-        default: keepDataImages,
-      }),
+    keepDataImages: OptionalBoolWithDefault(keepDataImages).meta({
+      title: 'Keep Data Images',
+      description: `Whether to preserve images with data: URIs (can be up to 1MB each) (default: ${keepDataImages})`,
+      examples: [false, true],
+      default: keepDataImages,
+    }),
     /**
      * Place URLS at the bottom and format links using link reference definitions
      *
@@ -272,15 +265,14 @@ export const MarkdownConverterOptionsSchema = z
      * [1]: /url
      * [2]: /url2
      */
-    useLinkReferenceDefinitions: z
-      .boolean()
-      .optional()
-      .meta({
-        title: 'Use Link Reference Definitions',
-        description: `Format links using reference definitions at bottom instead of inline (default: ${useLinkReferenceDefinitions})`,
-        examples: [false, true],
-        default: useLinkReferenceDefinitions,
-      }),
+    useLinkReferenceDefinitions: OptionalBoolWithDefault(
+      useLinkReferenceDefinitions,
+    ).meta({
+      title: 'Use Link Reference Definitions',
+      description: `Format links using reference definitions at bottom instead of inline (default: ${useLinkReferenceDefinitions})`,
+      examples: [false, true],
+      default: useLinkReferenceDefinitions,
+    }),
     /**
      * Wrap URL text in < > instead of []() syntax.
      *
@@ -291,18 +283,15 @@ export const MarkdownConverterOptionsSchema = z
      *
      * @default true - @see {@link DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks}
      */
-    useInlineLinks: z
-      .boolean()
-      .optional()
-      .default(useInlineLinks)
-      .meta({
-        title: 'Use Inline Links',
-        description: `Wrap URL text in <> instead of []() syntax when text matches URL (default: ${useInlineLinks})`,
-        examples: [true, false],
-        default: useInlineLinks,
-      }),
+    useInlineLinks: OptionalBoolWithDefault(useInlineLinks).meta({
+      title: 'Use Inline Links',
+      description: `Wrap URL text in <> instead of []() syntax when text matches URL (default: ${useInlineLinks})`,
+      examples: [true, false],
+      default: useInlineLinks,
+    }),
   })
   .default(DEFAULT_MARKDOWN_CONVERTER_OPTIONS)
+  .optional()
   .meta({
     title: 'MarkdownConverterOptions',
     description: 'Options for markdown conversion.',
@@ -347,10 +336,11 @@ export type MarkdownConverterOptions = z.infer<
   typeof MarkdownConverterOptionsSchema
 >;
 
-/**
- * @description This is the input type for the `MarkdownConverterOptions` schema.
- * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
- */
-export type MarkdownConverterOptionsInput = z.input<
-  typeof MarkdownConverterOptionsSchema
->;
+// @DEPRECATED AS WE REMOVED SMARTBOOL
+// /**
+//  * @description This is the input type for the `MarkdownConverterOptions` schema.
+//  * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+//  */
+// export type MarkdownConverterOptionsInput = z.input<
+//   typeof MarkdownConverterOptionsSchema
+// >;

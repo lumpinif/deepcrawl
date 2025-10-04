@@ -1,4 +1,4 @@
-import { smartboolOptionalWithDefault } from '@deepcrawl/types/common/smart-schemas';
+import { OptionalBoolWithDefault } from '@deepcrawl/types/common/shared-schemas';
 import { DEFAULT_CACHE_OPTIONS } from '@deepcrawl/types/configs';
 import { z } from 'zod/v4';
 
@@ -24,7 +24,7 @@ const { enabled } = DEFAULT_CACHE_OPTIONS;
  */
 export const CacheOptionsSchema = z
   .object({
-    enabled: smartboolOptionalWithDefault(enabled).meta({
+    enabled: OptionalBoolWithDefault(enabled).meta({
       description: 'Whether to enable cache. Default is true.',
       default: enabled,
       examples: [enabled, !enabled],
@@ -53,12 +53,12 @@ export const CacheOptionsSchema = z
 /**
  * @default { enabled: true }
  * @description This is the output type for the `CacheOptions` schema.
- * If you wish to use this type as input which contains both string and boolean for smartbool, you can use the Input types re-exported from the `@deepcrawl/contracts` package for each endpoint such as `ReadUrlOptions['cacheOptions']`.
+ * You can use the Input types re-exported in `deepcrawl` from the `@deepcrawl/contracts` package for each endpoint such as `ReadUrlOptions['cacheOptions']`.
  */
 export type CacheOptions = z.infer<typeof CacheOptionsSchema>;
 
-/**
- * @description This is the input type for the `CacheOptions` schema.
- * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
- */
-export type CacheOptionsInput = z.input<typeof CacheOptionsSchema>;
+// /** @DEPRECATED AS WE REMOVED SMARTBOOL
+//  * @description This is the input type for the `CacheOptions` schema.
+//  * This is a standalone export type that can be used as input which contains both string and boolean for smartbool.
+//  */
+// export type CacheOptionsInput = z.input<typeof CacheOptionsSchema>;
