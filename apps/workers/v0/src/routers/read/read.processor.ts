@@ -277,6 +277,7 @@ export async function processReadRequest(
     //   : undefined;
 
     readResponse = cleanEmptyValues<ReadSuccessResponse>({
+      requestId: c.var.requestId,
       success: true,
       cached: isReadCacheFresh,
       timestamp,

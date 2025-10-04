@@ -174,6 +174,7 @@ export const ReadGETInputSchema = ReadOptionsSchema.pick({
  * Base response schema containing common fields for all read operation responses.
  * Provides fundamental information about the operation status and target.
  *
+ * @property {string} requestId - Unique identifier (request ID) for the activity log entry
  * @property {boolean} success - Whether the read operation completed successfully
  * @property {boolean} [cached] - Whether response was served from cache
  * @property {string} targetUrl - Final URL processed after redirects
@@ -181,6 +182,7 @@ export const ReadGETInputSchema = ReadOptionsSchema.pick({
  * @example
  * ```typescript
  * {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: true,
  *   cached: false,
  *   targetUrl: 'https://example.com'
@@ -188,6 +190,16 @@ export const ReadGETInputSchema = ReadOptionsSchema.pick({
  * ```
  */
 export const ReadResponseBaseSchema = z.object({
+  /**
+   * Unique identifier (request ID) for the activity log entry
+   *
+   * @example '123e4567-e89b-12d3-a456-426614174000'
+   */
+  requestId: z.string().meta({
+    description: 'Unique identifier (request ID) for the activity log entry',
+    examples: ['123e4567-e89b-12d3-a456-426614174000'],
+  }),
+
   /**
    * Indicates whether the read operation completed successfully.
    *
@@ -271,6 +283,7 @@ export const ReadErrorResponseSchema = BaseErrorResponseSchema;
  * Contains extracted content, metadata, and optional performance metrics.
  * Extends ReadResponseBaseSchema with scraped data and content fields.
  *
+ * @property {string} requestId - Unique identifier (request ID) for the activity log entry
  * @property {true} success - Always true for successful responses
  * @property {boolean} [cached] - Whether response was served from cache
  * @property {string} targetUrl - Final URL processed after redirects
@@ -284,6 +297,7 @@ export const ReadErrorResponseSchema = BaseErrorResponseSchema;
  * @example
  * ```typescript
  * {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: true,
  *   cached: false,
  *   targetUrl: 'https://example.com/article',
@@ -474,6 +488,7 @@ export type ReadOptions = z.infer<typeof ReadOptionsSchema>;
  * @example
  * ```typescript
  * const baseResponse: ReadResponseBase = {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: true,
  *   cached: false,
  *   targetUrl: 'https://example.com'
@@ -486,6 +501,7 @@ export type ReadResponseBase = z.infer<typeof ReadResponseBaseSchema>;
  * Type for error responses from read operations.
  * Includes error details and status information when operations fail.
  *
+ * @property {string} requestId - Unique identifier (request ID) for the activity log entry
  * @property {false} success - Always false for error responses
  * @property {string} error - Error message describing what went wrong
  * @property {string} [requestUrl] - URL, raw url, that was requested to be processed and might be different from the target url
@@ -495,6 +511,7 @@ export type ReadResponseBase = z.infer<typeof ReadResponseBaseSchema>;
  * @example
  * ```typescript
  * const errorResponse: ReadErrorResponse = {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: false,
  *   error: 'Failed to fetch URL',
  *   requestUrl: 'https://example.com/article#fragment', // optional
@@ -509,6 +526,7 @@ export type ReadErrorResponse = z.infer<typeof ReadErrorResponseSchema>;
  * Type for successful read operation responses.
  * Contains extracted content, metadata, and optional performance metrics.
  *
+ * @property {string} requestId - Unique identifier (request ID) for the activity log entry
  * @property {true} success - Always true for successful responses
  * @property {boolean} [cached] - Whether response was served from cache
  * @property {string} targetUrl - Final URL processed after redirects
@@ -524,6 +542,7 @@ export type ReadErrorResponse = z.infer<typeof ReadErrorResponseSchema>;
  * @example
  * ```typescript
  * const successResponse: ReadSuccessResponse = {
+ *   requestId: '123e4567-e89b-12d3-a456-426614174000',
  *   success: true,
  *   cached: false,
  *   targetUrl: 'https://example.com/article',

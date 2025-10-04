@@ -118,8 +118,12 @@ export function extractDynamicsForHash(
       }
 
       // Only 'read/readUrl' is handled
-      const { metrics, timestamp, ...rest } =
-        params.response as ReadSuccessResponse;
+      const {
+        metrics,
+        timestamp,
+        requestId: _ignored, // ignored since it's not needed in dynamics
+        ...rest
+      } = params.response as ReadSuccessResponse;
       return {
         responseForHash: rest as ReadSuccessResponseWithoutDynamics,
         dynamics: { metrics, timestamp },

@@ -56,12 +56,13 @@ export function reconstructResponse(
   if (path === 'read-readUrl') {
     const baseResponse = responseContent as Omit<
       ReadSuccessResponse,
-      'metrics' | 'timestamp'
+      'metrics' | 'timestamp' | 'requestId'
     >;
     const readDynamics = dynamics as ReadDynamics | undefined;
 
     return {
       ...baseResponse,
+      requestId: activityLog.id, // put back requestId which is the same as the activity log id
       timestamp: readDynamics?.timestamp ?? new Date().toISOString(),
       metrics: readDynamics?.metrics,
     } as ReadSuccessResponse;
