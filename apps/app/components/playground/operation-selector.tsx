@@ -159,7 +159,7 @@ export function OperationSelector({
                   <IconHoverButtonText className="text-muted-foreground text-xs">
                     {readyToScrollOperation === feat.operation
                       ? 'Click to scroll'
-                      : 'Finished'}
+                      : 'Job finished'}
                   </IconHoverButtonText>
                 </IconHoverButton>
               </div>
