@@ -234,7 +234,6 @@ tsx src/test.ts
   - **API Key Authentication**: Primary method via `x-api-key` header or Authorization Bearer token
   - **Cookie Authentication**: Fallback for dashboard users
   - **Service Bindings**: Auth worker communicates with main worker via Cloudflare Service Bindings
-  - **Special API Key**: `USE_COOKIE_AUTH_INSTEAD_OF_API_KEY` bypasses API key auth for dashboard
 - **Router Structure**: Auth endpoints organized in `router/auth.ts`
 
 ## Development Workflow
