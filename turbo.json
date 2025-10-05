@@ -13,7 +13,8 @@
     "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
     "GOOGLE_CLIENT_SECRET",
     "RESEND_API_KEY",
-    "FROM_EMAIL"
+    "FROM_EMAIL",
+    "DEEPCRAWL_API_KEY"
   ],
   "tasks": {
     "auth:generate": {
