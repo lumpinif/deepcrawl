@@ -14,7 +14,7 @@
     "GOOGLE_CLIENT_SECRET",
     "RESEND_API_KEY",
     "FROM_EMAIL",
-    "DEEPCRAWL_API_KEY"
+    "NEXT_PUBLIC_DEEPCRAWL_API_URL"
   ],
   "tasks": {
     "auth:generate": {
