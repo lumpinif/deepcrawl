@@ -30,7 +30,7 @@ export const DeepcrawlFeatures: OperationConfig[] = [
     icon: ReadUrlGridIcon,
     endpoint: '/read',
     method: 'POST',
-    description: 'Return Agent-ready page context with markdown',
+    description: 'Agent-ready page context and markdown',
   },
   {
     label: 'Extract Links',
