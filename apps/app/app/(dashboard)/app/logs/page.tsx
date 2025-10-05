@@ -1,18 +1,20 @@
-import { ChartAreaInteractive } from '@/components/home/chart-area-interactive';
-import {
-  PageContainer,
-  PageHeader,
-  PageTitle,
-} from '@/components/page-elements';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { Suspense } from 'react';
+import { ActivityLogsClient } from '@/components/logs/activity-logs.client';
+import { getQueryClient } from '@/query/query.client';
+import { activityLogsQueryOptions } from '@/query/query-options.server';
 
-export default function HistoryPage() {
+export default function LogsPage() {
+  const queryClient = getQueryClient();
+
+  // Prefetch activity logs data
+  void queryClient.prefetchQuery(activityLogsQueryOptions());
+
   return (
-    <>
-      <PageHeader title="Activity Logs" />
-      <PageContainer>
-        <PageTitle title="Overview" titleSize="2xl" />
-        <ChartAreaInteractive />
-      </PageContainer>
-    </>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Suspense fallback={'...loading'}>
+        <ActivityLogsClient />
+      </Suspense>
+    </HydrationBoundary>
   );
 }

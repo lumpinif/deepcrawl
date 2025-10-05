@@ -29,6 +29,7 @@ import { getAppRoute } from '@/lib/navigation-config';
 import { generatePasskeyName } from '@/lib/passkey-utils';
 import { userQueryKeys } from '@/query/query-keys';
 import {
+  activityLogsQueryOptionsClient,
   apiKeysQueryOptionsClient,
   deviceSessionsQueryOptionsClient,
   listUserAccountsQueryOptionsClient,
@@ -948,3 +949,9 @@ export function useAuthRedirect(redirectTo?: string) {
     getFrontendCallbackURL,
   };
 }
+
+/**
+ * Suspense-friendly
+ */
+export const useSuspenseActivityLogs = () =>
+  useSuspenseQuery(activityLogsQueryOptionsClient());

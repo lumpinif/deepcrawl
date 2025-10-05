@@ -9,6 +9,7 @@ import {
   authListSessions,
   authListUserAccounts,
 } from '@/query/auth-query.server';
+import { fetchDeepcrawlLogs } from './logs-query.server';
 import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
 
@@ -86,5 +87,16 @@ export const apiKeysQueryOptions = () =>
   queryOptions({
     queryKey: userQueryKeys.apiKeys,
     queryFn: authListApiKeys,
+    ...baseQueryOptions,
+  });
+
+/**@server
+ * Query options for activity logs
+ * Provides full type inference for useQuery, prefetchQuery, etc.
+ */
+export const activityLogsQueryOptions = () =>
+  queryOptions({
+    queryKey: userQueryKeys.activityLogs,
+    queryFn: fetchDeepcrawlLogs,
     ...baseQueryOptions,
   });

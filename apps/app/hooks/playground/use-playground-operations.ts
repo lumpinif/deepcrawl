@@ -29,7 +29,7 @@ interface UsePlaygroundOperationsProps {
 }
 
 // API key configuration - matches playground-client pattern
-const API_KEY =
+export const DEEPCRAWL_API_KEY =
   process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY || 'demo-key-for-playground';
 
 export function usePlaygroundOperations({
@@ -45,7 +45,7 @@ export function usePlaygroundOperations({
     ensureClient,
     isReady,
   } = useDeepcrawlClient({
-    apiKey: API_KEY,
+    apiKey: DEEPCRAWL_API_KEY,
     baseUrl:
       process.env.NODE_ENV === 'development'
         ? 'http://localhost:8080'
