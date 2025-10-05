@@ -105,8 +105,8 @@ export const apiKeysQueryOptionsClient = () =>
   });
 
 /**@client
-
  * Query options for activity logs
+ * Uses the internal API route so credentials stay server-side
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
 export const activityLogsQueryOptionsClient = () =>

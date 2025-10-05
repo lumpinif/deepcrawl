@@ -1,15 +1,21 @@
 'use server';
 
 import { DeepcrawlApp, type GetManyLogsResponse } from 'deepcrawl';
-import { DEEPCRAWL_API_KEY } from '@/lib/deepcrawl';
+import { headers } from 'next/headers';
 
-const dc = new DeepcrawlApp({ apiKey: DEEPCRAWL_API_KEY });
+const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
 /**
  * Deepcrawl Server API Call:
  */
 export async function fetchDeepcrawlLogs(): Promise<GetManyLogsResponse> {
   try {
+    const requestHeaders = await headers();
+    const dc = new DeepcrawlApp({
+      baseUrl: DEEPCRAWL_BASE_URL,
+      headers: requestHeaders,
+    });
+
     const result: GetManyLogsResponse = await dc.getManyLogs();
 
     return result;

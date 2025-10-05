@@ -1,6 +1,9 @@
 import { toast } from 'sonner';
-import { DEEPCRAWL_API_KEY } from '@/lib/deepcrawl';
-import { handlePlaygroundError } from '@/utils/playground/error-handler';
+import {
+  playgroundExtractLinks,
+  playgroundGetMarkdown,
+  playgroundReadUrl,
+} from '@/app/actions/playground';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import {
   type APIResponseData,
@@ -12,7 +15,6 @@ import {
   type PlaygroundResponses,
   ReadUrlOptionsSchemaWithoutUrl,
 } from './types';
-import { useDeepcrawlClient } from './use-deepcrawl-client';
 import { useExecutionTimer } from './use-execution-timer';
 
 interface UsePlaygroundOperationsProps {
@@ -36,19 +38,6 @@ export function usePlaygroundOperations({
   setIsExecuting,
   setResponses,
 }: UsePlaygroundOperationsProps) {
-  // Initialize SDK client with custom hook
-  const {
-    client: sdkClient,
-    ensureClient,
-    isReady,
-  } = useDeepcrawlClient({
-    apiKey: DEEPCRAWL_API_KEY,
-    baseUrl:
-      process.env.NODE_ENV === 'development'
-        ? 'http://localhost:8080'
-        : 'https://api.deepcrawl.dev',
-  });
-
   // Initialize execution timer hook
   const {
     startTimer,
@@ -58,21 +47,34 @@ export function usePlaygroundOperations({
     formatTime,
   } = useExecutionTimer();
 
-  // Use centralized error handler
-  const handleError = (
-    error: unknown,
+  // Convert server action error response to PlaygroundOperationResponse
+  const handleServerActionError = (
+    errorResponse: {
+      error?: string;
+      status?: number;
+      errorType?: string;
+      targetUrl?: string;
+      timestamp?: string;
+    },
     operation: DeepcrawlOperations,
-    label: string,
     executionTime: number,
   ): PlaygroundOperationResponse => {
-    const baseError = handlePlaygroundError(error, {
+    return {
       operation,
-      label,
+      data: undefined,
+      status: errorResponse.status || 500,
       executionTime,
-      onRetry: executeApiCall,
-    });
-    // Add operation discriminant field
-    return { ...baseError, operation } as PlaygroundOperationResponse;
+      targetUrl: errorResponse.targetUrl || requestUrl,
+      timestamp: errorResponse.timestamp || new Date().toISOString(),
+      error: errorResponse.error || 'An unknown error occurred',
+      errorType: errorResponse.errorType as
+        | 'auth'
+        | 'network'
+        | 'read'
+        | 'links'
+        | 'unknown',
+      retryable: errorResponse.errorType === 'network',
+    } as PlaygroundOperationResponse;
   };
 
   const executeApiCall = async (
@@ -82,13 +84,6 @@ export function usePlaygroundOperations({
     // Guard against invalid URLs (defense in depth)
     if (!isPlausibleUrl(requestUrl)) {
       toast.error('Please enter a valid URL');
-      return;
-    }
-
-    const client = sdkClient ?? ensureClient();
-
-    if (!client) {
-      toast.error('Unable to initialize the Deepcrawl client');
       return;
     }
 
@@ -105,8 +100,14 @@ export function usePlaygroundOperations({
     const startTime = startTimer(operation);
 
     try {
-      let result: unknown;
-      let targetUrl = requestUrl;
+      let serverResponse: {
+        data?: unknown;
+        error?: string;
+        status?: number;
+        errorType?: string;
+        targetUrl?: string;
+        timestamp?: string;
+      };
 
       switch (operation) {
         case 'getMarkdown': {
@@ -118,8 +119,11 @@ export function usePlaygroundOperations({
             toast.error(`Invalid options for ${operation}`);
             return;
           }
-          result = await client.getMarkdown(requestUrl, currentOptions);
-          targetUrl = requestUrl;
+
+          serverResponse = await playgroundGetMarkdown({
+            url: requestUrl,
+            ...currentOptions,
+          });
           break;
         }
         case 'readUrl': {
@@ -129,9 +133,11 @@ export function usePlaygroundOperations({
             toast.error(`Invalid options for ${operation}`);
             return;
           }
-          const readData = await client.readUrl(requestUrl, currentOptions);
-          result = readData;
-          targetUrl = readData.targetUrl || requestUrl;
+
+          serverResponse = await playgroundReadUrl({
+            url: requestUrl,
+            ...currentOptions,
+          });
           break;
         }
         case 'extractLinks': {
@@ -142,23 +148,55 @@ export function usePlaygroundOperations({
             toast.error(`Invalid options for ${operation}`);
             return;
           }
-          const linksData = await client.extractLinks(
-            requestUrl,
-            currentOptions,
-          );
-          result = linksData;
-          targetUrl = linksData.targetUrl || requestUrl;
+
+          serverResponse = await playgroundExtractLinks({
+            url: requestUrl,
+            ...currentOptions,
+          });
           break;
         }
+        default:
+          toast.error(`Unknown operation: ${operation}`);
+          return;
       }
 
       const executionTime = getElapsedTime(operation, startTime);
+
+      // Check if server action returned an error
+      if (serverResponse.error) {
+        const errorResponse = handleServerActionError(
+          serverResponse,
+          operation,
+          executionTime,
+        );
+
+        setResponses((prev) => ({
+          ...prev,
+          [operation]: errorResponse,
+        }));
+
+        toast.error(`${label} failed`, {
+          description: serverResponse.error,
+        });
+
+        return;
+      }
+
+      // Success case
+      const targetUrl =
+        serverResponse.targetUrl ||
+        (typeof serverResponse.data === 'object' &&
+        serverResponse.data !== null &&
+        'targetUrl' in serverResponse.data
+          ? (serverResponse.data as { targetUrl?: string }).targetUrl
+          : undefined) ||
+        requestUrl;
 
       setResponses((prev) => ({
         ...prev,
         [operation]: {
           operation,
-          data: result as APIResponseData,
+          data: serverResponse.data as APIResponseData,
           status: 200,
           executionTime,
           targetUrl,
@@ -168,20 +206,31 @@ export function usePlaygroundOperations({
         } as PlaygroundOperationResponse,
       }));
 
-      toast.success(
-        `${label} completed successfully`,
-        //   , {
-        //   description: `Processed in ${formatTime(executionTime)}`,
-        // }
-      );
+      toast.success(`${label} completed successfully`);
     } catch (error) {
       const executionTime = getElapsedTime(operation, startTime);
-      const errorResponse = handleError(error, operation, label, executionTime);
+      const errorResponse = handleServerActionError(
+        {
+          error:
+            error instanceof Error
+              ? error.message
+              : 'An unknown error occurred',
+          status: 500,
+          errorType: 'unknown',
+        },
+        operation,
+        executionTime,
+      );
 
       setResponses((prev) => ({
         ...prev,
         [operation]: errorResponse,
       }));
+
+      toast.error(`${label} failed`, {
+        description:
+          error instanceof Error ? error.message : 'An unknown error occurred',
+      });
     } finally {
       // Always cleanup - prevent memory leaks
       setIsExecuting((prev) => ({ ...prev, [operation]: false }));
@@ -199,6 +248,6 @@ export function usePlaygroundOperations({
     handleRetry,
     formatTime,
     getCurrentExecutionTime,
-    isReady: sdkClient && isReady,
+    isReady: true, // Always ready with Server Actions
   };
 }

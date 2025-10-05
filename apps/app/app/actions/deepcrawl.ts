@@ -23,18 +23,13 @@ interface ApiResponse {
   timestamp?: string;
 }
 
-const apiKey =
-  process.env.DEEP_CRAWL_API_KEY ?? 'USE_COOKIE_AUTH_INSTEAD_OF_API_KEY';
+const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
 async function createDeepcrawlClient() {
   const requestHeaders = await headers();
 
   const client = new DeepcrawlApp({
-    apiKey,
-    baseUrl:
-      process.env.NODE_ENV === 'development'
-        ? 'http://localhost:8080'
-        : 'https://api.deepcrawl.dev',
+    baseUrl: DEEPCRAWL_BASE_URL,
     headers: requestHeaders, // SDK automatically extracts only auth headers
   });
 

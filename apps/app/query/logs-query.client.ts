@@ -1,18 +1,30 @@
 import type { GetManyLogsResponse } from 'deepcrawl';
-import { deepcrawlClient } from '@/lib/deepcrawl';
 
-/**
- * Deepcrawl SDK Client API Call:
- */
+const LOGS_ENDPOINT = '/api/deepcrawl/logs';
+
 export async function getManyDeepcrawlLogs(): Promise<GetManyLogsResponse> {
-  try {
-    const result: GetManyLogsResponse = await deepcrawlClient.getManyLogs();
+  const response = await fetch(LOGS_ENDPOINT, {
+    credentials: 'include',
+    cache: 'no-store',
+  });
 
-    return result;
-  } catch (error) {
-    console.error('Failed to fetch Deepcrawl logs:', error);
-    throw new Error(
-      error instanceof Error ? error.message : 'Failed to fetch Deepcrawl logs',
-    );
+  if (!response.ok) {
+    let message = 'Failed to fetch Deepcrawl logs';
+    try {
+      const errorBody = await response.json();
+      if (typeof errorBody?.error === 'string') {
+        message = errorBody.error;
+      }
+    } catch (parseError) {
+      console.warn(
+        'Failed to parse Deepcrawl logs error response:',
+        parseError,
+      );
+    }
+
+    throw new Error(message);
   }
+
+  const data = (await response.json()) as GetManyLogsResponse;
+  return data;
 }
