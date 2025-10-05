@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import { DEEPCRAWL_API_KEY } from '@/lib/deepcrawl';
 import { handlePlaygroundError } from '@/utils/playground/error-handler';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import {
@@ -27,10 +28,6 @@ interface UsePlaygroundOperationsProps {
     fn: (prev: PlaygroundResponses) => PlaygroundResponses,
   ) => void;
 }
-
-// API key configuration - matches playground-client pattern
-export const DEEPCRAWL_API_KEY = process.env
-  .NEXT_PUBLIC_DEEPCRAWL_API_KEY as string;
 
 export function usePlaygroundOperations({
   requestUrl,

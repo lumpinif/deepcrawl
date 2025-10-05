@@ -1,14 +1,12 @@
-import { DeepcrawlApp, type GetManyLogsResponse } from 'deepcrawl';
-
-const DEEPCRAWL_API_KEY = process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY as string;
-const dc = new DeepcrawlApp({ apiKey: DEEPCRAWL_API_KEY });
+import type { GetManyLogsResponse } from 'deepcrawl';
+import { deepcrawlClient } from '@/lib/deepcrawl';
 
 /**
  * Deepcrawl SDK Client API Call:
  */
 export async function getManyDeepcrawlLogs(): Promise<GetManyLogsResponse> {
   try {
-    const result: GetManyLogsResponse = await dc.getManyLogs();
+    const result: GetManyLogsResponse = await deepcrawlClient.getManyLogs();
 
     return result;
   } catch (error) {

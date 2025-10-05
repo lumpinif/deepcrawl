@@ -1,8 +1,8 @@
 'use server';
 
 import { DeepcrawlApp, type GetManyLogsResponse } from 'deepcrawl';
+import { DEEPCRAWL_API_KEY } from '@/lib/deepcrawl';
 
-const DEEPCRAWL_API_KEY = process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY as string;
 const dc = new DeepcrawlApp({ apiKey: DEEPCRAWL_API_KEY });
 
 /**
