@@ -29,8 +29,8 @@ interface UsePlaygroundOperationsProps {
 }
 
 // API key configuration - matches playground-client pattern
-export const DEEPCRAWL_API_KEY =
-  process.env.NEXT_PUBLIC_DEEPCRAWL_API_KEY || 'demo-key-for-playground';
+export const DEEPCRAWL_API_KEY = process.env
+  .NEXT_PUBLIC_DEEPCRAWL_API_KEY as string;
 
 export function usePlaygroundOperations({
   requestUrl,
