@@ -263,13 +263,9 @@ export class DeepcrawlApp {
 
     // Detect runtime environment with better browser detection
     const isBrowser =
-      typeof window !== 'undefined' ||
-      typeof navigator !== 'undefined' ||
-      typeof document !== 'undefined' ||
-      (typeof globalThis !== 'undefined' &&
-        ('window' in globalThis ||
-          'navigator' in globalThis ||
-          'document' in globalThis));
+      (typeof window !== 'undefined' &&
+        typeof window.document !== 'undefined') ||
+      typeof document !== 'undefined';
 
     this.nodeEnv =
       typeof process !== 'undefined' && !!process.versions?.node && !isBrowser
@@ -297,9 +293,9 @@ export class DeepcrawlApp {
     const hasApiKey = Boolean(providedApiKey);
     const hasHeaders = Boolean(this.config.headers);
 
-    if (!(hasApiKey && hasHeaders)) {
+    if (!(hasApiKey || hasHeaders)) {
       throw new DeepcrawlAuthError(
-        '[DEEPCRAWL_AUTH] Provide an API key or forward authenticated request headers.',
+        '[DEEPCRAWL_AUTH] Please provide a valid API key. Get one from: deepcrawl.dev/app/api-keys.',
       );
     }
 
