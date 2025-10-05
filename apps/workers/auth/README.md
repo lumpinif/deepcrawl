@@ -55,7 +55,6 @@ pnpm preview
 - 🔗 **Service Bindings** - Communication with main Deepcrawl worker
 - 🌍 **Environment Aware** - Development and production configurations
 - 📊 **Rate Limiting** - Built-in protection against abuse
-- 🛠️ **Special API Keys** - `USE_COOKIE_AUTH_INSTEAD_OF_API_KEY` for dashboard
 
 ## 🔧 Configuration
 

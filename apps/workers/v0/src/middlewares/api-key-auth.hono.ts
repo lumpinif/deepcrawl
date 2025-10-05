@@ -21,22 +21,12 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
     const apiKey = xApiKey ?? authHeader?.split(' ')[1];
 
-    // NOTE: IMPORTANT: This is a special API key checking for playground cookie-based auth
-    if (apiKey === c.env.DEEPCRAWL_API_KEY) {
-      logDebug('🏗️  skipping API key auth, using cookie auth instead');
-      return next();
-    }
-
     logDebug('🔑 apiKey:', apiKey);
 
     if (!apiKey) {
       logDebug('🔑 No API key provided, skipping to next auth method');
-      // return c.json(
-      //   { success: false, error: 'Unauthorized: No API key provided' },
-      //   401,
-      // );
 
-      // skip to next auth method
+      // skip to next cookie-based auth method
       return next();
     }
 
