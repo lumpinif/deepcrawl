@@ -30,7 +30,7 @@ export default function createHonoApp() {
 
     .use('*', connInfoMiddleware)
     .use('*', serviceFetcherMiddleware)
-    .use('*', apiKeyAuthMiddleware)
+    .use('*', apiKeyAuthMiddleware) // api-key auth check before cookie auth
     .use('*', cookieAuthMiddleware)
 
     .use('*', dbD1Middleware)

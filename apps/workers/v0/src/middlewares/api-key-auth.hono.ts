@@ -6,14 +6,23 @@ import { logDebug } from '@/utils/loggers';
 export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     const start = performance.now();
+    if (
+      c.get('session') ||
+      c.get('session')?.session ||
+      c.get('session')?.user
+    ) {
+      logDebug('✅ Skipping [apiKeyAuthMiddleware] Session found');
+      return next();
+    }
+
     // First, try to get API key from x-api-key header
     const xApiKey = c.req.header('x-api-key');
     const authHeader = c.req.header('authorization');
 
     const apiKey = xApiKey ?? authHeader?.split(' ')[1];
 
-    // TODO: NOTE: IMPORTANT: This is a special API key for playground, remove it before production
-    if (apiKey === 'demo-key-for-playground') {
+    // NOTE: IMPORTANT: This is a special API key checking for playground cookie-based auth
+    if (apiKey === c.env.DEEPCRAWL_API_KEY) {
       logDebug('🏗️  skipping API key auth, using cookie auth instead');
       return next();
     }
