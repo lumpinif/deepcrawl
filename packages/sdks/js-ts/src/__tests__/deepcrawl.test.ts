@@ -17,7 +17,7 @@
 //   describe('constructor', () => {
 //     it('should throw error when API key is missing', () => {
 //       expect(() => new DeepcrawlApp({ apiKey: '' })).toThrow(DeepcrawlAuthError);
-//       expect(() => new DeepcrawlApp({ apiKey: '' })).toThrow('API key is required');
+//       expect(() => new DeepcrawlApp({ apiKey: '' })).toThrow('[DEEPCRAWL_API_KEY] API key is required');
 //     });
 
 //     it('should use default base URL when not provided', () => {

@@ -29,15 +29,25 @@ export interface DeepcrawlFetchOptions {
   agent?: Agent;
 }
 
-export interface DeepcrawlConfig {
-  apiKey: string;
+export type DeepcrawlHeaders =
+  | Record<string, string | string[] | undefined>
+  | { get(name: string): string | null };
+
+interface DeepcrawlConfigBase {
   baseUrl?: string;
-  headers?:
-    | Record<string, string | string[] | undefined>
-    | { get(name: string): string | null }; // Next.js headers compatibility
+  headers?: DeepcrawlHeaders;
   fetch?: typeof fetch;
   fetchOptions?: DeepcrawlFetchOptions;
 }
+
+export type DeepcrawlConfig =
+  | (DeepcrawlConfigBase & {
+      apiKey: string;
+    })
+  | (Omit<DeepcrawlConfigBase, 'headers'> & {
+      apiKey?: undefined;
+      headers: DeepcrawlHeaders;
+    });
 
 export interface DeepcrawlClientContext extends ClientRetryPluginContext {}
 

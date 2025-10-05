@@ -1,6 +1,6 @@
 {
   "name": "deepcrawl",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "JavaScript/TypeScript SDK for Deepcrawl API - A powerful web scraping and crawling service",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -53,6 +53,9 @@
   "homepage": "https://github.com/lumpinif/deepcrawl#readme",
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "packageManager": "pnpm@10.12.1",
   "peerDependencies": {

@@ -46,6 +46,8 @@ import {
   type OptionsWithoutUrl,
 } from './types';
 
+const DEFAULT_API_BASE_URL = 'https://api.deepcrawl.dev';
+
 /**
  * Type guard to check if error is an ORPCError instance
  */
@@ -192,6 +194,19 @@ function extractAuthHeaders(
   return headers as Record<string, string | string[] | undefined>;
 }
 
+function ensureHttpsBaseUrl(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed) {
+    return DEFAULT_API_BASE_URL;
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+}
+
 const HTTP_AGENT_OPTIONS = {
   keepAlive: true,
   maxSockets: 10,
@@ -210,6 +225,8 @@ export class DeepcrawlApp {
   private config: DeepcrawlConfig;
   private nodeEnv: 'nodeJs' | 'cf-worker' | 'browser' = 'nodeJs';
   private httpsAgent?: Agent; // Node.js https.Agent
+  private authMode: 'apiKey' | 'session' = 'apiKey';
+  private apiKey?: string;
 
   /**
    * Lazy-load and cache the HTTPS agent for Node.js environments
@@ -234,9 +251,14 @@ export class DeepcrawlApp {
   }
 
   constructor(config: DeepcrawlConfig) {
+    const resolvedBaseUrl =
+      config.baseUrl && config.baseUrl.trim().length > 0
+        ? ensureHttpsBaseUrl(config.baseUrl)
+        : DEFAULT_API_BASE_URL;
+
     this.config = {
-      baseUrl: config.baseUrl || 'https://api.deepcrawl.dev',
       ...config,
+      baseUrl: resolvedBaseUrl,
     };
 
     // Detect runtime environment with better browser detection
@@ -261,8 +283,31 @@ export class DeepcrawlApp {
             ? 'browser'
             : 'nodeJs';
 
-    if (!this.config.apiKey) {
-      throw new DeepcrawlAuthError('API key is required');
+    if (this.nodeEnv === 'browser') {
+      throw new DeepcrawlServerError(
+        'DeepcrawlApp is server-only. Instantiate the client in Node.js or Cloudflare Worker runtimes.',
+      );
+    }
+
+    const providedApiKey =
+      typeof this.config.apiKey === 'string'
+        ? this.config.apiKey.trim()
+        : undefined;
+
+    const hasApiKey = Boolean(providedApiKey);
+    const hasHeaders = Boolean(this.config.headers);
+
+    if (!(hasApiKey && hasHeaders)) {
+      throw new DeepcrawlAuthError(
+        '[DEEPCRAWL_AUTH] Provide an API key or forward authenticated request headers.',
+      );
+    }
+
+    if (hasApiKey) {
+      this.apiKey = providedApiKey;
+      this.authMode = 'apiKey';
+    } else {
+      this.authMode = 'session';
     }
 
     // Use custom fetch or globalThis.fetch with proper fallback
@@ -279,10 +324,16 @@ export class DeepcrawlApp {
       },
       headers: () => {
         const extractedHeaders = extractAuthHeaders(this.config.headers);
+        const apiKeyHeaders =
+          this.authMode === 'apiKey' && this.apiKey
+            ? {
+                Authorization: `Bearer ${this.apiKey}`,
+                'x-api-key': this.apiKey,
+              }
+            : {};
 
         return {
-          Authorization: `Bearer ${this.config.apiKey}`,
-          'x-api-key': this.config.apiKey,
+          ...apiKeyHeaders,
           'Content-Type': 'application/json',
           'User-Agent': `${packageJSON.name}@${packageJSON.version}`,
           ...(this.nodeEnv === 'nodeJs' ? { Connection: 'keep-alive' } : {}),
