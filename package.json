@@ -41,7 +41,14 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "@vercel/speed-insights",
+      "core-js-pure",
+      "esbuild",
+      "msw",
       "sharp",
+      "unrs-resolver",
+      "vue-demi",
       "workerd"
     ]
   }
