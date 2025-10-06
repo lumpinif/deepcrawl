@@ -8,7 +8,10 @@ export function ActivityLogsClient() {
   const { data: activityLogs } = useSuspenseActivityLogs();
   return (
     <>
-      <PageHeader title="Activity Logs" />
+      <PageHeader
+        description="Check out your recent request activity logs"
+        title="Activity Logs"
+      />
       <PageContainer>
         {/* <PageTitle title="Overview" titleSize="2xl" /> */}
         <ActivityLogsDataGrid logs={activityLogs.logs} />
