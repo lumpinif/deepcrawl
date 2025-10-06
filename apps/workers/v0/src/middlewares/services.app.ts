@@ -15,6 +15,11 @@ function createRequestScopedServices() {
 
 export const servicesAppMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
+    // check if the path contains 'read' or 'links'
+    if (!(c.req.path.includes('read') || c.req.path.includes('links'))) {
+      return next();
+    }
+
     // Create services per request to respect IoContext boundaries
     // This prevents resource leaks in production workerd
     const services = createRequestScopedServices();

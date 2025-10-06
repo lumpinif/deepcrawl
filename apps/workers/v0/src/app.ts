@@ -24,10 +24,21 @@ app.get('/', async (c) => {
     message: 'Welcome to Deepcrawl Official API',
     runtime: getRuntimeKey(),
     nodeEnv: c.env.WORKER_NODE_ENV,
-    connInfo: info,
+    routes: {
+      docs: '/docs',
+      openapi: '/openapi',
+      read: '/read?=url',
+      links: '/links?=url',
+      logs: '/logs?id=requestId',
+      site: 'https://deepcrawl.dev',
+    },
+    connInfo: c.env.WORKER_NODE_ENV === 'development' ? 'development' : info,
     services: {
       scrapeService: !!c.var.scrapeService,
     },
+    authentication: c.var.session?.user
+      ? { ...c.var.session }
+      : 'You are currently not logged in! Login from https://deepcrawl.dev/app',
   });
 });
 

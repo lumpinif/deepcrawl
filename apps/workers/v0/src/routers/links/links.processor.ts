@@ -20,6 +20,7 @@ import type { ExtractedLinks } from '@deepcrawl/types/services/link';
 import type { ScrapedData } from '@deepcrawl/types/services/scrape';
 import type { ORPCContext } from '@/lib/context';
 import { type _linksSets, LinkService } from '@/services/link/link.service';
+import { ScrapeService } from '@/services/scrape/scrape.service';
 import { getLinksNonTreeCacheKey } from '@/utils/kv/links-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import * as helpers from '@/utils/links/helpers';
@@ -117,7 +118,7 @@ async function processNonTreeRequest({
   } = params;
 
   // Use app-level scrape service from context
-  const scrapeService = c.var.scrapeService;
+  const scrapeService = c.var.scrapeService ?? new ScrapeService();
 
   // Get root URL for link extraction context
   // Check if the root URL is a platform URL, e.g., like github.com

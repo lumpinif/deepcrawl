@@ -9,6 +9,7 @@ import {
 } from '@deepcrawl/types';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import type { ORPCContext } from '@/lib/context';
+import { ScrapeService } from '@/services/scrape/scrape.service';
 import { getReadCacheKey } from '@/utils/kv/read-kv-key';
 import { kvPutWithRetry } from '@/utils/kv/retry';
 import { logDebug, logError } from '@/utils/loggers';
@@ -219,7 +220,7 @@ export async function processReadRequest(
     const isGithubUrl = targetUrl.startsWith('https://github.com');
 
     // Use app-level service instance for optimal performance
-    const scrapeService = c.var.scrapeService;
+    const scrapeService = c.var.scrapeService ?? new ScrapeService();
 
     const {
       title,
