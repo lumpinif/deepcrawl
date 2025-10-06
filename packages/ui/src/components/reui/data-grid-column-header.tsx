@@ -256,7 +256,7 @@ function DataGridColumnHeader<TData, TValue>({
             {props.tableLayout?.columnsVisibility && visibility && (
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <Settings2 className="size-3.5!" />
+                  <Settings2 className="mr-1.5 size-3.5!" />
                   <span>Columns</span>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
