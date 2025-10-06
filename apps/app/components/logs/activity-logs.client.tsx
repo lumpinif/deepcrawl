@@ -7,18 +7,17 @@ import {
   PageTitle,
 } from '@/components/page-elements';
 import { useSuspenseActivityLogs } from '@/hooks/auth.hooks';
+import DataGridDemo from './logs-data-grid';
 
 export function ActivityLogsClient() {
-  const { data: activityLogs, error } = useSuspenseActivityLogs();
+  const { data: activityLogs } = useSuspenseActivityLogs();
   return (
     <>
       <PageHeader title="Activity Logs" />
       <PageContainer>
         <PageTitle title="Overview" titleSize="2xl" />
         {/* <ChartAreaInteractive /> */}
-        <pre className="max-h-[50svh] overflow-y-auto text-xs">
-          {JSON.stringify(activityLogs, null, 2)}
-        </pre>
+        <DataGridDemo logs={activityLogs.logs} />
       </PageContainer>
     </>
   );
