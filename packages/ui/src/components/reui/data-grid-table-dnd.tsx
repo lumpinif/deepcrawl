@@ -13,7 +13,7 @@ import {
   DataGridTableHeadRowCell,
   DataGridTableHeadRowCellResize,
   DataGridTableRowSpacer,
-} from '@deepcrawl/ui/components/reui/data-grid-table.js';
+} from '@deepcrawl/ui/components/reui/data-grid-table';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   closestCenter,
