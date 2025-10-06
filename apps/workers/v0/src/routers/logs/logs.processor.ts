@@ -24,6 +24,7 @@ import type {
   ReadSuccessResponse,
 } from '@deepcrawl/types';
 import type { ActivityLogEntry } from '@deepcrawl/types/routers/logs';
+import { normalizeActivityLogsPagination } from '@deepcrawl/types/routers/logs';
 import type { ORPCContext } from '@/lib/context';
 import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
 
@@ -37,41 +38,130 @@ function reconstructLogEntry(
   const reconstructedResponse = reconstructResponse(record, activity);
 
   switch (activity.path) {
-    case 'read-getMarkdown':
+    case 'read-getMarkdown': {
+      if (activity.success) {
+        return {
+          id: activity.id,
+          path: 'read-getMarkdown',
+          success: activity.success,
+          requestOptions: activity.requestOptions as GetMarkdownOptions,
+          response: reconstructedResponse as string,
+          requestTimestamp: activity.requestTimestamp,
+        };
+      }
+
+      const errorResponse = reconstructedResponse as
+        | ReadErrorResponse
+        | undefined;
+
+      if (!errorResponse) {
+        throw new Error(
+          `Missing error payload for read-getMarkdown log ${activity.id}`,
+        );
+      }
+
       return {
         id: activity.id,
         path: 'read-getMarkdown',
+        success: activity.success,
         requestOptions: activity.requestOptions as GetMarkdownOptions,
-        response: reconstructedResponse as string,
+        response: errorResponse,
         requestTimestamp: activity.requestTimestamp,
       };
-    case 'read-readUrl':
+    }
+    case 'read-readUrl': {
+      if (activity.success) {
+        return {
+          id: activity.id,
+          path: 'read-readUrl',
+          success: activity.success,
+          requestOptions: activity.requestOptions as ReadOptions,
+          response: reconstructedResponse as
+            | ReadSuccessResponse
+            | ReadErrorResponse,
+        };
+      }
+
+      const errorResponse = reconstructedResponse as
+        | ReadErrorResponse
+        | undefined;
+
+      if (!errorResponse) {
+        throw new Error(
+          `Missing error payload for read-readUrl log ${activity.id}`,
+        );
+      }
+
       return {
         id: activity.id,
         path: 'read-readUrl',
+        success: activity.success,
         requestOptions: activity.requestOptions as ReadOptions,
-        response: reconstructedResponse as
-          | ReadSuccessResponse
-          | ReadErrorResponse,
+        response: errorResponse,
       };
-    case 'links-getLinks':
+    }
+    case 'links-getLinks': {
+      if (activity.success) {
+        return {
+          id: activity.id,
+          path: 'links-getLinks',
+          success: activity.success,
+          requestOptions: activity.requestOptions as LinksOptions,
+          response: reconstructedResponse as
+            | LinksSuccessResponse
+            | LinksErrorResponse,
+        };
+      }
+
+      const errorResponse = reconstructedResponse as
+        | LinksErrorResponse
+        | undefined;
+
+      if (!errorResponse) {
+        throw new Error(
+          `Missing error payload for links-getLinks log ${activity.id}`,
+        );
+      }
+
       return {
         id: activity.id,
         path: 'links-getLinks',
+        success: activity.success,
         requestOptions: activity.requestOptions as LinksOptions,
-        response: reconstructedResponse as
-          | LinksSuccessResponse
-          | LinksErrorResponse,
+        response: errorResponse,
       };
-    case 'links-extractLinks':
+    }
+    case 'links-extractLinks': {
+      if (activity.success) {
+        return {
+          id: activity.id,
+          path: 'links-extractLinks',
+          success: activity.success,
+          requestOptions: activity.requestOptions as LinksOptions,
+          response: reconstructedResponse as
+            | LinksSuccessResponse
+            | LinksErrorResponse,
+        };
+      }
+
+      const errorResponse = reconstructedResponse as
+        | LinksErrorResponse
+        | undefined;
+
+      if (!errorResponse) {
+        throw new Error(
+          `Missing error payload for links-extractLinks log ${activity.id}`,
+        );
+      }
+
       return {
         id: activity.id,
         path: 'links-extractLinks',
+        success: activity.success,
         requestOptions: activity.requestOptions as LinksOptions,
-        response: reconstructedResponse as
-          | LinksSuccessResponse
-          | LinksErrorResponse,
+        response: errorResponse,
       };
+    }
     default:
       throw new Error(`Unknown path: ${activity.path}`);
   }
@@ -85,6 +175,9 @@ export async function getManyLogsWithReconstruction(
   options: GetManyLogsOptions,
 ): Promise<GetManyLogsResponse> {
   const { limit = 20, offset = 0, path, success, startDate, endDate } = options;
+  const normalized = normalizeActivityLogsPagination({ limit, offset });
+  const sanitizedLimit = normalized.limit ?? 20;
+  const sanitizedOffset = normalized.offset ?? 0;
 
   // Get user ID from session
   const userId = c.var.session?.user?.id;
@@ -126,8 +219,8 @@ export async function getManyLogsWithReconstruction(
     )
     .where(whereClause)
     .orderBy(desc(activityLog.requestTimestamp))
-    .limit(limit)
-    .offset(offset);
+    .limit(sanitizedLimit)
+    .offset(sanitizedOffset);
 
   // Reconstruct responses for each log entry
   const reconstructedLogs: ActivityLogEntry[] = logs.map(
@@ -136,6 +229,23 @@ export async function getManyLogsWithReconstruction(
       responseRecord: ResponseRecord | null;
     }) => reconstructLogEntry(log.activityLog, log.responseRecord),
   );
+
+  // const validatedLogs: ActivityLogEntry[] = reconstructedLogs.map((entry) => {
+  //   const result = ActivityLogEntrySchema.safeParse(entry);
+  //   if (!result.success) {
+  //     logDebug(
+  //       '⛔ [ActivityLogEntry] ~ getManyLogsWithReconstruction ~ entry:',
+  //       JSON.stringify(entry, null, 2),
+  //     );
+  //     logDebug('⛔ [ActivityLogEntry] Activity log entry validation failed', {
+  //       id: entry.id,
+  //       path: entry.path,
+  //       issues: JSON.stringify(z.treeifyError(result.error), null, 2),
+  //     });
+  //     throw new Error('⛔ [ActivityLogEntry] Invalid activity log entry');
+  //   }
+  //   return result.data;
+  // });
 
   return {
     logs: reconstructedLogs,
