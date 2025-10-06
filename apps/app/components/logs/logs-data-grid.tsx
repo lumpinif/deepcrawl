@@ -41,6 +41,7 @@ import {
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { formatDate } from 'date-fns';
 import type { GetManyLogsResponse } from 'deepcrawl';
 import { Ellipsis, Filter, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -68,10 +69,11 @@ function getLogStatus(log: ActivityLogEntry): string {
 }
 
 function getLogTimestamp(log: ActivityLogEntry): string | undefined {
-  const { response } = log;
+  const { response, path } = log;
 
   if (typeof response === 'string') {
-    return;
+    // for getMarkdown, the requestTimestamp from the log is the request timestamp
+    return path === 'read-getMarkdown' ? log.requestTimestamp : undefined;
   }
 
   if ('timestamp' in response && typeof response.timestamp === 'string') {
@@ -92,10 +94,7 @@ function formatTimestamp(timestamp?: string): string {
     return '--';
   }
 
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
+  return formatDate(date, 'MMM d, yyyy HH:mm');
 }
 
 function ActionsCell({ row }: { row: Row<ActivityLogEntry> }) {
