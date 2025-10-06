@@ -16,5 +16,8 @@
     "hooks": "@deepcrawl/ui/hooks",
     "lib": "@deepcrawl/ui/lib",
     "ui": "@deepcrawl/ui/components/ui"
+  },
+  "registries": {
+    "@reui": "https://reui.io/r/{name}.json"
   }
 }
