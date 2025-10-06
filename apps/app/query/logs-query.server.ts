@@ -1,12 +1,12 @@
 'use server';
 
 import {
-  GetManyLogsOptionsSchema,
+  // GetManyLogsOptionsSchema,
   normalizeActivityLogsPagination,
 } from '@deepcrawl/types/routers/logs';
 import { DeepcrawlApp, type GetManyLogsResponse } from 'deepcrawl';
 import { headers } from 'next/headers';
-import { z } from 'zod/v4';
+// import { z } from 'zod/v4';
 import {
   type ActivityLogsQueryParams,
   DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
@@ -27,18 +27,19 @@ export async function fetchDeepcrawlLogs(
       headers: requestHeaders,
     });
 
-    const validation = GetManyLogsOptionsSchema.safeParse(params);
+    // DISABLED VALIDATION FOR NOW
+    // const validation = GetManyLogsOptionsSchema.safeParse(params);
 
-    if (!validation.success) {
-      console.error(
-        '[SERVER_LOGS] Invalid Deepcrawl log parameters',
-        z.treeifyError(validation.error),
-      );
-      throw new Error('[SERVER_LOGS] Invalid Deepcrawl log parameters');
-    }
+    // if (!validation.success) {
+    //   console.error(
+    //     '[SERVER_LOGS] Invalid Deepcrawl log parameters',
+    //     z.treeifyError(validation.error),
+    //   );
+    //   throw new Error('[SERVER_LOGS] Invalid Deepcrawl log parameters');
+    // }
 
-    const normalized = normalizeActivityLogsPagination(validation.data);
-    return await dc.getManyLogs({ ...validation.data, ...normalized });
+    const normalized = normalizeActivityLogsPagination(params);
+    return await dc.getManyLogs({ ...params, ...normalized });
   } catch (error) {
     console.error('Failed to fetch Deepcrawl logs:', error);
     throw new Error(
