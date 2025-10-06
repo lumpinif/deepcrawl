@@ -89,19 +89,23 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      *
      * When path is `'read-getMarkdown'`:
      * - `requestOptions` will be typed as {@link GetMarkdownOptionsSchema GetMarkdownOptions}
-     * - `response` will be typed as `string` (markdown content)
+     * - `response` will be typed as `string` (markdown content) when success is true
      */
     path: z.literal('read-getMarkdown'),
+
+    /**
+     * Whether the request was successful
+     */
+    success: z.boolean(),
     /**
      * Original request options for the `getMarkdown` endpoint
      * @type {GetMarkdownOptions}
      */
     requestOptions: GetMarkdownOptionsSchema,
     /**
-     * Reconstructed markdown response (string content)
-     * @type {string}
+     * Reconstructed markdown response (string content) or error on failure
      */
-    response: z.string(),
+    response: z.union([z.string(), ReadErrorResponseSchema]),
     /**
      * Request timestamp for getMarkdown endpoint only
      * @type {string}
@@ -127,6 +131,10 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      */
     path: z.literal('read-readUrl'),
     /**
+     * Whether the request was successful
+     */
+    success: z.boolean(),
+    /**
      * Original request options for the `readUrl` endpoint
      * @type {ReadOptions}
      */
@@ -136,6 +144,11 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * @type {ReadSuccessResponse | ReadErrorResponse}
      */
     response: z.union([ReadSuccessResponseSchema, ReadErrorResponseSchema]),
+    /**
+     * Error response for the `readUrl` endpoint
+     * @type {ReadErrorResponse}
+     */
+    error: ReadErrorResponseSchema.optional(),
   }),
   z.object({
     /**
@@ -153,6 +166,10 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      */
     path: z.literal('links-getLinks'),
     /**
+     * Whether the request was successful
+     */
+    success: z.boolean(),
+    /**
      * Original request options for the `getLinks` endpoint
      * @type {LinksOptions}
      */
@@ -162,6 +179,11 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * @type {LinksSuccessResponse | LinksErrorResponse}
      */
     response: z.union([LinksSuccessResponseSchema, LinksErrorResponseSchema]),
+    /**
+     * Error response for the `getLinks` endpoint
+     * @type {LinksErrorResponse}
+     */
+    error: LinksErrorResponseSchema.optional(),
   }),
   z.object({
     /**
@@ -179,6 +201,10 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      */
     path: z.literal('links-extractLinks'),
     /**
+     * Whether the request was successful
+     */
+    success: z.boolean(),
+    /**
      * Original request options for the `extractLinks` endpoint
      * @type {LinksOptions}
      */
@@ -188,6 +214,11 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * @type {LinksSuccessResponse | LinksErrorResponse}
      */
     response: z.union([LinksSuccessResponseSchema, LinksErrorResponseSchema]),
+    /**
+     * Error response for the `extractLinks` endpoint
+     * @type {LinksErrorResponse}
+     */
+    error: LinksErrorResponseSchema.optional(),
   }),
 ]);
 
@@ -229,6 +260,34 @@ export const GetManyLogsResponseSchema = z.object({
     description: 'Array of activity log entries with responses',
   }),
 });
+
+export interface ActivityLogsPaginationInput {
+  readonly limit?: unknown;
+  readonly offset?: unknown;
+}
+
+export interface NormalizedActivityLogsPagination {
+  readonly limit?: number;
+  readonly offset?: number;
+}
+
+export function normalizeActivityLogsPagination(
+  input: ActivityLogsPaginationInput = {},
+): NormalizedActivityLogsPagination {
+  const { limit, offset } = input;
+  const limitNumber = Number(limit);
+  const offsetNumber = Number(offset);
+  const normalizedLimit = Number.isFinite(limitNumber)
+    ? Math.min(Math.max(Math.trunc(limitNumber), 1), 100)
+    : undefined;
+  const normalizedOffset = Number.isFinite(offsetNumber)
+    ? Math.max(Math.trunc(offsetNumber), 0)
+    : undefined;
+  return {
+    limit: normalizedLimit,
+    offset: normalizedOffset,
+  };
+}
 
 /** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
  * Type for get logs options (input)
