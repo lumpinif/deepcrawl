@@ -441,6 +441,7 @@ function DataGridTableLoader() {
 
 function DataGridTableRowSelect<TData>({
   row,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   size,
 }: {
   row: Row<TData>;
@@ -465,6 +466,7 @@ function DataGridTableRowSelect<TData>({
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function DataGridTableRowSelectAll({ size }: { size?: 'sm' | 'md' | 'lg' }) {
   const { table, recordCount, isLoading } = useDataGrid();
 

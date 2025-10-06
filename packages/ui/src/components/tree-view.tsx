@@ -9,15 +9,15 @@ import { ChevronRight } from 'lucide-react';
 import React from 'react';
 
 const treeVariants = cva(
-  'group hover:before:opacity-100 before:absolute before:rounded-lg before:left-0 px-2 before:w-full before:opacity-0 before:bg-accent/70 before:h-[2rem] before:-z-10 text-primary/75 hover:text-primary transition-colors duration-150 ease-out hover:underline hover:underline-offset-1',
+  'group before:-z-10 px-2 text-primary/75 transition-colors duration-150 ease-out before:absolute before:left-0 before:h-[2rem] before:w-full before:rounded-lg before:bg-accent/70 before:opacity-0 hover:text-primary hover:underline hover:underline-offset-1 hover:before:opacity-100',
 );
 
 const selectedTreeVariants = cva(
-  'before:opacity-100 before:bg-accent/70 text-primary underline underline-offset-1',
+  'text-primary underline underline-offset-1 before:bg-accent/70 before:opacity-100',
 );
 
 const dragOverVariants = cva(
-  'before:opacity-100 before:bg-primary/20 text-primary-foreground',
+  'text-primary-foreground before:bg-primary/20 before:opacity-100',
 );
 
 interface TreeDataItem {
