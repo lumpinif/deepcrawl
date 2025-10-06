@@ -102,6 +102,14 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * @type {string}
      */
     response: z.string(),
+    /**
+     * Request timestamp for getMarkdown endpoint only
+     * @type {string}
+     */
+    requestTimestamp: z.string().meta({
+      description: 'Request timestamp for getMarkdown',
+      examples: ['2025-09-12T10:30:00.000Z'],
+    }),
   }),
   z.object({
     /**
