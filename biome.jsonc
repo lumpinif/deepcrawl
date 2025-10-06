@@ -45,7 +45,13 @@
     "rules": {
       "recommended": true,
       "nursery": {
-        "useSortedClasses": "info",
+        "useSortedClasses": {
+          "level": "info",
+          "fix": "safe",
+          "options": {
+            "functions": ["cn", "clsx", "cva", "tw", "tw.*"]
+          }
+        },
         "noUselessUndefined": "error"
       },
       "a11y": {
