@@ -44,8 +44,9 @@ import {
 import { formatDate } from 'date-fns';
 import type { GetManyLogsResponse } from 'deepcrawl';
 import { Ellipsis, Filter, Search, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { useSuspenseActivityLogs } from '@/hooks/auth.hooks';
 import { copyToClipboard } from '@/utils/clipboard';
 
 type ActivityLogEntry = GetManyLogsResponse['logs'][number];
@@ -55,34 +56,30 @@ function getLogUrl(log: ActivityLogEntry): string {
 }
 
 function getLogStatus(log: ActivityLogEntry): string {
-  const { response } = log;
-
-  if (typeof response === 'string') {
-    return 'success';
-  }
-
-  if ('success' in response) {
-    return response.success ? 'success' : 'failed';
+  if (typeof log.success === 'boolean') {
+    return log.success ? 'success' : 'failed';
   }
 
   return 'failed';
 }
 
 function getLogTimestamp(log: ActivityLogEntry): string | undefined {
-  const { response, path } = log;
-
-  if (typeof response === 'string') {
-    // for getMarkdown, the requestTimestamp from the log is the request timestamp
-    return path === 'read-getMarkdown' ? log.requestTimestamp : undefined;
+  if (log.path === 'read-getMarkdown') {
+    return log.requestTimestamp;
   }
 
-  if ('timestamp' in response && typeof response.timestamp === 'string') {
-    return response.timestamp;
+  const response = (log as { response?: unknown }).response;
+
+  if (response && typeof response === 'object' && 'timestamp' in response) {
+    const timestamp = (response as { timestamp?: unknown }).timestamp;
+    if (typeof timestamp === 'string') {
+      return timestamp;
+    }
   }
 
   return;
 }
-// TODO: USE DATA-FNS TO FORMAT TIMESTAMP
+
 function formatTimestamp(timestamp?: string): string {
   if (!timestamp) {
     return '--';
@@ -122,14 +119,12 @@ function ActionsCell({ row }: { row: Row<ActivityLogEntry> }) {
   );
 }
 
-interface DataGridProps {
-  readonly logs: GetManyLogsResponse['logs'];
-}
+const DEFAULT_PAGE_SIZE = 10;
 
-export default function ActivityLogsDataGrid({ logs }: DataGridProps) {
+export default function ActivityLogsDataGrid() {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: DEFAULT_PAGE_SIZE,
   });
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'timestamp', desc: true },
@@ -137,6 +132,27 @@ export default function ActivityLogsDataGrid({ logs }: DataGridProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
+
+  const queryParams = useMemo(
+    () => ({
+      limit: pagination.pageSize,
+      offset: pagination.pageIndex * pagination.pageSize,
+    }),
+    [pagination.pageIndex, pagination.pageSize],
+  );
+
+  const { data } = useSuspenseActivityLogs(queryParams);
+
+  const logs = useMemo<ActivityLogEntry[]>(() => data?.logs ?? [], [data]);
+
+  useEffect(() => {
+    if (pagination.pageIndex > 0 && logs.length === 0) {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: Math.max(prev.pageIndex - 1, 0),
+      }));
+    }
+  }, [logs.length, pagination.pageIndex]);
 
   const filteredData = useMemo(() => {
     return logs.filter((item) => {
@@ -178,6 +194,10 @@ export default function ActivityLogsDataGrid({ logs }: DataGridProps) {
       first[0].localeCompare(second[0], undefined, { sensitivity: 'base' }),
     );
   }, [pathCounts]);
+
+  const hasNextPage = logs.length === pagination.pageSize;
+  const recordCount =
+    pagination.pageIndex * pagination.pageSize + filteredData.length;
 
   const handleStatusChange = (checked: boolean, value: string) => {
     setSelectedStatuses((prev = []) => {
@@ -305,7 +325,9 @@ export default function ActivityLogsDataGrid({ logs }: DataGridProps) {
   const table = useReactTable({
     columns,
     data: filteredData,
-    pageCount: Math.ceil((filteredData.length || 0) / pagination.pageSize),
+    pageCount: hasNextPage
+      ? pagination.pageIndex + 2
+      : pagination.pageIndex + 1,
     getRowId: (row: ActivityLogEntry) => row.id,
     state: {
       pagination,
@@ -320,11 +342,13 @@ export default function ActivityLogsDataGrid({ logs }: DataGridProps) {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    manualPagination: true,
   });
 
   return (
     <DataGrid
-      recordCount={filteredData.length || 0}
+      loadingMessage="Loading activity logs..."
+      recordCount={recordCount}
       table={table}
       tableLayout={{
         columnsPinnable: true,

@@ -10,6 +10,10 @@ import {
   listUserPasskeys,
 } from '@/query/auth-query.client';
 import { getManyDeepcrawlLogs } from './logs-query.client';
+import {
+  type ActivityLogsQueryParams,
+  DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
+} from './logs-query.shared';
 import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
 
@@ -109,9 +113,11 @@ export const apiKeysQueryOptionsClient = () =>
  * Uses the internal API route so credentials stay server-side
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const activityLogsQueryOptionsClient = () =>
+export const activityLogsQueryOptionsClient = (
+  params: ActivityLogsQueryParams = DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
+) =>
   queryOptions({
-    queryKey: userQueryKeys.activityLogs,
-    queryFn: getManyDeepcrawlLogs,
+    queryKey: [...userQueryKeys.activityLogs, params],
+    queryFn: () => getManyDeepcrawlLogs(params),
     ...baseQueryOptions,
   });

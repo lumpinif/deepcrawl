@@ -27,6 +27,10 @@ import {
 } from '@/lib/auth-errors';
 import { getAppRoute } from '@/lib/navigation-config';
 import { generatePasskeyName } from '@/lib/passkey-utils';
+import {
+  type ActivityLogsQueryParams,
+  DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
+} from '@/query/logs-query.shared';
 import { userQueryKeys } from '@/query/query-keys';
 import {
   activityLogsQueryOptionsClient,
@@ -953,5 +957,9 @@ export function useAuthRedirect(redirectTo?: string) {
 /**
  * Suspense-friendly
  */
-export const useSuspenseActivityLogs = () =>
-  useSuspenseQuery(activityLogsQueryOptionsClient());
+export const useSuspenseActivityLogs = (params?: ActivityLogsQueryParams) =>
+  useSuspenseQuery(
+    activityLogsQueryOptionsClient(
+      params ?? DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
+    ),
+  );

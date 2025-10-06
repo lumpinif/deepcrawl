@@ -10,6 +10,10 @@ import {
   authListUserAccounts,
 } from '@/query/auth-query.server';
 import { fetchDeepcrawlLogs } from './logs-query.server';
+import {
+  type ActivityLogsQueryParams,
+  DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
+} from './logs-query.shared';
 import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
 
@@ -94,9 +98,11 @@ export const apiKeysQueryOptions = () =>
  * Query options for activity logs
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const activityLogsQueryOptions = () =>
+export const activityLogsQueryOptions = (
+  params: ActivityLogsQueryParams = DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
+) =>
   queryOptions({
-    queryKey: userQueryKeys.activityLogs,
-    queryFn: fetchDeepcrawlLogs,
+    queryKey: [...userQueryKeys.activityLogs, params],
+    queryFn: () => fetchDeepcrawlLogs(params),
     ...baseQueryOptions,
   });
