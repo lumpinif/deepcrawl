@@ -1,4 +1,4 @@
-import { useDataGrid } from '@deepcrawl/ui/components/reui/data-grid.js';
+import { useDataGrid } from '@deepcrawl/ui/components/reui/data-grid';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   DropdownMenu,

@@ -79,12 +79,18 @@
     "./globals.css": "./src/styles/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",
-    "./components/*": "./src/components/*.tsx",
+    "./components/*": [
+      "./src/components/*.tsx",
+      "./src/components/*.ts"
+    ],
     "./hooks/*": [
       "./src/hooks/*.ts",
       "./src/hooks/*.tsx"
     ],
-    "./icons/*": "./src/components/icons/*.tsx"
+    "./icons/*": [
+      "./src/components/icons/*.tsx",
+      "./src/components/icons/*.ts"
+    ]
   },
   "overrides": {
     "react-is": "^19.1.0"
