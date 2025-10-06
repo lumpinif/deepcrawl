@@ -43,6 +43,7 @@ function reconstructLogEntry(
         path: 'read-getMarkdown',
         requestOptions: activity.requestOptions as GetMarkdownOptions,
         response: reconstructedResponse as string,
+        requestTimestamp: activity.requestTimestamp,
       };
     case 'read-readUrl':
       return {
