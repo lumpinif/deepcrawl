@@ -1,13 +1,8 @@
 'use client';
 
-// import { ChartAreaInteractive } from '@/components/home/chart-area-interactive';
-import {
-  PageContainer,
-  PageHeader,
-  PageTitle,
-} from '@/components/page-elements';
+import { PageContainer, PageHeader } from '@/components/page-elements';
 import { useSuspenseActivityLogs } from '@/hooks/auth.hooks';
-import DataGridDemo from './logs-data-grid';
+import ActivityLogsDataGrid from './logs-data-grid';
 
 export function ActivityLogsClient() {
   const { data: activityLogs } = useSuspenseActivityLogs();
@@ -15,9 +10,8 @@ export function ActivityLogsClient() {
     <>
       <PageHeader title="Activity Logs" />
       <PageContainer>
-        <PageTitle title="Overview" titleSize="2xl" />
-        {/* <ChartAreaInteractive /> */}
-        <DataGridDemo logs={activityLogs.logs} />
+        {/* <PageTitle title="Overview" titleSize="2xl" /> */}
+        <ActivityLogsDataGrid logs={activityLogs.logs} />
       </PageContainer>
     </>
   );
