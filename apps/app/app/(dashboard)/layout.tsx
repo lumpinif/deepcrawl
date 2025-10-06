@@ -41,7 +41,7 @@ export default async function DashboardLayout({
     (cookieStore.get('navigation:mode')?.value as NavigationMode) || 'header';
 
   const defaultInsetClassname = cn(
-    '!overflow-hidden !shadow-none border-none !max-h-svh',
+    '!overflow-hidden !shadow-none !max-h-svh border-none',
     /* desktop */
     'peer-data-[variant=inset]:max-h-[calc(100svh-theme(spacing.4))] peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))]',
     /* mobile */

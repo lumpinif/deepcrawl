@@ -27,8 +27,8 @@ export function PlaygroundOptionsMenusToolbar({
   const customizeLabelClasses = cn(
     'mr-1 flex w-fit select-none items-center overflow-hidden text-nowrap font-medium text-muted-foreground text-xs transition-all duration-250 ease-out',
     isDetailedBarOpen
-      ? 'ml-3 max-w-[12rem] opacity-100 translate-x-0'
-      : 'ml-0 max-w-0 opacity-0 -translate-x-1 pointer-events-none blur-[3px]',
+      ? 'ml-3 max-w-[12rem] translate-x-0 opacity-100'
+      : '-translate-x-1 pointer-events-none ml-0 max-w-0 opacity-0 blur-[3px]',
   );
 
   return (

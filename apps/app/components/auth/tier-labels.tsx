@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type React from 'react';
 
 const tierVariants = cva(
-  'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset transition-all duration-300 ease-in-out',
+  'inline-flex items-center rounded-full px-3 py-1 font-semibold text-xs ring-1 ring-inset transition-all duration-300 ease-in-out',
   {
     variants: {
       variant: {
