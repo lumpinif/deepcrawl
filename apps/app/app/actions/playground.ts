@@ -15,15 +15,7 @@ import {
   type ReadUrlResponse,
 } from 'deepcrawl';
 import { headers } from 'next/headers';
-
-interface PlaygroundApiResponse<T = unknown> {
-  data?: T;
-  error?: string;
-  status?: number;
-  errorType?: 'auth' | 'network' | 'read' | 'links' | 'unknown';
-  targetUrl?: string;
-  timestamp?: string;
-}
+import type { PlaygroundResponse } from '@/hooks/playground/types';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
@@ -44,17 +36,14 @@ async function createPlaygroundClient() {
  */
 export async function playgroundGetMarkdown(
   options: GetMarkdownOptions,
-): Promise<PlaygroundApiResponse<GetMarkdownResponse>> {
+): Promise<PlaygroundResponse<GetMarkdownResponse>> {
   try {
     const dc = await createPlaygroundClient();
     const data = await dc.getMarkdown(options);
 
-    return {
-      data,
-      status: 200,
-    };
+    return { data }; // must return in object to match the `data` property in PlaygroundResponse type
   } catch (error) {
-    return handlePlaygroundError<GetMarkdownResponse>(error);
+    return handlePlaygroundAPIError(error);
   }
 }
 
@@ -63,17 +52,14 @@ export async function playgroundGetMarkdown(
  */
 export async function playgroundReadUrl(
   options: ReadUrlOptions,
-): Promise<PlaygroundApiResponse<ReadUrlResponse>> {
+): Promise<PlaygroundResponse<ReadUrlResponse>> {
   try {
     const dc = await createPlaygroundClient();
     const data = await dc.readUrl(options);
 
-    return {
-      data,
-      status: 200,
-    };
+    return { data }; // must return in object to match the `data` property in PlaygroundResponse type
   } catch (error) {
-    return handlePlaygroundError<ReadUrlResponse>(error);
+    return handlePlaygroundAPIError(error);
   }
 }
 
@@ -82,26 +68,23 @@ export async function playgroundReadUrl(
  */
 export async function playgroundExtractLinks(
   options: ExtractLinksOptions,
-): Promise<PlaygroundApiResponse<ExtractLinksResponse>> {
+): Promise<PlaygroundResponse<ExtractLinksResponse>> {
   try {
     const dc = await createPlaygroundClient();
     const data = await dc.extractLinks(options);
 
-    return {
-      data,
-      status: 200,
-    };
+    return { data }; // must return in object to match the `data` property in PlaygroundResponse type
   } catch (error) {
-    return handlePlaygroundError<ExtractLinksResponse>(error);
+    return handlePlaygroundAPIError(error);
   }
 }
 
 /**
  * Unified error handler for playground operations
  */
-function handlePlaygroundError<T = unknown>(
+function handlePlaygroundAPIError(
   error: unknown,
-): PlaygroundApiResponse<T> {
+): Omit<PlaygroundResponse<never>, 'data'> {
   if (error instanceof DeepcrawlAuthError) {
     return {
       error: error.message,

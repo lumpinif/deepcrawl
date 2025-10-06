@@ -4,31 +4,31 @@ import {
   playgroundGetMarkdown,
   playgroundReadUrl,
 } from '@/app/actions/playground';
+import {
+  handlePlaygroundClientErrorResponse,
+  handleUnexpectedPlaygroundError,
+} from '@/utils/playground/error-handler.client';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
 import {
-  type APIResponseData,
+  type APISuccessResponses,
   type DeepcrawlOperations,
-  type GetAnyOperationState,
   GetMarkdownOptionsSchemaWithoutUrl,
   LinksOptionsSchemaWithoutUrl,
+  type PlaygroundActions,
+  type PlaygroundCoreState,
   type PlaygroundOperationResponse,
-  type PlaygroundResponses,
+  type PlaygroundOptionsState,
+  type PlaygroundResponse,
   ReadUrlOptionsSchemaWithoutUrl,
 } from './types';
 import { useExecutionTimer } from './use-execution-timer';
 
 interface UsePlaygroundOperationsProps {
   requestUrl: string;
-  getAnyOperationState: GetAnyOperationState;
-  activeRequestsRef: React.RefObject<Set<string>>;
-  setIsExecuting: (
-    fn: (
-      prev: Record<DeepcrawlOperations, boolean>,
-    ) => Record<DeepcrawlOperations, boolean>,
-  ) => void;
-  setResponses: (
-    fn: (prev: PlaygroundResponses) => PlaygroundResponses,
-  ) => void;
+  getAnyOperationState: PlaygroundOptionsState['getAnyOperationState'];
+  activeRequestsRef: PlaygroundCoreState['activeRequestsRef'];
+  setIsExecuting: PlaygroundActions['setIsExecuting'];
+  setResponses: PlaygroundActions['setResponses'];
 }
 
 export function usePlaygroundOperations({
@@ -46,36 +46,6 @@ export function usePlaygroundOperations({
     getCurrentExecutionTime,
     formatTime,
   } = useExecutionTimer();
-
-  // Convert server action error response to PlaygroundOperationResponse
-  const handleServerActionError = (
-    errorResponse: {
-      error?: string;
-      status?: number;
-      errorType?: string;
-      targetUrl?: string;
-      timestamp?: string;
-    },
-    operation: DeepcrawlOperations,
-    executionTime: number,
-  ): PlaygroundOperationResponse => {
-    return {
-      operation,
-      data: undefined,
-      status: errorResponse.status || 500,
-      executionTime,
-      targetUrl: errorResponse.targetUrl || requestUrl,
-      timestamp: errorResponse.timestamp || new Date().toISOString(),
-      error: errorResponse.error || 'An unknown error occurred',
-      errorType: errorResponse.errorType as
-        | 'auth'
-        | 'network'
-        | 'read'
-        | 'links'
-        | 'unknown',
-      retryable: errorResponse.errorType === 'network',
-    } as PlaygroundOperationResponse;
-  };
 
   const executeApiCall = async (
     operation: DeepcrawlOperations,
@@ -100,14 +70,7 @@ export function usePlaygroundOperations({
     const startTime = startTimer(operation);
 
     try {
-      let serverResponse: {
-        data?: unknown;
-        error?: string;
-        status?: number;
-        errorType?: string;
-        targetUrl?: string;
-        timestamp?: string;
-      };
+      let serverResponse: PlaygroundResponse;
 
       switch (operation) {
         case 'getMarkdown': {
@@ -164,20 +127,21 @@ export function usePlaygroundOperations({
 
       // Check if server action returned an error
       if (serverResponse.error) {
-        const errorResponse = handleServerActionError(
+        const errorResponse = handlePlaygroundClientErrorResponse(
           serverResponse,
-          operation,
-          executionTime,
+          {
+            operation,
+            label,
+            executionTime,
+            requestUrl,
+            onRetry: handleRetry,
+          },
         );
 
         setResponses((prev) => ({
           ...prev,
           [operation]: errorResponse,
         }));
-
-        toast.error(`${label} failed`, {
-          description: serverResponse.error,
-        });
 
         return;
       }
@@ -196,7 +160,7 @@ export function usePlaygroundOperations({
         ...prev,
         [operation]: {
           operation,
-          data: serverResponse.data as APIResponseData,
+          data: serverResponse.data as APISuccessResponses,
           status: 200,
           executionTime,
           targetUrl,
@@ -209,28 +173,18 @@ export function usePlaygroundOperations({
       toast.success(`${label} completed successfully`);
     } catch (error) {
       const executionTime = getElapsedTime(operation, startTime);
-      const errorResponse = handleServerActionError(
-        {
-          error:
-            error instanceof Error
-              ? error.message
-              : 'An unknown error occurred',
-          status: 500,
-          errorType: 'unknown',
-        },
+      const errorResponse = handleUnexpectedPlaygroundError(error, {
         operation,
+        label,
         executionTime,
-      );
+        requestUrl,
+        onRetry: handleRetry,
+      });
 
       setResponses((prev) => ({
         ...prev,
         [operation]: errorResponse,
       }));
-
-      toast.error(`${label} failed`, {
-        description:
-          error instanceof Error ? error.message : 'An unknown error occurred',
-      });
     } finally {
       // Always cleanup - prevent memory leaks
       setIsExecuting((prev) => ({ ...prev, [operation]: false }));
@@ -248,6 +202,5 @@ export function usePlaygroundOperations({
     handleRetry,
     formatTime,
     getCurrentExecutionTime,
-    isReady: true, // Always ready with Server Actions
   };
 }

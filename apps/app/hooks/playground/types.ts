@@ -105,63 +105,53 @@ export type GetAnyOperationState = <K extends keyof OperationToOptions>(
 /* ------------------------------------------------------------------------------------ */
 
 // Response types for API operations
-export type APIResponseData =
+export type APISuccessResponses =
   | GetMarkdownResponse
   | ReadUrlResponse
   | ExtractLinksResponse;
 
-export interface PlaygroundResponseMetadata {
+export type PlaygroundAPIErrorType =
+  | 'read'
+  | 'links'
+  | 'rateLimit'
+  | 'auth'
+  | 'validation'
+  | 'network'
+  | 'server'
+  | 'unknown';
+
+export interface PlaygroundAPIError {
+  error?: string;
+  errorType?: PlaygroundAPIErrorType;
+}
+
+export interface PlaygroundResponse<
+  T extends APISuccessResponses = APISuccessResponses,
+> extends PlaygroundAPIError {
+  data?: T | undefined;
+  status?: number;
+  targetUrl?: string;
+  timestamp?: string;
   executionTime?: number;
-  errorType?:
-    | 'read'
-    | 'links'
-    | 'rateLimit'
-    | 'auth'
-    | 'validation'
-    | 'network'
-    | 'server'
-    | 'unknown';
   retryable?: boolean;
   retryAfter?: number;
   userMessage?: string;
 }
 
-// Base response type (for error handler - operation discriminant added later)
-export type PlaygroundResponseBase = PlaygroundResponseMetadata & {
-  data?: APIResponseData;
-  error?: string;
-  status?: number;
-  targetUrl?: string;
-  timestamp?: string;
-};
-
 // Discriminated union types for operation-specific responses
-export type GetMarkdownPlaygroundResponse = PlaygroundResponseMetadata & {
-  operation: 'getMarkdown';
-  data?: GetMarkdownResponse;
-  error?: string;
-  status?: number;
-  targetUrl?: string;
-  timestamp?: string;
-};
+export type GetMarkdownPlaygroundResponse =
+  PlaygroundResponse<GetMarkdownResponse> & {
+    operation: 'getMarkdown';
+  };
 
-export type ReadUrlPlaygroundResponse = PlaygroundResponseMetadata & {
+export type ReadUrlPlaygroundResponse = PlaygroundResponse<ReadUrlResponse> & {
   operation: 'readUrl';
-  data?: ReadUrlResponse;
-  error?: string;
-  status?: number;
-  targetUrl?: string;
-  timestamp?: string;
 };
 
-export type ExtractLinksPlaygroundResponse = PlaygroundResponseMetadata & {
-  operation: 'extractLinks';
-  data?: ExtractLinksResponse;
-  error?: string;
-  status?: number;
-  targetUrl?: string;
-  timestamp?: string;
-};
+export type ExtractLinksPlaygroundResponse =
+  PlaygroundResponse<ExtractLinksResponse> & {
+    operation: 'extractLinks';
+  };
 
 // Discriminated union of all operation responses
 export type PlaygroundOperationResponse =
