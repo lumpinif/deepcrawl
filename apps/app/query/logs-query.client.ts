@@ -86,7 +86,7 @@ export async function getManyDeepcrawlLogs(
 
   const response = await fetch(endpoint, {
     credentials: 'include',
-    cache: 'no-store',
+    // cache: 'no-store',
   });
 
   if (!response.ok) {
