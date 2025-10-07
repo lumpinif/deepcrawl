@@ -10,7 +10,7 @@ import {
   authListUserAccounts,
 } from '@/query/auth-query.server';
 import { dcGetManyLogs } from './logs-query.server';
-import { DEFAULT_GET_MANY_LOGS_QUERY_PARAMS } from './logs-query.shared';
+import { createDefaultGetManyLogsQueryParams } from './logs-query.shared';
 import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
 
@@ -96,7 +96,7 @@ export const apiKeysQueryOptions = () =>
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
 export const getManyLogsQueryOptions = (
-  params: GetManyLogsOptions = DEFAULT_GET_MANY_LOGS_QUERY_PARAMS,
+  params: GetManyLogsOptions = createDefaultGetManyLogsQueryParams(),
 ) =>
   queryOptions({
     queryKey: [...userQueryKeys.activityLogs, params],

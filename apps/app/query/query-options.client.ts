@@ -11,7 +11,7 @@ import {
   listUserPasskeys,
 } from '@/query/auth-query.client';
 import { getManyDeepcrawlLogs } from './logs-query.client';
-import { DEFAULT_GET_MANY_LOGS_QUERY_PARAMS } from './logs-query.shared';
+import { createDefaultGetManyLogsQueryParams } from './logs-query.shared';
 import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
 
@@ -112,7 +112,7 @@ export const apiKeysQueryOptionsClient = () =>
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
 export const getManyLogsQueryOptionsClient = (
-  params: GetManyLogsOptions = DEFAULT_GET_MANY_LOGS_QUERY_PARAMS,
+  params: GetManyLogsOptions = createDefaultGetManyLogsQueryParams(),
 ) =>
   queryOptions({
     queryKey: [...userQueryKeys.activityLogs, params],

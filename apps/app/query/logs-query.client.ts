@@ -4,7 +4,7 @@ import {
   resolveGetManyLogsOptions,
 } from '@deepcrawl/contracts';
 import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs';
-import { DEFAULT_GET_MANY_LOGS_QUERY_PARAMS } from './logs-query.shared';
+import { createDefaultGetManyLogsQueryParams } from './logs-query.shared';
 
 const LOGS_ENDPOINT = '/api/deepcrawl/logs';
 
@@ -49,7 +49,7 @@ function buildLogsEndpoint(query: string): string {
 }
 
 export async function getManyDeepcrawlLogs(
-  params: GetManyLogsOptions = DEFAULT_GET_MANY_LOGS_QUERY_PARAMS,
+  params: GetManyLogsOptions = createDefaultGetManyLogsQueryParams(),
 ): Promise<GetManyLogsResponse> {
   const resolvedParams = resolveGetManyLogsOptions(params);
 

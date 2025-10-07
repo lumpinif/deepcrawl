@@ -9,7 +9,7 @@ import {
 import { DeepcrawlApp, type GetManyLogsResponse } from 'deepcrawl';
 import { headers } from 'next/headers';
 // import { z } from 'zod/v4';
-import { DEFAULT_GET_MANY_LOGS_QUERY_PARAMS } from './logs-query.shared';
+import { createDefaultGetManyLogsQueryParams } from './logs-query.shared';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
@@ -17,7 +17,7 @@ const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
  * Deepcrawl Server API Call:
  */
 export async function dcGetManyLogs(
-  params: GetManyLogsOptions = DEFAULT_GET_MANY_LOGS_QUERY_PARAMS,
+  params: GetManyLogsOptions = createDefaultGetManyLogsQueryParams(),
 ): Promise<GetManyLogsResponse> {
   try {
     const resolvedParams = resolveGetManyLogsOptions(params);
