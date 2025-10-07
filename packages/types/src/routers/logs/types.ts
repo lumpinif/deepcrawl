@@ -261,19 +261,19 @@ export const GetManyLogsResponseSchema = z.object({
   }),
 });
 
-export interface ActivityLogsPaginationInput {
+export interface GetManyLogsPaginationInput {
   readonly limit?: unknown;
   readonly offset?: unknown;
 }
 
-export interface NormalizedActivityLogsPagination {
+export interface NormalizedGetManyLogsPagination {
   readonly limit?: number;
   readonly offset?: number;
 }
 
-export function normalizeActivityLogsPagination(
-  input: ActivityLogsPaginationInput = {},
-): NormalizedActivityLogsPagination {
+export function normalizeGetManyLogsPagination(
+  input: GetManyLogsPaginationInput = {},
+): NormalizedGetManyLogsPagination {
   const { limit, offset } = input;
   const limitNumber = Number(limit);
   const offsetNumber = Number(offset);
