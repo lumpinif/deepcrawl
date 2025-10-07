@@ -1,6 +1,8 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { ActivityLogsClient } from '@/components/logs/activity-logs.client';
+import ActivityLogsDataGrid from '@/components/logs/logs-data-grid';
+import { ActivityLogsSkeletonFallback } from '@/components/logs/logs-skeleton-fallback';
+import { PageContainer, PageHeader } from '@/components/page-elements';
 import { getQueryClient } from '@/query/query.client';
 import { getManyLogsQueryOptions } from '@/query/query-options.server';
 
@@ -16,9 +18,15 @@ export default function LogsPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={'...loading'}>
-        <ActivityLogsClient />
-      </Suspense>
+      <PageHeader
+        description="Check out your recent request activity logs"
+        title="Activity Logs"
+      />
+      <PageContainer>
+        <Suspense fallback={<ActivityLogsSkeletonFallback />}>
+          <ActivityLogsDataGrid />
+        </Suspense>
+      </PageContainer>
     </HydrationBoundary>
   );
 }
