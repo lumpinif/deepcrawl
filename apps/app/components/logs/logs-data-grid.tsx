@@ -177,11 +177,11 @@ export default function ActivityLogsDataGrid() {
     >
       <Card className="rounded-none border-none bg-transparent">
         <CardHeader className="w-full px-0 py-4">
-          <div className="flex w-full items-center gap-2.5 max-sm:justify-between">
-            <div className="relative max-sm:flex-1">
+          <div className="flex w-full items-center justify-between gap-2.5 max-sm:flex-col max-sm:items-start max-sm:gap-4">
+            <div className="relative max-sm:w-full max-sm:flex-1">
               <Search className="-translate-y-1/2 absolute start-3 top-1/2 size-4 text-muted-foreground" />
               <Input
-                className="w-full min-w-60 max-w-80 ps-9 pe-9"
+                className="sm;max-w-80 w-full min-w-60 ps-9 pe-9 max-sm:w-full"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
                 value={searchQuery}
@@ -196,10 +196,10 @@ export default function ActivityLogsDataGrid() {
                 </Button>
               )}
             </div>
-            <div className="flex items-center gap-2.5 max-sm:w-full max-sm:justify-end">
+            <div className="flex items-center gap-2.5 max-sm:w-full">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline">
+                  <Button className="max-sm:flex-1" variant="outline">
                     <Filter />
                     Status
                     {selectedStatuses.length > 0 && (
@@ -239,7 +239,7 @@ export default function ActivityLogsDataGrid() {
               </Popover>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline">
+                  <Button className="max-sm:flex-1" variant="outline">
                     <Filter />
                     Path
                     {selectedPaths.length > 0 && (
