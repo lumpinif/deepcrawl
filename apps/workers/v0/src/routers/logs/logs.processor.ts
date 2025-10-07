@@ -5,6 +5,11 @@ import type {
   GetOneLogOptions,
   GetOneLogResponse,
 } from '@deepcrawl/contracts';
+import {
+  GET_MANY_LOGS_DEFAULT_LIMIT,
+  GET_MANY_LOGS_DEFAULT_OFFSET,
+  resolveGetManyLogsOptions,
+} from '@deepcrawl/contracts';
 import type { ActivityLog, ResponseRecord } from '@deepcrawl/db-d1';
 import {
   activityLog,
@@ -24,7 +29,7 @@ import type {
   ReadSuccessResponse,
 } from '@deepcrawl/types';
 import type { ActivityLogEntry } from '@deepcrawl/types/routers/logs';
-import { normalizeActivityLogsPagination } from '@deepcrawl/types/routers/logs';
+import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs';
 import type { ORPCContext } from '@/lib/context';
 import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
 
@@ -174,10 +179,13 @@ export async function getManyLogsWithReconstruction(
   c: ORPCContext,
   options: GetManyLogsOptions,
 ): Promise<GetManyLogsResponse> {
-  const { limit = 20, offset = 0, path, success, startDate, endDate } = options;
-  const normalized = normalizeActivityLogsPagination({ limit, offset });
-  const sanitizedLimit = normalized.limit ?? 20;
-  const sanitizedOffset = normalized.offset ?? 0;
+  const resolvedOptions = resolveGetManyLogsOptions(options);
+  const { path, success, startDate, endDate } = resolvedOptions;
+  const normalized = normalizeGetManyLogsPagination(resolvedOptions);
+  const sanitizedLimit =
+    normalized.limit ?? resolvedOptions.limit ?? GET_MANY_LOGS_DEFAULT_LIMIT;
+  const sanitizedOffset =
+    normalized.offset ?? resolvedOptions.offset ?? GET_MANY_LOGS_DEFAULT_OFFSET;
 
   // Get user ID from session
   const userId = c.var.session?.user?.id;
