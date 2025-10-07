@@ -8,7 +8,7 @@ import {
 import { getQueryClient } from '@/query/query.client';
 import { apiKeysQueryOptions } from '@/query/query-options.server';
 
-export default async function ApiKeysPage() {
+export default function ApiKeysPage() {
   const queryClient = getQueryClient();
 
   // Prefetch API keys data

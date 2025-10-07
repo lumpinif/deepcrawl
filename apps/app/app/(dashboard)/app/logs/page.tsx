@@ -8,7 +8,7 @@ import { getManyLogsQueryOptions } from '@/query/query-options.server';
 // export const dynamic = 'force-dynamic';
 // export const fetchCache = 'force-no-store';
 
-export default async function LogsPage() {
+export default function LogsPage() {
   const queryClient = getQueryClient();
 
   // Prefetch activity logs data

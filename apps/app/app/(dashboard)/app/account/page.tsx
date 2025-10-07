@@ -14,7 +14,7 @@ import { SessionsManagementCard } from './components/sessions-management-card';
 import { UserAvatarCard } from './components/user-avatar-card';
 import { UserNameCard } from './components/user-name-card';
 
-export default async function AccountPage() {
+export default function AccountPage() {
   const queryClient = getQueryClient();
 
   // Don't prefetch current session or organization as they can return null
