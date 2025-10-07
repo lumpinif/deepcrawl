@@ -60,7 +60,7 @@ export function PlaygroundOptionsMenusToolbar({
                   transition={{ duration: 0.25, ease: 'easeOut' }}
                 >
                   <ChevronRight className="size-3 shrink-0 select-none max-sm:hidden" />
-                  <ChevronDown className="size-3 shrink-0 select-none" />
+                  <ChevronDown className="size-3 shrink-0 select-none sm:hidden" />
                 </motion.span>
               </motion.span>
             )}
