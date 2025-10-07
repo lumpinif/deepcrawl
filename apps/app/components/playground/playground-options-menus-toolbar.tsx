@@ -4,7 +4,7 @@ import {
   PromptInputTools,
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import { ChevronRight, Plus } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { CacheOptionsMenu } from './cache-options-menu';
@@ -39,7 +39,7 @@ export function PlaygroundOptionsMenusToolbar({
         setIsDetailedBarOpen(!isDetailedBarOpen);
       }}
     >
-      <PromptInputTools className="items-center gap-x-0">
+      <PromptInputTools className="items-center gap-x-0 max-sm:flex-col max-sm:items-start max-sm:py-2">
         <div className={customizeLabelClasses}>
           <AnimatePresence mode="wait">
             {isDetailedBarOpen && (
@@ -59,34 +59,40 @@ export function PlaygroundOptionsMenusToolbar({
                   initial={{ rotate: 0 }}
                   transition={{ duration: 0.25, ease: 'easeOut' }}
                 >
-                  <ChevronRight className="size-3 shrink-0 select-none" />
+                  <ChevronRight className="size-3 shrink-0 select-none max-sm:hidden" />
+                  <ChevronDown className="size-3 shrink-0 select-none" />
                 </motion.span>
               </motion.span>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Content format options */}
-        <ContentFormatOptionsMenu />
+        <div className="">
+          {/* Content format options */}
+          <ContentFormatOptionsMenu />
 
-        {/* Link extraction options - only available for extractLinks */}
-        <LinkExtractionOptionsMenu />
+          {/* Link extraction options - only available for extractLinks */}
+          <LinkExtractionOptionsMenu />
 
-        {/* Markdown options - showing standalone for getMarkdown only */}
-        <MarkdownOptionsMenu />
+          {/* Markdown options - showing standalone for getMarkdown only */}
+          <MarkdownOptionsMenu />
 
-        {/* Cleaning processor options */}
-        <CleaningProcessorMenu />
+          {/* Cleaning processor options */}
+          <CleaningProcessorMenu />
 
-        {/* Cache options */}
-        <CacheOptionsMenu />
+          {/* Cache options */}
+          <CacheOptionsMenu />
 
-        {/* Metrics options - only available for readUrl and extractLinks */}
-        <MetricsOptionsMenu />
+          {/* Metrics options - only available for readUrl and extractLinks */}
+          <MetricsOptionsMenu />
+        </div>
       </PromptInputTools>
 
       <div className="flex items-center gap-x-0 overflow-hidden">
-        <OptionPreviewBadges isAccordionOpen={isDetailedBarOpen} />
+        <OptionPreviewBadges
+          className="max-sm:hidden"
+          isAccordionOpen={isDetailedBarOpen}
+        />
         {/* Detailed options toggle button */}
         <PromptInputButton
           className="cursor-pointer transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]>svg]:text-primary"
