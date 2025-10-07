@@ -96,7 +96,7 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
     id: 'id',
     header: () => <DataGridTableRowSelectAll />,
     cell: ({ row }) => <DataGridTableRowSelect row={row} />,
-    size: 20,
+    size: 48,
     enableSorting: false,
     enableHiding: false,
     meta: {
@@ -115,7 +115,9 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
     cell: ({ getValue }) => (
       <span className="text-foreground text-sm">{getValue<string>()}</span>
     ),
-    size: 20,
+    size: 200,
+    minSize: 160,
+    maxSize: 320,
     enableSorting: true,
     enableHiding: true,
     enableResizing: true,
@@ -134,7 +136,9 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
 
       return <span className="truncate text-primary text-sm">{url}</span>;
     },
-    size: 100,
+    size: 320,
+    minSize: 220,
+    maxSize: 420,
     enableSorting: true,
     enableHiding: true,
     enableResizing: true,
@@ -153,7 +157,9 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
         {formatTimestamp(getLogTimestamp(row.original))}
       </span>
     ),
-    size: 35,
+    size: 200,
+    minSize: 180,
+    maxSize: 260,
     enableSorting: true,
     enableHiding: true,
     enableResizing: true,
@@ -179,7 +185,9 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
         </Badge>
       );
     },
-    size: 20,
+    size: 120,
+    minSize: 100,
+    maxSize: 160,
     enableSorting: true,
     enableHiding: true,
     enableResizing: true,
@@ -191,7 +199,7 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
     id: 'actions',
     header: 'Actions',
     cell: ({ row }) => <ActionsCell row={row} />,
-    size: 20,
+    size: 72,
     enableSorting: false,
     enableHiding: false,
     enableResizing: false,
