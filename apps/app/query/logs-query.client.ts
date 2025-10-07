@@ -7,6 +7,46 @@ import {
 
 const LOGS_ENDPOINT = '/api/deepcrawl/logs';
 
+function resolveAppOrigin(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  const envOrigin =
+    process.env.NEXT_PUBLIC_APP_URL ??
+    process.env.NEXT_PUBLIC_VERCEL_URL ??
+    process.env.VERCEL_URL;
+
+  if (envOrigin && envOrigin.length > 0) {
+    const hasProtocol =
+      envOrigin.startsWith('http://') || envOrigin.startsWith('https://');
+    return hasProtocol ? envOrigin : `https://${envOrigin}`;
+  }
+
+  return 'http://localhost:3000';
+}
+
+function buildLogsEndpoint(query: string): string {
+  const origin = resolveAppOrigin();
+
+  try {
+    const url = new URL(LOGS_ENDPOINT, origin);
+    if (query.length > 0) {
+      url.search = query;
+    }
+    return url.toString();
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Failed to construct logs endpoint URL', {
+        error,
+        origin,
+        query,
+      });
+    }
+    return query.length > 0 ? `${LOGS_ENDPOINT}?${query}` : LOGS_ENDPOINT;
+  }
+}
+
 export async function getManyDeepcrawlLogs(
   params: ActivityLogsQueryParams = DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
 ): Promise<GetManyLogsResponse> {
@@ -39,8 +79,7 @@ export async function getManyDeepcrawlLogs(
   }
 
   const query = searchParams.toString();
-  const endpoint =
-    query.length > 0 ? `${LOGS_ENDPOINT}?${query}` : LOGS_ENDPOINT;
+  const endpoint = buildLogsEndpoint(query);
 
   const response = await fetch(endpoint, {
     credentials: 'include',
