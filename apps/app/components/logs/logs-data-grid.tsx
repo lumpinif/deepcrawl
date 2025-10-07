@@ -1,3 +1,4 @@
+import { GET_MANY_LOGS_DEFAULT_LIMIT } from '@deepcrawl/contracts';
 import {
   Card,
   CardFooter,
@@ -46,7 +47,7 @@ import type { GetManyLogsResponse } from 'deepcrawl';
 import { Ellipsis, Filter, Search, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { useSuspenseActivityLogs } from '@/hooks/auth.hooks';
+import { useSuspenseGetManyLogs } from '@/hooks/logs.hooks';
 import { copyToClipboard } from '@/utils/clipboard';
 
 type ActivityLogEntry = GetManyLogsResponse['logs'][number];
@@ -119,7 +120,7 @@ function ActionsCell({ row }: { row: Row<ActivityLogEntry> }) {
   );
 }
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = GET_MANY_LOGS_DEFAULT_LIMIT;
 
 export default function ActivityLogsDataGrid() {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -141,7 +142,7 @@ export default function ActivityLogsDataGrid() {
     [pagination.pageIndex, pagination.pageSize],
   );
 
-  const { data } = useSuspenseActivityLogs(queryParams);
+  const { data } = useSuspenseGetManyLogs(queryParams);
 
   const logs = useMemo<ActivityLogEntry[]>(() => data?.logs ?? [], [data]);
 

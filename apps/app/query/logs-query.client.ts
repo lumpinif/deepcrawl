@@ -1,9 +1,10 @@
-import type { GetManyLogsResponse } from '@deepcrawl/contracts';
-import { normalizeActivityLogsPagination } from '@deepcrawl/types/routers/logs';
 import {
-  type ActivityLogsQueryParams,
-  DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
-} from './logs-query.shared';
+  type GetManyLogsOptions,
+  type GetManyLogsResponse,
+  resolveGetManyLogsOptions,
+} from '@deepcrawl/contracts';
+import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs';
+import { DEFAULT_GET_MANY_LOGS_QUERY_PARAMS } from './logs-query.shared';
 
 const LOGS_ENDPOINT = '/api/deepcrawl/logs';
 
@@ -48,11 +49,13 @@ function buildLogsEndpoint(query: string): string {
 }
 
 export async function getManyDeepcrawlLogs(
-  params: ActivityLogsQueryParams = DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS,
+  params: GetManyLogsOptions = DEFAULT_GET_MANY_LOGS_QUERY_PARAMS,
 ): Promise<GetManyLogsResponse> {
+  const resolvedParams = resolveGetManyLogsOptions(params);
+
   const searchParams = new URLSearchParams();
   const { limit: normalizedLimit, offset: normalizedOffset } =
-    normalizeActivityLogsPagination(params);
+    normalizeGetManyLogsPagination(resolvedParams);
 
   if (normalizedLimit !== undefined) {
     searchParams.set('limit', normalizedLimit.toString());
@@ -62,20 +65,20 @@ export async function getManyDeepcrawlLogs(
     searchParams.set('offset', normalizedOffset.toString());
   }
 
-  if (params.path !== undefined) {
-    searchParams.set('path', params.path);
+  if (resolvedParams.path !== undefined) {
+    searchParams.set('path', resolvedParams.path);
   }
 
-  if (params.success !== undefined) {
-    searchParams.set('success', String(params.success));
+  if (resolvedParams.success !== undefined) {
+    searchParams.set('success', String(resolvedParams.success));
   }
 
-  if (params.startDate !== undefined) {
-    searchParams.set('startDate', params.startDate);
+  if (resolvedParams.startDate !== undefined) {
+    searchParams.set('startDate', resolvedParams.startDate);
   }
 
-  if (params.endDate !== undefined) {
-    searchParams.set('endDate', params.endDate);
+  if (resolvedParams.endDate !== undefined) {
+    searchParams.set('endDate', resolvedParams.endDate);
   }
 
   const query = searchParams.toString();

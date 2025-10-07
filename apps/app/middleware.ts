@@ -10,9 +10,14 @@ export async function middleware(request: NextRequest) {
   });
 
   const { pathname } = request.nextUrl;
+  const isDeepcrawlAPIRoute = pathname.startsWith('/api/deepcrawl');
 
   // If no session cookie
   if (!sessionCookie) {
+    if (isDeepcrawlAPIRoute) {
+      return NextResponse.json({ error: 'Unauthorized!' }, { status: 401 });
+    }
+
     // Logout requires session - redirect to login if no session
     if (pathname.startsWith(`/${authViewSegments.logout}`)) {
       return NextResponse.redirect(
@@ -33,5 +38,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // Remove /logout from exclusions since we handle it in middleware now
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/api/deepcrawl/:path*',
+  ],
 };

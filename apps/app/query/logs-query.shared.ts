@@ -1,5 +1,6 @@
 import type { GetManyLogsOptions } from '@deepcrawl/contracts';
+import { DEFAULT_GET_MANY_LOGS_OPTIONS } from '@deepcrawl/contracts';
 
-export type ActivityLogsQueryParams = Partial<GetManyLogsOptions>;
-
-export const DEFAULT_ACTIVITY_LOGS_QUERY_PARAMS: ActivityLogsQueryParams = {};
+export const DEFAULT_GET_MANY_LOGS_QUERY_PARAMS: GetManyLogsOptions = {
+  ...DEFAULT_GET_MANY_LOGS_OPTIONS,
+};

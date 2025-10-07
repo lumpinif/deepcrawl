@@ -1,18 +1,23 @@
+import { APP_COOKIE_PREFIX } from '@deepcrawl/auth/configs/constants';
+import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
 import {
   GetManyLogsOptionsSchema,
-  normalizeActivityLogsPagination,
+  normalizeGetManyLogsPagination,
 } from '@deepcrawl/types/routers/logs';
+import { getSessionCookie } from 'better-auth/cookies';
 import { DeepcrawlApp, DeepcrawlError } from 'deepcrawl';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { authGetSession } from '@/query/auth-query.server';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
 export async function GET(request: NextRequest) {
-  const session = await authGetSession();
-  if (!session) {
+  const sessionToken = getSessionCookie(request, {
+    cookiePrefix: APP_COOKIE_PREFIX,
+  });
+
+  if (!sessionToken) {
     return NextResponse.json({ error: 'Unauthorized!' }, { status: 401 });
   }
 
@@ -51,8 +56,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const normalized = normalizeActivityLogsPagination(validation.data);
-    const logs = await dc.getManyLogs({ ...validation.data, ...normalized });
+    const resolvedOptions = resolveGetManyLogsOptions(validation.data);
+    const normalized = normalizeGetManyLogsPagination(resolvedOptions);
+    const logs = await dc.getManyLogs({
+      ...resolvedOptions,
+      ...normalized,
+    });
 
     return NextResponse.json(logs, { status: 200 });
   } catch (error) {
