@@ -46,6 +46,7 @@ export function PasswordChangeCard() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isHighlighted, setIsHighlighted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [passwords, setPasswords] = useState({
     current: '',
@@ -57,6 +58,11 @@ export function PasswordChangeCard() {
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  // Set mounted state to prevent hydration mismatches
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Auto-cleanup hash after highlighting effect
   useEffect(() => {
@@ -173,16 +179,18 @@ export function PasswordChangeCard() {
                     : 'Password Management'}
               </div>
               <div className="text-muted-foreground text-xs">
-                {hasPassword
-                  ? 'Update your account password'
-                  : 'Set a password for your account'}
+                {isMounted
+                  ? hasPassword
+                    ? 'Update your account password'
+                    : 'Set a password for your account'
+                  : 'Manage your account password'}
               </div>
             </div>
           </div>
           {!(isChangingPassword || isSettingPassword) && (
             <Button
               className="max-sm:w-full"
-              disabled={isPending}
+              disabled={isPending || !isMounted}
               onClick={() => {
                 if (hasPassword) {
                   setIsChangingPassword(true);
@@ -193,7 +201,11 @@ export function PasswordChangeCard() {
               size="sm"
               variant="outline"
             >
-              {hasPassword ? 'Change Password' : 'Set Password'}
+              {isMounted
+                ? hasPassword
+                  ? 'Change Password'
+                  : 'Set Password'
+                : 'Loading...'}
             </Button>
           )}
         </div>
