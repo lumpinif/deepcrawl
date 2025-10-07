@@ -34,10 +34,16 @@ import { Filter, Search, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useSuspenseGetManyLogs } from '@/hooks/logs.hooks';
 import {
+  createLogsDateRangeFromPreset,
+  DEFAULT_LOGS_DATE_RANGE_PRESET,
+  type LogsDateRangePreset,
+} from '@/query/logs-query.shared';
+import {
   type ActivityLogEntry,
   activityLogsColumns,
   getLogStatus,
 } from './logs-columns';
+import { LogsDateRangeSelect } from './logs-date-range-select';
 
 const DEFAULT_PAGE_SIZE = GET_MANY_LOGS_DEFAULT_LIMIT;
 
@@ -52,13 +58,28 @@ export default function ActivityLogsDataGrid() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
+  const [datePreset, setDatePreset] = useState<LogsDateRangePreset>(
+    DEFAULT_LOGS_DATE_RANGE_PRESET,
+  );
+
+  const dateRange = useMemo(
+    () => createLogsDateRangeFromPreset(datePreset),
+    [datePreset],
+  );
 
   const queryParams = useMemo(
     () => ({
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
       limit: pagination.pageSize,
       offset: pagination.pageIndex * pagination.pageSize,
     }),
-    [pagination.pageIndex, pagination.pageSize],
+    [
+      dateRange.endDate,
+      dateRange.startDate,
+      pagination.pageIndex,
+      pagination.pageSize,
+    ],
   );
 
   const { data } = useSuspenseGetManyLogs(queryParams);
@@ -136,6 +157,13 @@ export default function ActivityLogsDataGrid() {
     });
   };
 
+  // Anytime we switch the range (and therefore fetch a different slice of logs), it snaps the grid back to page 1
+  useEffect(() => {
+    setPagination((prev) =>
+      prev.pageIndex === 0 ? prev : { ...prev, pageIndex: 0 },
+    );
+  }, [dateRange.endDate, dateRange.startDate]);
+
   const [columnOrder, setColumnOrder] = useState<string[]>(
     activityLogsColumns.map((column) => column.id as string),
   );
@@ -181,7 +209,7 @@ export default function ActivityLogsDataGrid() {
             <div className="relative max-sm:w-full max-sm:flex-1">
               <Search className="-translate-y-1/2 absolute start-3 top-1/2 size-4 text-muted-foreground" />
               <Input
-                className="sm;max-w-80 w-full min-w-60 ps-9 pe-9 max-sm:w-full"
+                className="w-full min-w-60 ps-9 pe-9 max-sm:w-full sm:max-w-80"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
                 value={searchQuery}
@@ -197,6 +225,11 @@ export default function ActivityLogsDataGrid() {
               )}
             </div>
             <div className="flex items-center gap-2.5 max-sm:w-full">
+              <LogsDateRangeSelect
+                className="max-sm:flex-1"
+                onValueChange={setDatePreset}
+                value={datePreset}
+              />
               <Popover>
                 <PopoverTrigger asChild>
                   <Button className="max-sm:flex-1" variant="outline">

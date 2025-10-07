@@ -10,8 +10,15 @@ const LOGS_DATE_RANGE_PRESET_IN_DAYS = {
 
 export type LogsDateRangePreset = keyof typeof LOGS_DATE_RANGE_PRESET_IN_DAYS;
 
+export const DATE_RANGE_PRESET_LABELS: Record<LogsDateRangePreset, string> = {
+  'last-2-days': 'Last 2 days',
+  'last-7-days': 'Last 7 days',
+  'last-30-days': 'Last 30 days',
+  'last-90-days': 'Last 90 days',
+} as const;
+
 export const DEFAULT_LOGS_DATE_RANGE_PRESET: LogsDateRangePreset =
-  'last-7-days';
+  'last-2-days';
 
 export interface LogsDateRange {
   readonly startDate: string;
@@ -74,6 +81,3 @@ export function createDefaultGetManyLogsQueryParams(
  */
 export const DEFAULT_GET_MANY_LOGS_QUERY_PARAMS: GetManyLogsOptions =
   createDefaultGetManyLogsQueryParams();
-
-export const LOGS_DATE_RANGE_PRESETS =
-  LOGS_DATE_RANGE_PRESET_IN_DAYS;
