@@ -1,3 +1,8 @@
+import {
+  GET_MANY_LOGS_DEFAULT_LIMIT,
+  GET_MANY_LOGS_DEFAULT_OFFSET,
+  GET_MANY_LOGS_MAX_LIMIT,
+} from '@deepcrawl/types/configs/default';
 import { z } from 'zod/v4';
 import {
   LinksErrorResponseSchema,
@@ -249,12 +254,25 @@ export type GetManyLogsSortDirection = z.infer<
 >;
 
 export const GetManyLogsOptionsSchema = z.object({
-  limit: z.number().int().min(1).max(100).default(20).optional().meta({
-    description: 'Maximum number of logs to return',
-  }),
-  offset: z.number().int().min(0).default(0).optional().meta({
-    description: 'Number of logs to skip for pagination',
-  }),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(GET_MANY_LOGS_MAX_LIMIT)
+    .default(GET_MANY_LOGS_DEFAULT_LIMIT)
+    .optional()
+    .meta({
+      description: 'Maximum number of logs to return',
+    }),
+  offset: z
+    .number()
+    .int()
+    .min(0)
+    .default(GET_MANY_LOGS_DEFAULT_OFFSET)
+    .optional()
+    .meta({
+      description: 'Number of logs to skip for pagination',
+    }),
   path: z.string().optional().meta({
     description:
       'Filter by endpoint path (e.g., "read-getMarkdown", "links-extractLinks")',

@@ -1,14 +1,14 @@
 import {
+  GET_MANY_LOGS_DEFAULT_LIMIT,
+  GET_MANY_LOGS_DEFAULT_OFFSET,
+} from '@deepcrawl/types/configs/default';
+import {
   type GetManyLogsSortColumn,
   GetManyLogsSortColumnSchema,
   type GetManyLogsSortDirection,
   GetManyLogsSortDirectionSchema,
 } from '@deepcrawl/types/routers/logs';
 import type { GetManyLogsOptions } from '../logs';
-
-export const GET_MANY_LOGS_DEFAULT_LIMIT = 10;
-export const GET_MANY_LOGS_DEFAULT_OFFSET = 0;
-export const GET_MANY_LOGS_DEFAULT_WINDOW_IN_DAYS = 2;
 
 export const GET_MANY_LOGS_SORT_COLUMNS = Object.freeze([
   ...GetManyLogsSortColumnSchema.options,

@@ -219,3 +219,10 @@ export const DEFAULT_LINKS_OPTIONS = {
   ...DEFAULT_SCRAPE_OPTIONS,
   ...DEFAULT_TREE_OPTIONS,
 } as const;
+
+/* ------------------------- Logs ------------------------- */
+
+export const GET_MANY_LOGS_DEFAULT_LIMIT = 5;
+export const GET_MANY_LOGS_MAX_LIMIT = 100;
+export const GET_MANY_LOGS_DEFAULT_OFFSET = 0;
+export const GET_MANY_LOGS_DEFAULT_WINDOW_IN_DAYS = 2;
