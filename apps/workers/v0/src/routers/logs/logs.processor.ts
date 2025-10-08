@@ -6,8 +6,6 @@ import type {
   GetOneLogResponse,
 } from '@deepcrawl/contracts';
 import {
-  GET_MANY_LOGS_DEFAULT_LIMIT,
-  GET_MANY_LOGS_DEFAULT_OFFSET,
   GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
   GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
   resolveGetManyLogsOptions,
@@ -23,13 +21,15 @@ import {
   lte,
   responseRecord,
 } from '@deepcrawl/db-d1';
-import type {
-  LinksErrorResponse,
-  LinksOptions,
-  LinksSuccessResponse,
-  ReadErrorResponse,
-  ReadOptions,
-  ReadSuccessResponse,
+import {
+  GET_MANY_LOGS_DEFAULT_LIMIT,
+  GET_MANY_LOGS_DEFAULT_OFFSET,
+  type LinksErrorResponse,
+  type LinksOptions,
+  type LinksSuccessResponse,
+  type ReadErrorResponse,
+  type ReadOptions,
+  type ReadSuccessResponse,
 } from '@deepcrawl/types';
 import type {
   ActivityLogEntry,
