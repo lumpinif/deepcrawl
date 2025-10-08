@@ -1,15 +1,18 @@
 'use server';
 
+import type {
+  GetManyLogsOptions,
+  GetManyLogsResponse,
+} from '@deepcrawl/contracts';
 import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
-import type { GetManyLogsOptions } from '@deepcrawl/contracts/logs';
 import {
   // GetManyLogsOptionsSchema,
   normalizeGetManyLogsPagination,
 } from '@deepcrawl/types/routers/logs';
-import { DeepcrawlApp, type GetManyLogsResponse } from 'deepcrawl';
+import { DeepcrawlApp } from 'deepcrawl';
 import { headers } from 'next/headers';
+
 // import { z } from 'zod/v4';
-import { createDefaultGetManyLogsQueryParams } from './logs-query.shared';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
@@ -17,7 +20,7 @@ const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
  * Deepcrawl Server API Call:
  */
 export async function dcGetManyLogs(
-  params: GetManyLogsOptions = createDefaultGetManyLogsQueryParams(),
+  params?: GetManyLogsOptions,
 ): Promise<GetManyLogsResponse> {
   try {
     const resolvedParams = resolveGetManyLogsOptions(params);

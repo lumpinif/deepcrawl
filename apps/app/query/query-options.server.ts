@@ -1,3 +1,4 @@
+import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
 import type { GetManyLogsOptions } from '@deepcrawl/contracts/logs';
 import { queryOptions } from '@tanstack/react-query';
 import {
@@ -10,7 +11,6 @@ import {
   authListUserAccounts,
 } from '@/query/auth-query.server';
 import { dcGetManyLogs } from './logs-query.server';
-import { createDefaultGetManyLogsQueryParams } from './logs-query.shared';
 import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
 
@@ -95,11 +95,11 @@ export const apiKeysQueryOptions = () =>
  * Query options for activity logs
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const getManyLogsQueryOptions = (
-  params: GetManyLogsOptions = createDefaultGetManyLogsQueryParams(),
-) =>
-  queryOptions({
-    queryKey: [...userQueryKeys.activityLogs, params],
-    queryFn: () => dcGetManyLogs(params),
+export const getManyLogsQueryOptions = (params?: GetManyLogsOptions) => {
+  const resolved = resolveGetManyLogsOptions(params);
+  return queryOptions({
+    queryKey: [...userQueryKeys.activityLogs, resolved],
+    queryFn: () => dcGetManyLogs(resolved),
     ...baseQueryOptions,
   });
+};

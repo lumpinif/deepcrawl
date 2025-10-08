@@ -1,3 +1,4 @@
+import type { GetManyLogsResponse } from '@deepcrawl/contracts';
 import { DataGridColumnHeader } from '@deepcrawl/ui/components/reui/data-grid-column-header';
 import {
   DataGridTableRowSelect,
@@ -15,7 +16,6 @@ import {
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
 import type { ColumnDef, Row } from '@tanstack/react-table';
 import { formatDate } from 'date-fns';
-import type { GetManyLogsResponse } from 'deepcrawl';
 import { Ellipsis } from 'lucide-react';
 import { toast } from 'sonner';
 import { copyToClipboard } from '@/utils/clipboard';

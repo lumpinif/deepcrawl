@@ -1,14 +1,10 @@
 import { APP_COOKIE_PREFIX } from '@deepcrawl/auth/configs/constants';
-import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
-import {
-  GetManyLogsOptionsSchema,
-  normalizeGetManyLogsPagination,
-} from '@deepcrawl/types/routers/logs';
 import { getSessionCookie } from 'better-auth/cookies';
 import { DeepcrawlApp, DeepcrawlError } from 'deepcrawl';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { parseGetManyLogsSearchParams } from '@/utils/logs';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
@@ -30,38 +26,17 @@ export async function GET(request: NextRequest) {
     });
 
     const searchParams = request.nextUrl.searchParams;
-    const rawOptions = {
-      limit: searchParams.get('limit')
-        ? Number(searchParams.get('limit'))
-        : undefined,
-      offset: searchParams.get('offset')
-        ? Number(searchParams.get('offset'))
-        : undefined,
-      path: searchParams.get('path') ?? undefined,
-      success:
-        searchParams.get('success') !== null
-          ? searchParams.get('success') === 'true'
-          : undefined,
-      startDate: searchParams.get('startDate') ?? undefined,
-      endDate: searchParams.get('endDate') ?? undefined,
-    };
+    const parsed = parseGetManyLogsSearchParams(searchParams);
 
-    const validation = GetManyLogsOptionsSchema.safeParse(rawOptions);
-
-    if (!validation.success) {
-      const error = z.treeifyError(validation.error);
+    if (!parsed.success) {
+      const error = z.treeifyError(parsed.error);
       return NextResponse.json(
         { error: '[NEXT_API_LOGS] Invalid query parameters', details: error },
         { status: 400 },
       );
     }
 
-    const resolvedOptions = resolveGetManyLogsOptions(validation.data);
-    const normalized = normalizeGetManyLogsPagination(resolvedOptions);
-    const logs = await dc.getManyLogs({
-      ...resolvedOptions,
-      ...normalized,
-    });
+    const logs = await dc.getManyLogs(parsed.options);
 
     return NextResponse.json(logs, { status: 200 });
   } catch (error) {

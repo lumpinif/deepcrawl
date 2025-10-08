@@ -1,5 +1,13 @@
 'use server';
 
+import type {
+  ExtractLinksOptions,
+  ExtractLinksResponse,
+  GetMarkdownOptions,
+  GetMarkdownResponse,
+  ReadUrlOptions,
+  ReadUrlResponse,
+} from '@deepcrawl/contracts';
 import {
   DeepcrawlApp,
   DeepcrawlAuthError,
@@ -7,12 +15,6 @@ import {
   DeepcrawlLinksError,
   DeepcrawlNetworkError,
   DeepcrawlReadError,
-  type ExtractLinksOptions,
-  type ExtractLinksResponse,
-  type GetMarkdownOptions,
-  type GetMarkdownResponse,
-  type ReadUrlOptions,
-  type ReadUrlResponse,
 } from 'deepcrawl';
 import { headers } from 'next/headers';
 import type { PlaygroundResponse } from '@/hooks/playground/types';

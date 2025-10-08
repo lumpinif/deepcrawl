@@ -1,6 +1,15 @@
 'use client';
 
-import { GET_MANY_LOGS_DEFAULT_LIMIT } from '@deepcrawl/contracts';
+import {
+  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
+  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
+  resolveGetManyLogsOptions,
+} from '@deepcrawl/contracts';
+import { GET_MANY_LOGS_DEFAULT_LIMIT } from '@deepcrawl/types/configs/default';
+import type {
+  GetManyLogsSortColumn,
+  GetManyLogsSortDirection,
+} from '@deepcrawl/types/routers/logs';
 import {
   Card,
   CardFooter,
@@ -24,76 +33,121 @@ import { ScrollArea, ScrollBar } from '@deepcrawl/ui/components/ui/scroll-area';
 import {
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   type PaginationState,
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
 import { Filter, Search, X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { DateRange } from 'react-day-picker';
 import { useSuspenseGetManyLogs } from '@/hooks/logs.hooks';
 import {
-  createLogsDateRangeFromPreset,
   DEFAULT_LOGS_DATE_RANGE_PRESET,
   type LogsDateRangePreset,
-} from '@/query/logs-query.shared';
+} from '@/lib/logs/config';
+import type { LogsDateRange } from '@/lib/logs/types';
+import {
+  createLogsDateRangeFromDates,
+  createLogsDateRangeFromPreset,
+} from '@/utils/logs';
 import {
   type ActivityLogEntry,
   activityLogsColumns,
   getLogStatus,
 } from './logs-columns';
-import { LogsDateRangeSelect } from './logs-date-range-select';
+import {
+  LogsDateRangeSelect,
+  type LogsDateRangeSelectValue,
+} from './logs-date-range-select';
 
-const DEFAULT_PAGE_SIZE = GET_MANY_LOGS_DEFAULT_LIMIT;
+const COLUMN_TO_SORT_COLUMN: Record<string, GetManyLogsSortColumn> = {
+  timestamp: 'requestTimestamp',
+  path: 'path',
+  url: 'requestUrl',
+  status: 'success',
+};
 
 export default function ActivityLogsDataGrid() {
-  const [pagination, setPagination] = useState<PaginationState>({
+  const [pagination, setPaginationState] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: DEFAULT_PAGE_SIZE,
+    pageSize: GET_MANY_LOGS_DEFAULT_LIMIT,
   });
+  const setPagination = useCallback(
+    (
+      updater:
+        | PaginationState
+        | ((previous: PaginationState) => PaginationState),
+    ) => {
+      setPaginationState((previous) => {
+        const nextState =
+          typeof updater === 'function'
+            ? (updater as (prev: PaginationState) => PaginationState)(previous)
+            : updater;
+        return nextState;
+      });
+    },
+    [],
+  );
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'timestamp', desc: true },
   ]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
   const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
-  const [datePreset, setDatePreset] = useState<LogsDateRangePreset>(
+  const [datePreset, setDatePreset] = useState<LogsDateRangeSelectValue>(
     DEFAULT_LOGS_DATE_RANGE_PRESET,
   );
-
-  const dateRange = useMemo(
-    () => createLogsDateRangeFromPreset(datePreset),
-    [datePreset],
+  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(
+    undefined,
+  );
+  const [activeRange, setActiveRange] = useState<LogsDateRange>(() =>
+    createLogsDateRangeFromPreset(DEFAULT_LOGS_DATE_RANGE_PRESET),
   );
 
-  const queryParams = useMemo(
-    () => ({
-      startDate: dateRange.startDate,
-      endDate: dateRange.endDate,
-      limit: pagination.pageSize,
-      offset: pagination.pageIndex * pagination.pageSize,
-    }),
+  const { orderBy, orderDir } = useMemo(() => {
+    const [primary] = sorting;
+    if (!primary) {
+      return {
+        orderBy: GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
+        orderDir: GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
+      };
+    }
+
+    const mapped =
+      COLUMN_TO_SORT_COLUMN[primary.id] ?? GET_MANY_LOGS_DEFAULT_SORT_COLUMN;
+    const direction: GetManyLogsSortDirection =
+      primary.desc === false ? 'asc' : 'desc';
+
+    return {
+      orderBy: mapped,
+      orderDir: direction,
+    };
+  }, [sorting]);
+
+  const queryOptions = useMemo(
+    () =>
+      resolveGetManyLogsOptions({
+        startDate: activeRange.startDate,
+        endDate: activeRange.endDate,
+        limit: pagination.pageSize,
+        offset: pagination.pageIndex * pagination.pageSize,
+        orderBy,
+        orderDir,
+      }),
     [
-      dateRange.endDate,
-      dateRange.startDate,
+      activeRange.endDate,
+      activeRange.startDate,
+      orderBy,
+      orderDir,
       pagination.pageIndex,
       pagination.pageSize,
     ],
   );
 
-  const { data } = useSuspenseGetManyLogs(queryParams);
+  const { data } = useSuspenseGetManyLogs(queryOptions);
 
-  const logs = useMemo<ActivityLogEntry[]>(() => data?.logs ?? [], [data]);
-
-  useEffect(() => {
-    if (pagination.pageIndex > 0 && logs.length === 0) {
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: Math.max(prev.pageIndex - 1, 0),
-      }));
-    }
-  }, [logs.length, pagination.pageIndex]);
+  const logs = data.logs;
+  const meta = data.meta;
 
   const filteredData = useMemo(() => {
     return logs.filter((item) => {
@@ -136,9 +190,9 @@ export default function ActivityLogsDataGrid() {
     );
   }, [pathCounts]);
 
-  const hasNextPage = logs.length === pagination.pageSize;
+  const hasNextPage = meta.hasMore;
   const recordCount =
-    pagination.pageIndex * pagination.pageSize + filteredData.length;
+    meta.offset + filteredData.length + (meta.hasMore ? 1 : 0);
 
   const handleStatusChange = (checked: boolean, value: string) => {
     setSelectedStatuses((prev = []) => {
@@ -157,12 +211,21 @@ export default function ActivityLogsDataGrid() {
     });
   };
 
+  // Track previous date range to only reset pagination when dates actually change
+  const prevDateRangeRef = useRef<string>(
+    `${activeRange.startDate}|${activeRange.endDate}`,
+  );
+
   // Anytime we switch the range (and therefore fetch a different slice of logs), it snaps the grid back to page 1
   useEffect(() => {
-    setPagination((prev) =>
-      prev.pageIndex === 0 ? prev : { ...prev, pageIndex: 0 },
-    );
-  }, [dateRange.endDate, dateRange.startDate]);
+    const currentRange = `${activeRange.startDate}|${activeRange.endDate}`;
+    if (prevDateRangeRef.current !== currentRange) {
+      prevDateRangeRef.current = currentRange;
+      setPagination((prev) =>
+        prev.pageIndex === 0 ? prev : { ...prev, pageIndex: 0 },
+      );
+    }
+  }, [activeRange.endDate, activeRange.startDate, setPagination]);
 
   const [columnOrder, setColumnOrder] = useState<string[]>(
     activityLogsColumns.map((column) => column.id as string),
@@ -180,14 +243,13 @@ export default function ActivityLogsDataGrid() {
       sorting,
       columnOrder,
     },
+    manualSorting: true,
     columnResizeMode: 'onChange',
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     manualPagination: true,
   });
 
@@ -205,7 +267,7 @@ export default function ActivityLogsDataGrid() {
     >
       <Card className="rounded-none border-none bg-transparent">
         <CardHeader className="w-full px-0 py-4">
-          <div className="flex w-full items-center justify-between gap-2.5 max-sm:flex-col max-sm:items-start max-sm:gap-4">
+          <div className="flex w-full items-center gap-2.5 max-sm:flex-col max-sm:items-start max-sm:gap-4">
             <div className="relative max-sm:w-full max-sm:flex-1">
               <Search className="-translate-y-1/2 absolute start-3 top-1/2 size-4 text-muted-foreground" />
               <Input
@@ -226,8 +288,44 @@ export default function ActivityLogsDataGrid() {
             </div>
             <div className="flex items-center gap-2.5 max-sm:w-full">
               <LogsDateRangeSelect
+                appliedRange={activeRange}
                 className="max-sm:flex-1"
-                onValueChange={setDatePreset}
+                customRange={customDateRange}
+                onCustomRangeChange={(range) => {
+                  if (!(range?.from || range?.to)) {
+                    setCustomDateRange(undefined);
+                    return;
+                  }
+
+                  if (range?.from && !range?.to) {
+                    setCustomDateRange({
+                      from: new Date(range.from),
+                      to: undefined,
+                    });
+                    return;
+                  }
+
+                  if (range?.from && range?.to) {
+                    const fromDate = new Date(range.from);
+                    const toDate = new Date(range.to);
+                    setCustomDateRange({ from: fromDate, to: toDate });
+                    setActiveRange(
+                      createLogsDateRangeFromDates(fromDate, toDate),
+                    );
+                    setDatePreset('custom');
+                  }
+                }}
+                onValueChange={(nextValue) => {
+                  if (nextValue === 'custom') {
+                    setDatePreset('custom');
+                    return;
+                  }
+
+                  const preset = nextValue as LogsDateRangePreset;
+                  setDatePreset(preset);
+                  setCustomDateRange(undefined);
+                  setActiveRange(createLogsDateRangeFromPreset(preset));
+                }}
                 value={datePreset}
               />
               <Popover>

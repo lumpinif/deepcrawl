@@ -1,10 +1,10 @@
 import {
   type GetManyLogsOptions,
+  type GetManyLogsOptionsOverrides,
   type GetManyLogsResponse,
   resolveGetManyLogsOptions,
 } from '@deepcrawl/contracts';
-import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs';
-import { createDefaultGetManyLogsQueryParams } from './logs-query.shared';
+import { serializeGetManyLogsOptions } from '@/utils/logs';
 
 const LOGS_ENDPOINT = '/api/deepcrawl/logs';
 
@@ -49,38 +49,11 @@ function buildLogsEndpoint(query: string): string {
 }
 
 export async function getManyDeepcrawlLogs(
-  params: GetManyLogsOptions = createDefaultGetManyLogsQueryParams(),
+  params: GetManyLogsOptions | GetManyLogsOptionsOverrides = {},
 ): Promise<GetManyLogsResponse> {
   const resolvedParams = resolveGetManyLogsOptions(params);
 
-  const searchParams = new URLSearchParams();
-  const { limit: normalizedLimit, offset: normalizedOffset } =
-    normalizeGetManyLogsPagination(resolvedParams);
-
-  if (normalizedLimit !== undefined) {
-    searchParams.set('limit', normalizedLimit.toString());
-  }
-
-  if (normalizedOffset !== undefined) {
-    searchParams.set('offset', normalizedOffset.toString());
-  }
-
-  if (resolvedParams.path !== undefined) {
-    searchParams.set('path', resolvedParams.path);
-  }
-
-  if (resolvedParams.success !== undefined) {
-    searchParams.set('success', String(resolvedParams.success));
-  }
-
-  if (resolvedParams.startDate !== undefined) {
-    searchParams.set('startDate', resolvedParams.startDate);
-  }
-
-  if (resolvedParams.endDate !== undefined) {
-    searchParams.set('endDate', resolvedParams.endDate);
-  }
-
+  const searchParams = serializeGetManyLogsOptions(resolvedParams);
   const query = searchParams.toString();
   const endpoint = buildLogsEndpoint(query);
 
