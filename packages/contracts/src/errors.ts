@@ -17,10 +17,40 @@ const RateLimitedSchema = z.object({
   }),
 });
 
+const LogsInvalidDateRangeSchema = z.object({
+  startDate: z.string().optional().meta({
+    description: 'Start date provided by the caller',
+  }),
+  endDate: z.string().optional().meta({
+    description: 'End date provided by the caller',
+  }),
+  message: z
+    .string()
+    .default('startDate must be less than or equal to endDate')
+    .meta({
+      description: 'Human-readable description of the validation failure',
+    }),
+});
+
+const LogsInvalidSortSchema = z.object({
+  orderBy: z.string().meta({
+    description: 'Requested sort key that is not supported',
+    examples: ['responseSize'],
+  }),
+  allowed: z.array(z.string()).meta({
+    description: 'List of supported sort keys',
+  }),
+  message: z.string().default('Unsupported sort column requested').meta({
+    description: 'Human-readable description of the validation failure',
+  }),
+});
+
 export const errorConfig: {
   READ_ERROR_RESPONSE: ErrorMapItem<typeof ReadErrorResponseSchema>;
   LINKS_ERROR_RESPONSE: ErrorMapItem<typeof LinksErrorResponseSchema>;
   RATE_LIMITED: ErrorMapItem<typeof RateLimitedSchema>;
+  LOGS_INVALID_DATE_RANGE: ErrorMapItem<typeof LogsInvalidDateRangeSchema>;
+  LOGS_INVALID_SORT: ErrorMapItem<typeof LogsInvalidSortSchema>;
 } = {
   READ_ERROR_RESPONSE: {
     status: 500,
@@ -36,6 +66,16 @@ export const errorConfig: {
     status: 429,
     message: 'Rate limit exceeded',
     data: RateLimitedSchema,
+  },
+  LOGS_INVALID_DATE_RANGE: {
+    status: 400,
+    message: 'Invalid logs date range',
+    data: LogsInvalidDateRangeSchema,
+  },
+  LOGS_INVALID_SORT: {
+    status: 400,
+    message: 'Invalid logs sort option',
+    data: LogsInvalidSortSchema,
   },
 } satisfies ErrorMap;
 
@@ -88,6 +128,32 @@ export const errorSpec = {
         500: {
           ...currentOperation.responses?.[500],
           description: 'Links extraction failed',
+        },
+      },
+    }),
+  ),
+  LOGS_INVALID_DATE_RANGE: oo.spec(
+    errorConfig.LOGS_INVALID_DATE_RANGE,
+    (currentOperation) => ({
+      ...currentOperation,
+      responses: {
+        ...currentOperation.responses,
+        400: {
+          ...currentOperation.responses?.[400],
+          description: 'Date range validation failed',
+        },
+      },
+    }),
+  ),
+  LOGS_INVALID_SORT: oo.spec(
+    errorConfig.LOGS_INVALID_SORT,
+    (currentOperation) => ({
+      ...currentOperation,
+      responses: {
+        ...currentOperation.responses,
+        400: {
+          ...currentOperation.responses?.[400],
+          description: 'Sort option validation failed',
         },
       },
     }),

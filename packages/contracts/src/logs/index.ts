@@ -5,13 +5,15 @@ import {
   GetOneLogResponseSchema,
 } from '@deepcrawl/types/routers/logs';
 import { oc } from '@orpc/contract';
-import type { Inputs, Outputs } from '.';
-import { errorSpec } from './errors';
+import { errorSpec } from '../errors';
+import type { Inputs, Outputs } from '../index';
 
 const tags = ['Activity Logs'];
 
 const logsOC = oc.errors({
   RATE_LIMITED: errorSpec.RATE_LIMITED,
+  LOGS_INVALID_DATE_RANGE: errorSpec.LOGS_INVALID_DATE_RANGE,
+  LOGS_INVALID_SORT: errorSpec.LOGS_INVALID_SORT,
 });
 
 /* ----------------------------------------------GET-LOGS---(Get multiple logs)------------------------------------------------------- */
@@ -51,3 +53,6 @@ export const getOneLogContract = logsOC
 
 export type GetOneLogOptions = Inputs['logs']['getOne'];
 export type GetOneLogResponse = Outputs['logs']['getOne'];
+
+export * from './default';
+export * from './utils';
