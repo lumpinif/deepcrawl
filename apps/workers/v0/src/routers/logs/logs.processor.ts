@@ -22,10 +22,10 @@ import {
   GET_MANY_LOGS_DEFAULT_OFFSET,
   GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
   GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-  type LinksErrorResponse,
+  // type LinksErrorResponse,
   type LinksOptions,
   // type LinksSuccessResponse,
-  type ReadErrorResponse,
+  // type ReadErrorResponse,
   type ReadOptions,
   // type ReadSuccessResponse,
 } from '@deepcrawl/types';
@@ -37,7 +37,8 @@ import type {
 import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs';
 import { ORPCError } from '@orpc/server';
 import type { ORPCContext } from '@/lib/context';
-import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
+
+// import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
 
 /**
  * Helper function to reconstruct a single activity log entry
