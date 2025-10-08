@@ -112,10 +112,14 @@ export type MetaFiles = z.infer<typeof MetaFilesSchema>;
  */
 export const ScrapedDataSchema = z
   .object({
-    title: z.string().meta({
-      description: 'The title of the webpage',
-      examples: ['Example Website - Home Page'],
-    }),
+    title: z
+      .string()
+      .optional()
+      .meta({
+        description:
+          'The title of the webpage (optional, may be missing for some pages)',
+        examples: ['Example Website - Home Page'],
+      }),
     rawHtml: z.string().meta({
       description: 'The original unmodified HTML content of the webpage',
       examples: [
@@ -180,7 +184,7 @@ export const ScrapedDataSchema = z
  * Type representing data scraped from a webpage.
  * Contains various extracted elements and metadata from the target page.
  *
- * @property {string} title - Title of the webpage extracted from the title tag
+ * @property {string} [title] - Title of the webpage extracted from the title tag (optional, may be missing for some pages)
  * @property {string} rawHtml - Original unmodified HTML content of the webpage
  * @property {string} [description] - Meta description of the webpage
  * @property {PageMetadata} [metadata] - Optional structured metadata extracted from the page
