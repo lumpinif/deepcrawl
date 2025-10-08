@@ -45,6 +45,9 @@
     "./configs": {
       "types": "./src/configs/index.ts"
     },
+    "./configs/default": {
+      "types": "./src/configs/default.ts"
+    },
     "./metrics": {
       "types": "./src/metrics/index.ts"
     }

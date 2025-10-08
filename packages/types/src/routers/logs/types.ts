@@ -2,6 +2,8 @@ import {
   GET_MANY_LOGS_DEFAULT_LIMIT,
   GET_MANY_LOGS_DEFAULT_OFFSET,
   GET_MANY_LOGS_MAX_LIMIT,
+  GET_MANY_LOGS_SORT_COLUMNS,
+  GET_MANY_LOGS_SORT_DIRECTIONS,
 } from '@deepcrawl/types/configs/default';
 import { z } from 'zod/v4';
 import {
@@ -236,18 +238,20 @@ export type ActivityLogEntry = z.infer<typeof ActivityLogEntrySchema>;
  * Input schema for fetching activity logs
  */
 export const GetManyLogsSortColumnSchema = z
-  .enum(['requestTimestamp', 'path', 'requestUrl', 'success', 'id'])
+  .enum(GET_MANY_LOGS_SORT_COLUMNS)
   .meta({
     description: 'Column key to sort activity logs by',
-    examples: ['requestTimestamp', 'path', 'requestUrl', 'success', 'id'],
+    examples: GET_MANY_LOGS_SORT_COLUMNS,
   });
 
 export type GetManyLogsSortColumn = z.infer<typeof GetManyLogsSortColumnSchema>;
 
-export const GetManyLogsSortDirectionSchema = z.enum(['asc', 'desc']).meta({
-  description: 'Sort direction',
-  examples: ['asc', 'desc'],
-});
+export const GetManyLogsSortDirectionSchema = z
+  .enum(GET_MANY_LOGS_SORT_DIRECTIONS)
+  .meta({
+    description: 'Sort direction',
+    examples: GET_MANY_LOGS_SORT_DIRECTIONS,
+  });
 
 export type GetManyLogsSortDirection = z.infer<
   typeof GetManyLogsSortDirectionSchema
