@@ -14,8 +14,8 @@ interface LogsDataGridCardProps {
 
 export function LogsDataGridCard({ children }: LogsDataGridCardProps) {
   return (
-    <Card className="rounded-none border-none bg-transparent">
-      <CardHeader className="w-full px-0 py-4">{children}</CardHeader>
+    <Card>
+      <CardHeader className="w-full p-4">{children}</CardHeader>
       <CardTable>
         <ScrollArea className="w-full overflow-x-hidden">
           <DataGridTable />
