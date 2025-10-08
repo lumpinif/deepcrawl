@@ -16,7 +16,7 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Check } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
-import { usePlaygroundOptionsSelector } from '@/hooks/playground/playground-context';
+import { usePlaygroundOptionsSelector } from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
 const PROCESSOR_OPTIONS = [

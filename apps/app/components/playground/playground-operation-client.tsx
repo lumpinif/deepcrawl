@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import {
   usePlaygroundActionsSelector,
   usePlaygroundCoreSelector,
-} from '@/hooks/playground/playground-context';
+} from '@/contexts/playground-context';
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';

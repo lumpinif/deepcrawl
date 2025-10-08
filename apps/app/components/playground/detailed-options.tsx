@@ -38,7 +38,7 @@ import {
   usePlaygroundActionsSelector,
   usePlaygroundCoreSelector,
   usePlaygroundOptionsSelector,
-} from '@/hooks/playground/playground-context';
+} from '@/contexts/playground-context';
 import type {
   DeepcrawlOperations,
   OperationToOptions,

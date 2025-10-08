@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import {
   usePlaygroundActionsSelector,
   usePlaygroundCoreSelector,
-} from '@/hooks/playground/playground-context';
+} from '@/contexts/playground-context';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { SpinnerButton } from '../spinner-button';
 import { MetricsNumber } from './metrics-number';

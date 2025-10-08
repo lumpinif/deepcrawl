@@ -23,7 +23,7 @@ import { useCallback, useRef, useState } from 'react';
 import {
   usePlaygroundCoreSelector,
   usePlaygroundOptionsSelector,
-} from '@/hooks/playground/playground-context';
+} from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
 type LinkExtractionOptionsInput = ExtractLinksOptions['linkExtractionOptions'];

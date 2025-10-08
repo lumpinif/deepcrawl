@@ -18,7 +18,7 @@ import { useState } from 'react';
 import {
   usePlaygroundActionsSelector,
   usePlaygroundCoreSelector,
-} from '@/hooks/playground/playground-context';
+} from '@/contexts/playground-context';
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import {
   DeepcrawlFeatures,

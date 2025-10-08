@@ -20,7 +20,7 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { CacheOptions } from 'deepcrawl';
 import { useCallback, useRef, useState } from 'react';
-import { usePlaygroundOptionsSelector } from '@/hooks/playground/playground-context';
+import { usePlaygroundOptionsSelector } from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 import { formatDaysFromSeconds } from '@/utils/playground/formatter';
 

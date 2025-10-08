@@ -19,7 +19,7 @@ import {
   usePlaygroundCoreSelector,
   usePlaygroundOptions,
   usePlaygroundOptionsSelector,
-} from '../playground-context';
+} from '../../../contexts/playground-context';
 
 // Validation component that tests all context hooks
 function PlaygroundContextValidator() {

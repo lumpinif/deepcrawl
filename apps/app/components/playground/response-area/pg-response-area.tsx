@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import {
   usePlaygroundActionsSelector,
   usePlaygroundCoreSelector,
-} from '@/hooks/playground/playground-context';
+} from '@/contexts/playground-context';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { copyToClipboard } from '@/utils/clipboard';
 import { baseContainerCN, PageHeader } from '../../page-elements';

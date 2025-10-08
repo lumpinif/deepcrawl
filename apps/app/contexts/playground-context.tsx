@@ -28,9 +28,9 @@ import type {
   UsePlaygroundCoreReturn,
   UsePlaygroundOptionsReturn,
   UsePlaygroundReturn,
-} from './types';
-import { usePlaygroundOperations } from './use-playground-operations';
-import { usePlaygroundState } from './use-playground-state';
+} from '../hooks/playground/types';
+import { usePlaygroundOperations } from '../hooks/playground/use-playground-operations';
+import { usePlaygroundState } from '../hooks/playground/use-playground-state';
 
 /* ------------------------------------------------------------------------------------ */
 /* CONTEXT DEFINITIONS */
