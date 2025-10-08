@@ -90,6 +90,7 @@ function reconstructLogEntry(
           response: reconstructedResponse as
             | ReadSuccessResponse
             | ReadErrorResponse,
+          requestTimestamp: activity.requestTimestamp,
         };
       }
 
@@ -109,6 +110,7 @@ function reconstructLogEntry(
         success: activity.success,
         requestOptions: activity.requestOptions as ReadOptions,
         response: errorResponse,
+        requestTimestamp: activity.requestTimestamp,
       };
     }
     case 'links-getLinks': {
@@ -121,6 +123,7 @@ function reconstructLogEntry(
           response: reconstructedResponse as
             | LinksSuccessResponse
             | LinksErrorResponse,
+          requestTimestamp: activity.requestTimestamp,
         };
       }
 
@@ -140,6 +143,7 @@ function reconstructLogEntry(
         success: activity.success,
         requestOptions: activity.requestOptions as LinksOptions,
         response: errorResponse,
+        requestTimestamp: activity.requestTimestamp,
       };
     }
     case 'links-extractLinks': {
@@ -152,6 +156,7 @@ function reconstructLogEntry(
           response: reconstructedResponse as
             | LinksSuccessResponse
             | LinksErrorResponse,
+          requestTimestamp: activity.requestTimestamp,
         };
       }
 
@@ -171,6 +176,7 @@ function reconstructLogEntry(
         success: activity.success,
         requestOptions: activity.requestOptions as LinksOptions,
         response: errorResponse,
+        requestTimestamp: activity.requestTimestamp,
       };
     }
     default:
