@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import ActivityLogsDataGrid from '@/components/logs/logs-data-grid';
 import { ActivityLogsSkeleton } from '@/components/logs/logs-data-grid-skeleton';
 import { PageContainer, PageHeader } from '@/components/page-elements';
+import { LogsProvider } from '@/contexts/logs-provider';
 import { getQueryClient } from '@/query/query.client';
 import { getManyLogsQueryOptions } from '@/query/query-options.server';
 
@@ -22,9 +23,11 @@ export default function LogsPage() {
         title="Activity Logs"
       />
       <PageContainer>
-        <Suspense fallback={<ActivityLogsSkeleton />}>
-          <ActivityLogsDataGrid />
-        </Suspense>
+        <LogsProvider>
+          <Suspense fallback={<ActivityLogsSkeleton />}>
+            <ActivityLogsDataGrid />
+          </Suspense>
+        </LogsProvider>
       </PageContainer>
     </HydrationBoundary>
   );

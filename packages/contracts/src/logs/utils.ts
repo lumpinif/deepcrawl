@@ -29,9 +29,11 @@ export function toISOStringBoundary(
 ): string {
   const normalized = new Date(date);
   if (boundary === 'start') {
-    normalized.setUTCHours(0, 0, 0, 0);
+    // Set to start of day in LOCAL timezone, then convert to UTC
+    normalized.setHours(0, 0, 0, 0);
   } else {
-    normalized.setUTCHours(23, 59, 59, 999);
+    // Set to end of day in LOCAL timezone, then convert to UTC
+    normalized.setHours(23, 59, 59, 999);
   }
   return normalized.toISOString();
 }
@@ -42,7 +44,8 @@ export function createDefaultLogsDateRange(
 ): { startDate: string; endDate: string } {
   const endBoundary = toISOStringBoundary(referenceDate, 'end');
   const startReference = new Date(referenceDate);
-  startReference.setUTCDate(startReference.getUTCDate() - (windowInDays - 1));
+  // Subtract days in LOCAL timezone, not UTC
+  startReference.setDate(startReference.getDate() - (windowInDays - 1));
   const startBoundary = toISOStringBoundary(startReference, 'start');
 
   return {
