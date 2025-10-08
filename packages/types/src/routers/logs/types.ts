@@ -230,6 +230,24 @@ export type ActivityLogEntry = z.infer<typeof ActivityLogEntrySchema>;
 /**
  * Input schema for fetching activity logs
  */
+export const GetManyLogsSortColumnSchema = z
+  .enum(['requestTimestamp', 'path', 'requestUrl', 'success', 'id'])
+  .meta({
+    description: 'Column key to sort activity logs by',
+    examples: ['requestTimestamp', 'path', 'requestUrl', 'success', 'id'],
+  });
+
+export type GetManyLogsSortColumn = z.infer<typeof GetManyLogsSortColumnSchema>;
+
+export const GetManyLogsSortDirectionSchema = z.enum(['asc', 'desc']).meta({
+  description: 'Sort direction',
+  examples: ['asc', 'desc'],
+});
+
+export type GetManyLogsSortDirection = z.infer<
+  typeof GetManyLogsSortDirectionSchema
+>;
+
 export const GetManyLogsOptionsSchema = z.object({
   limit: z.number().int().min(1).max(100).default(20).optional().meta({
     description: 'Maximum number of logs to return',
@@ -250,16 +268,64 @@ export const GetManyLogsOptionsSchema = z.object({
   endDate: z.iso.datetime().optional().meta({
     description: 'Filter logs until this date (ISO 8601)',
   }),
+  orderBy: GetManyLogsSortColumnSchema.optional().meta({
+    description:
+      'Column to sort by. Defaults to requestTimestamp when omitted.',
+  }),
+  orderDir: GetManyLogsSortDirectionSchema.optional().meta({
+    description: 'Sort direction. Defaults to desc when omitted.',
+  }),
 });
 
 /**
  * Output schema for activity logs response
  */
-export const GetManyLogsResponseSchema = z.object({
-  logs: z.array(ActivityLogEntrySchema).meta({
-    description: 'Array of activity log entries with responses',
+export const GetManyLogsResponseMetaSchema = z.object({
+  limit: z.number().int().min(1).meta({
+    description: 'Effective limit applied to the result set',
+  }),
+  offset: z.number().int().min(0).meta({
+    description: 'Effective offset applied to the result set',
+  }),
+  hasMore: z.boolean().meta({
+    description: 'Indicates if more logs are available beyond this page',
+  }),
+  nextOffset: z.number().int().min(0).nullable().meta({
+    description:
+      'Offset to request the next page. Null when no additional data exists.',
+  }),
+  orderBy: GetManyLogsSortColumnSchema.meta({
+    description: 'Column key used for sorting',
+  }),
+  orderDir: GetManyLogsSortDirectionSchema.meta({
+    description: 'Sort direction applied to the result set',
+  }),
+  startDate: z.string().optional().meta({
+    description:
+      'Start date boundary (ISO 8601) that was applied after normalization.',
+  }),
+  endDate: z.string().optional().meta({
+    description:
+      'End date boundary (ISO 8601) that was applied after normalization.',
   }),
 });
+
+export type GetManyLogsResponseMeta = z.infer<
+  typeof GetManyLogsResponseMetaSchema
+>;
+
+export const GetManyLogsResponseSchema = z
+  .object({
+    logs: z.array(ActivityLogEntrySchema).meta({
+      description: 'Array of activity log entries with responses',
+    }),
+    meta: GetManyLogsResponseMetaSchema.meta({
+      description: 'Pagination and filtering metadata for the response',
+    }),
+  })
+  .meta({
+    description: 'Paginated activity log entries with metadata',
+  });
 
 export interface GetManyLogsPaginationInput {
   readonly limit?: unknown;
