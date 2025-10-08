@@ -8,12 +8,15 @@ import type {
 import {
   GET_MANY_LOGS_DEFAULT_LIMIT,
   GET_MANY_LOGS_DEFAULT_OFFSET,
+  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
+  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
   resolveGetManyLogsOptions,
 } from '@deepcrawl/contracts';
 import type { ActivityLog, ResponseRecord } from '@deepcrawl/db-d1';
 import {
   activityLog,
   and,
+  asc,
   desc,
   eq,
   gte,
@@ -28,8 +31,13 @@ import type {
   ReadOptions,
   ReadSuccessResponse,
 } from '@deepcrawl/types';
-import type { ActivityLogEntry } from '@deepcrawl/types/routers/logs';
+import type {
+  ActivityLogEntry,
+  GetManyLogsSortColumn,
+  GetManyLogsSortDirection,
+} from '@deepcrawl/types/routers/logs';
 import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs';
+import { ORPCError } from '@orpc/server';
 import type { ORPCContext } from '@/lib/context';
 import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
 
@@ -172,6 +180,37 @@ function reconstructLogEntry(
   }
 }
 
+type ActivityLogSortableColumn =
+  | typeof activityLog.requestTimestamp
+  | typeof activityLog.path
+  | typeof activityLog.requestUrl
+  | typeof activityLog.success
+  | typeof activityLog.id;
+
+const ORDERABLE_COLUMN_MAP: Record<
+  GetManyLogsSortColumn,
+  ActivityLogSortableColumn
+> = {
+  requestTimestamp: activityLog.requestTimestamp,
+  path: activityLog.path,
+  requestUrl: activityLog.requestUrl,
+  success: activityLog.success,
+  id: activityLog.id,
+};
+
+function resolveOrderExpressions(
+  column: GetManyLogsSortColumn,
+  direction: GetManyLogsSortDirection,
+) {
+  const targetColumn =
+    ORDERABLE_COLUMN_MAP[column] ?? activityLog.requestTimestamp;
+  const primary = direction === 'asc' ? asc(targetColumn) : desc(targetColumn);
+  const secondary =
+    direction === 'asc' ? asc(activityLog.id) : desc(activityLog.id);
+
+  return [primary, secondary];
+}
+
 /**
  * Fetch multiple activity logs with pagination and filtering
  */
@@ -180,12 +219,50 @@ export async function getManyLogsWithReconstruction(
   options: GetManyLogsOptions,
 ): Promise<GetManyLogsResponse> {
   const resolvedOptions = resolveGetManyLogsOptions(options);
-  const { path, success, startDate, endDate } = resolvedOptions;
+  const {
+    path,
+    success,
+    startDate,
+    endDate,
+    orderBy = GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
+    orderDir = GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
+  } = resolvedOptions;
+
+  const startTimestamp = startDate ? Date.parse(startDate) : undefined;
+  const endTimestamp = endDate ? Date.parse(endDate) : undefined;
+
+  if (
+    startTimestamp !== undefined &&
+    endTimestamp !== undefined &&
+    !Number.isNaN(startTimestamp) &&
+    !Number.isNaN(endTimestamp) &&
+    startTimestamp > endTimestamp
+  ) {
+    throw new ORPCError('LOGS_INVALID_DATE_RANGE', {
+      status: 400,
+      message: 'startDate must be less than or equal to endDate',
+      data: {
+        startDate,
+        endDate,
+      },
+    });
+  }
   const normalized = normalizeGetManyLogsPagination(resolvedOptions);
   const sanitizedLimit =
     normalized.limit ?? resolvedOptions.limit ?? GET_MANY_LOGS_DEFAULT_LIMIT;
   const sanitizedOffset =
     normalized.offset ?? resolvedOptions.offset ?? GET_MANY_LOGS_DEFAULT_OFFSET;
+
+  if (!Object.hasOwn(ORDERABLE_COLUMN_MAP, orderBy)) {
+    throw new ORPCError('LOGS_INVALID_SORT', {
+      status: 400,
+      message: 'Unsupported sort column requested',
+      data: {
+        orderBy,
+        allowed: Object.keys(ORDERABLE_COLUMN_MAP),
+      },
+    });
+  }
 
   // Get user ID from session
   const userId = c.var.session?.user?.id;
@@ -215,7 +292,9 @@ export async function getManyLogsWithReconstruction(
   const whereClause = and(...conditions);
 
   // Get activity logs with response records
-  const logs = await c.var.dbd1
+  const orderExpressions = resolveOrderExpressions(orderBy, orderDir);
+  const fetchLimit = sanitizedLimit + 1;
+  const rows = await c.var.dbd1
     .select({
       activityLog,
       responseRecord,
@@ -226,12 +305,15 @@ export async function getManyLogsWithReconstruction(
       eq(activityLog.responseHash, responseRecord.responseHash),
     )
     .where(whereClause)
-    .orderBy(desc(activityLog.requestTimestamp))
-    .limit(sanitizedLimit)
+    .orderBy(...orderExpressions)
+    .limit(fetchLimit)
     .offset(sanitizedOffset);
 
+  const hasMore = rows.length > sanitizedLimit;
+  const paginatedRows = hasMore ? rows.slice(0, sanitizedLimit) : rows;
+
   // Reconstruct responses for each log entry
-  const reconstructedLogs: ActivityLogEntry[] = logs.map(
+  const reconstructedLogs: ActivityLogEntry[] = paginatedRows.map(
     (log: {
       activityLog: ActivityLog;
       responseRecord: ResponseRecord | null;
@@ -255,8 +337,20 @@ export async function getManyLogsWithReconstruction(
   //   return result.data;
   // });
 
+  const nextOffset = hasMore ? sanitizedOffset + sanitizedLimit : null;
+
   return {
     logs: reconstructedLogs,
+    meta: {
+      limit: sanitizedLimit,
+      offset: sanitizedOffset,
+      hasMore,
+      nextOffset,
+      orderBy,
+      orderDir,
+      startDate,
+      endDate,
+    },
   };
 }
 
