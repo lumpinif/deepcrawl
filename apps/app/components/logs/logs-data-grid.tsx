@@ -1,11 +1,11 @@
 'use client';
 
+import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
 import {
+  GET_MANY_LOGS_DEFAULT_LIMIT,
   GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
   GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-  resolveGetManyLogsOptions,
-} from '@deepcrawl/contracts';
-import { GET_MANY_LOGS_DEFAULT_LIMIT } from '@deepcrawl/types/configs/default';
+} from '@deepcrawl/types/configs/default';
 import type {
   GetManyLogsSortColumn,
   GetManyLogsSortDirection,

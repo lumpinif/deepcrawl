@@ -5,11 +5,7 @@ import type {
   GetOneLogOptions,
   GetOneLogResponse,
 } from '@deepcrawl/contracts';
-import {
-  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
-  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-  resolveGetManyLogsOptions,
-} from '@deepcrawl/contracts';
+import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
 import type { ActivityLog, ResponseRecord } from '@deepcrawl/db-d1';
 import {
   activityLog,
@@ -24,6 +20,8 @@ import {
 import {
   GET_MANY_LOGS_DEFAULT_LIMIT,
   GET_MANY_LOGS_DEFAULT_OFFSET,
+  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
+  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
   type LinksErrorResponse,
   type LinksOptions,
   type LinksSuccessResponse,

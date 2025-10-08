@@ -54,5 +54,4 @@ export const getOneLogContract = logsOC
 export type GetOneLogOptions = Inputs['logs']['getOne'];
 export type GetOneLogResponse = Outputs['logs']['getOne'];
 
-export * from './default';
 export * from './utils';

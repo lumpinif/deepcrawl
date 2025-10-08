@@ -1,19 +1,18 @@
 import {
+  DEFAULT_GET_MANY_LOGS_OPTIONS,
   GET_MANY_LOGS_DEFAULT_LIMIT,
   GET_MANY_LOGS_DEFAULT_OFFSET,
+  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
+  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
   GET_MANY_LOGS_DEFAULT_WINDOW_IN_DAYS,
+  GET_MANY_LOGS_SORT_COLUMNS,
+  GET_MANY_LOGS_SORT_DIRECTIONS,
 } from '@deepcrawl/types/configs/default';
 import type {
   GetManyLogsSortColumn,
   GetManyLogsSortDirection,
 } from '@deepcrawl/types/routers/logs';
-import {
-  DEFAULT_GET_MANY_LOGS_OPTIONS,
-  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
-  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-  GET_MANY_LOGS_SORT_COLUMNS,
-  GET_MANY_LOGS_SORT_DIRECTIONS,
-} from './default';
+
 import type { GetManyLogsOptions } from './index';
 
 const SORT_COLUMN_SET = new Set<GetManyLogsSortColumn>(
