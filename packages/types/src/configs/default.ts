@@ -7,6 +7,8 @@ import {
   GetManyLogsSortDirectionSchema,
 } from '../routers/logs/types';
 
+// TODO: TYPE ALL DEFAULT VALUES
+
 export const MAX_KIN_LIMIT = 30;
 export const MAX_VISITED_URLS_LIMIT = 1000;
 
