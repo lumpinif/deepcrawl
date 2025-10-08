@@ -16,14 +16,17 @@ import {
 import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { getOperationConfig } from '@/lib/playground/operations-config';
 import { isPlausibleUrl } from '@/utils/playground/url-input-pre-validation';
+import {
+  PLAYGROUND_SECTION_ID,
+  RESPONSE_SECTION_ID,
+} from '../../lib/playground/scroll-anchors';
+import { useScrollToAnchor } from '../../utils/use-scroll-to-anchor';
 import { PageContainer, PageTitle } from '../page-elements';
 import { DetailedOptions } from './detailed-options';
 import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { OperationSelector } from './operation-selector';
 import { PlaygroundOptionsMenusToolbar } from './playground-options-menus-toolbar';
 import { PlaygroundUrlInput } from './playground-url-input';
-import { PLAYGROUND_SECTION_ID, RESPONSE_SECTION_ID } from './scroll-anchors';
-import { useScrollToAnchor } from './use-scroll-to-anchor';
 // TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart currentState.setOptions generic function
 
 // TODO: VALIDATE ALL TOOLTIPS AND DESCRIPTIONS FOR ALL OPTIONS

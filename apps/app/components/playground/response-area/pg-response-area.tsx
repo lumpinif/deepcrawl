@@ -20,10 +20,13 @@ import {
   usePlaygroundCoreSelector,
 } from '@/contexts/playground-context';
 import { getOperationConfig } from '@/lib/playground/operations-config';
+import {
+  PLAYGROUND_SECTION_ID,
+  RESPONSE_SECTION_ID,
+} from '@/lib/playground/scroll-anchors';
 import { copyToClipboard } from '@/utils/clipboard';
+import { useScrollToAnchor } from '@/utils/use-scroll-to-anchor';
 import { baseContainerCN, PageHeader } from '../../page-elements';
-import { PLAYGROUND_SECTION_ID, RESPONSE_SECTION_ID } from '../scroll-anchors';
-import { useScrollToAnchor } from '../use-scroll-to-anchor';
 import { ContentTabs } from './content-tabs';
 import { ErrorCard } from './error-card';
 import { PageMetadataCard } from './page-metadata-card';

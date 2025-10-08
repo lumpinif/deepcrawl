@@ -24,8 +24,8 @@ import {
   DeepcrawlFeatures,
   type OperationConfig,
 } from '@/lib/playground/operations-config';
-import { RESPONSE_SECTION_ID } from './scroll-anchors';
-import { useScrollToAnchor } from './use-scroll-to-anchor';
+import { RESPONSE_SECTION_ID } from '@/lib/playground/scroll-anchors';
+import { useScrollToAnchor } from '@/utils/use-scroll-to-anchor';
 
 export function OperationSelector({
   className,
