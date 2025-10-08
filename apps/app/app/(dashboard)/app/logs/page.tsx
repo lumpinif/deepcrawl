@@ -1,7 +1,7 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import ActivityLogsDataGrid from '@/components/logs/logs-data-grid';
-import { ActivityLogsSkeletonFallback } from '@/components/logs/logs-skeleton-fallback';
+import { ActivityLogsSkeleton } from '@/components/logs/logs-data-grid-skeleton';
 import { PageContainer, PageHeader } from '@/components/page-elements';
 import { getQueryClient } from '@/query/query.client';
 import { getManyLogsQueryOptions } from '@/query/query-options.server';
@@ -22,7 +22,7 @@ export default function LogsPage() {
         title="Activity Logs"
       />
       <PageContainer>
-        <Suspense fallback={<ActivityLogsSkeletonFallback />}>
+        <Suspense fallback={<ActivityLogsSkeleton />}>
           <ActivityLogsDataGrid />
         </Suspense>
       </PageContainer>
