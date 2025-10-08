@@ -104,7 +104,7 @@ function matchesPreset(
 /**
  * Get label for the current date range
  */
-function getDateRangeLabel(range: LogsDateRange): string {
+export function getDateRangeLabel(range: LogsDateRange): string {
   // Check if matches any preset
   for (const { value, label } of DATE_RANGE_PRESET_OPTIONS) {
     if (matchesPreset(range, value)) {

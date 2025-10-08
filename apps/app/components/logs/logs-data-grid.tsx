@@ -8,6 +8,7 @@ import { useLogsFilters } from '@/hooks/use-logs-filters';
 import { useLogsPagination } from '@/hooks/use-logs-pagination';
 import { useLogsSorting } from '@/hooks/use-logs-sorting';
 import { useLogsTable } from '@/hooks/use-logs-table';
+import { LogsChart } from './logs-chart';
 import { LogsDataGridCard } from './logs-data-grid-card';
 import { LogsToolbar } from './logs-toolbar';
 
@@ -65,6 +66,9 @@ export default function ActivityLogsDataGrid() {
         columnsVisibility: true,
       }}
     >
+      <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
+        <LogsChart />
+      </div>
       <LogsDataGridCard>
         <LogsToolbar pathOptions={pathOptions} statusOptions={statusOptions} />
       </LogsDataGridCard>
