@@ -1,5 +1,13 @@
 /* NOTE: ENSURE ALL DEFAULT VALUES ARE 100% BUILD-TIME KNOWN */
 
+import type z from 'zod/v4';
+import type {
+  GetManyLogsOptionsSchema,
+  GetManyLogsSortColumn,
+  GetManyLogsSortDirection,
+  GetManyLogsSortDirectionSchema,
+} from '../routers/logs/types';
+
 export const MAX_KIN_LIMIT = 30;
 export const MAX_VISITED_URLS_LIMIT = 1000;
 
@@ -240,14 +248,14 @@ export const GET_MANY_LOGS_SORT_COLUMNS = [
 export const GET_MANY_LOGS_SORT_DIRECTIONS = ['asc', 'desc'] as const;
 
 export const GET_MANY_LOGS_DEFAULT_SORT_COLUMN: (typeof GET_MANY_LOGS_SORT_COLUMNS)[number] =
-  'requestTimestamp' as const; // direct literal, known at build time
+  'requestTimestamp' as const satisfies Readonly<GetManyLogsSortColumn>;
 
 export const GET_MANY_LOGS_DEFAULT_SORT_DIRECTION: (typeof GET_MANY_LOGS_SORT_DIRECTIONS)[number] =
-  'desc' as const;
+  'desc' as const satisfies Readonly<GetManyLogsSortDirection>;
 
 export const DEFAULT_GET_MANY_LOGS_OPTIONS = {
   limit: GET_MANY_LOGS_DEFAULT_LIMIT,
   offset: GET_MANY_LOGS_DEFAULT_OFFSET,
   orderBy: GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
   orderDir: GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-} as const;
+} as const satisfies Readonly<z.infer<typeof GetManyLogsOptionsSchema>>;
