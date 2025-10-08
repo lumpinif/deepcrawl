@@ -5,7 +5,6 @@ import type {
   GetManyLogsOptionsSchema,
   GetManyLogsSortColumn,
   GetManyLogsSortDirection,
-  GetManyLogsSortDirectionSchema,
 } from '../routers/logs/types';
 
 export const MAX_KIN_LIMIT = 30;
