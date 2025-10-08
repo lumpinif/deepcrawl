@@ -56,8 +56,8 @@ export function PlaygroundOptionsMenusToolbar({
                   animate={{ rotate: 360 }}
                   className="shrink-0 select-none"
                   exit={{ rotate: -180 }}
-                  initial={{ rotate: 0 }}
-                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                  initial={{ rotate: -180 }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
                 >
                   <ChevronRight className="size-3 shrink-0 select-none max-sm:hidden" />
                   <ChevronDown className="size-3 shrink-0 select-none sm:hidden" />
