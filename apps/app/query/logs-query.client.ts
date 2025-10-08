@@ -59,7 +59,7 @@ export async function getManyDeepcrawlLogs(
 
   const response = await fetch(endpoint, {
     credentials: 'include',
-    // cache: 'no-store',
+    cache: 'no-store', // Disable Next.js fetch cache to ensure cookies are always sent
   });
 
   if (!response.ok) {
