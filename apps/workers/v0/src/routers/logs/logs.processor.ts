@@ -324,23 +324,6 @@ export async function getManyLogsWithReconstruction(
     }) => reconstructLogEntry(log.activityLog, log.responseRecord),
   );
 
-  // const validatedLogs: ActivityLogEntry[] = reconstructedLogs.map((entry) => {
-  //   const result = ActivityLogEntrySchema.safeParse(entry);
-  //   if (!result.success) {
-  //     logDebug(
-  //       '⛔ [ActivityLogEntry] ~ getManyLogsWithReconstruction ~ entry:',
-  //       JSON.stringify(entry, null, 2),
-  //     );
-  //     logDebug('⛔ [ActivityLogEntry] Activity log entry validation failed', {
-  //       id: entry.id,
-  //       path: entry.path,
-  //       issues: JSON.stringify(z.treeifyError(result.error), null, 2),
-  //     });
-  //     throw new Error('⛔ [ActivityLogEntry] Invalid activity log entry');
-  //   }
-  //   return result.data;
-  // });
-
   const nextOffset = hasMore ? sanitizedOffset + sanitizedLimit : null;
 
   return {
