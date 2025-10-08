@@ -24,10 +24,10 @@ import {
   GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
   type LinksErrorResponse,
   type LinksOptions,
-  type LinksSuccessResponse,
+  // type LinksSuccessResponse,
   type ReadErrorResponse,
   type ReadOptions,
-  type ReadSuccessResponse,
+  // type ReadSuccessResponse,
 } from '@deepcrawl/types';
 import type {
   ActivityLogEntry,
@@ -46,7 +46,7 @@ function reconstructLogEntry(
   activity: ActivityLog,
   record: ResponseRecord | null,
 ): ActivityLogEntry {
-  const reconstructedResponse = reconstructResponse(record, activity);
+  // const reconstructedResponse = reconstructResponse(record, activity);
 
   switch (activity.path) {
     case 'read-getMarkdown': {
@@ -56,27 +56,27 @@ function reconstructLogEntry(
           path: 'read-getMarkdown',
           success: activity.success,
           requestOptions: activity.requestOptions as GetMarkdownOptions,
-          response: reconstructedResponse as string,
+          // response: reconstructedResponse as string,
           requestTimestamp: activity.requestTimestamp,
         };
       }
 
-      const errorResponse = reconstructedResponse as
-        | ReadErrorResponse
-        | undefined;
+      // const errorResponse = reconstructedResponse as
+      //   | ReadErrorResponse
+      //   | undefined;
 
-      if (!errorResponse) {
-        throw new Error(
-          `Missing error payload for read-getMarkdown log ${activity.id}`,
-        );
-      }
+      // if (!errorResponse) {
+      //   throw new Error(
+      //     `Missing error payload for read-getMarkdown log ${activity.id}`,
+      //   );
+      // }
 
       return {
         id: activity.id,
         path: 'read-getMarkdown',
         success: activity.success,
         requestOptions: activity.requestOptions as GetMarkdownOptions,
-        response: errorResponse,
+        // response: errorResponse,
         requestTimestamp: activity.requestTimestamp,
       };
     }
@@ -87,29 +87,29 @@ function reconstructLogEntry(
           path: 'read-readUrl',
           success: activity.success,
           requestOptions: activity.requestOptions as ReadOptions,
-          response: reconstructedResponse as
-            | ReadSuccessResponse
-            | ReadErrorResponse,
+          // response: reconstructedResponse as
+          //   | ReadSuccessResponse
+          //   | ReadErrorResponse,
           requestTimestamp: activity.requestTimestamp,
         };
       }
 
-      const errorResponse = reconstructedResponse as
-        | ReadErrorResponse
-        | undefined;
+      // const errorResponse = reconstructedResponse as
+      //   | ReadErrorResponse
+      //   | undefined;
 
-      if (!errorResponse) {
-        throw new Error(
-          `Missing error payload for read-readUrl log ${activity.id}`,
-        );
-      }
+      // if (!errorResponse) {
+      //   throw new Error(
+      //     `Missing error payload for read-readUrl log ${activity.id}`,
+      //   );
+      // }
 
       return {
         id: activity.id,
         path: 'read-readUrl',
         success: activity.success,
         requestOptions: activity.requestOptions as ReadOptions,
-        response: errorResponse,
+        // response: errorResponse,
         requestTimestamp: activity.requestTimestamp,
       };
     }
@@ -120,29 +120,29 @@ function reconstructLogEntry(
           path: 'links-getLinks',
           success: activity.success,
           requestOptions: activity.requestOptions as LinksOptions,
-          response: reconstructedResponse as
-            | LinksSuccessResponse
-            | LinksErrorResponse,
+          // response: reconstructedResponse as
+          //   | LinksSuccessResponse
+          //   | LinksErrorResponse,
           requestTimestamp: activity.requestTimestamp,
         };
       }
 
-      const errorResponse = reconstructedResponse as
-        | LinksErrorResponse
-        | undefined;
+      // const errorResponse = reconstructedResponse as
+      //   | LinksErrorResponse
+      //   | undefined;
 
-      if (!errorResponse) {
-        throw new Error(
-          `Missing error payload for links-getLinks log ${activity.id}`,
-        );
-      }
+      // if (!errorResponse) {
+      //   throw new Error(
+      //     `Missing error payload for links-getLinks log ${activity.id}`,
+      //   );
+      // }
 
       return {
         id: activity.id,
         path: 'links-getLinks',
         success: activity.success,
         requestOptions: activity.requestOptions as LinksOptions,
-        response: errorResponse,
+        // response: errorResponse,
         requestTimestamp: activity.requestTimestamp,
       };
     }
@@ -153,29 +153,29 @@ function reconstructLogEntry(
           path: 'links-extractLinks',
           success: activity.success,
           requestOptions: activity.requestOptions as LinksOptions,
-          response: reconstructedResponse as
-            | LinksSuccessResponse
-            | LinksErrorResponse,
+          // response: reconstructedResponse as
+          //   | LinksSuccessResponse
+          //   | LinksErrorResponse,
           requestTimestamp: activity.requestTimestamp,
         };
       }
 
-      const errorResponse = reconstructedResponse as
-        | LinksErrorResponse
-        | undefined;
+      // const errorResponse = reconstructedResponse as
+      //   | LinksErrorResponse
+      //   | undefined;
 
-      if (!errorResponse) {
-        throw new Error(
-          `Missing error payload for links-extractLinks log ${activity.id}`,
-        );
-      }
+      // if (!errorResponse) {
+      //   throw new Error(
+      //     `Missing error payload for links-extractLinks log ${activity.id}`,
+      //   );
+      // }
 
       return {
         id: activity.id,
         path: 'links-extractLinks',
         success: activity.success,
         requestOptions: activity.requestOptions as LinksOptions,
-        response: errorResponse,
+        // response: errorResponse,
         requestTimestamp: activity.requestTimestamp,
       };
     }
