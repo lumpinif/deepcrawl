@@ -156,6 +156,14 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * @type {ReadErrorResponse}
      */
     error: ReadErrorResponseSchema.optional(),
+    /**
+     * Request timestamp for readUrl endpoint
+     * @type {string}
+     */
+    requestTimestamp: z.string().meta({
+      description: 'Request timestamp for readUrl',
+      examples: ['2025-09-12T10:30:00.000Z'],
+    }),
   }),
   z.object({
     /**
@@ -191,6 +199,14 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * @type {LinksErrorResponse}
      */
     error: LinksErrorResponseSchema.optional(),
+    /**
+     * Request timestamp for getLinks endpoint
+     * @type {string}
+     */
+    requestTimestamp: z.string().meta({
+      description: 'Request timestamp for getLinks',
+      examples: ['2025-09-12T10:30:00.000Z'],
+    }),
   }),
   z.object({
     /**
@@ -226,6 +242,14 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * @type {LinksErrorResponse}
      */
     error: LinksErrorResponseSchema.optional(),
+    /**
+     * Request timestamp for extractLinks endpoint
+     * @type {string}
+     */
+    requestTimestamp: z.string().meta({
+      description: 'Request timestamp for extractLinks',
+      examples: ['2025-09-12T10:30:00.000Z'],
+    }),
   }),
 ]);
 
