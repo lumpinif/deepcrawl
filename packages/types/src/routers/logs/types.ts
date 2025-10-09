@@ -56,7 +56,7 @@ export type JoinedRequestPath = z.infer<typeof JoinedRequestPathSchema>;
  *
  * - **`read-readUrl`**: Returns structured page content with metadata
  *   - `requestOptions`: {@link ReadOptionsSchema ReadOptions}
-//  *   - `response`: {@link ReadSuccessResponseSchema ReadSuccessResponse} | {@link ReadErrorResponseSchema ReadErrorResponse}
+ *   - `response`: {@link ReadSuccessResponseSchema ReadSuccessResponse} | {@link ReadErrorResponseSchema ReadErrorResponse}
  *
  * - **`links-getLinks`**: Extracts links from a page (GET request)
  *   - `requestOptions`: {@link LinksOptionsSchema LinksOptions}
@@ -109,10 +109,10 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
      * @type {GetMarkdownOptions}
      */
     requestOptions: GetMarkdownOptionsSchema,
-    // /**
-    //  * Reconstructed markdown response (string content) or error on failure
-    //  */
-    // response: z.union([z.string(), ReadErrorResponseSchema]),
+    /**
+     * Reconstructed markdown response (string content) or error on failure
+     */
+    response: z.union([z.string(), ReadErrorResponseSchema]).optional(),
     /**
      * Request timestamp for getMarkdown endpoint only
      * @type {string}
@@ -150,7 +150,9 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
     //  * Reconstructed response for `readUrl` endpoint (success or error)
     //  * @type {ReadSuccessResponse | ReadErrorResponse}
     //  */
-    // response: z.union([ReadSuccessResponseSchema, ReadErrorResponseSchema]),
+    response: z
+      .union([ReadSuccessResponseSchema, ReadErrorResponseSchema])
+      .optional(),
     /**
      * Error response for the `readUrl` endpoint
      * @type {ReadErrorResponse}
@@ -193,7 +195,9 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
     //  * Reconstructed response for `getLinks` endpoint (success or error)
     //  * @type {LinksSuccessResponse | LinksErrorResponse}
     //  */
-    // response: z.union([LinksSuccessResponseSchema, LinksErrorResponseSchema]),
+    response: z
+      .union([LinksSuccessResponseSchema, LinksErrorResponseSchema])
+      .optional(),
     /**
      * Error response for the `getLinks` endpoint
      * @type {LinksErrorResponse}
@@ -236,7 +240,9 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
     //  * Reconstructed response for `extractLinks` endpoint (success or error)
     //  * @type {LinksSuccessResponse | LinksErrorResponse}
     //  */
-    // response: z.union([LinksSuccessResponseSchema, LinksErrorResponseSchema]),
+    response: z
+      .union([LinksSuccessResponseSchema, LinksErrorResponseSchema])
+      .optional(),
     /**
      * Error response for the `extractLinks` endpoint
      * @type {LinksErrorResponse}
