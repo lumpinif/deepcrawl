@@ -39,20 +39,7 @@ export function getLogStatus(log: ActivityLogEntry): string {
 }
 
 export function getLogTimestamp(log: ActivityLogEntry): string | undefined {
-  if (log.path === 'read-getMarkdown') {
-    return log.requestTimestamp;
-  }
-
-  const response = (log as { response?: unknown }).response;
-
-  if (response && typeof response === 'object' && 'timestamp' in response) {
-    const timestamp = (response as { timestamp?: unknown }).timestamp;
-    if (typeof timestamp === 'string') {
-      return timestamp;
-    }
-  }
-
-  return;
+  return log.requestTimestamp;
 }
 
 export function formatTimestamp(timestamp?: string): string {
