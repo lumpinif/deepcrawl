@@ -512,7 +512,7 @@ export const useLinkSocialProvider = () => {
   return useMutation({
     mutationFn: async ({
       provider,
-      redirectTo = 'account',
+      redirectTo = '/app/account',
     }: {
       provider: 'google' | 'github';
       redirectTo?: string;
