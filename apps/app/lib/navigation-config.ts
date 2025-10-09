@@ -1,5 +1,6 @@
 import type { Icon } from '@tabler/icons-react';
 import {
+  IconBook,
   IconDashboard,
   IconKey,
   // IconLocation,
@@ -52,14 +53,20 @@ export const NAVGATION_ITEMS: NavigationItem[] = [
     icon: IconLogs,
   },
   {
+    title: 'API Keys',
+    url: getAppRoute('/api-keys'),
+    icon: IconKey,
+  },
+  {
     label: 'User',
     title: 'Account',
     url: getAppRoute('/account'),
     icon: IconUser,
   },
   {
-    title: 'API Keys',
-    url: getAppRoute('/api-keys'),
-    icon: IconKey,
+    label: 'Docs',
+    title: 'Documentation',
+    url: '/docs',
+    icon: IconBook,
   },
 ];
