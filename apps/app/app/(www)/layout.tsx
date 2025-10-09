@@ -1,20 +1,14 @@
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
-import { UserDropdown } from '@/components/user/user-dropdown';
+import { type ReactNode, Suspense } from 'react';
+import { UserDropdownSkeleton } from '@/components/user/user-dropdown';
+import { UserDropdownServer } from '@/components/user/user-dropdown-server';
 import { baseOptions } from '@/lib/layout.config';
-import {
-  authGetSession,
-  authListDeviceSessions,
-} from '@/query/auth-query.server';
+import { authGetSession } from '@/query/auth-query.server';
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const [currentSession, listDeviceSessions] = await Promise.all([
-    authGetSession(),
-    authListDeviceSessions(),
-  ]);
-
+  const currentSession = await authGetSession();
   const user = currentSession?.user;
 
   return (
@@ -33,14 +27,12 @@ export default async function Layout({ children }: { children: ReactNode }) {
           type: 'custom',
           secondary: true,
           children: user ? (
-            <div className="ml-2 flex items-center">
-              <UserDropdown
-                deviceSessions={listDeviceSessions}
+            <Suspense fallback={<UserDropdownSkeleton />}>
+              <UserDropdownServer
                 enableLayoutViewToggle={false}
                 redirectLogout="/"
-                session={currentSession}
               />
-            </div>
+            </Suspense>
           ) : (
             <>
               <Button asChild className="ml-2 max-md:hidden" variant="outline">

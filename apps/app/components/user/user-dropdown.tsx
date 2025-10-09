@@ -44,6 +44,14 @@ import {
 } from '@/query/query-options.client';
 import { LayoutViewToggle } from '../layout-toggle';
 
+export function UserDropdownSkeleton() {
+  return (
+    <div className="ml-2 flex items-center">
+      <Skeleton className="size-6 rounded-full" />
+    </div>
+  );
+}
+
 function UserAvatar({ user }: { user: Session['user'] | LDSUser | undefined }) {
   return (
     <Avatar className="size-6 cursor-pointer rounded-full ring-0 ring-transparent">
