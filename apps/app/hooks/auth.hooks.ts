@@ -386,7 +386,8 @@ export const useSetPassword = (onSuccessCallback?: () => void) => {
 };
 
 /**
- * Hook for revoking a specific session with optimistic updates
+ * Hook for revoking a specific session
+ * Uses multiSession API for consistency with the Better Auth multiSession plugin
  */
 export const useRevokeSession = () => {
   const queryClient = useQueryClient();
@@ -394,17 +395,24 @@ export const useRevokeSession = () => {
 
   return useMutation({
     mutationFn: async (sessionToken: string) => {
-      const result = await authClient.revokeSession({
-        token: sessionToken,
+      // Use multiSession.revoke instead of revokeSession for consistency
+      const result = await authClient.multiSession.revoke({
+        sessionToken,
       });
 
       if (result.error) {
-        throw new Error(result.error.message);
+        // Better error handling with fallback message
+        const errorMessage =
+          result.error.message ||
+          result.error.statusText ||
+          'Failed to revoke session';
+        throw new Error(errorMessage);
       }
 
       return result;
     },
     onError: (err) => {
+      console.error('❌ [useRevokeSession] Error:', err);
       toast.error(err.message || 'Failed to revoke session');
     },
     onSuccess: async (data, sessionToken) => {
@@ -428,8 +436,12 @@ export const useRevokeSession = () => {
 
       toast.success('Session terminated successfully');
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
+    onSettled: async () => {
+      // Force refetch sessions list to update UI after termination
+      await queryClient.refetchQueries({
+        queryKey: userQueryKeys.listSessions,
+        type: 'active',
+      });
     },
   });
 };
@@ -477,11 +489,15 @@ export const useRevokeAllOtherSessions = () => {
     onError: (err) => {
       toast.error(err.message || 'Failed to revoke sessions');
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       toast.success('All other sessions terminated successfully');
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.listSessions });
+    onSettled: async () => {
+      // Invalidate sessions list to update UI after termination
+      await queryClient.refetchQueries({
+        queryKey: userQueryKeys.listSessions,
+        type: 'active',
+      });
     },
   });
 };
@@ -523,7 +539,7 @@ export const useLinkSocialProvider = () => {
         queryKey: userQueryKeys.listUserAccounts,
       });
     },
-    // Remove onSuccess - OAuth redirects mean we won't be here when linking completes
+    // Note: OAuth redirects mean we typically won't be here when linking completes
     // The success state will be handled after the user returns from OAuth provider
     onError: (error) => {
       console.error('Social provider linking failed:', error);
@@ -590,9 +606,12 @@ export const useAddPasskey = () => {
 
       return result;
     },
-    onSuccess: () => {
-      // Invalidate passkeys list
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
+    onSuccess: async () => {
+      // Invalidate passkeys list to show the new passkey
+      await queryClient.refetchQueries({
+        queryKey: userQueryKeys.passkeys,
+        type: 'active',
+      });
 
       toast.success('Passkey added successfully');
     },
@@ -654,7 +673,7 @@ export const useRemovePasskey = () => {
       toast.error(errorMessage);
     },
     onSuccess: () => {
-      // Invalidate passkeys list
+      // Invalidate passkeys list to confirm removal
       queryClient.invalidateQueries({ queryKey: userQueryKeys.passkeys });
 
       toast.success('Passkey removed successfully', {
@@ -693,8 +712,11 @@ export const useCreateApiKey = () => {
       return await createApiKey({ name, expiresIn, prefix, metadata });
     },
     onSuccess: async (data) => {
-      // Invalidate and refetch API keys
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
+      // Invalidate API keys to show the new key
+      await queryClient.refetchQueries({
+        queryKey: userQueryKeys.apiKeys,
+        type: 'active',
+      });
 
       // Auto-copy the API key to clipboard if available
       if (data?.key) {
@@ -786,9 +808,12 @@ export const useUpdateApiKey = () => {
         error instanceof Error ? error.message : 'Failed to update API key',
       );
     },
-    onSuccess: () => {
-      // Invalidate API keys to refresh the updated key
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
+    onSuccess: async () => {
+      // Invalidate API keys to show the updated key
+      await queryClient.refetchQueries({
+        queryKey: userQueryKeys.apiKeys,
+        type: 'active',
+      });
       toast.success('API key updated successfully');
     },
   });
@@ -845,10 +870,13 @@ export const useDeleteApiKey = () => {
         error instanceof Error ? error.message : 'Failed to delete API key',
       );
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success('API key deleted successfully');
-      // Invalidate and refetch to update UI after successful deletion
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.apiKeys });
+      // Invalidate to remove the deleted key from UI
+      await queryClient.refetchQueries({
+        queryKey: userQueryKeys.apiKeys,
+        type: 'active',
+      });
     },
   });
 };
