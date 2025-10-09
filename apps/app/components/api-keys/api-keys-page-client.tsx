@@ -51,7 +51,7 @@ export function ApiKeysPageSkeleton() {
         </div>
 
         {/* Desktop skeleton */}
-        <Card className="hidden bg-background sm:block">
+        <Card className="hidden bg-card sm:block">
           <CardContent className="overflow-x-auto">
             <div className="space-y-4">
               <Skeleton className="h-12 w-full" />
@@ -74,7 +74,7 @@ export function ApiKeysPageClient() {
   if (error) {
     return (
       <div className="space-y-6">
-        <Card>
+        <Card className="bg-card">
           <CardContent className="pt-6">
             <div className="py-8 text-center">
               <p className="text-destructive">
@@ -109,7 +109,7 @@ export function ApiKeysPageClient() {
           <ApiKeysTable apiKeys={apiKeys || []} />
         </div>
 
-        <Card className="hidden bg-background sm:block">
+        <Card className="hidden bg-card sm:block">
           <CardContent className="overflow-x-auto">
             <ApiKeysTable apiKeys={apiKeys || []} />
           </CardContent>

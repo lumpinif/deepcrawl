@@ -118,7 +118,7 @@ export function ApiKeysTable({ apiKeys }: ApiKeysTableProps) {
   return (
     <>
       {/* Desktop Table View */}
-      <Table className="hidden bg-background md:table">
+      <Table className="hidden bg-card md:table">
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
