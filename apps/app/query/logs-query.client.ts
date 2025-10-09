@@ -1,4 +1,6 @@
 import {
+  type ExportResponseOptions,
+  type ExportResponseOutput,
   type GetManyLogsOptions,
   type GetManyLogsOptionsOverrides,
   type GetManyLogsResponse,
@@ -7,6 +9,7 @@ import {
 import { serializeGetManyLogsOptions } from '@/utils/logs';
 
 const LOGS_ENDPOINT = '/api/deepcrawl/logs';
+const LOGS_EXPORT_ENDPOINT = '/api/deepcrawl/logs/export';
 
 function resolveAppOrigin(): string {
   if (typeof window !== 'undefined' && window.location?.origin) {
@@ -80,5 +83,42 @@ export async function getManyDeepcrawlLogs(
   }
 
   const data = (await response.json()) as GetManyLogsResponse;
+  return data;
+}
+
+export async function exportLogResponse(
+  options: ExportResponseOptions,
+): Promise<ExportResponseOutput> {
+  const { id, format } = options;
+
+  const searchParams = new URLSearchParams({
+    id,
+    format,
+  });
+
+  const origin = resolveAppOrigin();
+  const url = new URL(LOGS_EXPORT_ENDPOINT, origin);
+  url.search = searchParams.toString();
+
+  const response = await fetch(url.toString(), {
+    credentials: 'include',
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    let message = 'Failed to export log response';
+    try {
+      const errorBody = await response.json();
+      if (typeof errorBody?.error === 'string') {
+        message = errorBody.error;
+      }
+    } catch (parseError) {
+      console.warn('Failed to parse export error response:', parseError);
+    }
+
+    throw new Error(message);
+  }
+
+  const data = (await response.json()) as ExportResponseOutput;
   return data;
 }
