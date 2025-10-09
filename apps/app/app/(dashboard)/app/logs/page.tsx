@@ -27,6 +27,7 @@ export default function LogsPage() {
             startDate: resolvedOptions.startDate as string,
             endDate: resolvedOptions.endDate as string,
           }}
+          key={`${resolvedOptions.startDate}-${resolvedOptions.endDate}`}
         >
           <Suspense fallback={<ActivityLogsSkeleton />}>
             <ActivityLogsDataGrid />
