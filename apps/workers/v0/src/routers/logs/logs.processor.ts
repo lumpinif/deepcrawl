@@ -22,12 +22,12 @@ import {
   GET_MANY_LOGS_DEFAULT_OFFSET,
   GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
   GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-  // type LinksErrorResponse,
+  type LinksErrorResponse,
   type LinksOptions,
-  // type LinksSuccessResponse,
-  // type ReadErrorResponse,
+  type LinksSuccessResponse,
+  type ReadErrorResponse,
   type ReadOptions,
-  // type ReadSuccessResponse,
+  type ReadSuccessResponse,
 } from '@deepcrawl/types';
 import type {
   ActivityLogEntry,
@@ -38,17 +38,22 @@ import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs';
 import { ORPCError } from '@orpc/server';
 import type { ORPCContext } from '@/lib/context';
 
-// import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
+import { reconstructResponse } from '@/utils/tail-jobs/response-reconstruction';
+
+interface ReconstructLogEntryParams {
+  activity: ActivityLog;
+  record: ResponseRecord | null;
+  enableResponseReconstruction: boolean;
+}
 
 /**
  * Helper function to reconstruct a single activity log entry
  */
-function reconstructLogEntry(
-  activity: ActivityLog,
-  record: ResponseRecord | null,
-): ActivityLogEntry {
-  // const reconstructedResponse = reconstructResponse(record, activity);
-
+function reconstructLogEntry({
+  activity,
+  record,
+  enableResponseReconstruction: isResponse,
+}: ReconstructLogEntryParams): ActivityLogEntry {
   switch (activity.path) {
     case 'read-getMarkdown': {
       if (activity.success) {
@@ -57,27 +62,23 @@ function reconstructLogEntry(
           path: 'read-getMarkdown',
           success: activity.success,
           requestOptions: activity.requestOptions as GetMarkdownOptions,
-          // response: reconstructedResponse as string,
+          response: isResponse
+            ? (reconstructResponse(record, activity) as string)
+            : undefined,
           requestTimestamp: activity.requestTimestamp,
         };
       }
-
-      // const errorResponse = reconstructedResponse as
-      //   | ReadErrorResponse
-      //   | undefined;
-
-      // if (!errorResponse) {
-      //   throw new Error(
-      //     `Missing error payload for read-getMarkdown log ${activity.id}`,
-      //   );
-      // }
 
       return {
         id: activity.id,
         path: 'read-getMarkdown',
         success: activity.success,
         requestOptions: activity.requestOptions as GetMarkdownOptions,
-        // response: errorResponse,
+        response: isResponse
+          ? ((reconstructResponse(record, activity) as
+              | ReadErrorResponse
+              | undefined) ?? 'Missing error payload for read-getMarkdown log')
+          : undefined,
         requestTimestamp: activity.requestTimestamp,
       };
     }
@@ -88,29 +89,23 @@ function reconstructLogEntry(
           path: 'read-readUrl',
           success: activity.success,
           requestOptions: activity.requestOptions as ReadOptions,
-          // response: reconstructedResponse as
-          //   | ReadSuccessResponse
-          //   | ReadErrorResponse,
+          response: isResponse
+            ? (reconstructResponse(record, activity) as ReadSuccessResponse)
+            : undefined,
           requestTimestamp: activity.requestTimestamp,
         };
       }
-
-      // const errorResponse = reconstructedResponse as
-      //   | ReadErrorResponse
-      //   | undefined;
-
-      // if (!errorResponse) {
-      //   throw new Error(
-      //     `Missing error payload for read-readUrl log ${activity.id}`,
-      //   );
-      // }
 
       return {
         id: activity.id,
         path: 'read-readUrl',
         success: activity.success,
         requestOptions: activity.requestOptions as ReadOptions,
-        // response: errorResponse,
+        response: isResponse
+          ? (reconstructResponse(record, activity) as
+              | ReadErrorResponse
+              | undefined)
+          : undefined,
         requestTimestamp: activity.requestTimestamp,
       };
     }
@@ -121,29 +116,23 @@ function reconstructLogEntry(
           path: 'links-getLinks',
           success: activity.success,
           requestOptions: activity.requestOptions as LinksOptions,
-          // response: reconstructedResponse as
-          //   | LinksSuccessResponse
-          //   | LinksErrorResponse,
+          response: isResponse
+            ? (reconstructResponse(record, activity) as LinksSuccessResponse)
+            : undefined,
           requestTimestamp: activity.requestTimestamp,
         };
       }
-
-      // const errorResponse = reconstructedResponse as
-      //   | LinksErrorResponse
-      //   | undefined;
-
-      // if (!errorResponse) {
-      //   throw new Error(
-      //     `Missing error payload for links-getLinks log ${activity.id}`,
-      //   );
-      // }
 
       return {
         id: activity.id,
         path: 'links-getLinks',
         success: activity.success,
         requestOptions: activity.requestOptions as LinksOptions,
-        // response: errorResponse,
+        response: isResponse
+          ? (reconstructResponse(record, activity) as
+              | LinksErrorResponse
+              | undefined)
+          : undefined,
         requestTimestamp: activity.requestTimestamp,
       };
     }
@@ -154,29 +143,23 @@ function reconstructLogEntry(
           path: 'links-extractLinks',
           success: activity.success,
           requestOptions: activity.requestOptions as LinksOptions,
-          // response: reconstructedResponse as
-          //   | LinksSuccessResponse
-          //   | LinksErrorResponse,
+          response: isResponse
+            ? (reconstructResponse(record, activity) as LinksSuccessResponse)
+            : undefined,
           requestTimestamp: activity.requestTimestamp,
         };
       }
-
-      // const errorResponse = reconstructedResponse as
-      //   | LinksErrorResponse
-      //   | undefined;
-
-      // if (!errorResponse) {
-      //   throw new Error(
-      //     `Missing error payload for links-extractLinks log ${activity.id}`,
-      //   );
-      // }
 
       return {
         id: activity.id,
         path: 'links-extractLinks',
         success: activity.success,
         requestOptions: activity.requestOptions as LinksOptions,
-        // response: errorResponse,
+        response: isResponse
+          ? (reconstructResponse(record, activity) as
+              | LinksErrorResponse
+              | undefined)
+          : undefined,
         requestTimestamp: activity.requestTimestamp,
       };
     }
@@ -218,6 +201,7 @@ function resolveOrderExpressions(
 
 /**
  * Fetch multiple activity logs with pagination and filtering
+ * @description Response reconstruction is not enabled by default
  */
 export async function getManyLogsWithReconstruction(
   c: ORPCContext,
@@ -322,7 +306,12 @@ export async function getManyLogsWithReconstruction(
     (log: {
       activityLog: ActivityLog;
       responseRecord: ResponseRecord | null;
-    }) => reconstructLogEntry(log.activityLog, log.responseRecord),
+    }) =>
+      reconstructLogEntry({
+        activity: log.activityLog,
+        record: log.responseRecord,
+        enableResponseReconstruction: false, // don't include response reconstruction in the payload
+      }),
   );
 
   const nextOffset = hasMore ? sanitizedOffset + sanitizedLimit : null;
@@ -376,5 +365,9 @@ export async function getOneLogWithReconstruction(
   }
 
   const log = result[0];
-  return reconstructLogEntry(log.activityLog, log.responseRecord);
+  return reconstructLogEntry({
+    activity: log.activityLog,
+    record: log.responseRecord,
+    enableResponseReconstruction: true,
+  });
 }
