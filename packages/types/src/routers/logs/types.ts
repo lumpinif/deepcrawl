@@ -10,6 +10,9 @@ import {
   LinksErrorResponseSchema,
   LinksOptionsSchema,
   LinksSuccessResponseSchema,
+  LinksSuccessResponseWithoutTreeSchema,
+  LinksSuccessResponseWithTreeSchema,
+  LinksTreeSchema,
 } from '../links';
 import {
   GetMarkdownOptionsSchema,
@@ -447,3 +450,62 @@ export const GetOneLogResponseSchema = ActivityLogEntrySchema.meta({
  * Type for get log response (output)
  */
 // export type GetOneLogResponse = z.infer<typeof GetOneLogResponseSchema>;
+
+/* ----------------------------------------------EXPORT-RESPONSE---(Export response by ID)------------------------------------------------------- */
+
+/**
+ * Export format enum for response export
+ */
+export const ExportFormatSchema = z.enum(['json', 'markdown', 'links']).meta({
+  description: 'Export format for the response data',
+  examples: ['json', 'markdown', 'links'],
+});
+
+export type ExportFormat = z.infer<typeof ExportFormatSchema>;
+
+/**
+ * Input schema for exporting a response by request ID
+ */
+export const ExportResponseOptionsSchema = z.object({
+  /**
+   * Unique identifier (request ID) for the activity log entry
+   */
+  id: z.string().meta({
+    description: 'Unique identifier (request ID) for the activity log entry',
+  }),
+  /**
+   * Export format - determines what data to return
+   * - 'json': Full response object as JSON
+   * - 'markdown': Markdown string (from getMarkdown or readUrl.markdown)
+   * - 'links': Links tree data (from getLinks or extractLinks)
+   */
+  format: ExportFormatSchema.meta({
+    description:
+      'Export format: "json" (full response), "markdown" (markdown string), "links" (links tree)',
+  }),
+});
+
+/**
+ * Response union type for exported data
+ * The actual type returned depends on the path and format requested
+ */
+export const ExportResponseOutputSchema = z.union([
+  z.string(), // For markdown format
+  z.record(z.string(), z.unknown()), // For json/links format (generic object)
+  LinksTreeSchema,
+  ReadSuccessResponseSchema, // For read-readUrl json format
+  ReadErrorResponseSchema, // For error responses
+  LinksSuccessResponseWithTreeSchema, // For links json format
+  LinksSuccessResponseWithoutTreeSchema, // For links json format
+  LinksErrorResponseSchema, // For links error responses
+]);
+
+/** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
+ * Type for export response options (input)
+ */
+// export type ExportResponseOptions = z.infer<typeof ExportResponseOptionsSchema>;
+
+/** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
+ * Type for export response output
+ */
+// export type ExportResponseOutput = z.infer<typeof ExportResponseOutputSchema>;
