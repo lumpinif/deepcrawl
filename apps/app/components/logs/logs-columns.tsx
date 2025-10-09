@@ -166,21 +166,21 @@ function ActionsCell({ row }: { row: Row<ActivityLogEntry> }) {
 }
 
 export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
-  {
-    accessorKey: 'id',
-    id: 'id',
-    header: () => <DataGridTableRowSelectAll />,
-    cell: ({ row }) => <DataGridTableRowSelect row={row} />,
-    size: 48,
-    enableSorting: false,
-    enableHiding: false,
-    meta: {
-      headerClassName: '',
-      cellClassName: '',
-      skeleton: <Skeleton className="h-4 w-4 rounded" />,
-    },
-    enableResizing: false,
-  },
+  // {
+  //   accessorKey: 'id',
+  //   id: 'id',
+  //   header: () => <DataGridTableRowSelectAll />,
+  //   cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+  //   size: 48,
+  //   enableSorting: false,
+  //   enableHiding: false,
+  //   meta: {
+  //     headerClassName: '',
+  //     cellClassName: '',
+  //     skeleton: <Skeleton className="h-4 w-4 rounded" />,
+  //   },
+  //   enableResizing: false,
+  // },
   {
     accessorKey: 'path',
     id: 'path',
@@ -190,9 +190,9 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
     cell: ({ getValue }) => (
       <span className="text-foreground text-sm">{getValue<string>()}</span>
     ),
-    size: 200,
-    minSize: 160,
-    maxSize: 320,
+    size: 140,
+    minSize: 120,
+    maxSize: 200,
     enableSorting: true,
     enableHiding: true,
     enableResizing: true,
@@ -211,9 +211,9 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
 
       return <span className="truncate text-primary text-sm">{url}</span>;
     },
-    size: 320,
-    minSize: 220,
-    maxSize: 420,
+    size: 400,
+    minSize: 200,
+    maxSize: 600,
     enableSorting: true,
     enableHiding: true,
     enableResizing: true,
@@ -232,9 +232,9 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
         {formatTimestamp(getLogTimestamp(row.original))}
       </span>
     ),
-    size: 200,
-    minSize: 180,
-    maxSize: 260,
+    size: 160,
+    minSize: 140,
+    maxSize: 180,
     enableSorting: true,
     enableHiding: true,
     enableResizing: true,
@@ -260,9 +260,9 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
         </Badge>
       );
     },
-    size: 120,
-    minSize: 100,
-    maxSize: 160,
+    size: 100,
+    minSize: 90,
+    maxSize: 120,
     enableSorting: true,
     enableHiding: true,
     enableResizing: true,
@@ -274,7 +274,7 @@ export const activityLogsColumns: ColumnDef<ActivityLogEntry>[] = [
     id: 'actions',
     header: 'Actions',
     cell: ({ row }) => <ActionsCell row={row} />,
-    size: 72,
+    size: 50,
     enableSorting: false,
     enableHiding: false,
     enableResizing: false,
