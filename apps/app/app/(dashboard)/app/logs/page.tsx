@@ -15,15 +15,19 @@ export const dynamic = 'force-dynamic';
 export default function LogsPage() {
   const queryClient = getQueryClient();
 
-  const resolvedOptions = resolveGetManyLogsOptions(); // Resolve once on server
-  // Prefetch activity logs data
+  const resolvedOptions = resolveGetManyLogsOptions();
   void queryClient.prefetchQuery(getManyLogsQueryOptions(resolvedOptions));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <LogsPageHeader />
       <PageContainer>
-        <LogsProvider>
+        <LogsProvider
+          initialDateRange={{
+            startDate: resolvedOptions.startDate as string,
+            endDate: resolvedOptions.endDate as string,
+          }}
+        >
           <Suspense fallback={<ActivityLogsSkeleton />}>
             <ActivityLogsDataGrid />
           </Suspense>

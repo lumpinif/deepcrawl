@@ -23,14 +23,19 @@ const LogsDateRangeContext = createContext<
 
 interface LogsDateRangeProviderProps {
   children: React.ReactNode;
+  initialDateRange?: LogsDateRange;
 }
 
 export function LogsDateRangeProvider({
   children,
+  initialDateRange,
 }: LogsDateRangeProviderProps) {
-  const [activeRange, setActiveRange] = useState<LogsDateRange>(() =>
-    createLogsDateRangeFromPreset(DEFAULT_LOGS_DATE_RANGE_PRESET),
-  );
+  const [activeRange, setActiveRange] = useState<LogsDateRange>(() => {
+    if (initialDateRange) {
+      return initialDateRange;
+    }
+    return createLogsDateRangeFromPreset(DEFAULT_LOGS_DATE_RANGE_PRESET);
+  });
 
   const updateActiveRange = useCallback((range: LogsDateRange) => {
     setActiveRange(range);
