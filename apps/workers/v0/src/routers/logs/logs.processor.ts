@@ -1,4 +1,6 @@
 import type {
+  ExportResponseOptions,
+  ExportResponseOutput,
   GetManyLogsOptions,
   GetManyLogsResponse,
   GetMarkdownOptions,
@@ -370,4 +372,139 @@ export async function getOneLogWithReconstruction(
     record: log.responseRecord,
     enableResponseReconstruction: true,
   });
+}
+
+/**
+ * Export response data by request ID and format
+ * Allows users to export specific parts of a response (JSON, markdown, or links tree)
+ */
+export async function exportResponseByIdAndFormat(
+  c: ORPCContext,
+  options: ExportResponseOptions,
+): Promise<ExportResponseOutput> {
+  const { id, format } = options;
+
+  // Get user ID from session
+  const userId = c.var.session?.user?.id;
+  if (!userId) {
+    throw new ORPCError('UNAUTHORIZED', {
+      status: 401,
+      message: 'User ID not found in session',
+    });
+  }
+
+  // Get single activity log with response record
+  const result = await c.var.dbd1
+    .select({
+      activityLog,
+      responseRecord,
+    })
+    .from(activityLog)
+    .leftJoin(
+      responseRecord,
+      eq(activityLog.responseHash, responseRecord.responseHash),
+    )
+    .where(and(eq(activityLog.id, id), eq(activityLog.userId, userId)))
+    .limit(1);
+
+  if (result.length === 0) {
+    throw new ORPCError('NOT_FOUND', {
+      status: 404,
+      message: 'Activity log not found',
+      data: { id },
+    });
+  }
+
+  const log = result[0];
+  const { activityLog: activity, responseRecord: record } = log;
+
+  // Reconstruct the full response
+  const response = reconstructResponse(record, activity);
+
+  // Return based on format
+  switch (format) {
+    case 'json': {
+      // Return the full response object
+      return response;
+    }
+
+    case 'markdown': {
+      // Extract markdown string based on path
+      if (activity.path === 'read-getMarkdown') {
+        // For getMarkdown, response is already a string
+        return response as string;
+      }
+
+      if (activity.path === 'read-readUrl') {
+        // For readUrl, extract markdown from response
+        if (activity.success && typeof response === 'object') {
+          const readResponse = response as ReadSuccessResponse;
+          if (readResponse.markdown) {
+            return readResponse.markdown;
+          }
+          throw new ORPCError('INVALID_EXPORT_FORMAT', {
+            status: 400,
+            message:
+              'No markdown content available for this request. The original request did not include markdown extraction.',
+            data: { id, path: activity.path },
+          });
+        }
+        // Error response
+        throw new ORPCError('INVALID_EXPORT_FORMAT', {
+          status: 400,
+          message: 'Cannot export markdown from error response',
+          data: { id, path: activity.path },
+        });
+      }
+
+      // Links endpoints don't have markdown
+      throw new ORPCError('INVALID_EXPORT_FORMAT', {
+        status: 400,
+        message: `Markdown export is not supported for ${activity.path} endpoint`,
+        data: { id, path: activity.path },
+      });
+    }
+
+    case 'links': {
+      // Extract links tree based on path
+      if (
+        activity.path === 'links-getLinks' ||
+        activity.path === 'links-extractLinks'
+      ) {
+        if (activity.success && typeof response === 'object') {
+          const linksResponse = response as LinksSuccessResponse;
+          // Type narrowing: check if tree exists in response
+          if ('tree' in linksResponse && linksResponse.tree) {
+            return linksResponse.tree;
+          }
+          throw new ORPCError('INVALID_EXPORT_FORMAT', {
+            status: 400,
+            message:
+              'No links tree available for this request. The original request did not include tree generation.',
+            data: { id, path: activity.path },
+          });
+        }
+        // Error response
+        throw new ORPCError('INVALID_EXPORT_FORMAT', {
+          status: 400,
+          message: 'Cannot export links from error response',
+          data: { id, path: activity.path },
+        });
+      }
+
+      // Read endpoints don't have links tree
+      throw new ORPCError('INVALID_EXPORT_FORMAT', {
+        status: 400,
+        message: `Links export is not supported for ${activity.path} endpoint`,
+        data: { id, path: activity.path },
+      });
+    }
+
+    default:
+      throw new ORPCError('INVALID_EXPORT_FORMAT', {
+        status: 400,
+        message: `Unsupported export format: ${format}`,
+        data: { id, format },
+      });
+  }
 }

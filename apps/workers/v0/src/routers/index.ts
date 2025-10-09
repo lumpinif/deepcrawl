@@ -1,6 +1,10 @@
 import { publicProcedures } from '@/orpc';
 import { linksGETHandler, linksPOSTHandler } from './links/links.handler';
-import { logsGETHandler, logsPOSTHandler } from './logs/logs.handler';
+import {
+  logsExportHandler,
+  logsGETHandler,
+  logsPOSTHandler,
+} from './logs/logs.handler';
 import { readGETHandler, readPOSTHandler } from './read/read.handler';
 
 export const router = publicProcedures.router({
@@ -15,5 +19,6 @@ export const router = publicProcedures.router({
   logs: {
     getOne: logsGETHandler,
     getMany: logsPOSTHandler,
+    exportResponse: logsExportHandler,
   },
 });
