@@ -1,17 +1,12 @@
 'use client';
 
 import {
-  Card,
-  CardFooter,
-  CardHeader,
-  CardTable,
-} from '@deepcrawl/ui/components/reui/card';
+  GET_MANY_LOGS_DEFAULT_LIMIT,
+  GET_MANY_LOGS_DEFAULT_OFFSET,
+} from '@deepcrawl/types/configs/default';
 import { DataGrid } from '@deepcrawl/ui/components/reui/data-grid';
-import { DataGridPagination } from '@deepcrawl/ui/components/reui/data-grid-pagination';
-import { DataGridTable } from '@deepcrawl/ui/components/reui/data-grid-table';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Input } from '@deepcrawl/ui/components/ui/input';
-import { ScrollArea, ScrollBar } from '@deepcrawl/ui/components/ui/scroll-area';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -21,16 +16,15 @@ import {
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { Filter, Search } from 'lucide-react';
+import { ChevronDownIcon, Filter, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { type ActivityLogEntry, activityLogsColumns } from './logs-columns';
-
-const DEFAULT_PAGE_SIZE = 10;
+import { LogsDataGridCard } from './logs-data-grid-card';
 
 export function ActivityLogsSkeleton() {
   const [pagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: DEFAULT_PAGE_SIZE,
+    pageIndex: GET_MANY_LOGS_DEFAULT_OFFSET,
+    pageSize: GET_MANY_LOGS_DEFAULT_LIMIT,
   });
   const [sorting] = useState<SortingState>([{ id: 'timestamp', desc: true }]);
 
@@ -72,40 +66,41 @@ export function ActivityLogsSkeleton() {
         columnsVisibility: true,
       }}
     >
-      <Card className="rounded-none border-none bg-transparent">
-        <CardHeader className="w-full px-0 py-4">
-          <div className="flex w-full items-center gap-2.5 max-sm:justify-between">
-            <div className="relative max-sm:flex-1">
-              <Search className="-translate-y-1/2 absolute start-3 top-1/2 size-4 text-muted-foreground" />
-              <Input
-                className="w-full min-w-60 max-w-80 ps-9 pe-9"
-                disabled
-                placeholder="Search..."
-                value=""
-              />
+      <LogsDataGridCard>
+        <div className="flex w-full items-center justify-between gap-x-2 max-sm:flex-col max-sm:items-start max-sm:gap-4">
+          <div className="flex w-full items-center gap-2.5 max-sm:flex-col max-sm:items-start max-sm:gap-4">
+            <div className="max-sm:w-full max-sm:flex-1">
+              <div className="relative max-sm:w-full max-sm:flex-1">
+                <Search className="-translate-y-1/2 absolute start-3 top-1/2 size-4 text-muted-foreground" />
+                <Input
+                  className="w-full min-w-60 ps-9 pe-9 max-sm:w-full sm:max-w-80"
+                  disabled
+                  placeholder="Search..."
+                  value=""
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-2.5 max-sm:w-full max-sm:justify-end">
-              <Button disabled variant="outline">
+            <div className="flex items-center gap-2.5 max-sm:w-full">
+              <Button className="max-sm:flex-1" disabled variant="outline">
                 <Filter />
                 Status
               </Button>
-              <Button disabled variant="outline">
+              <Button className="max-sm:flex-1" disabled variant="outline">
                 <Filter />
                 Path
               </Button>
             </div>
           </div>
-        </CardHeader>
-        <CardTable>
-          <ScrollArea className="w-full overflow-x-hidden">
-            <DataGridTable />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </CardTable>
-        <CardFooter>
-          <DataGridPagination />
-        </CardFooter>
-      </Card>
+          <Button
+            className="w-fit justify-between font-normal max-sm:w-full max-sm:flex-1"
+            disabled
+            variant="outline"
+          >
+            <span className="truncate">Select date range</span>
+            <ChevronDownIcon className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </LogsDataGridCard>
     </DataGrid>
   );
 }
