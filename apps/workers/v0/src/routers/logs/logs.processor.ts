@@ -15,6 +15,7 @@ import {
   asc,
   desc,
   eq,
+  getTableColumns,
   gte,
   lte,
   responseRecord,
@@ -287,8 +288,8 @@ export async function getManyLogsWithReconstruction(
   const fetchLimit = sanitizedLimit + 1;
   const rows = await c.var.dbd1
     .select({
-      activityLog,
-      responseRecord,
+      activityLog: getTableColumns(activityLog),
+      responseRecord: getTableColumns(responseRecord),
     })
     .from(activityLog)
     .leftJoin(
@@ -351,8 +352,8 @@ export async function getOneLogWithReconstruction(
   // Get single activity log with response record
   const result = await c.var.dbd1
     .select({
-      activityLog,
-      responseRecord,
+      activityLog: getTableColumns(activityLog),
+      responseRecord: getTableColumns(responseRecord),
     })
     .from(activityLog)
     .leftJoin(
@@ -396,8 +397,8 @@ export async function exportResponseByIdAndFormat(
   // Get single activity log with response record
   const result = await c.var.dbd1
     .select({
-      activityLog,
-      responseRecord,
+      activityLog: getTableColumns(activityLog),
+      responseRecord: getTableColumns(responseRecord),
     })
     .from(activityLog)
     .leftJoin(
