@@ -140,28 +140,31 @@ function ActionsCell({ row }: { row: Row<ActivityLogEntry> }) {
   };
 
   return (
-    <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button className="size-7" disabled={isExporting} variant="ghost">
-          <Ellipsis />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" side="bottom">
-        <DropdownMenuLabel>Export as</DropdownMenuLabel>
-        {availableFormats.map((format) => (
-          <DropdownMenuItem
-            disabled={isExporting}
-            key={format}
-            onClick={() => handleExport(format)}
-          >
-            <Download className="mr-2 size-4" />
-            {getExportFormatLabel(format)}
-          </DropdownMenuItem>
-        ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleCopyId}>Copy ID</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    // biome-ignore lint/a11y/noStaticElementInteractions: <expecetd workaround>
+    <div onClick={(e) => e.stopPropagation()}>
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button className="size-7" disabled={isExporting} variant="ghost">
+            <Ellipsis />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="bottom">
+          <DropdownMenuLabel>Export as</DropdownMenuLabel>
+          {availableFormats.map((format) => (
+            <DropdownMenuItem
+              disabled={isExporting}
+              key={format}
+              onClick={() => handleExport(format)}
+            >
+              <Download className="mr-2 size-4" />
+              {getExportFormatLabel(format)}
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleCopyId}>Copy ID</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
 
