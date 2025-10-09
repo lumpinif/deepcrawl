@@ -1,10 +1,10 @@
 import type { GetManyLogsResponse } from '@deepcrawl/contracts';
 import type { ExportFormat } from '@deepcrawl/types/routers/logs';
 import { DataGridColumnHeader } from '@deepcrawl/ui/components/reui/data-grid-column-header';
-import {
-  DataGridTableRowSelect,
-  DataGridTableRowSelectAll,
-} from '@deepcrawl/ui/components/reui/data-grid-table';
+// import {
+//   DataGridTableRowSelect,
+//   DataGridTableRowSelectAll,
+// } from '@deepcrawl/ui/components/reui/data-grid-table';
 import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
