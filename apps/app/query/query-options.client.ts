@@ -111,7 +111,7 @@ export const apiKeysQueryOptionsClient = () =>
  * Uses the internal API route so credentials stay server-side
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const getManyLogsQueryOptionsClient = (params: GetManyLogsOptions) => {
+export const getManyLogsQueryOptionsClient = (params?: GetManyLogsOptions) => {
   const resolved = resolveGetManyLogsOptions(params);
   return queryOptions({
     queryKey: [...userQueryKeys.activityLogs, resolved],
