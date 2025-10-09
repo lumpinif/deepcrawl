@@ -74,21 +74,24 @@ export const authClient = createAuthClient({
   fetchOptions: {
     ...authClientConfig.fetchOptions,
     onError(e) {
-      if (e.error.status === 429) {
+      // Handle rate limiting with user-friendly message
+      if (e?.error?.status === 429) {
         toast.error('Too many requests. Please try again later.');
       }
-      // Enhanced debugging for production issues
+
+      // Enhanced debugging for development
       if (process.env.NODE_ENV === 'development') {
-        console.error('❌ Auth Client Error:', {
-          status: e.error.status,
-          message: e.error.message,
-          url: e.error.url,
+        console.error('❌ [Auth Client] Error:', {
+          fullError: e,
+          status: e?.error?.status,
+          message: e?.error?.message,
+          statusText: e?.error?.statusText,
+          url: e?.error?.url,
           baseURL: getAuthBaseURL(),
           authMode:
             process.env.NEXT_PUBLIC_USE_AUTH_WORKER === 'false'
               ? 'nextjs-integrated'
               : 'external-worker',
-          environment: process.env.NODE_ENV,
           timestamp: new Date().toISOString(),
         });
       }
