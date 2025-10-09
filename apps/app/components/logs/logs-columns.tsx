@@ -62,7 +62,7 @@ export function formatTimestamp(timestamp?: string): string {
 function getAvailableExportFormats(log: ActivityLogEntry): ExportFormat[] {
   switch (log.path) {
     case 'read-getMarkdown':
-      return ['json', 'markdown'];
+      return ['markdown'];
     case 'read-readUrl':
       return ['json', 'markdown'];
     case 'links-getLinks':
