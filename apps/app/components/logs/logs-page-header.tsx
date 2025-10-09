@@ -4,7 +4,7 @@ import { Button } from '@deepcrawl/ui/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import { startTransition } from 'react';
 import { PageHeader } from '@/components/page-elements';
-import { getManyLogsQueryOptionsClient } from '@/query/query-options.client';
+import { userQueryKeys } from '@/query/query-keys';
 
 export function LogsPageHeader() {
   const queryClient = useQueryClient();
@@ -12,7 +12,7 @@ export function LogsPageHeader() {
   const handleRefresh = () => {
     startTransition(() => {
       queryClient.resetQueries({
-        queryKey: getManyLogsQueryOptionsClient().queryKey,
+        queryKey: userQueryKeys.activityLogs,
       });
     });
   };
