@@ -1,6 +1,8 @@
 import type { Agent, AgentOptions } from 'node:https';
 import type {
   contract,
+  ExportResponseOptions,
+  ExportResponseOutput,
   ExtractLinksOptions,
   ExtractLinksResponse,
   GetManyLogsOptions,
@@ -879,6 +881,70 @@ export class DeepcrawlApp {
     }
 
     return data as GetOneLogResponse;
+  }
+
+  /**
+   * ---
+   *
+   * @method async `exportResponse()` - Export response data by request ID in specified format (JSON, markdown, or links tree).
+   * @returns {Promise<ExportResponseOutput>} Promise<{@link ExportResponseOutput}> - Exported response data based on format
+   * @param options exportResponseOptions ({@link ExportResponseOptions options: ExportResponseOptions}) - Request ID and desired export format
+   *
+   * Export formats:
+   * - **`json`**: Full response object (all endpoints)
+   * - **`markdown`**: Markdown string (from getMarkdown or readUrl with markdown enabled)
+   * - **`links`**: Links tree data (from getLinks or extractLinks with tree enabled)
+   *
+   * @example Export as JSON
+   * ```typescript
+   * import { DeepcrawlApp, ExportResponseOutput } from 'deepcrawl';
+   *
+   * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
+   *
+   * // Export full response as JSON
+   * const jsonData: ExportResponseOutput = await dc.exportResponse({
+   *   id: 'log-123',
+   *   format: 'json'
+   * });
+   * ```
+   *
+   * @example Export markdown
+   * ```typescript
+   * // Export markdown from getMarkdown or readUrl request
+   * const markdown: ExportResponseOutput = await dc.exportResponse({
+   *   id: 'log-123',
+   *   format: 'markdown'
+   * });
+   * // Returns markdown string
+   * ```
+   *
+   * @example Export links tree
+   * ```typescript
+   * // Export links tree from getLinks or extractLinks request
+   * const linksTree: ExportResponseOutput = await dc.exportResponse({
+   *   id: 'log-123',
+   *   format: 'links'
+   * });
+   * // Returns SiteTree object
+   * ```
+   *
+   * @throws `DeepcrawlAuthError` Invalid or missing API key - {@link DeepcrawlAuthError}
+   * @throws `DeepcrawlNotFoundError` Log not found - {@link DeepcrawlNotFoundError}
+   * @throws `DeepcrawlValidationError` Invalid export format or request ID - {@link DeepcrawlValidationError}
+   * @throws `DeepcrawlNetworkError` Network request failed - {@link DeepcrawlNetworkError}
+   * @throws `DeepcrawlRateLimitError` Rate limit exceeded - {@link DeepcrawlRateLimitError}
+   *
+   */
+  async exportResponse(
+    options: ExportResponseOptions,
+  ): Promise<ExportResponseOutput> {
+    const [error, data] = await this.safeClient.logs.exportResponse(options);
+
+    if (error) {
+      handleDeepcrawlError(error, 'read', 'Failed to export response');
+    }
+
+    return data as ExportResponseOutput;
   }
 }
 
