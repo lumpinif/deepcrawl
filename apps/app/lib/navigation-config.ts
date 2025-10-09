@@ -65,7 +65,7 @@ export const NAVGATION_ITEMS: NavigationItem[] = [
   },
   {
     label: 'Docs',
-    title: 'Documentation',
+    title: 'Docs',
     url: '/docs',
     icon: IconBook,
   },
