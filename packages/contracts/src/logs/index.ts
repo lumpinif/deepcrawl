@@ -1,4 +1,6 @@
 import {
+  ExportResponseOptionsSchema,
+  ExportResponseOutputSchema,
   GetManyLogsOptionsSchema,
   GetManyLogsResponseSchema,
   GetOneLogOptionsSchema,
@@ -14,6 +16,7 @@ const logsOC = oc.errors({
   RATE_LIMITED: errorSpec.RATE_LIMITED,
   LOGS_INVALID_DATE_RANGE: errorSpec.LOGS_INVALID_DATE_RANGE,
   LOGS_INVALID_SORT: errorSpec.LOGS_INVALID_SORT,
+  INVALID_EXPORT_FORMAT: errorSpec.INVALID_EXPORT_FORMAT,
 });
 
 /* ----------------------------------------------GET-LOGS---(Get multiple logs)------------------------------------------------------- */
@@ -53,5 +56,25 @@ export const getOneLogContract = logsOC
 
 export type GetOneLogOptions = Inputs['logs']['getOne'];
 export type GetOneLogResponse = Outputs['logs']['getOne'];
+
+/* ----------------------------------------------EXPORT-RESPONSE---(Export response by ID)------------------------------------------------------- */
+
+/**
+ * Export response data by request ID - GET method
+ * Allows users to download specific parts of a response (JSON, markdown, or links tree)
+ */
+export const exportResponseContract = logsOC
+  .route({
+    tags,
+    path: '/export',
+    method: 'GET',
+    summary: 'Export response by request ID',
+    description: `Endpoint: GET \`api.deepcrawl.dev/logs/export?id={requestId}&format={format}\`\n\nExport the response data from a specific request. Choose format:\n- \`json\`: Full response object\n- \`markdown\`: Markdown string (from getMarkdown or readUrl)\n- \`links\`: Links tree data (from getLinks or extractLinks)`,
+  })
+  .input(ExportResponseOptionsSchema)
+  .output(ExportResponseOutputSchema);
+
+export type ExportResponseOptions = Inputs['logs']['exportResponse'];
+export type ExportResponseOutput = Outputs['logs']['exportResponse'];
 
 export * from './utils';

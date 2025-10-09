@@ -45,12 +45,36 @@ const LogsInvalidSortSchema = z.object({
   }),
 });
 
+const InvalidExportFormatSchema = z.object({
+  id: z.string().meta({
+    description: 'The request ID that was attempted to export',
+  }),
+  path: z
+    .string()
+    .optional()
+    .meta({
+      description: 'The API path that the request was made to',
+      examples: ['read-getMarkdown', 'links-extractLinks'],
+    }),
+  format: z
+    .string()
+    .optional()
+    .meta({
+      description: 'The export format that was requested',
+      examples: ['json', 'markdown', 'links'],
+    }),
+  message: z.string().meta({
+    description: 'Human-readable description of the export format error',
+  }),
+});
+
 export const errorConfig: {
   READ_ERROR_RESPONSE: ErrorMapItem<typeof ReadErrorResponseSchema>;
   LINKS_ERROR_RESPONSE: ErrorMapItem<typeof LinksErrorResponseSchema>;
   RATE_LIMITED: ErrorMapItem<typeof RateLimitedSchema>;
   LOGS_INVALID_DATE_RANGE: ErrorMapItem<typeof LogsInvalidDateRangeSchema>;
   LOGS_INVALID_SORT: ErrorMapItem<typeof LogsInvalidSortSchema>;
+  INVALID_EXPORT_FORMAT: ErrorMapItem<typeof InvalidExportFormatSchema>;
 } = {
   READ_ERROR_RESPONSE: {
     status: 500,
@@ -76,6 +100,11 @@ export const errorConfig: {
     status: 400,
     message: 'Invalid logs sort option',
     data: LogsInvalidSortSchema,
+  },
+  INVALID_EXPORT_FORMAT: {
+    status: 400,
+    message: 'Invalid export format for the requested log',
+    data: InvalidExportFormatSchema,
   },
 } satisfies ErrorMap;
 
@@ -154,6 +183,19 @@ export const errorSpec = {
         400: {
           ...currentOperation.responses?.[400],
           description: 'Sort option validation failed',
+        },
+      },
+    }),
+  ),
+  INVALID_EXPORT_FORMAT: oo.spec(
+    errorConfig.INVALID_EXPORT_FORMAT,
+    (currentOperation) => ({
+      ...currentOperation,
+      responses: {
+        ...currentOperation.responses,
+        400: {
+          ...currentOperation.responses?.[400],
+          description: 'Export format validation failed',
         },
       },
     }),
