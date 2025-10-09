@@ -1,3 +1,4 @@
+import { resolveGetManyLogsOptions } from '@deepcrawl/contracts/logs/utils';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { PlaygroundOperationClientContent } from '@/components/playground/playground-operation-client';
 import { PGResponseArea } from '@/components/playground/response-area/pg-response-area';
@@ -8,8 +9,9 @@ import { getManyLogsQueryOptions } from '@/query/query-options.server';
 export default function DashboardPage() {
   const queryClient = getQueryClient();
 
+  const resolvedOptions = resolveGetManyLogsOptions(); // Resolve once on server
   // Prefetch activity logs data from the home page
-  void queryClient.prefetchQuery(getManyLogsQueryOptions());
+  void queryClient.prefetchQuery(getManyLogsQueryOptions(resolvedOptions));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

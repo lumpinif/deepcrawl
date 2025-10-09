@@ -1,3 +1,4 @@
+import { resolveGetManyLogsOptions } from '@deepcrawl/contracts/logs/utils';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import ActivityLogsDataGrid from '@/components/logs/logs-data-grid';
@@ -14,8 +15,9 @@ export const dynamic = 'force-dynamic';
 export default function LogsPage() {
   const queryClient = getQueryClient();
 
+  const resolvedOptions = resolveGetManyLogsOptions(); // Resolve once on server
   // Prefetch activity logs data
-  void queryClient.prefetchQuery(getManyLogsQueryOptions());
+  void queryClient.prefetchQuery(getManyLogsQueryOptions(resolvedOptions));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
