@@ -364,8 +364,8 @@ export function createAuthConfig(env: Env) {
       // Unified cross-domain cookie configuration
       // Works for both auth worker and integrated auth, all environments
       crossSubDomainCookies: {
-        enabled: !isDevelopment,
-        domain: isDevelopment ? undefined : 'deepcrawl.dev',
+        enabled: !isDevelopment, // Only in production
+        domain: 'deepcrawl.dev',
         additionalCookies: [LAST_USED_LOGIN_METHOD_COOKIE_NAME],
       },
     },
