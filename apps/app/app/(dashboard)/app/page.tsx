@@ -4,14 +4,32 @@ import { PlaygroundOperationClientContent } from '@/components/playground/playgr
 import { PGResponseArea } from '@/components/playground/response-area/pg-response-area';
 import { PlaygroundProvider } from '@/contexts/playground-context';
 import { getQueryClient } from '@/query/query.client';
-import { getManyLogsQueryOptions } from '@/query/query-options.server';
+import {
+  apiKeysQueryOptions,
+  authListUserAccountsQueryOptions,
+  authPasskeysQueryOptions,
+  deviceSessionsQueryOptions,
+  getManyLogsQueryOptions,
+  listSessionsQueryOptions,
+} from '@/query/query-options.server';
 
 export default function DashboardPage() {
   const queryClient = getQueryClient();
 
+  /* Prefetching Logs page data */
   const resolvedOptions = resolveGetManyLogsOptions(); // Resolve once on server
   // Prefetch activity logs data from the home page
   void queryClient.prefetchQuery(getManyLogsQueryOptions(resolvedOptions));
+
+  /* Prefetching Account page data */
+  // Don't prefetch current session or organization as they can return null
+  void queryClient.prefetchQuery(authPasskeysQueryOptions());
+  void queryClient.prefetchQuery(listSessionsQueryOptions());
+  void queryClient.prefetchQuery(deviceSessionsQueryOptions()); // it should be populated by layout.tsx already but it doesn't hurt to prefetch it here
+  void queryClient.prefetchQuery(authListUserAccountsQueryOptions());
+
+  /* Prefetching API Keys page data */
+  void queryClient.prefetchQuery(apiKeysQueryOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
