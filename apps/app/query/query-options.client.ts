@@ -118,6 +118,7 @@ export const getManyLogsQueryOptionsClient = (params?: GetManyLogsOptions) => {
     queryFn: () => getManyDeepcrawlLogs(resolved),
     ...baseQueryOptions,
     refetchOnMount: true,
+    refetchOnReconnect: true,
     refetchOnWindowFocus: true,
   });
 };
