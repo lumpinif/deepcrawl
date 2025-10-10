@@ -37,7 +37,7 @@ export function HeaderNavigationLayout({
   SiteHeaderSlot,
 }: HeaderNavigationLayoutProps) {
   const y = useScrollPosition(60);
-  const navX = useRange(y, 0, 53, 0, 80);
+  const navX = useRange(y, 0, 35, 0, 80);
 
   return (
     <main

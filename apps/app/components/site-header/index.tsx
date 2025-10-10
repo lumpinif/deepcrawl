@@ -43,7 +43,7 @@ export function SiteHeader({
         'flex shrink-0 items-center gap-2',
         'transition-[width,height] ease-in-out sm:group-has-data-[collapsible=icon]/sidebar-wrapper:h-12',
         navigationMode === 'header' &&
-          '!h-14 border-none bg-background-subtle pb-0',
+          '!h-12 border-none bg-background-subtle pb-0',
         className,
       )}
     >
@@ -66,7 +66,7 @@ export function SiteHeader({
 
         {/* Logo */}
         {navigationMode === 'header' && enableTitle && (
-          <div className="top-3.5 left-4 block sm:fixed">
+          <div className="top-2.5 left-4 block sm:fixed">
             <Link className="font-semibold text-base tracking-tight" href="/">
               Deepcrawl
             </Link>

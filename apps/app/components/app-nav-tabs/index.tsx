@@ -156,7 +156,7 @@ export default function AppNavTabs({
   return (
     <div
       className={cn(
-        'scrollbar-none sticky top-0 z-10 h-14 overflow-x-auto border-b bg-background-subtle px-4',
+        'scrollbar-none sticky top-0 z-10 h-12 overflow-x-auto border-b bg-background-subtle px-4',
         className,
       )}
     >
