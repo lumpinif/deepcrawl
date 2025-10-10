@@ -42,7 +42,7 @@ export const listSessionsQueryOptionsClient = () =>
     ...baseQueryOptions,
   });
 
-/**@client
+/** @client
 
  * Query options for device sessions
  * Provides full type inference for useQuery, prefetchQuery, etc.
@@ -57,6 +57,8 @@ export const deviceSessionsQueryOptionsClient = ({
     queryFn: listDeviceSessions,
     initialData: init,
     ...baseQueryOptions,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
 /**@client
