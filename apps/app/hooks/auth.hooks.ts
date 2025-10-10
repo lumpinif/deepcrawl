@@ -395,9 +395,9 @@ export const useRevokeSession = () => {
 
   return useMutation({
     mutationFn: async (sessionToken: string) => {
-      // Use multiSession.revoke instead of revokeSession for consistency
-      const result = await authClient.multiSession.revoke({
-        sessionToken,
+      // use revokeSession from authClient instead of multiSession.revoke
+      const result = await authClient.revokeSession({
+        token: sessionToken,
       });
 
       if (result.error) {
@@ -437,7 +437,9 @@ export const useRevokeSession = () => {
       toast.success('Session terminated successfully');
     },
     onSettled: async () => {
-      // Force refetch sessions list to update UI after termination
+      // Force refetch sessions list to immediately update UI after termination
+      // Using refetchQueries ensures the component gets fresh data immediately
+      // This is necessary because the component uses useSuspenseQuery which expects immediate data
       await queryClient.refetchQueries({
         queryKey: userQueryKeys.listSessions,
         type: 'active',
