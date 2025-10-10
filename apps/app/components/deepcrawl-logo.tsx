@@ -2,8 +2,9 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import Link from 'next/link';
 
+// TODO: CONSIDER CREATE A CUSTOM CSS LAYER SINCE base → components → utilities.
 export const DeepcrawlLogoClassNames =
-  '!font-semibold !text-base !tracking-tighter' as const;
+  'font-semibold text-base tracking-tighter' as const;
 
 export function DeepcrawlLogoText({
   className,

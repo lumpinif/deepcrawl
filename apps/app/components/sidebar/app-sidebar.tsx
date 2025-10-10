@@ -35,7 +35,7 @@ export function AppSidebar({
             asChild
             className="data-[slot=sidebar-menu-button]:!p-1.5 cursor-default hover:bg-transparent active:bg-transparent"
           >
-            <DeepcrawlLogo href="/" />
+            <DeepcrawlLogo className="!text-base" href="/" />
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>

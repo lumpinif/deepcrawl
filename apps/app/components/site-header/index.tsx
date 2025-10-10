@@ -76,14 +76,13 @@ export function SiteHeader({
         {navigationMode === 'header' && enableTitle && (
           <div
             className={cn(
-              'top-4 left-7 z-50 block bg-background-subtle sm:fixed',
+              'top-4 left-7 z-50 block bg-background-subtle max-sm:pl-3 sm:fixed',
               'transform-gpu transition-all duration-[50ms] ease-linear',
               logoTransformY >= 85 &&
                 'top-2.5 text-muted-foreground hover:text-foreground',
             )}
           >
             <DeepcrawlLogo
-              className="font-semibold text-base tracking-tighter"
               href="/"
               style={{
                 transformOrigin: 'center center',
