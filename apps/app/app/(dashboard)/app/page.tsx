@@ -25,7 +25,7 @@ export default function DashboardPage() {
   // Don't prefetch current session or organization as they can return null
   void queryClient.prefetchQuery(authPasskeysQueryOptions());
   void queryClient.prefetchQuery(listSessionsQueryOptions());
-  void queryClient.prefetchQuery(deviceSessionsQueryOptions()); // it should be populated by layout.tsx already but it doesn't hurt to prefetch it here
+  void queryClient.prefetchQuery(deviceSessionsQueryOptions());
   void queryClient.prefetchQuery(authListUserAccountsQueryOptions());
 
   /* Prefetching API Keys page data */
