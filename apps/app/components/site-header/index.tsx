@@ -18,8 +18,9 @@ import { UserDropdown } from '../user/user-dropdown';
 export function SiteHeader({
   session,
   className,
-  deviceSessions,
+  // children,
   navigationMode,
+  listDeviceSessions,
   enableTitle = true,
   enableDocsLink = true,
   enableThemeToggle = false,
@@ -27,7 +28,6 @@ export function SiteHeader({
   enableLayoutViewToggle = true,
 }: {
   session?: Session | null;
-  deviceSessions: ListDeviceSessions;
   className?: string;
   navigationMode: NavigationMode;
   enableThemeToggle?: boolean;
@@ -35,6 +35,8 @@ export function SiteHeader({
   enableLayoutToggle?: boolean;
   enableDocsLink?: boolean;
   enableLayoutViewToggle?: boolean;
+  listDeviceSessions?: ListDeviceSessions;
+  // children?: React.ReactNode;
 }) {
   return (
     <header
@@ -117,8 +119,8 @@ export function SiteHeader({
           )}
           {session ? (
             <UserDropdown
-              deviceSessions={deviceSessions}
               enableLayoutViewToggle={enableLayoutViewToggle}
+              listDeviceSessions={listDeviceSessions}
               navigationMode={navigationMode}
               session={session}
             />

@@ -1,6 +1,6 @@
 'use client';
 
-import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
+import type { Session } from '@deepcrawl/auth/types';
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { ReactNode } from 'react';
@@ -13,7 +13,6 @@ import { useHeaderScroll } from '@/hooks/use-header-scroll';
 interface HeaderNavigationLayoutProps {
   children: ReactNode;
   session: Session;
-  deviceSessions: ListDeviceSessions;
   navigationMode: NavigationMode;
   defaultInsetClassname: string;
 }
@@ -27,7 +26,6 @@ interface HeaderNavigationLayoutProps {
 export function HeaderNavigationLayout({
   children,
   session,
-  deviceSessions,
   navigationMode,
   defaultInsetClassname,
 }: HeaderNavigationLayoutProps) {
@@ -50,7 +48,6 @@ export function HeaderNavigationLayout({
             'absolute top-0 right-0 left-0 z-50 transition-transform duration-100 ease-in-out will-change-transform',
             shouldHideHeader && '-translate-y-full',
           )}
-          deviceSessions={deviceSessions}
           enableThemeToggle={false}
           navigationMode={navigationMode}
           session={session}

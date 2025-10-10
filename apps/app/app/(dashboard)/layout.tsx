@@ -8,24 +8,20 @@ import { HeaderNavigationLayout } from '@/components/layout/header-navigation-la
 import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
-import {
-  authGetSession,
-  authListDeviceSessions,
-} from '@/query/auth-query.server';
+import { authGetSession } from '@/query/auth-query.server';
+import { getQueryClient } from '@/query/query.client';
+import { deviceSessionsQueryOptions } from '@/query/query-options.server';
 
 export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  // Get session first to check authentication
-  const [currentSession, listDeviceSessions] = await Promise.all([
-    authGetSession(),
-    authListDeviceSessions(),
-    // auth.api.getFullOrganization({
-    // 	headers: requestHeaders,
-    // }),
-  ]).catch(() => {
+  const queryClient = getQueryClient();
+  // for user dropdown menu in site-header with suspense and prefetching to work, since we opt out await listDevicesSessions() from server component
+  void queryClient.prefetchQuery(deviceSessionsQueryOptions());
+
+  const currentSession = await authGetSession().catch(() => {
     // Auth failed - redirect to login
     throw redirect('/login');
   });
@@ -54,7 +50,6 @@ export default async function DashboardLayout({
         <AppSidebar />
         <SidebarInset className={defaultInsetClassname}>
           <SiteHeader
-            deviceSessions={listDeviceSessions}
             enableThemeToggle={false}
             navigationMode={navigationMode}
             session={currentSession}
@@ -71,7 +66,6 @@ export default async function DashboardLayout({
   return (
     <HeaderNavigationLayout
       defaultInsetClassname={defaultInsetClassname}
-      deviceSessions={listDeviceSessions}
       navigationMode={navigationMode}
       session={currentSession}
     >

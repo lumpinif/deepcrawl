@@ -30,7 +30,7 @@ import {
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
 import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
 import { IconBook } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { ChevronsDownUpIcon, ChevronsUpDownIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -70,12 +70,12 @@ export function UserDropdown({
   session,
   redirectLogout,
   navigationMode,
-  deviceSessions: deviceSessionsProps,
+  listDeviceSessions,
   enableLayoutViewToggle = true,
 }: {
   session: Session;
   redirectLogout?: string;
-  deviceSessions: ListDeviceSessions;
+  listDeviceSessions?: ListDeviceSessions;
   navigationMode?: NavigationMode;
   enableLayoutViewToggle?: boolean;
 }) {
@@ -85,15 +85,15 @@ export function UserDropdown({
   const { data: currentSession } = useQuery(
     sessionQueryOptionsClient({ init: session }),
   );
-  const { data: deviceSessionsQuery } = useQuery(
-    deviceSessionsQueryOptionsClient({ init: deviceSessionsProps }),
+  const { data: deviceSessionsQuery } = useSuspenseQuery(
+    deviceSessionsQueryOptionsClient({ init: listDeviceSessions }),
   );
 
   const { mutate: setActiveSession } = useSetActiveSession();
   const [selectOpen, setSelectOpen] = useState(false);
 
   // Use React Query data if available (fresh), fallback to server props (SSR/initial load)
-  const deviceSessions = deviceSessionsQuery ?? deviceSessionsProps;
+  const deviceSessions = deviceSessionsQuery ?? listDeviceSessions;
 
   // Determine current user: prioritize React Query session
   const user = currentSession?.user;

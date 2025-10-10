@@ -3,13 +3,16 @@ import {
   authGetSession,
   authListDeviceSessions,
 } from '@/query/auth-query.server';
+import type { NavigationMode } from '../providers';
 
 export async function UserDropdownServer({
   redirectLogout,
   enableLayoutViewToggle = false,
+  navigationMode,
 }: {
   redirectLogout?: string;
   enableLayoutViewToggle?: boolean;
+  navigationMode?: NavigationMode;
 }) {
   const [currentSession, listDeviceSessions] = await Promise.all([
     authGetSession(),
@@ -22,8 +25,9 @@ export async function UserDropdownServer({
 
   return (
     <UserDropdown
-      deviceSessions={listDeviceSessions}
       enableLayoutViewToggle={enableLayoutViewToggle}
+      listDeviceSessions={listDeviceSessions}
+      navigationMode={navigationMode}
       redirectLogout={redirectLogout}
       session={currentSession}
     />
