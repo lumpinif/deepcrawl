@@ -2,11 +2,12 @@ import { Button } from '@deepcrawl/ui/components/ui/button';
 import type { DocsLayoutProps } from 'fumadocs-ui/layouts/docs';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import Link from 'next/link';
+import { DeepcrawlLogoText } from '@/components/deepcrawl-logo';
 import { source } from './source';
 
 export const baseOptions: BaseLayoutProps = {
   nav: {
-    title: 'Deepcrawl',
+    title: <DeepcrawlLogoText />,
     transparentMode: 'top',
   },
 };

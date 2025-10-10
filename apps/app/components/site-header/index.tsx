@@ -15,6 +15,7 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import { IconBook } from '@tabler/icons-react';
 import Link from 'next/link';
 import type { NavigationMode } from '@/components/providers';
+import { DeepcrawlLogo } from '../deepcrawl-logo';
 import { LayoutToggle } from '../layout-toggle';
 import { UserDropdown } from '../user/user-dropdown';
 
@@ -48,11 +49,11 @@ export function SiteHeader({
   return (
     <header
       className={cn(
-        'z-50 h-16 border-b bg-background px-4 pt-4',
+        'z-50 h-16 border-b bg-background px-4',
         'flex shrink-0 items-center gap-2',
         'transition-[width,height] ease-in-out sm:group-has-data-[collapsible=icon]/sidebar-wrapper:h-12',
         navigationMode === 'header' &&
-          '!h-13 border-none bg-background-subtle pb-0',
+          '!h-13 border-none bg-background-subtle pt-4 pb-0',
         className,
       )}
     >
@@ -64,12 +65,10 @@ export function SiteHeader({
               className="mr-1 data-[orientation=vertical]:h-4 md:hidden"
               orientation="vertical"
             />
-            <Link
+            <DeepcrawlLogo
               className="font-semibold text-base tracking-tighter md:hidden"
               href="/"
-            >
-              Deepcrawl
-            </Link>
+            />
           </>
         )}
 
@@ -83,16 +82,14 @@ export function SiteHeader({
                 'top-2.5 text-muted-foreground hover:text-foreground',
             )}
           >
-            <Link
+            <DeepcrawlLogo
               className="font-semibold text-base tracking-tighter"
               href="/"
               style={{
                 transformOrigin: 'center center',
                 fontSize: isMobile ? '16px' : `calc(16px * ${logoScale})`,
               }}
-            >
-              Deepcrawl
-            </Link>
+            />
           </div>
         )}
 

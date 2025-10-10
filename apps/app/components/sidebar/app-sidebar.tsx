@@ -12,11 +12,10 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@deepcrawl/ui/components/ui/sidebar';
-import { GalleryVerticalEnd } from 'lucide-react';
-import Link from 'next/link';
 import * as React from 'react';
 import { NavMain } from '@/components/sidebar/nav-main';
 import { NAVGATION_ITEMS } from '@/lib/navigation-config';
+import { DeepcrawlLogo } from '../deepcrawl-logo';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   session?: Session;
@@ -36,10 +35,7 @@ export function AppSidebar({
             asChild
             className="data-[slot=sidebar-menu-button]:!p-1.5 cursor-default hover:bg-transparent active:bg-transparent"
           >
-            <Link href="/">
-              <GalleryVerticalEnd className="!size-5 group-has-data-[collapsible=icon]/sidebar-wrapper:block md:hidden" />
-              <span className="font-semibold text-base">Deepcrawl</span>
-            </Link>
+            <DeepcrawlLogo href="/" />
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>
