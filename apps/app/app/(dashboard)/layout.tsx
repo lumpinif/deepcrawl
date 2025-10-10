@@ -9,18 +9,13 @@ import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { authGetSession } from '@/query/auth-query.server';
-import { getQueryClient } from '@/query/query.client';
-import { deviceSessionsQueryOptions } from '@/query/query-options.server';
 
 export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const queryClient = getQueryClient();
-  // for user dropdown menu in site-header with suspense and prefetching to work, since we opt out await listDevicesSessions() from server component
-  void queryClient.prefetchQuery(deviceSessionsQueryOptions());
-
+  // KNOWN ISSUE: DO NOT FETCH listDeviceSessions FROM ANY LAYOUT SERVER COMPONENT WHICH IS BREAKING MULTI-SESSION DATA FETCHING FROM CLIENT COMPONENT AND SESSION REVOKING ISSUES
   const currentSession = await authGetSession().catch(() => {
     // Auth failed - redirect to login
     throw redirect('/login');
@@ -67,7 +62,17 @@ export default async function DashboardLayout({
     <HeaderNavigationLayout
       defaultInsetClassname={defaultInsetClassname}
       navigationMode={navigationMode}
-      session={currentSession}
+      SiteHeaderSlot={
+        <SiteHeader
+          className={cn(
+            'absolute top-0 right-0 left-0 z-50 transition-transform duration-100 ease-in-out will-change-transform',
+            // shouldHideHeader && '-translate-y-full',
+          )}
+          enableThemeToggle={false}
+          navigationMode={navigationMode}
+          session={currentSession}
+        />
+      }
     >
       {children}
     </HeaderNavigationLayout>

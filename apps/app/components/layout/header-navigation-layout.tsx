@@ -1,20 +1,18 @@
 'use client';
 
-import type { Session } from '@deepcrawl/auth/types';
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { ReactNode } from 'react';
 import { useRef } from 'react';
 import AppNavTabs from '@/components/app-nav-tabs';
 import type { NavigationMode } from '@/components/providers';
-import { SiteHeader } from '@/components/site-header';
 import { useHeaderScroll } from '@/hooks/use-header-scroll';
 
 interface HeaderNavigationLayoutProps {
   children: ReactNode;
-  session: Session;
   navigationMode: NavigationMode;
   defaultInsetClassname: string;
+  SiteHeaderSlot: ReactNode;
 }
 
 /** **********************************************************************************************
@@ -25,9 +23,9 @@ interface HeaderNavigationLayoutProps {
 
 export function HeaderNavigationLayout({
   children,
-  session,
   navigationMode,
   defaultInsetClassname,
+  SiteHeaderSlot,
 }: HeaderNavigationLayoutProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const { shouldHideHeader } = useHeaderScroll({
@@ -43,15 +41,7 @@ export function HeaderNavigationLayout({
       data-nav-mode={navigationMode === 'header' ? 'header' : 'sidebar'}
     >
       <div className="relative">
-        <SiteHeader
-          className={cn(
-            'absolute top-0 right-0 left-0 z-50 transition-transform duration-100 ease-in-out will-change-transform',
-            shouldHideHeader && '-translate-y-full',
-          )}
-          enableThemeToggle={false}
-          navigationMode={navigationMode}
-          session={session}
-        />
+        {SiteHeaderSlot}
 
         {/* Add spacing for absolute header only when visible */}
         <div
