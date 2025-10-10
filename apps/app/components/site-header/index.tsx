@@ -1,4 +1,4 @@
-import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
+import type { Session } from '@deepcrawl/auth/types';
 import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
@@ -18,9 +18,7 @@ import { UserDropdown } from '../user/user-dropdown';
 export function SiteHeader({
   session,
   className,
-  // children,
   navigationMode,
-  listDeviceSessions,
   enableTitle = true,
   enableDocsLink = true,
   enableThemeToggle = false,
@@ -35,8 +33,6 @@ export function SiteHeader({
   enableLayoutToggle?: boolean;
   enableDocsLink?: boolean;
   enableLayoutViewToggle?: boolean;
-  listDeviceSessions?: ListDeviceSessions;
-  // children?: React.ReactNode;
 }) {
   return (
     <header
@@ -120,7 +116,6 @@ export function SiteHeader({
           {session ? (
             <UserDropdown
               enableLayoutViewToggle={enableLayoutViewToggle}
-              listDeviceSessions={listDeviceSessions}
               navigationMode={navigationMode}
               session={session}
             />

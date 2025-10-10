@@ -1,10 +1,6 @@
 'use client';
 
-import type {
-  LDSUser,
-  ListDeviceSessions,
-  Session,
-} from '@deepcrawl/auth/types';
+import type { LDSUser, Session } from '@deepcrawl/auth/types';
 import { GitHubIcon } from '@deepcrawl/ui/components/icons/provider-icons';
 import { ThemeGroupToggle } from '@deepcrawl/ui/components/theme/toggle';
 import {
@@ -29,6 +25,7 @@ import {
 } from '@deepcrawl/ui/components/ui/popover';
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
 import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import { IconBook } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronsDownUpIcon, ChevronsUpDownIcon, LogOut } from 'lucide-react';
@@ -70,14 +67,14 @@ export function UserDropdown({
   session,
   redirectLogout,
   navigationMode,
-  listDeviceSessions,
   enableLayoutViewToggle = true,
+  className,
 }: {
   session: Session;
   redirectLogout?: string;
-  listDeviceSessions?: ListDeviceSessions;
   navigationMode?: NavigationMode;
   enableLayoutViewToggle?: boolean;
+  className?: string;
 }) {
   const router = useRouter();
   const isMac = useIsMac();
@@ -86,14 +83,14 @@ export function UserDropdown({
     sessionQueryOptionsClient({ init: session }),
   );
   const { data: deviceSessionsQuery } = useQuery(
-    deviceSessionsQueryOptionsClient({ init: listDeviceSessions }),
+    deviceSessionsQueryOptionsClient(),
   ); // use useQuery instead of useSuspenseQuery since it doesn't benefit from HydrationBoundary from layout server component right now
 
   const { mutate: setActiveSession } = useSetActiveSession();
   const [selectOpen, setSelectOpen] = useState(false);
 
-  // Use React Query data if available (fresh), fallback to server props (SSR/initial load) if there are any
-  const deviceSessions = deviceSessionsQuery ?? listDeviceSessions;
+  // Use React Query data if available (fresh)
+  const deviceSessions = deviceSessionsQuery;
 
   // Determine current user: prioritize React Query session
   const user = currentSession?.user;
@@ -112,7 +109,9 @@ export function UserDropdown({
 
   return (
     <DropdownMenu modal={false}>
-      <DropdownMenuTrigger className="outline-none ring-0 ring-transparent">
+      <DropdownMenuTrigger
+        className={cn('outline-none ring-0 ring-transparent', className)}
+      >
         <UserAvatar user={user} />
       </DropdownMenuTrigger>
       <DropdownMenuContent
