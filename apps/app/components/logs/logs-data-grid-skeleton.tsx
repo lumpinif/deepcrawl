@@ -16,7 +16,7 @@ import {
   type SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { ChevronDownIcon, Filter, Search, X } from 'lucide-react';
+import { ChevronDownIcon, Filter, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { type ActivityLogEntry, activityLogsColumns } from './logs-columns';
 import { LogsDataGridCard } from './logs-data-grid-card';

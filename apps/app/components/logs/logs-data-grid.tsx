@@ -18,12 +18,7 @@ import { useLogsFilters } from '@/hooks/use-logs-filters';
 import { useLogsPagination } from '@/hooks/use-logs-pagination';
 import { useLogsSorting } from '@/hooks/use-logs-sorting';
 import { useLogsTable } from '@/hooks/use-logs-table';
-import {
-  type ActivityLogEntry,
-  formatTimestamp,
-  getLogStatus,
-  getLogTimestamp,
-} from './logs-columns';
+import { type ActivityLogEntry, getLogStatus } from './logs-columns';
 import { LogsDataGridCard } from './logs-data-grid-card';
 import { LogsDetailContent } from './logs-detail-content';
 import { LogsToolbar } from './logs-toolbar';

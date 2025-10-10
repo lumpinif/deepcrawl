@@ -2,12 +2,10 @@ import {
   CodeBlock,
   CodeBlockCopyButton,
 } from '@deepcrawl/ui/components/ai-elements/code-block';
-import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { toast } from 'sonner';
 import {
   type ActivityLogEntry,
   formatTimestamp,
-  getLogStatus,
   getLogTimestamp,
   getLogUrl,
 } from './logs-columns';
