@@ -35,8 +35,6 @@ export default async function DashboardLayout({
     '!overflow-hidden !shadow-none !max-h-svh border-none',
     /* desktop */
     'peer-data-[variant=inset]:max-h-[calc(100svh-theme(spacing.4))] peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))]',
-    /* mobile */
-    'max-md:max-h-svh',
   );
 
   if (navigationMode === 'sidebar') {
@@ -60,14 +58,9 @@ export default async function DashboardLayout({
   // Header navigation mode
   return (
     <HeaderNavigationLayout
-      defaultInsetClassname={defaultInsetClassname}
       navigationMode={navigationMode}
       SiteHeaderSlot={
         <SiteHeader
-          className={cn(
-            'absolute top-0 right-0 left-0 z-50 transition-transform duration-100 ease-in-out will-change-transform',
-            // shouldHideHeader && '-translate-y-full',
-          )}
           enableThemeToggle={false}
           navigationMode={navigationMode}
           session={currentSession}

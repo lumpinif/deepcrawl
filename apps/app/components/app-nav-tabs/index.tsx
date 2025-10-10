@@ -1,11 +1,19 @@
 'use client';
 
+import { useMediaQuery } from '@deepcrawl/ui/hooks/use-media-query';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NAVGATION_ITEMS } from '@/lib/navigation-config';
 
-export default function AppNavTabs() {
+export default function AppNavTabs({
+  className,
+  transFormX,
+}: {
+  className?: string;
+  transFormX?: number;
+}) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -21,6 +29,8 @@ export default function AppNavTabs() {
   const [activeStyle, setActiveStyle] = useState({ left: '0px', width: '0px' });
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const rafIdRef = useRef<number | null>(null);
+
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   // Memoized tab ref setter
   const setTabRef = useCallback(
@@ -144,8 +154,19 @@ export default function AppNavTabs() {
   );
 
   return (
-    <div className="scrollbar-none sticky top-0 z-10 h-12 overflow-x-auto border-b bg-background-subtle px-4">
-      <div className="relative flex h-full w-full flex-nowrap items-center justify-start shadow-none">
+    <div
+      className={cn(
+        'scrollbar-none sticky top-0 z-10 h-14 overflow-x-auto border-b bg-background-subtle px-4',
+        className,
+      )}
+    >
+      <div
+        className={cn(
+          'relative flex h-full w-full flex-nowrap items-center justify-start shadow-none',
+          'transform-gpu',
+        )}
+        style={{ transform: isMobile ? 'none' : `translateX(${transFormX}px)` }}
+      >
         {/* Hover Highlight */}
         <div
           className="absolute hidden h-8 items-center rounded bg-accent transition-all duration-150 ease-out md:flex"

@@ -1,3 +1,5 @@
+'use client';
+
 import type { Session } from '@deepcrawl/auth/types';
 import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
 import { Button } from '@deepcrawl/ui/components/ui/button';
@@ -37,13 +39,15 @@ export function SiteHeader({
   return (
     <header
       className={cn(
-        'z-50 flex h-16 shrink-0 items-center gap-2 border-b bg-background transition-[width,height] ease-in-out max-sm:h-16 sm:group-has-data-[collapsible=icon]/sidebar-wrapper:h-12',
+        'z-50 h-16 border-b bg-background px-4',
+        'flex shrink-0 items-center gap-2',
+        'transition-[width,height] ease-in-out sm:group-has-data-[collapsible=icon]/sidebar-wrapper:h-12',
         navigationMode === 'header' &&
-          '!h-14 border-none bg-background-subtle px-3 pt-2 pb-0',
+          '!h-14 border-none bg-background-subtle pb-0',
         className,
       )}
     >
-      <div className="flex w-full items-center gap-1 px-4 lg:gap-2">
+      <div className="flex h-full w-full items-center gap-1 lg:gap-2">
         {navigationMode === 'sidebar' && enableTitle && (
           <>
             <SidebarTrigger className="-ml-1" />
@@ -59,11 +63,16 @@ export function SiteHeader({
             </Link>
           </>
         )}
+
+        {/* Logo */}
         {navigationMode === 'header' && enableTitle && (
-          <Link className="font-semibold text-base tracking-tight" href="/">
-            Deepcrawl
-          </Link>
+          <div className="top-3.5 left-4 block sm:fixed">
+            <Link className="font-semibold text-base tracking-tight" href="/">
+              Deepcrawl
+            </Link>
+          </div>
         )}
+
         <div className="ml-auto flex items-center gap-1">
           {enableThemeToggle && <ThemeToggle />}
 

@@ -1,3 +1,5 @@
+// @ DEPRECATED: This hook is no longer used and will be removed in the future
+
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
