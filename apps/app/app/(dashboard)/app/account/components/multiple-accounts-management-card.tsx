@@ -66,9 +66,9 @@ export function MultipleAccountsManagementCard() {
   const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
     sessionQueryOptionsClient(),
   );
-  const { data: deviceSessions, isPending: isPendingDeviceSessions } =
-    useSuspenseQuery(deviceSessionsQueryOptionsClient());
-
+  const { data: deviceSessions } = useSuspenseQuery(
+    deviceSessionsQueryOptionsClient(),
+  );
   const { mutate: setActiveSession, isPending: isSwitching } =
     useSetActiveSession();
   const { mutate: revokeDeviceSession, isPending: isRemoving } =
@@ -95,7 +95,7 @@ export function MultipleAccountsManagementCard() {
     }
   }, [isSwitching, isRemoving, switchingSessionToken, removingSessionToken]);
 
-  if (isPendingCurrentSession || isPendingDeviceSessions) {
+  if (isPendingCurrentSession) {
     //   return (
     //     <Card>
     //       <CardHeader>
