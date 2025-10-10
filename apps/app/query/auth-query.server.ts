@@ -28,7 +28,7 @@ export async function authGetSession(): Promise<Session | null> {
 
 /**
  * Auth Server API Call:
- * all active sessions for the current user
+ * @description listSessions returns all active sessions for the current user across all devices
  */
 export async function authListSessions(): Promise<ListSessions> {
   const requestHeaders = await headers();
@@ -49,7 +49,7 @@ export async function authListSessions(): Promise<ListSessions> {
 
 /**
  * Auth Server API Call:
- * all device sessions for the current user
+ * @description listDeviceSessions (from the multi-session plugin) returns sessions for different user accounts stored in the same browser/device.
  */
 export async function authListDeviceSessions(): Promise<ListDeviceSessions> {
   const requestHeaders = await headers();
