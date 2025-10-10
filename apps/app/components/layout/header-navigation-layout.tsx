@@ -26,7 +26,7 @@ const useRange = (
     const largest = Math.max(outMin, outMax);
     const smallest = Math.min(outMin, outMax);
     return Math.min(Math.max(newValue, smallest), largest);
-  }, [num]);
+  }, [num, inMin, inMax, outMin, outMax]);
 
   return mappedValue;
 };
