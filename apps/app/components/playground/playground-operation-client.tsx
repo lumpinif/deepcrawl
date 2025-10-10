@@ -103,7 +103,7 @@ export const PlaygroundOperationClientContent = ({
   return (
     <PageContainer
       className={cn(
-        'h-full',
+        'h-full scroll-mt-16 group-has-data-[collapsible=icon]/sidebar-wrapper:scroll-mt-12 group-data-[nav-mode=header]/header-nav-layout:scroll-mt-12',
         hasResponseData &&
           'min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.14)-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
       )}

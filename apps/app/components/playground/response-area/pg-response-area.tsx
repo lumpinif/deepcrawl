@@ -20,12 +20,8 @@ import {
   usePlaygroundCoreSelector,
 } from '@/contexts/playground-context';
 import { getOperationConfig } from '@/lib/playground/operations-config';
-import {
-  PLAYGROUND_SECTION_ID,
-  RESPONSE_SECTION_ID,
-} from '@/lib/playground/scroll-anchors';
+import { RESPONSE_SECTION_ID } from '@/lib/playground/scroll-anchors';
 import { copyToClipboard } from '@/utils/clipboard';
-import { useScrollToAnchor } from '@/utils/use-scroll-to-anchor';
 import { baseContainerCN, PageHeader } from '../../page-elements';
 import { ContentTabs } from './content-tabs';
 import { ErrorCard } from './error-card';
@@ -59,7 +55,6 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
   }, [selectedOP]);
 
   const selectedOPConfig = getOperationConfig(selectedOP);
-  const scrollToAnchor = useScrollToAnchor();
 
   const handleShareUrl = async () => {
     const currentUrl = window.location.href;
@@ -199,9 +194,17 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
           </IconHoverButton>
 
           <IconHoverButton
-            aria-label="Scroll to playground"
+            aria-label="Scroll to top"
             className="text-muted-foreground hover:text-foreground"
-            onClick={() => scrollToAnchor(PLAYGROUND_SECTION_ID)}
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              const scrollContainer = document.querySelector(
+                '[data-nav-mode] > div.overflow-y-auto, [data-radix-scroll-area-viewport]',
+              );
+              if (scrollContainer) {
+                scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
             size="sm"
             type="button"
             variant="outline"

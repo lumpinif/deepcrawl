@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 const DEFAULT_SCROLL_OPTIONS: ScrollIntoViewOptions = {
   behavior: 'smooth',
   block: 'start',
+  inline: 'nearest',
 };
 
 export function useScrollToAnchor(defaultOptions?: ScrollIntoViewOptions) {
