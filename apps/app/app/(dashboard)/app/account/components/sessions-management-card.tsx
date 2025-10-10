@@ -118,8 +118,6 @@ export function SessionsManagementCard() {
       })
     : [];
 
-  console.log('🚀 ~ SessionsManagementCard ~ sortedSessions:', sortedSessions);
-
   const handleRevokeOtherSessions = () => {
     revokeAllOtherSessions();
   };
