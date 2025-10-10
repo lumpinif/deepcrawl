@@ -238,7 +238,7 @@ export function MultipleAccountsManagementCard() {
 
                 return (
                   <div
-                    className="flex items-center justify-between rounded-lg border p-3"
+                    className="flex items-center justify-between rounded-lg border p-3 max-sm:flex-col max-sm:items-start max-sm:gap-y-2"
                     key={session.session.id || index}
                   >
                     <div className="flex items-center gap-3">
@@ -273,8 +273,9 @@ export function MultipleAccountsManagementCard() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 max-sm:w-full">
                       <SpinnerButton
+                        className="max-sm:flex-1"
                         disabled={isSwitching || isRemoving}
                         isLoading={isSwitchingThis}
                         onClick={() => handleSwitchAccount(session)}
@@ -295,6 +296,7 @@ export function MultipleAccountsManagementCard() {
                       </SpinnerButton>
 
                       <SpinnerButton
+                        className="max-sm:flex-1"
                         disabled={isSwitching || isRemoving}
                         isLoading={isRemovingThis}
                         onClick={() => handleRemoveAccount(session)}
