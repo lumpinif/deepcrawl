@@ -30,8 +30,9 @@ export function SessionsManagementCard() {
   const { data: currentSession, isPending: isPendingCurrentSession } = useQuery(
     sessionQueryOptionsClient(),
   );
-  const { data: listSessions, isPending: isPendingListSessions } =
-    useSuspenseQuery(listSessionsQueryOptionsClient());
+  const { data: listSessions } = useSuspenseQuery(
+    listSessionsQueryOptionsClient(),
+  );
 
   const { mutate: revokeSession, isPending } = useRevokeSession();
   const { mutate: revokeAllOtherSessions, isPending: isRevokingOtherSessions } =
@@ -50,7 +51,7 @@ export function SessionsManagementCard() {
     }
   }, [isPending, revokingSessionId]);
 
-  if (isPendingCurrentSession || isPendingListSessions) {
+  if (isPendingCurrentSession) {
     return <SessionsManagementCardSkeleton />;
   }
 
@@ -116,6 +117,8 @@ export function SessionsManagementCard() {
         return 0;
       })
     : [];
+
+  console.log('🚀 ~ SessionsManagementCard ~ sortedSessions:', sortedSessions);
 
   const handleRevokeOtherSessions = () => {
     revokeAllOtherSessions();
