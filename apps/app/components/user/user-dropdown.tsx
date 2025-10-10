@@ -30,7 +30,7 @@ import {
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
 import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
 import { IconBook } from '@tabler/icons-react';
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ChevronsDownUpIcon, ChevronsUpDownIcon, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -85,14 +85,14 @@ export function UserDropdown({
   const { data: currentSession } = useQuery(
     sessionQueryOptionsClient({ init: session }),
   );
-  const { data: deviceSessionsQuery } = useSuspenseQuery(
+  const { data: deviceSessionsQuery } = useQuery(
     deviceSessionsQueryOptionsClient({ init: listDeviceSessions }),
-  );
+  ); // use useQuery instead of useSuspenseQuery since it doesn't benefit from HydrationBoundary from layout server component right now
 
   const { mutate: setActiveSession } = useSetActiveSession();
   const [selectOpen, setSelectOpen] = useState(false);
 
-  // Use React Query data if available (fresh), fallback to server props (SSR/initial load)
+  // Use React Query data if available (fresh), fallback to server props (SSR/initial load) if there are any
   const deviceSessions = deviceSessionsQuery ?? listDeviceSessions;
 
   // Determine current user: prioritize React Query session

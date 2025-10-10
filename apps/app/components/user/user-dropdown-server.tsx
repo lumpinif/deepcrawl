@@ -1,23 +1,22 @@
+// @DEPRECATED
+
+import type { Session } from '@deepcrawl/auth/types';
 import { UserDropdown } from '@/components/user/user-dropdown';
-import {
-  authGetSession,
-  authListDeviceSessions,
-} from '@/query/auth-query.server';
+// import { authListDeviceSessions } from '@/query/auth-query.server';
 import type { NavigationMode } from '../providers';
 
 export async function UserDropdownServer({
   redirectLogout,
   enableLayoutViewToggle = false,
   navigationMode,
+  currentSession,
 }: {
   redirectLogout?: string;
   enableLayoutViewToggle?: boolean;
   navigationMode?: NavigationMode;
+  currentSession?: Session | null;
 }) {
-  const [currentSession, listDeviceSessions] = await Promise.all([
-    authGetSession(),
-    authListDeviceSessions(),
-  ]);
+  // const listDeviceSessions = await authListDeviceSessions(); // DISABLE SESSIONS SWITCHING FROM LANDING PAGE FOR NOW
 
   if (!currentSession) {
     return null;
@@ -26,7 +25,7 @@ export async function UserDropdownServer({
   return (
     <UserDropdown
       enableLayoutViewToggle={enableLayoutViewToggle}
-      listDeviceSessions={listDeviceSessions}
+      // listDeviceSessions={listDeviceSessions}
       navigationMode={navigationMode}
       redirectLogout={redirectLogout}
       session={currentSession}

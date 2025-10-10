@@ -29,6 +29,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
           children: user ? (
             <Suspense fallback={<UserDropdownSkeleton />}>
               <UserDropdownServer
+                currentSession={currentSession}
                 enableLayoutViewToggle={false}
                 redirectLogout="/"
               />
