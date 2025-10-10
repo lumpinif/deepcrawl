@@ -2,10 +2,11 @@
 
 import { cn } from '@deepcrawl/ui/lib/utils';
 import useScrollPosition from '@react-hook/window-scroll';
-import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import { cloneElement, useMemo } from 'react';
 import AppNavTabs from '@/components/app-nav-tabs';
 import type { NavigationMode } from '@/components/providers';
+import type { SiteHeaderProps } from '../site-header';
 
 interface HeaderNavigationLayoutProps {
   children: ReactNode;
@@ -37,7 +38,17 @@ export function HeaderNavigationLayout({
   SiteHeaderSlot,
 }: HeaderNavigationLayoutProps) {
   const y = useScrollPosition(60);
-  const navX = useRange(y, 0, 35, 0, 80);
+  const navX = useRange(y, 0, 35, 0, 85);
+  const logoTransformY = useRange(y, 0, 35, 0, 85);
+  const logoScale = useRange(y, 0, 35, 1, 0.85);
+
+  const clonedHeader = cloneElement(
+    SiteHeaderSlot as ReactElement<SiteHeaderProps>,
+    {
+      logoScale: logoScale,
+      logoTransformY: logoTransformY,
+    },
+  );
 
   return (
     <main
@@ -46,7 +57,7 @@ export function HeaderNavigationLayout({
       )}
       data-nav-mode={navigationMode === 'header' ? 'header' : 'sidebar'}
     >
-      {SiteHeaderSlot}
+      {clonedHeader}
 
       {/* @ DEPRECATED: Add spacing for absolute header only when visible */}
       {/* <div
