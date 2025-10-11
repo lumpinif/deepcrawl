@@ -1,6 +1,6 @@
-# 🕷️ Deepcrawl API Worker
+# Deepcrawl API Worker
 
-**High-performance web scraping and reading APIs** powered by Cloudflare Workers with enterprise-grade features.
+Web scraping and reading APIs powered by Cloudflare Workers with enterprise-grade features.
 
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange.svg)](https://workers.cloudflare.com/)
 [![Hono.js](https://img.shields.io/badge/Hono.js-Framework-blue.svg)](https://hono.dev/)
@@ -36,26 +36,26 @@ pnpm preview
 
 ### **Core Capabilities**
 
-- 🌐 **Advanced Web Scraping** - Puppeteer + Cheerio for comprehensive content extraction
-- 🧹 **Content Sanitization** - Professional HTML cleaning and markdown conversion
-- 🔗 **Smart Link Processing** - Link extraction, normalization, and relationship mapping
-- 📊 **Rich Metadata** - Comprehensive page metadata extraction
-- 🤖 **AI Integration** - Cloudflare AI binding for intelligent content processing
+- 🌐 **Web Scraping** - Puppeteer + Cheerio for content extraction
+- 🧹 **Content Sanitization** - HTML cleaning and markdown conversion
+- 🔗 **Link Processing** - Link extraction, normalization, and relationship mapping
+- 📊 **Metadata Extraction** - Page metadata extraction
 
 ### **API Architecture**
 
 - 🎯 **Dual API System** - Both oRPC (type-safe RPC) and OpenAPI/REST endpoints
-- ⚡ **High Performance** - Smart placement and caching with Cloudflare KV
-- 🔐 **Robust Authentication** - API key and cookie-based auth with rate limiting
-- 📚 **Auto-Generated Docs** - OpenAPI documentation at `/docs`
+- ⚡ **Performance** - Smart placement and caching with Cloudflare KV
+- 🔐 **Authentication** - API key and cookie-based auth with rate limiting
+- 📚 **Documentation** - OpenAPI documentation at `/docs`
 
 ### **Service Architecture**
 
 - `ScrapeService` - Web scraping with Puppeteer and Cheerio
 - `HTMLCleaningService` - Content sanitization and processing
-- `MetadataService` - Extract comprehensive page metadata
+- `MetadataService` - Page metadata extraction
 - `LinkService` - Link extraction and normalization
-- `CacheService` - Intelligent caching with Cloudflare KV
+- `ActivityLoggerService` - Activity logging and tracking
+- Caching implemented via Cloudflare KV bindings
 
 ## 🌍 Production
 

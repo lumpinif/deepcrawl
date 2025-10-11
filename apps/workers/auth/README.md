@@ -1,6 +1,6 @@
 # 🔐 Deepcrawl Auth Worker
 
-**Enterprise-grade authentication service** powered by Better Auth and Cloudflare Workers.
+Authentication service powered by Better Auth and Cloudflare Workers.
 
 [![Better Auth](https://img.shields.io/badge/Better_Auth-1.3-green.svg)](https://better-auth.com/)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange.svg)](https://workers.cloudflare.com/)
@@ -32,29 +32,29 @@ pnpm preview
 ## ⚡ Features
 
 ### **Authentication Methods**
-- 🔐 **OAuth Providers** - GitHub, Google with seamless integration
+- 🔐 **OAuth Providers** - GitHub, Google integration
 - 🔑 **Passkeys** - WebAuthn passwordless authentication
-- ✨ **Magic Links** - Secure email-based login
+- ✨ **Magic Links** - Email-based login
 - 📧 **Email Verification** - Account verification flow
-- 🔄 **Password Reset** - Secure password recovery
+- 🔄 **Password Reset** - Password recovery
 
 ### **Session Management**
 - 🏢 **Multi-Session Support** - Up to 2 concurrent sessions per user
 - 🍪 **Cross-Domain Cookies** - Works across `deepcrawl.dev` subdomains
 - 🔐 **API Key Authentication** - Primary method for API access
-- 🍪 **Cookie Fallback** - Seamless dashboard authentication
+- 🍪 **Cookie Fallback** - Dashboard authentication
 - 🛡️ **Secure Headers** - CSRF protection and security headers
 
 ### **Email System**
 - 📨 **Universal Email Support** - Works in both Workers and Next.js
-- 🎨 **Beautiful HTML Templates** - Professional email designs
-- 📧 **Resend Integration** - Reliable email delivery
+- 🎨 **HTML Templates** - Email designs
+- 📧 **Resend Integration** - Email delivery
 - 👥 **Organization Invitations** - Team invitation system
 
-### **Advanced Features**
+### **Additional Features**
 - 🔗 **Service Bindings** - Communication with main Deepcrawl worker
 - 🌍 **Environment Aware** - Development and production configurations
-- 📊 **Rate Limiting** - Built-in protection against abuse
+- 📊 **Rate Limiting** - Protection against abuse
 
 ## 🔧 Configuration
 

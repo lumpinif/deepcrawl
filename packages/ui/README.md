@@ -1,10 +1,10 @@
 # @deepcrawl/ui
 
-**Shared UI component library** built with shadcn/ui, Tailwind CSS, and React for the Deepcrawl ecosystem.
+Shared UI component library built with shadcn/ui, Tailwind CSS, and React for the Deepcrawl ecosystem.
 
 ## Features
 
-- ✅ **shadcn/ui Components** - High-quality, accessible components
+- ✅ **shadcn/ui Components** - Accessible components
 - ✅ **Tailwind CSS** - Utility-first styling with consistent design system
 - ✅ **Dark Mode Support** - Built-in theme switching capabilities
 - ✅ **TypeScript-First** - Full type safety and IntelliSense

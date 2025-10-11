@@ -5,8 +5,8 @@ Authentication package for Deepcrawl using Better Auth with email functionality 
 ## Features
 
 - ✅ **Multi-session support** - Users can be logged into multiple accounts simultaneously
-- ✅ **Email verification** - Beautiful HTML emails for email verification
-- ✅ **Password reset** - Secure password reset flow with styled emails  
+- ✅ **Email verification** - HTML emails for email verification
+- ✅ **Password reset** - Password reset flow with styled emails  
 - ✅ **Magic link authentication** - Passwordless login via email
 - ✅ **Organization invitations** - Team invitation emails
 - ✅ **Cross-domain cookies** - Works across deepcrawl.dev subdomains

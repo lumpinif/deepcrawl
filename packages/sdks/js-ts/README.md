@@ -1,6 +1,6 @@
-# 🕷️ Deepcrawl SDK
+# Deepcrawl SDK
 
-**World-class TypeScript SDK for the Deepcrawl API** - Professional web scraping and crawling with enterprise-grade error handling.
+TypeScript SDK for the Deepcrawl API - Web scraping and crawling with comprehensive error handling.
 
 [![npm version](https://badge.fury.io/js/deepcrawl.svg)](https://www.npmjs.com/package/deepcrawl)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org)
@@ -8,13 +8,13 @@
 
 ## ⚡ **Why Deepcrawl SDK?**
 
-- 🏗️ **oRPC-Powered**: Built on industry-leading RPC framework for optimal performance
-- 🔒 **Type-Safe**: End-to-end TypeScript with intelligent error handling
+- 🏗️ **oRPC-Powered**: Built on oRPC framework for type-safe RPC
+- 🔒 **Type-Safe**: End-to-end TypeScript with error handling
 - 🖥️ **Server-Side Only**: Designed for Node.js, Cloudflare Workers, and Next.js Server Actions
 - 🪶 **Lightweight**: Minimal bundle size with tree-shaking support
-- 🛡️ **World-Class Error Handling**: Comprehensive, typed errors with actionable context
-- 🔄 **Smart Retry Logic**: Built-in exponential backoff for transient failures
-- ⚡ **Connection Pooling**: Automatic HTTP connection reuse for optimal performance (Node.js)
+- 🛡️ **Error Handling**: Comprehensive, typed errors with context
+- 🔄 **Retry Logic**: Built-in exponential backoff for transient failures
+- ⚡ **Connection Pooling**: Automatic HTTP connection reuse (Node.js)
 
 ## 📦 **Installation**
 
@@ -54,7 +54,6 @@ const result = await deepcrawl.readUrl('https://example.com', {
   markdown: true,        // Convert to markdown
   cleanedHtml: true,     // Get sanitized HTML
   rawHtml: true,        // Get original HTML
-  screenshot: false,     // Capture screenshot
   metricsOptions: {     // Performance tracking
     enable: true
   }
@@ -67,7 +66,6 @@ interface ReadUrlResponse {
   markdown?: string;
   cleanedHtml?: string;
   rawHtml?: string;
-  screenshot?: string;
   metadata?: {
     title?: string;
     description?: string;
@@ -141,38 +139,53 @@ interface ExtractLinksResponse {
 ```
 
 ### **getManyLogs(options?)**
-Retrieve activity logs with type-safe filtering.
+Retrieve activity logs with paginated results and filtering by path, success status, and date range. Returns logs with full type safety through discriminated unions based on the endpoint path.
 
 ```typescript
-const logs = await deepcrawl.getManyLogs({
-  userId: 'user123',           // Filter by user
-  url: 'https://example.com',  // Filter by URL
-  operation: 'getMarkdown',    // Filter by operation
-  status: 'success',           // Filter by status
-  limit: 50,                   // Pagination limit
-  offset: 0                    // Pagination offset
+const result = await deepcrawl.getManyLogs({
+  limit: 50,                          // Max results (default: 20, max: 100)
+  offset: 0,                          // Skip first N results (default: 0)
+  path: 'read-getMarkdown',           // Filter by endpoint path (optional)
+  success: true,                      // Filter by success status (optional)
+  startDate: '2025-01-01T00:00:00Z',  // Filter from date (ISO 8601) (optional)
+  endDate: '2025-12-31T23:59:59Z',    // Filter to date (ISO 8601) (optional)
+  orderBy: 'requestTimestamp',        // Sort column (default: 'requestTimestamp')
+  orderDir: 'desc'                    // Sort direction: 'asc' | 'desc' (default: 'desc')
 });
 
-// Response type
-interface ActivityLog {
-  id: string;
-  userId: string;
-  sessionId: string;
-  url: string;
-  operation: 'readUrl' | 'getMarkdown' | 'extractLinks';
-  status: 'success' | 'error';
-  errorType?: 'auth' | 'network' | 'read' | 'links' | 'unknown';
-  errorMessage?: string;
-  responseTime?: number;
-  createdAt: string;
+// Response type with discriminated unions
+interface GetManyLogsResponse {
+  logs: ActivityLogEntry[];  // Array of log entries with discriminated unions
+  meta: {
+    limit: number;           // Effective limit applied
+    offset: number;          // Effective offset applied
+    hasMore: boolean;        // More logs available?
+    nextOffset: number | null; // Next page offset (null if no more data)
+    orderBy: string;         // Column used for sorting
+    orderDir: 'asc' | 'desc'; // Sort direction applied
+    startDate?: string;      // Normalized start date boundary
+    endDate?: string;        // Normalized end date boundary
+  };
 }
+
+// Each log entry uses discriminated union based on 'path' field:
+// - 'read-getMarkdown': response is string
+// - 'read-readUrl': response is ReadSuccessResponse | ReadErrorResponse
+// - 'links-getLinks': response is LinksSuccessResponse | LinksErrorResponse
+// - 'links-extractLinks': response is LinksSuccessResponse | LinksErrorResponse
 ```
 
-### **getOneLog(id)**
-Get a single activity log by ID.
+### **getOneLog(options)**
+
+Get a single activity log entry by ID with full type safety through discriminated unions.
 
 ```typescript
-const log = await deepcrawl.getOneLog('log_abc123');
+const log = await deepcrawl.getOneLog({
+  id: 'request-id-123'  // Request ID (required)
+});
+
+// Response is ActivityLogEntry with discriminated union
+// TypeScript automatically narrows types based on log.path
 ```
 
 ## 🌟 **Real-World Usage Examples**
@@ -481,7 +494,7 @@ export function ActivityLogsClient() {
 
 ## 🛡️ **Error Handling Patterns**
 
-Our SDK provides multiple patterns for different coding styles:
+The SDK provides multiple patterns for different coding styles:
 
 ### **Traditional Try/Catch**
 ```typescript
@@ -573,7 +586,7 @@ const deepcrawl = new DeepcrawlApp({
 
 ### **Connection Pooling (Node.js Only)**
 
-The SDK automatically uses HTTP connection pooling in Node.js environments for optimal performance:
+The SDK automatically uses HTTP connection pooling in Node.js environments:
 
 ```typescript
 // Automatic configuration (no action needed)
@@ -587,7 +600,7 @@ The SDK automatically uses HTTP connection pooling in Node.js environments for o
 ```
 
 Benefits:
-- ⚡ **~40% faster** for concurrent requests
+- ⚡ **Faster** for concurrent requests
 - 🔄 **Connection reuse** reduces handshake overhead
 - 🎯 **Auto-cleanup** of idle connections
 - 📊 **Optimized for batch operations**

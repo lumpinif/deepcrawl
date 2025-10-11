@@ -1,6 +1,6 @@
-# 🕷️ Deepcrawl
+# Deepcrawl
 
-**World-class web scraping and crawling service** built with modern technologies for enterprise-grade performance and reliability.
+Web scraping and crawling service built with modern technologies for enterprise-grade performance and reliability.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange.svg)](https://workers.cloudflare.com/)
@@ -32,7 +32,7 @@ Deepcrawl is a comprehensive monorepo featuring:
 
 ### 📦 **Shared Packages**
 
-- **🛠️ TypeScript SDK** (`packages/sdks/js-ts/`) - Universal client library with world-class error handling
+- **🛠️ TypeScript SDK** (`packages/sdks/js-ts/`) - Universal client library with comprehensive error handling
 - **🗄️ Database Packages** - Dual setup with PostgreSQL (auth) and Cloudflare D1 (data preservation)
 - **🎨 UI Components** (`@deepcrawl/ui`) - shadcn/ui component library
 - **📋 Types & Contracts** - Shared TypeScript definitions and API contracts

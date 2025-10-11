@@ -1,6 +1,6 @@
 # 📊 Deepcrawl Dashboard
 
-**Modern management interface** for the Deepcrawl service built with Next.js 15 and cutting-edge web technologies.
+Management interface for the Deepcrawl service built with Next.js 15 and modern web technologies.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
@@ -37,19 +37,19 @@ pnpm check
 - 🌍 **Universal SDK Integration** - Built-in Deepcrawl TypeScript SDK
 
 ### **Technical Stack**
-- ⚡ **Next.js 15** - Latest App Router with React 19
-- 📊 **TanStack Query** - Powerful server state management
-- 🎨 **shadcn/ui + Tailwind** - Beautiful, accessible component library
-- 🛠️ **Turbopack** - Ultra-fast development builds
-- 🔄 **React Hook Form** - Performant form handling
-- 🎨 **Framer Motion** - Smooth animations and transitions
+- ⚡ **Next.js 15** - App Router with React 19
+- 📊 **TanStack Query** - Server state management
+- 🎨 **shadcn/ui + Tailwind** - Component library
+- 🛠️ **Turbopack** - Development builds
+- 🔄 **React Hook Form** - Form handling
+- 🎨 **Framer Motion** - Animations and transitions
 
 ### **Developer Experience**
-- 🔥 **Hot Module Replacement** - Instant feedback during development
+- 🔥 **Hot Module Replacement** - Fast feedback during development
 - 📋 **TypeScript-First** - Full type safety across the application
 - 🧩 **Component Documentation** - Fumadocs integration for component docs
 - 🎨 **Design System** - Consistent UI patterns and theming
-- 🛠️ **Development Tools** - Built-in debugging and development utilities
+- 🛠️ **Development Tools** - Debugging and development utilities
 
 ## 🎨 UI Development
 

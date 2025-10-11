@@ -1,6 +1,6 @@
 # @deepcrawl/db-d1
 
-**D1 database** package for Deepcrawl data preservation using Cloudflare D1 and Drizzle ORM.
+D1 database package for Deepcrawl data preservation using Cloudflare D1 and Drizzle ORM.
 
 ## Features
 

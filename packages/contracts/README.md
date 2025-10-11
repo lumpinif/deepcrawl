@@ -1,6 +1,6 @@
 # @deepcrawl/contracts
 
-**API contract definitions** for oRPC endpoints in the Deepcrawl ecosystem.
+API contract definitions for oRPC endpoints in the Deepcrawl ecosystem.
 
 ## Features
 
