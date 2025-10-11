@@ -1,0 +1,22 @@
+{
+  "title": "Deepcrawl Docs",
+  "root": true,
+  "icon": "Book",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "---Overview---",
+    "...overview",
+    "---Usage---",
+    "...usage",
+    "---Features and Endpoints---",
+    "...features/read",
+    "...features/links",
+    "---Integrations---",
+    "...integrations",
+    "---Reference---",
+    "...reference",
+    "---Support---",
+    "...support"
+  ]
+}
