@@ -1,11 +1,310 @@
 ---
-title: Node SDK
-description: Placeholder for the official JS/TS SDK.
+title: Node.js SDK
+description: Install and use the official Deepcrawl JavaScript/TypeScript SDK client in Node runtimes.
 ---
 
-This page will include installation, initialization, examples, and links to reference docs.
+Deepcrawl’s SDK wraps every API endpoint with typed methods, retry helpers, and structured errors. Use it anywhere you can run server-side JavaScript—Next.js route handlers, serverless functions, edge workers (Node-compatible), CLI tools, or background jobs.
 
-Next steps
-- Add install instructions (workspace and per-app)
-- Document auth/config patterns
-- Provide minimal examples for common operations
+## Requirements
+- Node.js 18.17+ (Node 20+ recommended for built-in `fetch` and `AbortController`).
+- Access to a Deepcrawl API key (see [Quick Start](/docs/overview/quick-start)).
+- Environment variables stored securely (local `.env`, platform secrets, etc.).
+
+<Callout type="warn">
+`DeepcrawlApp` is server-only. Do not import it inside client-side components or ship it to the browser bundle.
+</Callout>
+
+## Install the package
+
+<Tabs items={['pnpm', 'npm', 'yarn', 'bun']}>
+  <Tab>
+
+```bash
+pnpm add deepcrawl
+```
+
+  </Tab>
+  <Tab>
+
+```bash
+npm install deepcrawl
+```
+
+  </Tab>
+  <Tab>
+
+```bash
+yarn add deepcrawl
+```
+
+  </Tab>
+  <Tab>
+
+```bash
+bun add deepcrawl
+```
+
+  </Tab>
+</Tabs>
+
+
+## Step 1. Configure environment variables
+
+<Steps>
+  <Step>
+    Choose where to persist your API key (shell export, `.env` file, secret manager). For Next.js, use `.env.local` and access via `process.env` in server code.
+  </Step>
+  <Step>
+    Optional: declare a custom `DEEPCRAWL_API_URL` if you self-host the workers. Leave it unset to use `https://api.deepcrawl.dev`.
+  </Step>
+  <Step>
+    Restart your dev server so the new environment variables load.
+  </Step>
+</Steps>
+
+```dotenv
+# .env.local (server only)
+DEEPCRAWL_API_KEY=dc_your_API_key
+# Optional for self-hosted API deployment
+DEEPCRAWL_API_URL=https://your-worker.example.com
+```
+
+## Step 2. Initialize the client
+
+```ts
+// src/lib/deepcrawl.ts
+import { DeepcrawlApp } from 'deepcrawl';
+
+export const deepcrawl = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY as string,
+  baseUrl: process.env.DEEPCRAWL_API_URL, // Optional for self-hosted API deployment
+});
+```
+
+<Callout type="info">
+The constructor automatically sets headers (`Authorization`, `x-api-key`, `User-Agent`), negotiates retries for read/link endpoints, and uses keep‑alive HTTPS agents in Node runtimes. You can pass a custom `fetch` (for polyfills) or `fetchOptions` to tweak timeouts.
+</Callout>
+
+## Basic usage
+
+<Tabs items={['Get Markdown', 'Read Url', 'Extract Links']}>
+  <Tab>
+
+```ts
+import { deepcrawl } from '@/lib/deepcrawl';
+
+export async function getMarkdown(url: string) {
+  const markdown = await deepcrawl.getMarkdown(url);
+  // const markdown = await deepcrawl.getMarkdown(url, {...options}); // with more options
+
+  return markdown; // string (clean markdown)
+}
+```
+
+  </Tab>
+  <Tab>
+
+```ts
+import { deepcrawl } from '@/lib/deepcrawl';
+
+export async function readUrl(url: string) {
+  const result = await deepcrawl.read.readUrl(url);
+  // const result = await deepcrawl.read.readUrl(url, {...options}); // with more options
+
+  return result;
+}
+```
+
+  </Tab>
+  <Tab>
+
+```ts
+import { deepcrawl } from '@/lib/deepcrawl';
+
+export async function extractLinks(url: string) {
+  const result = await deepcrawl.links.extractLinks(url);
+  // const tree = await deepcrawl.links.extractLinks(url, {...options}); // with more options
+
+  if ('tree' in result && result.tree) {
+     // TypeScript infers LinksSuccessResponseWithTree
+     console.log(result.tree.metadata?.title);
+   } else {
+     // TypeScript infers LinksSuccessResponseWithoutTree
+     console.log(result.title);
+   }
+
+  return result;
+}
+```
+
+  </Tab>
+</Tabs>
+
+### Sharing one client instance
+- Instantiate the client once per process (singleton module export) to reuse HTTPS agents.
+- In serverless/edge functions, create the client outside the handler to benefit from warm invocations.
+
+## Handling errors and retries
+
+```ts
+import {
+  DeepcrawlAuthError,
+  DeepcrawlRateLimitError,
+  DeepcrawlReadError,
+} from 'deepcrawl';
+import { deepcrawl } from '@/lib/deepcrawl';
+
+export async function safeGetMarkdown(url: string) {
+  try {
+    return await deepcrawl.getMarkdown(url);
+  } catch (error) {
+    if (error instanceof DeepcrawlAuthError) {
+      // Missing/invalid API key
+      throw new Error('Check Deepcrawl credentials');
+    }
+
+    if (error instanceof DeepcrawlRateLimitError) {
+      const retryAfter = error.data?.retryAfter ?? 60;
+      throw new Error(`Rate limited, retry in ${retryAfter}s`);
+    }
+
+    if (error instanceof DeepcrawlReadError) {
+      // Access error.data for the original request payload
+      console.error('Read error:', error.data);
+    }
+
+    throw error;
+  }
+}
+```
+
+- The SDK retries transient network errors and certain read/link operations up to two times. For custom logic, wrap calls with your own retry policy.
+- All error classes inherit from `DeepcrawlError`, so you can add a fallback handler.
+
+## Framework examples
+
+If you want provide `deepcrawl` as your service in your system, you can use the following examples.
+
+<Tabs items={['Next.js Route Handler', 'Cloudflare Workers (Hono)', 'Cloudflare Workers (Vanilla)', 'Express']}>
+  <Tab>
+
+```ts
+// app/api/markdown/route.ts
+import { NextResponse } from 'next/server';
+import { deepcrawl } from '@/lib/deepcrawl';
+
+export async function POST(req: Request) {
+  const { url } = await req.json();
+  const markdown = await deepcrawl.getMarkdown(url);
+  return NextResponse.json({ markdown });
+}
+```
+
+  </Tab>
+  <Tab>
+
+```ts
+// src/index.ts
+import { Hono } from 'hono';
+import { DeepcrawlApp } from 'deepcrawl';
+
+type Bindings = {
+  DEEPCRAWL_API_KEY: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
+
+app.post('/read', async (c) => {
+  const deepcrawl = new DeepcrawlApp({
+    apiKey: c.env.DEEPCRAWL_API_KEY,
+  });
+
+  const { url } = await c.req.json();
+
+  try {
+    const result = await deepcrawl.read.readUrl(url);
+    return c.json(result);
+  } catch (error) {
+    return c.json({ error: (error as Error).message }, 500);
+  }
+});
+
+export default app;
+```
+
+  </Tab>
+  <Tab>
+
+```ts
+// src/index.ts
+import { DeepcrawlApp } from 'deepcrawl';
+
+interface Env {
+  DEEPCRAWL_API_KEY: string;
+}
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    if (request.method !== 'POST') {
+      return new Response('Method not allowed', { status: 405 });
+    }
+
+    const deepcrawl = new DeepcrawlApp({
+      apiKey: env.DEEPCRAWL_API_KEY,
+    });
+
+    try {
+      const { url } = await request.json();
+      const markdown = await deepcrawl.getMarkdown(url);
+
+      return new Response(JSON.stringify({ markdown }), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (error) {
+      return new Response(
+        JSON.stringify({ error: (error as Error).message }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+  },
+};
+```
+
+  </Tab>
+  <Tab>
+
+```ts
+import express from 'express';
+import { deepcrawl } from './lib/deepcrawl';
+
+const app = express();
+app.use(express.json());
+
+app.post('/api/read', async (req, res) => {
+  try {
+    const result = await deepcrawl.read.readUrl({
+      url: req.body.url,
+      metadata: true,
+    });
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+});
+
+app.listen(3000);
+```
+
+  </Tab>
+</Tabs>
+
+## Customizing requests
+- **baseUrl:** point to your self-hosted worker (`https://<your-worker>.workers.dev/rpc`).
+- **headers:** pass cookies or session headers when running inside Next.js middleware/route handlers.
+- **fetch:** supply a custom implementation (e.g., `undici`), or add proxy agents via `fetchOptions.agent`.
+- **cacheOptions / metricsOptions / linkExtractionOptions:** share the same shapes as the REST API; see the [API reference](/docs/api) for schema details.
+
+## What’s next
+- Explore the [SDK reference](/docs/sdk) for every method, type, and option.
+- Check the [Playground guide](/docs/usage/playground) to prototype requests before porting them to code.
+- Combine with the [Logs API](/docs/features/read) to inspect past runs, collect analytics, or export markdown snapshots.
