@@ -7,7 +7,7 @@ const config = {
   /* config options here */
   devIndicators: false,
   reactStrictMode: true,
-  transpilePackages: ['shiki', '@deepcrawl/contracts', '@deepcrawl/types'], // include contracts and types packages in the build for docs generation
+  transpilePackages: ['shiki'],
   images: {
     remotePatterns: [
       {
