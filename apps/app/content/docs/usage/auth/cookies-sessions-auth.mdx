@@ -1,6 +1,66 @@
 ---
-title: Cookie-based Auth
-description: Cookie-based Auth.
+title: Cookie Sessions
+description: Use the Deepcrawl dashboard login to call the API with secure session cookies directly from your browser.
 ---
 
-Cookie-based Auth.
+Deepcrawl uses [better-auth](https://better-auth.com/) to power dashboard sessions. When you sign in at <Link href="https://app.deepcrawl.dev/">app.deepcrawl.dev</Link>, the same session cookies can authorize direct requests to `https://api.deepcrawl.dev`—no API key required. This is ideal for quick tests, manual QA, or low-friction internal tools that run inside your browser.
+
+## How cookie auth works
+- The dashboard issues HTTP-only session cookies scoped to `.deepcrawl.dev`. They contain signed tokens; only Deepcrawl’s backend can read them.
+- When you visit `https://api.deepcrawl.dev/read?url=…` in the same browser, the cookies travel with the request, and the middleware (`cookieAuthMiddleware`) resolves your session automatically.
+- The session carries the same roles and rate limits as your dashboard account, and it respects multi-session switching if you belong to multiple organizations.
+
+<Callout type="info">
+If you are self-hosting, configure your worker’s `BETTER_AUTH_URL` and cookie domain so dashboard and API sit under the same parent domain (for example, `app.example.com` and `api.example.com`).
+</Callout>
+
+## Try it in the browser
+
+<Steps>
+  <Step>
+    Sign in to the dashboard. Confirm you can access the playground or logs (proves your session is active).
+  </Step>
+  <Step>
+    Open a new tab and visit <code>https://api.deepcrawl.dev/read?url=hono.dev</code>. The response delivers markdown directly (
+    <code>text/markdown; charset=utf-8</code>).
+  </Step>
+  <Step>
+    Switch to <code>https://api.deepcrawl.dev/links?url=hono.dev</code> or other endpoints as needed. Session cookies authorize GET and POST requests from the same browser.
+  </Step>
+</Steps>
+
+- For POST endpoints (e.g., `/read` with advanced options), use a REST client like Hoppscotch, Postman, or the browser console with `fetch`, making sure `credentials: 'include'` is set.
+- Responses behave exactly like API-key calls: you can retrieve markdown, metadata, link trees, logs, and exports.
+
+## Using cookies in browser scripts
+
+```ts
+// Run inside the dashboard domain (devtools, user scripts, internal extensions)
+const url = 'https://api.deepcrawl.dev/read?url=https://example.com';
+
+const response = await fetch(url, {
+  credentials: 'include', // send dashboard cookies
+  headers: {
+    Accept: 'text/markdown',
+  },
+});
+
+const markdown = await response.text();
+console.log(markdown.slice(0, 200));
+```
+
+<Callout type="warn">
+Cookie-based requests run with the user’s full permissions. Avoid executing them from untrusted pages and never expose the cookies themselves—they are HTTP-only for a reason.
+</Callout>
+
+## Switching organizations & sessions
+- The dashboard supports multiple sessions; you can set the active session via **Account → Device Sessions**.
+- Once switched, reload API tabs to ensure the new session ID is used. The middleware checks active sessions transparently.
+- To sign out everywhere, hit **Account → Sign out of all devices**—this invalidates the cookies, and further API requests will return `401 Unauthorized`.
+
+## When to use cookies vs. API keys
+- **Use cookies** for exploratory browsing, manual debugging, or building internal browser-based helpers.
+- **Use API keys (or the SDK)** for server-side agents, CI jobs, or machine-to-machine automation where no interactive user is present.
+- You can mix approaches: generate data in the browser with cookies, then persist long-lived workflows via API keys.
+
+Need to automate what you just tested? Continue to the [Playground guide](/docs/usage/playground) or set up the [Node SDK](/docs/usage/installation/node-sdk).
