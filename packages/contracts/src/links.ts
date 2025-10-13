@@ -22,7 +22,7 @@ export const linksGETContract = linksOC
     summary: 'Get page links',
     description: `Endpoint: GET \`api.deepcrawl.dev/links?url=example.com\`\n\nDirectly return page links from the request URL as a string response.`,
   })
-  .input(LinksOptionsSchema.pick({ url: true }))
+  .input(LinksOptionsSchema)
   .output(LinksSuccessResponseSchema);
 
 export type GetLinksOptions = Inputs['links']['getLinks'];

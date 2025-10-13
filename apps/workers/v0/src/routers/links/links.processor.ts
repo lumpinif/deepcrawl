@@ -111,11 +111,18 @@ async function processNonTreeRequest({
     cleanedHtml: isCleanedHtml,
     extractedLinks: includeExtractedLinks,
     linkExtractionOptions,
-    cacheOptions,
+    cacheOptions: providedCacheOptions,
     isPlatformUrl: isPlatformUrlProp,
     subdomainAsRootUrl,
     metricsOptions,
   } = params;
+
+  const cacheOptions = {
+    ...DEFAULT_CACHE_OPTIONS,
+    ...(providedCacheOptions ?? {}),
+  };
+
+  params.cacheOptions = cacheOptions;
 
   // Use app-level scrape service from context
   const scrapeService = c.var.scrapeService ?? new ScrapeService();
@@ -145,7 +152,7 @@ async function processNonTreeRequest({
   let cacheHit = false;
   const nonTreeCacheKey = await getLinksNonTreeCacheKey(params, isGETRequest);
 
-  if (_ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
+  if (_ENABLE_LINKS_CACHE && cacheOptions.enabled) {
     try {
       const { value, metadata } =
         await c.env.DEEPCRAWL_V0_LINKS_STORE.getWithMetadata<{
@@ -255,7 +262,7 @@ async function processNonTreeRequest({
     ) as LinksSuccessResponseWithoutTree;
 
     // Store non-tree response in cache with separate key
-    if (_ENABLE_LINKS_CACHE && cacheOptions?.enabled && !cacheHit) {
+    if (_ENABLE_LINKS_CACHE && cacheOptions.enabled && !cacheHit) {
       try {
         c.executionCtx.waitUntil(
           kvPutWithRetry(
@@ -270,7 +277,7 @@ async function processNonTreeRequest({
               },
               // expiration: cacheOptions?.expiration ?? undefined,
               expirationTtl:
-                cacheOptions?.expirationTtl ??
+                cacheOptions.expirationTtl ??
                 DEFAULT_CACHE_OPTIONS.expirationTtl,
             },
           ),
@@ -343,11 +350,18 @@ export async function processLinksRequest(
     subdomainAsRootUrl,
     folderFirst,
     linksOrder,
-    cacheOptions,
+    cacheOptions: providedCacheOptions,
     linkExtractionOptions,
     isPlatformUrl: isPlatformUrlProp,
     metricsOptions,
   } = params;
+
+  const cacheOptions = {
+    ...DEFAULT_CACHE_OPTIONS,
+    ...(providedCacheOptions ?? {}),
+  };
+
+  params.cacheOptions = cacheOptions;
 
   logDebug(
     `🪂 [LINKS Endpoint] Processing links request for ${url}`,
@@ -671,7 +685,7 @@ export async function processLinksRequest(
     // --- Core Processing Flow Starts ---
 
     // Check cache first
-    if (_ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
+    if (_ENABLE_LINKS_CACHE && cacheOptions.enabled) {
       try {
         const { value, metadata } =
           await c.env.DEEPCRAWL_V0_LINKS_STORE.getWithMetadata<{
@@ -844,7 +858,7 @@ export async function processLinksRequest(
     }
 
     // --- Store the final/updated tree back to KV ---
-    if (finalTree && _ENABLE_LINKS_CACHE && cacheOptions?.enabled) {
+    if (finalTree && _ENABLE_LINKS_CACHE && cacheOptions.enabled) {
       try {
         const treeToStore = finalTree;
 
@@ -862,7 +876,7 @@ export async function processLinksRequest(
               },
               // expiration: cacheOptions?.expiration ?? undefined,
               expirationTtl:
-                cacheOptions?.expirationTtl ??
+                cacheOptions.expirationTtl ??
                 DEFAULT_CACHE_OPTIONS.expirationTtl,
             },
           ),

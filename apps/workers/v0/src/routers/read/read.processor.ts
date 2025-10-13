@@ -142,11 +142,18 @@ export async function processReadRequest(
     markdown: isMarkdown,
     cleanedHtml: isCleanedHtml,
     rawHtml: isRawHtml,
-    cacheOptions,
+    cacheOptions: providedCacheOptions,
     markdownConverterOptions,
     cleaningProcessor,
     metricsOptions,
   } = params;
+
+  const cacheOptions = {
+    ...DEFAULT_CACHE_OPTIONS,
+    ...(providedCacheOptions ?? {}),
+  };
+
+  params.cacheOptions = cacheOptions;
 
   logDebug(
     `🪂 [READ Endpoint] Processing read request for ${url}`,
@@ -171,7 +178,7 @@ export async function processReadRequest(
     const cacheKey = await getReadCacheKey(params, isGETRequest);
 
     // Check cache first
-    if (_ENABLE_READ_CACHE && cacheOptions?.enabled) {
+    if (_ENABLE_READ_CACHE && cacheOptions.enabled) {
       try {
         const { value: cachedResult, metadata } =
           await c.env.DEEPCRAWL_V0_READ_STORE.getWithMetadata<{
@@ -297,7 +304,7 @@ export async function processReadRequest(
       throw new Error('Failed to process read request');
     }
 
-    if (_ENABLE_READ_CACHE && cacheOptions?.enabled) {
+    if (_ENABLE_READ_CACHE && cacheOptions.enabled) {
       // Cache the response
       try {
         const valueToCache = isGETRequest
@@ -318,7 +325,7 @@ export async function processReadRequest(
             {
               // expiration: cacheOptions?.expiration ?? undefined,
               expirationTtl:
-                cacheOptions?.expirationTtl ??
+                cacheOptions.expirationTtl ??
                 DEFAULT_CACHE_OPTIONS.expirationTtl,
               metadata: {
                 timestamp: new Date().toISOString(),
