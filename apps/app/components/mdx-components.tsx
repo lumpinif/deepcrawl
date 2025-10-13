@@ -1,3 +1,6 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { Endpoint } from '@deepcrawl/ui/components/mdx/endpoint';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { createGenerator } from 'fumadocs-typescript';
@@ -11,7 +14,13 @@ import defaultMdxComponents from 'fumadocs-ui/mdx';
 import type { MDXComponents } from 'mdx/types';
 import Link from 'next/link';
 
-const tsGenerator = createGenerator();
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const appDir = path.resolve(moduleDir, '..');
+
+const tsGenerator = createGenerator({
+  basePath: appDir,
+  tsconfigPath: path.resolve(appDir, 'tsconfig.json'),
+});
 
 // use this function to get MDX components, you will need it for rendering MDX
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
