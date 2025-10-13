@@ -3,7 +3,7 @@ title: Cookie Sessions
 description: Use the Deepcrawl dashboard login to call the API with secure session cookies directly from your browser.
 ---
 
-Deepcrawl uses [better-auth](https://better-auth.com/) to power dashboard sessions. When you sign in at <Link href="https://app.deepcrawl.dev/">app.deepcrawl.dev</Link>, the same session cookies can authorize direct requests to `https://api.deepcrawl.dev`—no API key required. This is ideal for quick tests, manual QA, or low-friction internal tools that run inside your browser.
+Deepcrawl uses [better-auth](https://better-auth.com/) to power dashboard sessions. When you sign in at <Link href="https://deepcrawl.dev">deepcrawl.dev</Link>, the same session cookies can authorize direct requests to `https://api.deepcrawl.dev`—no API key required. This is ideal for quick tests, manual QA, or low-friction internal tools that run inside your browser.
 
 ## How cookie auth works
 - The dashboard issues HTTP-only session cookies scoped to `.deepcrawl.dev`. They contain signed tokens; only Deepcrawl’s backend can read them.
