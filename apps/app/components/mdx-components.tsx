@@ -42,8 +42,9 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
         {...props}
         className={cn(
           props,
-          'rounded-none border-border border-dashed bg-none',
+          'rounded-md border-border border-dashed bg-background-subtle',
           props.type === 'info' && 'border-l-blue-500/50',
+          props.type === 'success' && 'border-l-green-500/50',
           props.type === 'warn' && 'border-l-amber-700/50',
           props.type === 'error' && 'border-l-red-500/50',
         )}
