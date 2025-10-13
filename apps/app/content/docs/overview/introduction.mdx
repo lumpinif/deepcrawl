@@ -18,6 +18,20 @@ Deepcrawl is an open-source agents-oriented web page context extraction platform
 - **Rendering outputs:** Engines convert HTML into markdown tuned for LLM prompts, keeping context rich while trimming noise.
 - **Developer toolchain:** The monorepo hosts shared packages, database modules, and scripts that keep the full stack consistent.
 
+## What technologies Deepcrawl is built on
+<Callout type="info">Shout out to all the awesome projects that make Deepcrawl possible.</Callout>
+
+- **Hono:** Lightweight edge-first framework powering our worker routing and middleware.
+- **oRPC:** Contract-first RPC layer that generates both OpenAPI REST endpoints and RPC methods exposed to SDK client from a single source.
+- **better-auth:** All-powered enterprise-grade secure session and API key management so teams can ship without rolling their own auth stack.
+- **Next.js 15 App Router:** Aggressively optimized dashboard combining with streaming routes and granular data fetching that manifests the best UI/UX industrial standards and stability.
+- **Cloudflare Workers:** Global runtime for V8 runtime web scraping, caching, and rate limiting with minimal latency and cost control, along with service bindings for communication between workers and more in-coming services for more planed features.
+- **Zod v4:** Shared schema library that enforces type safety across workers, SDKs, and docs.
+- **React Query:** Advanced server-side prefetching and cache synchronization for fast dashboard interactions.
+- **shadcn/ui + Tailwind CSS v4:** Beautiful and accessible components system and modern design tokens for consistent UI.
+- **Drizzle ORM:** Type-safe data layer across both Neon PostgreSQL and Cloudflare D1 SQLite deployments for data persistence.
+- **Upstash Redis + Cloudflare KV:** Layered caching strategy that balances hot-path performance with cost control.
+
 ## Ways to use Deepcrawl today
 - **Developers:** Consume the APIs directly or integrate with the fully typed JavaScript/TypeScript SDKs for fast agent workflows.
 - **Analysts & teams:** Use the Next.js 15 dashboard to run crawls, explore the API playground, review logs, and manage API keys without writing code.
