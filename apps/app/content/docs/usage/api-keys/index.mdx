@@ -1,6 +1,99 @@
 ---
 title: API Keys
-description: API Keys.
+description: Create, rotate, and manage Deepcrawl API keys for secure integrations.
 ---
 
-Include content here.
+API keys authenticate any non-session client (SDKs, REST calls, automation scripts). The dashboard gives you full lifecycle management—create, rotate, disable, and audit usage—without touching the database.
+
+## Where API keys are used
+- **Dashboard playground:** runs on server-side sessions but can reuse API keys for persistent server integrations.
+- **SDK & REST clients:** include the key in either the `Authorization: Bearer <key>` header or the `x-api-key` header. One header is enough.
+- **Automation platforms:** copy the key into CI/CD secrets, Zapier, Airtable scripts, etc., to trigger crawls without user logins.
+
+## Generate a new key
+
+<Steps>
+  <Step>
+    Open the dashboard at <Link href="https://app.deepcrawl.dev/app/api-keys">API Keys</Link> and click <code>New API Key</code>.
+  </Step>
+  <Step>
+    Choose an expiration (never, 30/60/90 days, 6 months, 1 year) and name the key so teammates recognize its purpose.
+  </Step>
+  <Step>
+    After creation, copy the full token. This is the only time the dashboard shows the entire key.
+  </Step>
+</Steps>
+
+<Callout type="warn">
+Lost keys cannot be recovered—create a new one and update consumers.
+</Callout>
+
+### CLI and local development
+
+<Tabs items={['Shell', 'Next.js (.env.local)', 'CI provider']}>
+  <Tab>
+
+```bash
+export DEEPCRAWL_API_KEY="dc_sk_live_your_key"
+```
+
+  </Tab>
+  <Tab>
+
+```dotenv
+# .env.local (server only)
+DEEPCRAWL_API_KEY=dc_sk_live_your_key
+```
+
+  </Tab>
+  <Tab>
+
+Add the key as a secret (e.g., `DEEPCRAWL_API_KEY`) inside GitHub Actions, Vercel, or Cloudflare Workers. Inject it at runtime and never commit it to git.
+
+  </Tab>
+</Tabs>
+
+## Manage existing keys
+
+<Tabs items={['Rename & notes', 'Disable temporarily', 'Rotate or delete']}>
+  <Tab>
+
+  - Use the row menu to edit the display name after creation. Helpful for tracking ownership or scope.
+  - Add descriptions in your team docs referencing the dashboard name so rotations are painless.
+
+  </Tab>
+  <Tab>
+
+  - Toggle a key to “Disabled” to pause access without losing the secret.
+  - Ideal when investigating suspicious activity or preparing a planned maintenance window.
+
+  </Tab>
+  <Tab>
+
+  - Delete keys you no longer need; the dashboard warns that the action is irreversible.
+  - When rotating, create a replacement key first, update all consumers, confirm traffic shifts, then delete the old one.
+
+  </Tab>
+</Tabs>
+
+## Using API keys in code
+
+```ts
+import { DeepcrawlApp } from 'deepcrawl';
+
+const deepcrawl = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY as string,
+});
+
+export async function run() {
+  const markdown = await deepcrawl.getMarkdown('https://example.com');
+  return markdown;
+}
+```
+
+```bash
+curl \
+  -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
+  "https://api.deepcrawl.dev/read?url=https://example.com"
+```
+
