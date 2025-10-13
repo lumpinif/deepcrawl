@@ -1,7 +1,114 @@
 ---
-title: Read Url
-description: Features of Deepcrawl.
+title: Read URL
+description: Capture full page context, metadata, and logs via the POST /read endpoint.
 ---
 
-## readUrl
-read-readUrl
+`readUrl` is Deepcrawl’s full-fidelity page fetcher. It returns structured metadata, cleaned/markdown/HTML variants, optional metrics, robots data, and more—perfect for agents that need the entire page context in one call.
+
+## When to use this endpoint
+- You need metadata, cleaned HTML, markdown, or robots manifest as `JSON` in addition to plain text.
+- You want Deepcrawl to capture metrics and logging info for debugging or analytics.
+- You plan to export or replay responses later via the logs API.
+
+If you only need markdown, the lighter [`getMarkdown`](/docs/features/read/getMarkdown) endpoint is faster and cheaper on token cost for agent integration. For link trees or maps, use the [links endpoints](/docs/features/links).
+
+## Request formats
+
+### REST (POST)
+
+```bash
+curl \
+  -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST "https://api.deepcrawl.dev/read" \
+  -d '{
+    "url": "https://example.com",
+    "metadata": true,
+    "markdown": true,
+    "cleanedHtml": true,
+    "metricsOptions": { "enable": true }
+  }'
+```
+
+- Authentication can be an API key header or session cookies from the dashboard.
+- POST requests accept the full option set (see below); omit fields to fall back to defaults.
+
+### Node SDK
+
+```ts
+import { DeepcrawlApp } from 'deepcrawl';
+
+const deepcrawl = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY!,
+});
+
+const result = await deepcrawl.read.readUrl({
+  url: 'https://example.com',
+  metadata: true,
+  markdown: true,
+  cleanedHtml: false,
+  metricsOptions: { enable: true },
+});
+
+console.log(result.metadata?.title);
+```
+
+## Request body
+
+<AutoTypeTable
+  path="../../packages/contracts/src/read.ts"
+  name="ReadUrlOptions"
+/>
+
+Highlights:
+- Toggle `metadata`, `cleanedHtml`, `robots`, `sitemapXML`, or `metaFiles` depending on what the agent needs.
+- Control fetch behavior via `fetchOptions` (headers, geo, user agent) and HTML processing using `cleaningProcessor`, `htmlRewriterOptions`, or `readerCleaningOptions`.
+- Use `cacheOptions` and `metricsOptions` just like on the GET endpoint.
+
+## Response structure
+
+Successful responses include page metadata, content variants, metrics, and crawl diagnostics.
+
+<AutoTypeTable
+  path="../../packages/types/src/routers/read/types.ts"
+  name="ReadSuccessResponse"
+/>
+
+Errors follow the shared response schema and always include the request/target URL plus a timestamp.
+
+<AutoTypeTable
+  path="../../packages/types/src/routers/read/types.ts"
+  name="ReadErrorResponse"
+/>
+
+Example snippet:
+
+```json
+{
+  "requestId": "4c2fb3f1-56f1-4ad3-9e5d-1d9f9b6efabc",
+  "success": true,
+  "cached": true,
+  "targetUrl": "https://example.com",
+  "metadata": {
+    "title": "Example Domain",
+    "description": "This domain is for use in illustrative examples." 
+  },
+  "markdown": "# Example Domain...",
+  "metrics": {
+    "readableDuration": "0.32s",
+    "durationMs": 320
+  }
+}
+```
+
+## Logs & observability
+- Every POST is logged under `read-readUrl` with full request/response payloads.
+- Use the dashboard or Logs API to export JSON snapshots for debugging or downstream processing.
+- Rate limiting errors use `RATE_LIMITED`; respect the `retryAfter` hint or enable caching to reduce load.
+
+## Tips
+- Prototype in the [Playground](/docs/usage/playground) to compare output combinations quickly.
+- Share playground URLs to hand teammates a preconfigured run (`nuqs` keeps state in the link).
+- Combine with the logs export endpoint to stream historical markdown or link data into your pipelines.
+
+Looking for lighter payloads? Switch to [`getMarkdown`](/docs/features/read/getMarkdown) or pair with [links endpoints](/docs/features/links) for sitemap navigation.
