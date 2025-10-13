@@ -18,6 +18,7 @@ const appDir = moduleDir.includes(`${path.sep}.source`)
 const tsGenerator = createGenerator({
   basePath: appDir,
   tsconfigPath: path.resolve(appDir, 'tsconfig.json'),
+  cache: false, // disable cache for production build
 });
 
 // proactively ensure the .next/fumadocs-typescript directory exists before generation runs fixes the error: ENOENT: no such file or directory, mkdir '.next/fumadocs-typescript' in production build
