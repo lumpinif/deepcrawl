@@ -1,15 +1,179 @@
 ---
 title: Quick Start
-description: Minimal steps to run Deepcrawl locally.
+description: Fetch clean markdown from any site with Deepcrawl in minutes.
 ---
 
-This page is a placeholder for the initial setup steps.
+This guide shows the fastest way to turn a page into markdown with Deepcrawl. The platform exposes many endpoints—markdown extraction, link trees, logs, exports, and more—but we will focus on `getMarkdown()` so you can experience the basics first. Explore the navigation to dive into the rest of the API afterwards.
 
-Assumption — needs verification
-- Package manager: pnpm (pnpm-workspace.yaml found).
-- App to run: apps/app (Next.js, includes /docs route).
+## Choose how you want to use Deepcrawl
+- **REST API:** Ideal when you need Deepcrawl from any environment (CLI, Zapier, Python scripts, internal tools) with zero setup.
+- **JavaScript/TypeScript SDK:** Great for Node.js or server-side frameworks that want first-class typings, zod4-schemas, retries, and deeper integration.
 
-Suggested flow (to be confirmed)
-1. Install dependencies
-2. Start the dashboard app
-3. Open Docs at /docs
+Pick the option that matches your workflow and follow the steps below.
+
+## Step 1. Create an API key
+
+<Steps>
+  <Step>
+    Visit the <Link href="https://deepcrawl.dev/app">Deepcrawl dashboard</Link> and sign in with your account.
+  </Step>
+  <Step>
+    Open <Link href="https://deepcrawl.dev/app/api-keys">API Keys</Link> page and generate a new key.
+  </Step>
+  <Step>
+    Copy the key and store it securely for the method you plan to use.
+  </Step>
+</Steps>
+
+
+### Store the key where your app can reach it
+
+<Tabs items={['Shell session', 'Next.js', 'Other servers']}>
+  <Tab>
+
+```bash
+export DEEPCRAWL_API_KEY="dc-your-generated-key"
+```
+
+Run this before invoking the CLI or scripts that call Deepcrawl.
+
+  </Tab>
+  <Tab>
+
+```dotenv
+# .env.local
+DEEPCRAWL_API_KEY=dc-your-generated-key
+```
+
+<Callout title="WARNING" type="warn">Don't expose the key in client-side code. <br/> Access it in server components or API routes with `process.env.DEEPCRAWL_API_KEY`.</Callout>
+
+  </Tab>
+  <Tab>
+
+Keep the key in the secret manager your platform provides (for example, Vercel, Cloudflare, AWS). Expose it to runtime code as `DEEPCRAWL_API_KEY`.
+
+  </Tab>
+</Tabs>
+
+Once the key is available to your environment, follow the path that fits your workflow.
+
+## Option A. Call the REST endpoint
+Use `GET https://api.deepcrawl.dev/read` to fetch markdown anywhere. Provide either a bearer token **or** an `x-api-key` header—one is enough.
+
+<Tabs items={['curl', 'PowerShell', 'Python']}>
+  <Tab>
+
+```bash
+curl \
+  -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
+  "https://api.deepcrawl.dev/read?url=https://example.com"
+```
+
+  </Tab>
+  <Tab>
+
+```powershell
+$apiKey = $env:DEEPCRAWL_API_KEY
+
+$response = Invoke-RestMethod `
+  -Uri "https://api.deepcrawl.dev/read?url=https://example.com" `
+  -Headers @{ "Authorization" = "Bearer $apiKey" } `
+  -Method Get
+
+# Replace the header with @{ "x-api-key" = $apiKey } if you prefer.
+
+Write-Host $response.Substring(0, [Math]::Min(400, $response.Length))
+```
+
+  </Tab>
+  <Tab>
+
+```python
+import os
+import requests
+
+api_key = os.environ["DEEPCRAWL_API_KEY"]
+response = requests.get(
+    "https://api.deepcrawl.dev/read",
+    params={"url": "https://example.com"},
+    headers={"Authorization": f"Bearer {api_key}"},
+    timeout=30,
+)
+
+# Prefer `{"x-api-key": api_key}` if you want to omit the bearer header.
+
+response.raise_for_status()
+print(response.text[:400])
+```
+
+  </Tab>
+</Tabs>
+
+```markdown
+# Example Domain
+
+This domain is for use in illustrative examples in documents.
+```
+
+Need more control? Switch to `POST https://api.deepcrawl.dev/read` for additional rich options. Other endpoints—link extraction, logs, exports—are documented in the API docs.
+
+## Option B. Use the TypeScript(JavaScript) SDK
+Install the `deepcrawl` package when you want typed helpers and automatic retries in Node.js or edge/server runtimes.
+
+<Tabs items={['pnpm', 'npm', 'yarn', 'bun']}>
+  <Tab>
+
+```bash
+pnpm add deepcrawl
+```
+
+  </Tab>
+  <Tab>
+
+```bash
+npm install deepcrawl
+```
+
+  </Tab>
+  <Tab>
+
+```bash
+yarn add deepcrawl
+```
+
+  </Tab>
+  <Tab>
+
+```bash
+bun add deepcrawl
+```
+
+  </Tab>
+</Tabs>
+
+### Minimal Node.js example
+
+```ts
+import { DeepcrawlApp } from 'deepcrawl';
+
+const client = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY!,
+});
+
+async function main() {
+  const markdown = await client.getMarkdown('https://example.com');
+  console.log(markdown.slice(0, 400));
+}
+
+main().catch((error) => {
+  console.error('Deepcrawl request failed', error);
+  process.exit(1);
+});
+```
+
+The client exposes every API group (`read`, `links`, `logs`, `exports`, and more). Browse the SDK reference to see how to generate link trees, inspect crawl history, or export responses.
+
+## What’s next
+{/* - Review the [API overview]() for all endpoints and request parameters. */}
+{/* - Dive into the [SDK reference]() for advanced usage patterns. */}
+{/* - If you need step-by-step workflows, explore the [Guides section](). */}
