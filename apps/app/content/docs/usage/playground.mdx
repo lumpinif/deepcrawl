@@ -1,6 +1,98 @@
 ---
 title: Online Playground
-description: Free Official Online Playground and Dashboard of Deepcrawl.
+description: Learn how to drive the Deepcrawl dashboard, configure options, and validate operations before automating them.
 ---
 
-How to use the free online playground and dashboard of Deepcrawl.
+Deepcrawl ships with a production-grade dashboard that mirrors everything exposed by the API and SDK. The playground lets you experiment with `getMarkdown`, `readUrl`, or `extractLinks`, tune advanced options, and inspect responses side-by-side before wiring them into code.
+
+## Before you begin
+- Sign in at <Link href="https://deepcrawl.dev/app">Deepcrawl dashboard</Link> using the organization credentials you created in the Quick Start.
+- Create or reuse an API key from <Link href="https://deepcrawl.dev/app/api-keys">API Keys</Link>. Dashboard calls run server-side, so the key stays in Deepcrawl’s backend—no need to paste it every time.
+- Optional: Inspect activity logs details, API keys, or account management supporting multiple user sessions.
+
+## Dashboard layout
+- **Operation switcher:** Choose `Get Markdown`, `Read URL`, or `Extract Links`. Each operation remembers its latest options, so you can jump between experiments without losing state.
+- **Prompt bar:** Paste a target URL, hit the operation button, and watch execution time badges confirm when the run finishes or retries.
+- **Options toolbar:** Hover over the icons (format, links, markdown, processor, cache, metrics) to open contextual menus. The `+` button expands a full summary panel with every toggle explained.
+- **Response workspace:** A tabbed viewer renders markdown, tree maps, and raw JSON. Metadata and metrics cards sit alongside copy/share buttons so you can export results instantly.
+
+## Run your first operation
+
+<Steps>
+  <Step>
+    Pick the operation that matches your goal. `Get Markdown` is fastest for LLMs-favored markdown content only with minimal token cost, `Read URL` adds metadata and structured context, and `Extract Links` builds a crawlable map.
+  </Step>
+  <Step>
+    Paste a full URL. The input highlights errors and links to cached execution time while the request is in flight.
+  </Step>
+  <Step>
+    (Optional) Open the toolbar menus to adjust output format, caching, or link handling. Defaults are safe for most sites and can be adjusted to your needs.
+  </Step>
+  <Step>
+    Submit and review the response panel. Drill into **Markdown**, **Tree**, or **Raw** tabs, copy the payload, or retry with a single click if the source throttled the request.
+  </Step>
+</Steps>
+
+## Configure options for your use case
+
+<Accordions type="single" collapsible>
+  <Accordion value="content-format" title="Content format toggles">
+    - Toggle markdown, metadata, cleaned HTML, raw HTML, or robots.txt fetches. `Extract Links` adds sitemap XML and full tree generation.
+    - When building sitemap-aware agents, enable both **Tree** and **Metadata** so every node carries titles, descriptions, and canonical URLs.
+    - For minimal token costs, disable raw HTML and metadata so only condensed markdown comes back.
+  </Accordion>
+  <Accordion value="markdown" title="Markdown converter">
+    - Available on `Get Markdown`. Tune bullet markers, fenced vs. indented code blocks, newline compression, inline links, and base64 image retention.
+    - Prefer the native parser for performance, but switch it off if the source uses edge-case HTML the fallback handles better.
+  </Accordion>
+  <Accordion value="links" title="Link extraction filters">
+    - Only visible on `Extract Links`. Include external domains, media assets, or strip query strings depending on how your agents crawl.
+    - Provide newline-separated patterns (regex or path fragments) to exclude login areas or marketing parameters from the graph.
+  </Accordion>
+  <Accordion value="processor" title="Cleaning processor">
+    - Swap between **Cheerio Reader** (default) and the Deepcrawl **HTML Rewriter**. The rewriter is tuned for GitHub and other script-heavy sites.
+    - Useful when the default output misses dynamic content—switch processors and re-run to compare.
+  </Accordion>
+  <Accordion value="cache" title="Cache behaviour">
+    - Enable caching to reuse recent crawls. Adjust TTL (seconds) to balance freshness and cost; the default maps to roughly 2-4 days.
+    - Reset to defaults anytime. Cached hits show up instantly in the response metrics card.
+  </Accordion>
+  <Accordion value="metrics" title="Performance metrics">
+    - Toggle timing output for `Read URL` or `Extract Links`. Metrics include total duration, processing stages, and cache status.
+    - Use this when benchmarking agent workflows or comparing processors.
+  </Accordion>
+</Accordions>
+
+## Playground recipes
+
+<Tabs items={['LLM prompt prep', 'Agent site audit', 'Link intelligence']}>
+  <Tab>
+    - Operation: `Get Markdown`
+    - Enable markdown (default) and inline links; disabled metadata and raw HTML for the leanest tokens.
+    - Keep cache on so repeat prompts stay instant while you iterate on prompt engineering.
+  </Tab>
+  <Tab>
+    - Operation: `Read URL`
+    - Turn on metadata, cleaned HTML, and metrics.
+    - Combine with the **Logs** page to inspect operation details or errors, or export the full JSON when debugging agents.
+  </Tab>
+  <Tab>
+    - Operation: `Extract Links`
+    - Include external links or media links when mapping knowledge bases that span multiple domains.
+    - Provide folder-first or alphabetical order file-tree like structure patterns for query-heavy tracking URLs, and enable tree metadata so agents see titles plus hierarchy depth. Imagine a specially tailored navigation map for agents to navigate a website.
+  </Tab>
+</Tabs>
+
+## Inspecting results
+- Use the **Markdown** tab to preview cleaned content exactly as your LLM would consume it. Copy the snippet or download via the action buttons.
+- Switch to **Tree** to browse the hierarchical view generated by `Extract Links`. Every node carries quick-open and copy controls.
+- **Raw** response displays the JSON contract—the same structure returned by the REST API and SDK.
+- Metadata and metrics cards highlight request IDs, cache status, and timing so you can reproduce or escalate issues quickly.
+- Every playground state is encoded in the URL (thanks to [nuqs](https://github.com/47ng/nuqs)), so copy the address bar to share a preconfigured run—operation, toggles, and URL included.
+
+## Related dashboard views
+- **Logs:** the home page prefetches recent runs. Filter by status, endpoint, or time range, then export markdown, JSON, or tree payloads.
+- **API Keys:** generate scoped keys, rotate credentials, and assign usage notes for teammates.
+- **Account & devices:** manage passkeys, active sessions, and organization memberships.
+
+Ready to automate what you built in the playground? Jump back to the [Quick Start](/docs/overview/quick-start) for SDK usage, or explore the [API reference](/docs/api) to script these flows end to end.
