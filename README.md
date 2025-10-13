@@ -21,6 +21,15 @@ Deepcrawl is an open-source agents-oriented web page context extraction platform
 - **Rendering outputs:** Engines convert HTML into markdown tuned for LLM prompts, keeping context rich while trimming noise
 - **Developer toolchain:** The monorepo hosts shared packages, database modules, and scripts that keep the full stack consistent
 
+## 👥 Who Uses Deepcrawl
+
+- **Developers:** Consume the APIs directly or integrate with the fully typed JavaScript/TypeScript SDKs for fast agent workflows
+- **Analysts & teams:** Use the Next.js 15 dashboard to run crawls, explore the API playground, review logs, and manage API keys without writing code
+
+## 🏢 Deployment
+
+Deepcrawl ships with everything you need to self-host: deploy the dashboard to Vercel, the workers to Cloudflare, and you have a complete system without paid dependencies. Fork it, extend it, or plug it into your existing stack—the licenses and tooling encourage customization.
+
 ## 🏗️ Architecture
 
 Deepcrawl is a comprehensive monorepo featuring:
@@ -37,15 +46,6 @@ Deepcrawl is a comprehensive monorepo featuring:
 - **🗄️ Database Packages** - Dual setup with PostgreSQL (auth) and Cloudflare D1 (data preservation)
 - **🎨 UI Components** (`@deepcrawl/ui`) - shadcn/ui component library
 - **📋 Types & Contracts** - Shared TypeScript definitions and API contracts
-
-## 👥 Who Uses Deepcrawl
-
-- **Developers:** Consume the APIs directly or integrate with the fully typed JavaScript/TypeScript SDKs for fast agent workflows
-- **Analysts & teams:** Use the Next.js 15 dashboard to run crawls, explore the API playground, review logs, and manage API keys without writing code
-
-## 🏢 Deployment
-
-Deepcrawl ships with everything you need to self-host: deploy the dashboard to Vercel, the workers to Cloudflare, and you have a complete system without paid dependencies. Fork it, extend it, or plug it into your existing stack—the licenses and tooling encourage customization.
 
 ## 📚 More Information
 
