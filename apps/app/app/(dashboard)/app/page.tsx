@@ -13,6 +13,9 @@ import {
   listSessionsQueryOptions,
 } from '@/query/query-options.server';
 
+/* Marked the logs page as dynamic so Next.js doesn't try to prerender it and can safely call headers() at request time - this won't break the React Query SSR prefetching */
+export const dynamic = 'force-dynamic';
+
 export default function DashboardPage() {
   const queryClient = getQueryClient();
 
