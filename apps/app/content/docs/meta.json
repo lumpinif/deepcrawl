@@ -4,8 +4,8 @@
   "icon": "Book",
   "defaultOpen": true,
   "pages": [
-    "index",
     "---Overview---",
+    "index",
     "...overview",
     "---Usage---",
     "...usage",
