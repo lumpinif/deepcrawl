@@ -56,4 +56,4 @@ Deepcrawl is a comprehensive monorepo featuring:
 
 ## License
 
-MIT License - Open Source. Open Code.
+MIT License - Open Source. Open Code - built with ❤️ by [@felixLu](https://x.com/felixlu1018).
