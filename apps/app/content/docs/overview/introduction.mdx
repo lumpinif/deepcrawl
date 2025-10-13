@@ -1,16 +1,32 @@
 ---
 title: Introduction
-description: Overview of Deepcrawl and how this monorepo is organized.
 ---
+<Callout type="info" title="tl;dr one-liner">
+Deepcrawl is 100% free and open-source Firecrawl alternative with better performance and flexibility.
+</Callout>
 
-Welcome to the Deepcrawl documentation.
+<br />
+Deepcrawl is an open-source agents-oriented web page context extraction platform. It extracts cleaned markdown of page content, agent-favoured links tree and page metadata that LLMs can digest with minimal token cost to reduce context switching and hallucination. Open Source. Open Code.
+<br />
 
-What’s here
-- Getting Started: the fastest way to try Deepcrawl.
-- Guides: task-based walkthroughs.
-- SDK: JavaScript/TypeScript client usage.
-- API: overview and references.
-- Monorepo: structure and developer workflow.
+## Why Deepcrawl exists
+- Compress messy web pages into structured markdown that agents and humans can read.
+- Map every link in a domain so workflows understand site topology before they browse.
+- Offer type-safe, production-ready APIs and SDKs that feel native inside agent frameworks like `ai-sdk`.
 
-Next steps
-- Start with Quick Start: /docs/getting-started
+## How the system is put together
+- **Crawling pipeline:** Cloudflare Workers handle fetching, normalization, and link graph generation for each domain or URL.
+- **Rendering outputs:** Engines convert HTML into markdown tuned for LLM prompts, keeping context rich while trimming noise.
+- **Developer toolchain:** The monorepo hosts shared packages, database modules, and scripts that keep the full stack consistent.
+
+## Ways to use Deepcrawl today
+- **Developers:** Consume the APIs directly or integrate with the fully typed JavaScript/TypeScript SDKs for fast agent workflows.
+- **Analysts & teams:** Use the Next.js 15 dashboard to run crawls, explore the API playground, review logs, and manage API keys without writing code.
+
+## Deploy on your own terms
+Deepcrawl ships with everything you need to self-host: deploy the dashboard to Vercel, the workers to Cloudflare, and you have a complete system without paid dependencies. Fork it, extend it, or plug it into your existing stack—the licenses and tooling encourage customization.
+
+## Where to go next
+- Follow the Quick Start at `/docs/quick-start`
+- Dive into API usage at
+- Explore the SDK reference
