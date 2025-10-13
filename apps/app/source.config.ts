@@ -23,7 +23,16 @@ export default defineConfig({
   mdxOptions: {
     remarkPlugins: [
       remarkNpm,
-      [remarkAutoTypeTable, { generator: tsGenerator }],
+      [
+        remarkAutoTypeTable,
+        {
+          name: 'AutoTypeTable',
+          generator: tsGenerator,
+          options: {
+            basePath: appDir,
+          },
+        },
+      ],
     ],
   },
 });
