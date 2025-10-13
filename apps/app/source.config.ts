@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,6 +18,11 @@ const appDir = moduleDir.includes(`${path.sep}.source`)
 const tsGenerator = createGenerator({
   basePath: appDir,
   tsconfigPath: path.resolve(appDir, 'tsconfig.json'),
+  cache: false,
+});
+
+fs.mkdirSync(path.join(appDir, '.next/fumadocs-typescript'), {
+  recursive: true,
 });
 
 export default defineConfig({
