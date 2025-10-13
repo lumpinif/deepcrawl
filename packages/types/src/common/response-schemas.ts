@@ -74,6 +74,12 @@ export const BaseErrorResponseSchema = z
   });
 
 /**
+ * Type alias for {@link BaseErrorResponseSchema}.
+ * Provides the standardized error response structure shared across endpoints.
+ */
+export type BaseErrorResponse = z.infer<typeof BaseErrorResponseSchema>;
+
+/**
  * Common base response schema for successful operations.
  * Contains standard fields that appear in most success responses.
  *
@@ -123,3 +129,9 @@ export const BaseSuccessResponseSchema = z
       },
     ],
   });
+
+/**
+ * Type alias for {@link BaseSuccessResponseSchema}.
+ * Represents the shared fields included in successful responses.
+ */
+export type BaseSuccessResponse = z.infer<typeof BaseSuccessResponseSchema>;
