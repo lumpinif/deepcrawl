@@ -1,7 +1,62 @@
 ---
 title: Get Links
-description: Features of Deepcrawl.
+description: Fetch extracted links for a page via GET /links.
 ---
 
-## getLinks
-links-getLinks
+`getLinks` is the identical companion to `extractLinks` but with quick access support directly from your browser URL bar. It shares the same schema but is accessible through a GET request, making it ideal for quick lookups or copy-paste-ready results where you don't need to POST a body.
+
+<Callout type="success" title="No prerequisites required">
+Link extraction works by parsing the actual HTML content of your target page—no sitemap.xml, robots.txt, or other configuration files needed. Deepcrawl intelligently discovers links by analyzing the page structure, making it work on any website regardless of their SEO setup.
+</Callout>
+
+## When to use this endpoint
+- You want to preview link extraction results without constructing a POST payload.
+- You’re integrating from environments that only allow GET (e.g., low-code tooling, browser tabs using cookie auth).
+- You don’t need to modify request options beyond query parameters.
+
+For deeper customization (tree generation, exclusion patterns, metadata, metrics), use [`extractLinks`](/docs/features/links/extractLinks).
+
+## Request format
+
+```bash
+curl \
+  -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
+  "https://api.deepcrawl.dev/links?url=https://example.com"
+```
+
+- Add query parameters mirroring the POST options (tree, metadata, cleanedHtml, link extraction toggles, etc.).
+- Responses default to the same structure as `extractLinks`—tree data when `tree=true`, otherwise only extracted links.
+
+## Query parameters
+
+<AutoTypeTable
+  path="../../packages/contracts/src/links.ts"
+  name="ExtractLinksOptions"
+/>
+
+Even though this is a GET request, the available fields align with `ExtractLinksOptions`. Send them as query parameters (e.g., `tree=true`, `metadata=true`, `includeExternal=false`).
+
+## Response structure
+
+<AutoTypeTable
+  path="../../packages/types/src/routers/links/types.ts"
+  name="LinksSuccessResponse"
+/>
+
+<Callout type="info">
+The success type is a union. When you pass `tree=true`, the response conforms to `LinksSuccessResponseWithTree` and the `tree` field is present. Otherwise it matches `LinksSuccessResponseWithoutTree` and you should read `extractedLinks` instead. Narrow with `if ('tree' in response && response.tree)` before traversing the hierarchy.
+</Callout>
+
+Errors use the shared schema:
+
+<AutoTypeTable
+  path="../../packages/types/src/routers/links/types.ts"
+  name="LinksErrorResponse"
+/>
+
+## Tuning tips
+- Combine the GET endpoint with the [Playground](/docs/usage/playground) for rapid iteration. Once satisfied, move to POST calls to leverage cached options.
+- Use `includeExternal=true` when mapping third-party references; toggle `includeMedia` to catalog assets.
+- Pair outputs with [`readUrl`](/docs/features/read/readUrl) to fetch detailed content for the most important links.
+
+Need richer control? Jump to [`extractLinks`](/docs/features/links/extractLinks).

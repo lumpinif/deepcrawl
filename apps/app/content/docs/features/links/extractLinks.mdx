@@ -1,7 +1,127 @@
 ---
 title: Extract Links
-description: Features of Deepcrawl.
+description: Crawl a page and return a structured site map with metadata via POST /links.
 ---
 
-## extractLinks
-links-extractLinks
+`extractLinks` is the deep, configurable crawl endpoint. It builds a hierarchical links tree site map, optionally enriches each node with metadata, and exports performance metrics—ideal for agents that need to understand a domain before planning actions.
+
+<Callout type="success" title="No prerequisites required">
+Link extraction works by parsing the actual HTML content of your target page—no sitemap.xml, robots.txt, or other configuration files needed. Deepcrawl intelligently discovers links by analyzing the page structure, making it work on any website regardless of their SEO setup.
+</Callout>
+
+## When to use this endpoint
+- You need a tree of internal pages in one response, including optional metadata per node.
+- You want to configure link extraction (external links, media, query stripping, exclusion patterns).
+- You plan to cache results or analyze crawl performance metrics.
+
+For lighter GET-only usage (no request body), see [`getLinks`](/docs/features/links/getLinks). For page content rather than graph data, use the [read endpoints](/docs/features/read).
+
+## Request formats
+
+### REST (POST)
+
+```bash
+curl \
+  -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST "https://api.deepcrawl.dev/links" \
+  -d '{
+    "url": "https://example.com",
+    "tree": true,
+    "metadata": true,
+    "metricsOptions": { "enable": true }
+  }'
+```
+
+### Node SDK
+
+```ts
+import { DeepcrawlApp } from 'deepcrawl';
+
+const deepcrawl = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY!,
+});
+
+const tree = await deepcrawl.links.extractLinks({
+  url: 'https://example.com',
+  tree: true,
+  metadata: true,
+  metricsOptions: { enable: true },
+});
+
+console.log(tree.tree?.children?.length);
+```
+
+## Request body
+
+<AutoTypeTable
+  path="../../packages/contracts/src/links.ts"
+  name="ExtractLinksOptions"
+/>
+
+Key controls:
+- `tree`: enable to receive the hierarchical tree; otherwise you get flat extracted links.
+- `linkExtractionOptions`: include/exclude external links, media assets, strip query params, or provide regex exclusions.
+- `metadata`, `cleanedHtml`, `robots`, `sitemapXML`, `metaFiles`: mirror the read endpoint options to enrich tree nodes.
+- `cacheOptions` & `metricsOptions`: same behavior as other endpoints.
+
+## Response structure
+
+Successful responses return a tree, metadata, metrics, and extracted link sets.
+
+<AutoTypeTable
+  path="../../packages/types/src/routers/links/types.ts"
+  name="LinksSuccessResponse"
+/>
+
+<Callout type="info">
+`LinksSuccessResponse` is a union of two shapes:
+- `LinksSuccessResponseWithTree` (when `tree` is enabled) – includes a `tree` hierarchy you can traverse.
+- `LinksSuccessResponseWithoutTree` (when `tree` is false) – omits `tree`, returning only extracted links and metadata.
+
+Type safely narrow by checking `if ('tree' in response && response.tree)` before reading the tree.
+</Callout>
+
+Errors follow the standard schema:
+
+<AutoTypeTable
+  path="../../packages/types/src/routers/links/types.ts"
+  name="LinksErrorResponse"
+/>
+
+Example snippet:
+
+```json
+{
+   requestId: "123e4567-e89b-12d3-a456-426614174000",
+   success: true,
+   cached: false,
+   targetUrl: "https://example.com",
+   timestamp: "2024-01-15T10:30:00.000Z",
+   ancestors: ["https://example.com"],
+   tree: {
+     url: "https://example.com",
+     name: "Home",
+     lastUpdated: "2024-01-15T10:30:00.000Z",
+     metadata: { title: "Example", description: "..." },
+     extractedLinks: { internal: [...], external: [...] },
+     children: [...]
+   },
+   metrics: {
+    readableDuration: "0.54s",
+    durationMs: 540
+  }
+}
+```
+
+## Logs & observability
+- Logged under `links-extractLinks` with full request/response data.
+- Export responses later via the Logs API to replay site maps or analyze crawl history.
+- Rate limiting returns `RATE_LIMITED`; consider caching large crawls.
+
+## Tips
+- Prototype in the [Playground](/docs/usage/playground) to tune extraction patterns quickly.
+- Use `excludePatterns` to remove auth or tracking links; `includeMedia` to capture assets.
+- Pair with [`readUrl`](/docs/features/read/readUrl) to fetch content for the highest-value pages discovered in the tree.
+
+Need a quick GET request? See [`getLinks`](/docs/features/links/getLinks).

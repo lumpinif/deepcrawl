@@ -16,6 +16,10 @@ Deepcrawl is 100% free and open-source Firecrawl alternative with better perform
 
 Deepcrawl is an open-source agents-oriented web page context extraction platform. It extracts cleaned markdown of page content, agent-favoured links tree and page metadata that LLMs can digest with minimal token cost to reduce context switching and hallucination. Open Source. Open Code.
 
+## Core endpoints at a glance
+- **[`getMarkdown`](/docs/features/read/getMarkdown):** Fast GET endpoint that returns prompt-ready markdown—ideal for caching snippets or feeding LLM prompts.
+- **[`readUrl`](/docs/features/read/readUrl):** Full POST operation with metadata, cleaned HTML, markdown, robots, sitemap data, and metrics in one payload.
+- **[`extractLinks`](/docs/features/links/extractLinks):** Configurable crawl endpoint that builds a agent-navigable links tree, filters external/media links.
 
 ## Why Deepcrawl exists
 - Compress messy web pages into structured markdown that agents and humans can read.
