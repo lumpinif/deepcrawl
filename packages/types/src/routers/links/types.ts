@@ -259,6 +259,18 @@ export const LinksOptionsSchema = z
     ],
   });
 
+/**
+ * Full configuration schema for the 'getLinks' RPC operation.
+ * Alias of {@link LinksOptionsSchema} to provide endpoint-specific naming.
+ */
+export const GetLinksOptionsSchema = LinksOptionsSchema;
+
+/**
+ * Full configuration schema for the 'extractLinks' RPC operation.
+ * Alias of {@link LinksOptionsSchema} to provide endpoint-specific naming.
+ */
+export const ExtractLinksOptionsSchema = LinksOptionsSchema;
+
 export const SkippedUrlSchema = z
   .object({
     url: z.string().meta({

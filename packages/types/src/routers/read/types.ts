@@ -143,6 +143,12 @@ export const ReadOptionsSchema = z
   });
 
 /**
+ * Full configuration schema for the `readUrl` RPC operation.
+ * Alias of {@link ReadOptionsSchema} to keep naming consistent with other option exports.
+ */
+export const ReadUrlOptionsSchema = ReadOptionsSchema;
+
+/**
  * @name GetMarkdownOptionsSchema || ReadGETInputSchema
  * @description Input schema for the GET endpoint
  * @note Only includes:
