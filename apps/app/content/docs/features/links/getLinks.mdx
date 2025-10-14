@@ -27,32 +27,31 @@ curl \
 - Add query parameters mirroring the POST options (tree, metadata, cleanedHtml, link extraction toggles, etc.).
 - Responses default to the same structure as `extractLinks`—tree data when `tree=true`, otherwise only extracted links.
 
-## Query parameters
+## Query parameters - `GetLinksOptions`
 
 <AutoTypeTable
   path="../../packages/contracts/src/links.ts"
-  name="ExtractLinksOptions"
+  name="GetLinksOptions"
 />
 
-Even though this is a GET request, the available fields align with `ExtractLinksOptions`. Send them as query parameters (e.g., `tree=true`, `metadata=true`, `includeExternal=false`).
+Even though this is a GET request, the available fields align with `GetLinksOptions`. Send them as query parameters (e.g., `tree=true`, `metadata=true`, `includeExternal=false`).
 
-## Response structure
+## Response structure - `GetLinksResponse` is a union of two shapes.
 
-`LinksSuccessResponse` is a union of two shapes.
-  1. `LinksSuccessResponseWithTree` (when `tree` is enabled in options) – includes a `tree` hierarchy you can traverse, and metadata is nested in the tree node.
-  2. `LinksSuccessResponseWithoutTree` (when `tree` is false in options) – omits `tree`, returning only extracted links and metadata.
+  1. `GetLinksResponseWithTree` (when `tree` is enabled in options) – includes a `tree` hierarchy you can traverse, and metadata is nested in the tree node.
+  2. `GetLinksResponseWithoutTree` (when `tree` is false in options) – omits `tree`, returning only extracted links and metadata.
 
-<Callout type="info" title="LinksSuccessResponse">
+<Callout type="info" title="GetLinksResponse">
 
-- `LinksSuccessResponseWithTree`
+- `GetLinksResponseWithTree`
   <AutoTypeTable
-    path="../../packages/types/src/routers/links/types.ts"
-    name="LinksSuccessResponseWithTree"
+    path="../../packages/contracts/src/links.ts"
+    name="GetLinksResponseWithTree"
   />
-- `LinksSuccessResponseWithoutTree`
+- `GetLinksResponseWithoutTree`
   <AutoTypeTable
-    path="../../packages/types/src/routers/links/types.ts"
-    name="LinksSuccessResponseWithoutTree"
+    path="../../packages/contracts/src/links.ts"
+    name="GetLinksResponseWithoutTree"
   />
 
 Type safely narrow by checking `if ('tree' in response && response.tree)` before reading the tree.

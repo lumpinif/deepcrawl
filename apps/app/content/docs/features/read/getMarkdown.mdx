@@ -42,7 +42,7 @@ const markdown = await deepcrawl.getMarkdown('https://example.com', {
 });
 ```
 
-## Query parameters
+## Query parameters - `GetMarkdownOptions`
 
 <AutoTypeTable
   path="../../packages/contracts/src/read.ts"
@@ -54,7 +54,7 @@ Common tweaks:
 - `cleaningProcessor`: choose `cheerio-reader` (default) or `html-rewriter` for GitHub-like pages.
 - `markdownConverterOptions`: adjust bullet markers, inline links, data-image handling, etc.
 
-## Response
+## Response - `GetMarkdownResponse`
 
 The GET endpoint returns markdown as a string:
 

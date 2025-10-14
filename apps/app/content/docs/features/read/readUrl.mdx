@@ -39,10 +39,10 @@ curl \
 import { DeepcrawlApp } from 'deepcrawl';
 
 const deepcrawl = new DeepcrawlApp({
-  apiKey: process.env.DEEPCRAWL_API_KEY!,
+  apiKey: process.env.DEEPCRAWL_API_KEY as string,
 });
 
-const result = await deepcrawl.read.readUrl({
+const result = await deepcrawl.readUrl({
   url: 'https://example.com',
   metadata: true,
   markdown: true,
@@ -53,7 +53,7 @@ const result = await deepcrawl.read.readUrl({
 console.log(result.metadata?.title);
 ```
 
-## Request body
+## Request body - `ReadUrlOptions`
 
 <AutoTypeTable
   path="../../packages/contracts/src/read.ts"
@@ -65,13 +65,13 @@ Highlights:
 - Control fetch behavior via `fetchOptions` (headers, geo, user agent) and HTML processing using `cleaningProcessor`, `htmlRewriterOptions`, or `readerCleaningOptions`.
 - Use `cacheOptions` and `metricsOptions` just like on the GET endpoint.
 
-## Response structure
+## Response structure - `ReadUrlResponse`
 
 Successful responses include page metadata, content variants, metrics, and crawl diagnostics.
 
 <AutoTypeTable
-  path="../../packages/types/src/routers/read/types.ts"
-  name="ReadSuccessResponse"
+  path="../../packages/contracts/src/read.ts"
+  name="ReadUrlResponse"
 />
 
 Errors follow the shared response schema and always include the request/target URL plus a timestamp.

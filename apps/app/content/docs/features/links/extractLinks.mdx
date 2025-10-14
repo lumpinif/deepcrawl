@@ -42,7 +42,7 @@ const deepcrawl = new DeepcrawlApp({
   apiKey: process.env.DEEPCRAWL_API_KEY!,
 });
 
-const tree = await deepcrawl.links.extractLinks({
+const tree = await deepcrawl.extractLinks({
   url: 'https://example.com',
   tree: true,
   metadata: true,
@@ -52,7 +52,7 @@ const tree = await deepcrawl.links.extractLinks({
 console.log(tree.tree?.children?.length);
 ```
 
-## Request body
+## Request body - `ExtractLinksOptions`
 
 <AutoTypeTable
   path="../../packages/contracts/src/links.ts"
@@ -65,23 +65,22 @@ Key controls:
 - `metadata`, `cleanedHtml`, `robots`, `sitemapXML`, `metaFiles`: mirror the read endpoint options to enrich tree nodes.
 - `cacheOptions` & `metricsOptions`: same behavior as other endpoints.
 
-## Response structure
+## Response structure - `ExtractLinksResponse` is a union of two shapes.
 
-`LinksSuccessResponse` is a union of two shapes.
-  1. `LinksSuccessResponseWithTree` (when `tree` is enabled in options) – includes a `tree` hierarchy you can traverse, and metadata is nested in the tree node.
-  2. `LinksSuccessResponseWithoutTree` (when `tree` is false in options) – omits `tree`, returning only extracted links and metadata.
+  1. `ExtractLinksResponseWithTree` (when `tree` is enabled in options) – includes a `tree` hierarchy you can traverse, and metadata is nested in the tree node.
+  2. `ExtractLinksResponseWithoutTree` (when `tree` is false in options) – omits `tree`, returning only extracted links and metadata.
 
-<Callout type="info" title="LinksSuccessResponse">
+<Callout type="info" title="ExtractLinksResponse">
 
-- `LinksSuccessResponseWithTree`
+- `ExtractLinksResponseWithTree`
   <AutoTypeTable
-    path="../../packages/types/src/routers/links/types.ts"
-    name="LinksSuccessResponseWithTree"
+    path="../../packages/contracts/src/links.ts"
+    name="ExtractLinksResponseWithTree"
   />
-- `LinksSuccessResponseWithoutTree`
+- `ExtractLinksResponseWithoutTree`
   <AutoTypeTable
-    path="../../packages/types/src/routers/links/types.ts"
-    name="LinksSuccessResponseWithoutTree"
+    path="../../packages/contracts/src/links.ts"
+    name="ExtractLinksResponseWithoutTree"
   />
 
 Type safely narrow by checking `if ('tree' in response && response.tree)` before reading the tree.
