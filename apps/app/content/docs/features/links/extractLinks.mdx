@@ -67,17 +67,22 @@ Key controls:
 
 ## Response structure
 
-Successful responses return a tree, metadata, metrics, and extracted link sets.
+`LinksSuccessResponse` is a union of two shapes.
+  1. `LinksSuccessResponseWithTree` (when `tree` is enabled in options) – includes a `tree` hierarchy you can traverse, and metadata is nested in the tree node.
+  2. `LinksSuccessResponseWithoutTree` (when `tree` is false in options) – omits `tree`, returning only extracted links and metadata.
 
-<AutoTypeTable
-  path="../../packages/types/src/routers/links/types.ts"
-  name="LinksSuccessResponse"
-/>
+<Callout type="info" title="LinksSuccessResponse">
 
-<Callout type="info">
-`LinksSuccessResponse` is a union of two shapes:
-- `LinksSuccessResponseWithTree` (when `tree` is enabled) – includes a `tree` hierarchy you can traverse.
-- `LinksSuccessResponseWithoutTree` (when `tree` is false) – omits `tree`, returning only extracted links and metadata.
+- `LinksSuccessResponseWithTree`
+  <AutoTypeTable
+    path="../../packages/types/src/routers/links/types.ts"
+    name="LinksSuccessResponseWithTree"
+  />
+- `LinksSuccessResponseWithoutTree`
+  <AutoTypeTable
+    path="../../packages/types/src/routers/links/types.ts"
+    name="LinksSuccessResponseWithoutTree"
+  />
 
 Type safely narrow by checking `if ('tree' in response && response.tree)` before reading the tree.
 </Callout>

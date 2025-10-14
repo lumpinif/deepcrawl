@@ -38,13 +38,24 @@ Even though this is a GET request, the available fields align with `ExtractLinks
 
 ## Response structure
 
-<AutoTypeTable
-  path="../../packages/types/src/routers/links/types.ts"
-  name="LinksSuccessResponse"
-/>
+`LinksSuccessResponse` is a union of two shapes.
+  1. `LinksSuccessResponseWithTree` (when `tree` is enabled in options) – includes a `tree` hierarchy you can traverse, and metadata is nested in the tree node.
+  2. `LinksSuccessResponseWithoutTree` (when `tree` is false in options) – omits `tree`, returning only extracted links and metadata.
 
-<Callout type="info">
-The success type is a union. When you pass `tree=true`, the response conforms to `LinksSuccessResponseWithTree` and the `tree` field is present. Otherwise it matches `LinksSuccessResponseWithoutTree` and you should read `extractedLinks` instead. Narrow with `if ('tree' in response && response.tree)` before traversing the hierarchy.
+<Callout type="info" title="LinksSuccessResponse">
+
+- `LinksSuccessResponseWithTree`
+  <AutoTypeTable
+    path="../../packages/types/src/routers/links/types.ts"
+    name="LinksSuccessResponseWithTree"
+  />
+- `LinksSuccessResponseWithoutTree`
+  <AutoTypeTable
+    path="../../packages/types/src/routers/links/types.ts"
+    name="LinksSuccessResponseWithoutTree"
+  />
+
+Type safely narrow by checking `if ('tree' in response && response.tree)` before reading the tree.
 </Callout>
 
 Errors use the shared schema:
