@@ -108,8 +108,8 @@ export async function getMarkdown(url: string) {
 import { deepcrawl } from '@/lib/deepcrawl';
 
 export async function readUrl(url: string) {
-  const result = await deepcrawl.read.readUrl(url);
-  // const result = await deepcrawl.read.readUrl(url, {...options}); // with more options
+  const result = await deepcrawl.readUrl(url);
+  // const result = await deepcrawl.readUrl(url, {...options}); // with more options
 
   return result;
 }
@@ -122,8 +122,8 @@ export async function readUrl(url: string) {
 import { deepcrawl } from '@/lib/deepcrawl';
 
 export async function extractLinks(url: string) {
-  const result = await deepcrawl.links.extractLinks(url);
-  // const tree = await deepcrawl.links.extractLinks(url, {...options}); // with more options
+  const result = await deepcrawl.extractLinks(url);
+  // const tree = await deepcrawl.extractLinks(url, {...options}); // with more options
 
   if ('tree' in result && result.tree) {
      // TypeScript infers LinksSuccessResponseWithTree
@@ -222,7 +222,7 @@ app.post('/read', async (c) => {
   const { url } = await c.req.json();
 
   try {
-    const result = await deepcrawl.read.readUrl(url);
+    const result = await deepcrawl.readUrl(url);
     return c.json(result);
   } catch (error) {
     return c.json({ error: (error as Error).message }, 500);
@@ -282,7 +282,7 @@ app.use(express.json());
 
 app.post('/api/read', async (req, res) => {
   try {
-    const result = await deepcrawl.read.readUrl({
+    const result = await deepcrawl.readUrl({
       url: req.body.url,
       metadata: true,
     });
