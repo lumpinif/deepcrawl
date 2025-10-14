@@ -37,7 +37,7 @@ import type {
   GetManyLogsSortColumn,
   GetManyLogsSortDirection,
 } from '@deepcrawl/types/routers/logs';
-import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs';
+import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs/utils';
 import { ORPCError } from '@orpc/server';
 import type { ORPCContext } from '@/lib/context';
 

@@ -1,7 +1,9 @@
 import {
   CacheOptionsSchema,
   ExtractedLinksSchema,
+  ExtractLinksOptionsSchema,
   FetchOptionsSchema,
+  GetLinksOptionsSchema,
   GetManyLogsOptionsSchema,
   GetManyLogsResponseSchema,
   GetOneLogOptionsSchema,
@@ -11,6 +13,8 @@ import {
   LinksErrorResponseSchema,
   LinksOptionsSchema,
   LinksSuccessResponseSchema,
+  LinksSuccessResponseWithoutTreeSchema,
+  LinksSuccessResponseWithTreeSchema,
   LinksTreeSchema,
   MetadataOptionsSchema,
   PageMetadataSchema,
@@ -18,12 +22,13 @@ import {
   ReaderCleaningOptionsSchema,
   ReadOptionsSchema,
   ReadSuccessResponseSchema,
+  ReadUrlOptionsSchema,
   ScrapedDataSchema,
   ScrapeOptionsSchema,
   SkippedLinksSchema,
   SkippedUrlSchema,
   VisitedUrlSchema,
-} from '@deepcrawl/types';
+} from '@deepcrawl/types/schemas';
 import type {
   ConditionalSchemaConverter,
   OpenAPIGeneratorGenerateOptions,
@@ -60,6 +65,9 @@ export const OpenAPISpecBaseOptions = {
     ReadOptions: {
       schema: ReadOptionsSchema,
     },
+    ReadUrlOptions: {
+      schema: ReadUrlOptionsSchema,
+    },
     ReadSuccessResponse: {
       schema: ReadSuccessResponseSchema,
     },
@@ -68,6 +76,18 @@ export const OpenAPISpecBaseOptions = {
     },
     LinksOptions: {
       schema: LinksOptionsSchema,
+    },
+    GetLinksOptions: {
+      schema: GetLinksOptionsSchema,
+    },
+    ExtractedLinksOptions: {
+      schema: ExtractLinksOptionsSchema,
+    },
+    LinksSuccessResponseWithTree: {
+      schema: LinksSuccessResponseWithTreeSchema,
+    },
+    LinksSuccessResponseWithoutTree: {
+      schema: LinksSuccessResponseWithoutTreeSchema,
     },
     LinksSuccessResponse: {
       schema: LinksSuccessResponseSchema,
