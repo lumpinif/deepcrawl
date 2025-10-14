@@ -1,8 +1,8 @@
 /* NOTE: ENSURE ALL DEFAULT VALUES ARE 100% BUILD-TIME KNOWN */
 
+import type { GetManyLogsOptionsSchema } from '@deepcrawl/types/schemas';
 import type z from 'zod/v4';
 import type {
-  GetManyLogsOptionsSchema,
   GetManyLogsSortColumn,
   GetManyLogsSortDirection,
 } from '../routers/logs/types';

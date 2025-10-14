@@ -50,6 +50,12 @@
     },
     "./metrics": {
       "types": "./src/metrics/index.ts"
+    },
+    "./schemas": {
+      "types": "./src/schemas.ts"
+    },
+    "./utils": {
+      "types": "./src/utils/index.ts"
     }
   },
   "scripts": {

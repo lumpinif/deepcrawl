@@ -11,17 +11,6 @@ import * as z from 'zod/v4';
  * @property {string} timestamp - ISO timestamp when the error occurred
  * @property {string} error - Error message describing what went wrong
  *
- * @example
- * ```typescript
- * const errorResponse = {
- *   requestId: '123e4567-e89b-12d3-a456-426614174000',
- *   success: false,
- *   requestUrl: 'https://example.com/article#fragment',
- *   targetUrl: 'https://example.com/article',
- *   timestamp: '2024-01-15T10:30:00.000Z'
- *   error: 'Failed to fetch: 404 Not Found',
- * };
- * ```
  */
 export const BaseErrorResponseSchema = z
   .object({
@@ -88,15 +77,6 @@ export type BaseErrorResponse = z.infer<typeof BaseErrorResponseSchema>;
  * @property {string} timestamp - ISO timestamp when operation was completed
  * @property {boolean} cached - Whether response was served from cache
  *
- * @example
- * ```typescript
- * const successResponse = {
- *   success: true,
- *   cached: false,
- *   targetUrl: 'https://example.com',
- *   timestamp: '2024-01-15T10:30:00.000Z'
- * };
- * ```
  */
 export const BaseSuccessResponseSchema = z
   .object({
@@ -129,9 +109,3 @@ export const BaseSuccessResponseSchema = z
       },
     ],
   });
-
-/**
- * Type alias for {@link BaseSuccessResponseSchema}.
- * Represents the shared fields included in successful responses.
- */
-export type BaseSuccessResponse = z.infer<typeof BaseSuccessResponseSchema>;
