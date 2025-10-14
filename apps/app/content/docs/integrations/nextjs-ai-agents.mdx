@@ -41,16 +41,16 @@ import { tool } from 'ai';
 import {
   GetMarkdownOptionsSchema,
   GetMarkdownResponse,
-  ReadOptionsSchema,
+  ReadUrlOptionsSchema,
   ReadUrlResponse,
-  LinksOptionsSchema,
+  ExtractLinksOptionsSchema,
   ExtractLinksResponse,
 } from 'deepcrawl/types';
 import { deepcrawl } from '../lib/deepcrawl';
 
 export const extractLinks = tool({
   description: 'Build a site map for a domain using Deepcrawl extractLinks.',
-  parameters: LinksOptionsSchema,
+  parameters: ExtractLinksOptionsSchema,
   async execute({ url, tree, ...options }) {
     const response = await deepcrawl.extractLinks({
       url,
@@ -73,7 +73,7 @@ export const getMarkdown = tool({
 
 export const readUrl = tool({
   description: 'Fetch metadata, markdown, and optional cleaned HTML via Deepcrawl readUrl.',
-  parameters: ReadOptionsSchema,
+  parameters: ReadUrlOptionsSchema,
   async execute({ url, ...options }) {
     const response = await deepcrawl.readUrl({
       url,
@@ -94,7 +94,7 @@ export const deepcrawlTools = {
 
 > `extractLinks` returns a union type; when you consume the result, narrow with `'tree' in result` before traversing the hierarchy.
 
-<Callout type="info">Need to limit what the model can tweak? Swap `LinksOptionsSchema` (or the other schemas) for a `.pick(...)` subset. This example feeds the full schema so the agent has complete control.</Callout>
+<Callout type="info">Need to limit what the model can tweak? Swap `ExtractLinksOptionsSchema` (or the other schemas) for a `.pick(...)` subset. This example feeds the full schema so the agent has complete control.</Callout>
 
 ## 3. Instantiate the ai-sdk Agent
 
