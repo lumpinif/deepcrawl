@@ -1,7 +1,9 @@
 /**
- * Public type + schema exports for the Deepcrawl SDK.
+ * Public type and utility exports for the Deepcrawl SDK.
  * Enables importing from `deepcrawl/types` without relying on internal packages.
  */
+
+/* Links */
 export type {
   ExtractLinksOptions,
   ExtractLinksResponse,
@@ -9,6 +11,7 @@ export type {
   GetLinksResponse,
 } from '@deepcrawl/contracts/links';
 
+/* Logs */
 export type {
   ExportResponseOptions,
   ExportResponseOutput,
@@ -18,20 +21,16 @@ export type {
   GetOneLogResponse,
 } from '@deepcrawl/contracts/logs';
 
+/* Read */
 export type {
   GetMarkdownOptions,
   GetMarkdownResponse,
   ReadUrlOptions,
   ReadUrlResponse,
 } from '@deepcrawl/contracts/read';
-export * from '@deepcrawl/types';
-export {
-  ExportResponseOptionsSchema,
-  ExportResponseOutputSchema,
-  GetManyLogsOptionsSchema,
-  GetManyLogsResponseSchema,
-  GetOneLogOptionsSchema,
-  GetOneLogResponseSchema,
-} from '@deepcrawl/types/routers/logs';
 
-export * from './types';
+/* Types Only (no schemas) */
+export type * from '@deepcrawl/types/types';
+
+/* Utils Only (no types or schemas) */
+export * from '@deepcrawl/types/utils';
