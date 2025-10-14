@@ -26,6 +26,10 @@ yarn add deepcrawl
 pnpm add deepcrawl
 ```
 
+> Zod v4 ships with the SDK as a runtime dependency and is mirrored as a peer dependency.
+> If your app already provides Zod ≥4.1, your package manager will dedupe it; otherwise,
+> the bundled copy means no extra install step.
+
 ## 🚀 **Quick Start**
 
 ```typescript
@@ -99,6 +103,7 @@ import type {
 
 ```typescript
 import {
+  z,
   // Request Schemas
   ReadUrlOptionsSchema,
   GetMarkdownOptionsSchema,
@@ -126,6 +131,25 @@ import {
   CacheOptionsSchema
 } from 'deepcrawl/schemas';
 ```
+
+> Importing `z` from `deepcrawl/zod/v4` (or from `deepcrawl/schemas`) reuses the
+> SDK's Zod runtime so schema composition works even if your app already has its
+> own Zod installation.
+
+### **Zod Helper**
+
+```typescript
+import { z } from 'deepcrawl/zod/v4';
+import { ReadUrlOptionsSchema } from 'deepcrawl/schemas';
+
+const CustomSchema = ReadUrlOptionsSchema.extend({
+  customFlag: z.boolean().default(false),
+});
+```
+
+Use this helper when you want to compose Zod schemas with the SDK’s public
+schemas or utils to avoid instance mismatch issues in projects that install
+multiple copies of Zod.
 
 ### **Utilities Export**
 

@@ -1,7 +1,13 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/types-public.ts', 'src/schemas-public.ts'],
+  entry: [
+    './src/index.ts',
+    './src/types-public.ts',
+    './src/schemas-public.ts',
+    './src/types-utils.ts',
+    './src/zod-v4.ts',
+  ],
   format: ['cjs', 'esm'],
   clean: true,
   noExternal: ['@deepcrawl/contracts', '@deepcrawl/types'],

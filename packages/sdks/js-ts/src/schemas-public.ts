@@ -4,3 +4,4 @@
  * `import { ReadOptionsSchema } from "deepcrawl/schemas"`
  */
 export * from '@deepcrawl/types/schemas';
+export { z } from 'zod/v4';

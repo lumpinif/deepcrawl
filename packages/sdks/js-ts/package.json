@@ -1,6 +1,6 @@
 {
   "name": "deepcrawl",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "JavaScript/TypeScript SDK for Deepcrawl API - A powerful web scraping and crawling service",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -24,6 +24,12 @@
       "require": "./dist/types-utils.js",
       "default": "./dist/types-utils.js"
     },
+    "./zod/v4": {
+      "types": "./dist/zod-v4.d.ts",
+      "import": "./dist/zod-v4.mjs",
+      "require": "./dist/zod-v4.js",
+      "default": "./dist/zod-v4.js"
+    },
     "./schemas": {
       "types": "./dist/schemas-public.d.ts",
       "import": "./dist/schemas-public.mjs",
@@ -38,8 +44,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/types-public.ts src/schemas-public.ts src/types-utils.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts src/types-public.ts src/schemas-public.ts src/types-utils.ts --format cjs,esm --dts --watch",
+    "build": "tsup src/index.ts src/types-public.ts src/schemas-public.ts src/types-utils.ts src/zod-v4.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts src/types-public.ts src/schemas-public.ts src/types-utils.ts src/zod-v4.ts --format cjs,esm --dts --watch",
     "check": "biome check --write && pnpm typecheck",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run check && pnpm run clean && pnpm run build",
@@ -77,7 +83,8 @@
   },
   "packageManager": "pnpm@10.12.1",
   "peerDependencies": {
-    "typescript": ">=5.0.0"
+    "typescript": ">=5.0.0",
+    "zod": "^4.1.12"
   },
   "dependencies": {
     "zod": "^4.1.12"
