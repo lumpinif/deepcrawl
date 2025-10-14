@@ -1,0 +1,189 @@
+---
+title: Next.js AI Agents
+description: Build a Next.js 15 agent with ai-sdk Agent and Deepcrawl schemas.
+---
+
+This walkthrough assumes a **Next.js 15 App Router** project using the latest ai-sdk `Agent` class. The agent will:
+
+- Map a domain with Deepcrawl `extractLinks`.
+- Pull markdown via `getMarkdown` when a lightweight summary is enough.
+- Fall back to `readUrl` for full metadata, cleaned HTML, and metrics when deeper context is required.
+
+The example targets `https://hono.dev` (the framework powering Deepcrawl's backend), but you can change the URL per request.
+
+## Prerequisites
+- Node.js 20 or newer (native `fetch`, top-level `await`).
+- Environment variables: `DEEPCRAWL_API_KEY`, `OPENAI_API_KEY`.
+- Packages:
+
+```bash
+pnpm add deepcrawl ai @ai-sdk/openai @ai-sdk/react zod
+```
+
+> Add `dotenv` if you prefer loading secrets from a `.env` file and call `import 'dotenv/config'` where appropriate.
+
+## 1. Shared Deepcrawl client
+
+```ts title="src/lib/deepcrawl.ts"
+import { DeepcrawlApp } from 'deepcrawl';
+
+export const deepcrawl = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY as string,
+});
+```
+
+Keep this module server-only.
+
+## 2. Tools using Deepcrawl schemas
+
+```ts title="src/tools/deepcrawl-tools.ts"
+import { tool } from 'ai';
+import {
+  GetMarkdownOptionsSchema,
+  GetMarkdownResponse,
+  ReadOptionsSchema,
+  ReadUrlResponse,
+  LinksOptionsSchema,
+  ExtractLinksResponse,
+} from 'deepcrawl/types';
+import { deepcrawl } from '../lib/deepcrawl';
+
+export const extractLinks = tool({
+  description: 'Build a site map for a domain using Deepcrawl extractLinks.',
+  parameters: LinksOptionsSchema,
+  async execute({ url, tree, ...options }) {
+    const response = await deepcrawl.extractLinks({
+      url,
+      tree: tree ?? true,
+      ...options,
+    });
+
+    return response as ExtractLinksResponse;
+  },
+});
+
+export const getMarkdown = tool({
+  description: 'Convert a public page into clean markdown using Deepcrawl getMarkdown.',
+  parameters: GetMarkdownOptionsSchema,
+  async execute({ url, ...options }) {
+    const markdown = await deepcrawl.getMarkdown(url, options);
+    return { url, markdown } as { url: string; markdown: GetMarkdownResponse };
+  },
+});
+
+export const readUrl = tool({
+  description: 'Fetch metadata, markdown, and optional cleaned HTML via Deepcrawl readUrl.',
+  parameters: ReadOptionsSchema,
+  async execute({ url, ...options }) {
+    const response = await deepcrawl.readUrl({
+      url,
+      markdown: options.markdown ?? true,
+      ...options,
+    });
+
+    return response as ReadUrlResponse;
+  },
+});
+
+export const deepcrawlTools = {
+  extractLinks,
+  getMarkdown,
+  readUrl,
+};
+```
+
+> `extractLinks` returns a union type; when you consume the result, narrow with `'tree' in result` before traversing the hierarchy.
+
+<Callout type="info">Need to limit what the model can tweak? Swap `LinksOptionsSchema` (or the other schemas) for a `.pick(...)` subset. This example feeds the full schema so the agent has complete control.</Callout>
+
+## 3. Instantiate the ai-sdk Agent
+
+```ts title="src/agent/deepcrawl-agent.ts"
+import {
+  Experimental_Agent as Agent,
+  Experimental_InferAgentUIMessage as InferAgentUIMessage,
+} from 'ai';
+import { deepcrawlTools } from '../tools/deepcrawl-tools';
+
+export const deepcrawlResearchAgent = new Agent({
+  name: 'deepcrawl-researcher',
+  model: 'openai/gpt-4o-mini',
+  instructions: `You are a research assistant.
+1. Start with extractLinks to understand a site's structure.
+2. Use getMarkdown for quick summaries.
+3. Call readUrl when the user needs metadata or cleaned HTML.
+4. Avoid hitting the same URL repeatedly.`,
+  tools: deepcrawlTools,
+});
+
+export type DeepcrawlAgentUIMessage = InferAgentUIMessage<typeof deepcrawlResearchAgent>;
+```
+
+## 4. API route
+
+```ts title="app/api/agent/route.ts"
+import { validateUIMessages } from 'ai';
+import { deepcrawlResearchAgent } from '@/agent/deepcrawl-agent';
+
+export async function POST(request: Request) {
+  const { messages } = await request.json();
+
+  return deepcrawlResearchAgent.respond({
+    messages: await validateUIMessages({ messages }),
+  });
+}
+```
+
+## 5. Client hook (optional)
+
+```tsx title="components/chat.tsx"
+'use client';
+
+import { useChat } from '@ai-sdk/react';
+import type { DeepcrawlAgentUIMessage } from '@/agent/deepcrawl-agent';
+
+export function Chat() {
+  const { messages, input, setInput, handleSubmit, isLoading } =
+    useChat<DeepcrawlAgentUIMessage>({ api: '/api/agent' });
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        {messages.map((message) => (
+          <div key={message.id}>
+            <strong>{message.role}:</strong> {message.content?.map((part) => part.text).join(' ')}
+          </div>
+        ))}
+      </div>
+      <input
+        className="w-full rounded border px-3 py-2"
+        value={input}
+        onChange={(event) => setInput(event.target.value)}
+        placeholder="Ask about hono.dev..."
+        disabled={isLoading}
+      />
+    </form>
+  );
+}
+```
+
+## 6. Run it
+
+```bash
+OPENAI_API_KEY=sk-... DEEPCRAWL_API_KEY=dc-... pnpm next dev
+```
+
+Try a prompt such as:
+
+> Find the Hono documentation that covers middleware, summarize it, and suggest two related sections to read next.
+
+The agent typically:
+1. Calls `extractLinks` on `https://hono.dev` to map relevant docs.
+2. Uses `getMarkdown` for focused summaries.
+3. Escalates to `readUrl` if more metadata or cleaned HTML is required.
+
+## Tips
+- **Prototype first**: Validate tool options in the [online playground](/docs/usage/playground) before exposing them to agents.
+- **Caching**: Cache is enabled by default. Pass a `expirationTtl` or `enabled` to customize the cache behavior.
+- **Safety**: Always validate user-provided URLs if the agent runs in a public setting.
+- **Retry strategy**: Deepcrawl already retries transient failures; avoid wrapping tools with extra retry loops unless required.
