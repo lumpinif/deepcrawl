@@ -2,8 +2,11 @@ import { LinksSuccessResponse } from '@deepcrawl/types';
 import {
   LinksOptionsSchema,
   LinksSuccessResponseSchema,
+  type LinksSuccessResponseWithoutTreeSchema,
+  type LinksSuccessResponseWithTreeSchema,
 } from '@deepcrawl/types/schemas';
 import { oc } from '@orpc/contract';
+import type z from 'zod/v4';
 import type { Inputs, Outputs } from '.';
 import { errorSpec } from './errors';
 
@@ -23,10 +26,32 @@ export const linksGETContract = linksOC
     description: `Endpoint: GET \`api.deepcrawl.dev/links?url=example.com\`\n\nDirectly return page links from the request URL as a string response.`,
   })
   .input(LinksOptionsSchema)
+  /* LinksSuccessResponse is a union of two shapes.
+  LinksSuccessResponseWithTree (when tree is enabled in options) – includes a tree hierarchy you can traverse, and metadata is nested in the tree node.
+  LinksSuccessResponseWithoutTree (when tree is false in options) – omits tree, returning only extracted links and metadata. */
   .output(LinksSuccessResponseSchema);
 
 export type GetLinksOptions = Inputs['links']['getLinks'];
+/**
+ * @description Tree is in discriminated union. Check {@link LinksSuccessResponse} to see details of type narrowing
+ */
 export type GetLinksResponse = Outputs['links']['getLinks'];
+
+/** Helper types for type narrowing
+ * Type representing a successful links extraction response with tree.
+ * @see {@link LinksSuccessResponseWithTreeSchema}
+ */
+export type GetLinksResponseWithTree = z.infer<
+  typeof LinksSuccessResponseWithTreeSchema
+>;
+
+/** Helper types for type narrowing
+ * Type representing a successful links extraction response without tree.
+ * @see {@link LinksSuccessResponseWithoutTreeSchema}
+ */
+export type GetLinksResponseWithoutTree = z.output<
+  typeof LinksSuccessResponseWithoutTreeSchema
+>;
 
 export const linksPOSTContract = linksOC
   .route({
@@ -41,6 +66,21 @@ export const linksPOSTContract = linksOC
 
 export type ExtractLinksOptions = Inputs['links']['extractLinks'];
 /**
- * @description Tree is in discriminated union check {@link LinksSuccessResponse} or {@link LinksSuccessResponseSchema} to see details of type narrowing
+ * @description Tree is in discriminated union. Check {@link LinksSuccessResponse} to see details of type narrowing
  */
 export type ExtractLinksResponse = Outputs['links']['extractLinks'];
+
+/** Helper types for type narrowing
+ * Type representing a successful links extraction response with tree.
+ * @see {@link LinksSuccessResponseWithTreeSchema}
+ */
+export type ExtractLinksResponseWithTree = z.infer<
+  typeof LinksSuccessResponseWithTreeSchema
+>;
+/** Helper types for type narrowing
+ * Type representing a successful links extraction response without tree.
+ * @see {@link LinksSuccessResponseWithoutTreeSchema}
+ */
+export type ExtractLinksResponseWithoutTree = z.output<
+  typeof LinksSuccessResponseWithoutTreeSchema
+>;
