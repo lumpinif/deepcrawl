@@ -5,6 +5,7 @@ import type {
 } from '@deepcrawl/contracts/read';
 import type { LinksErrorResponse, ReadErrorResponse } from '@deepcrawl/types';
 import type { ClientRetryPluginContext } from '@orpc/client/plugins';
+import type { ContractRouterClient as CRC } from '@orpc/contract';
 import type { Agent } from 'https';
 
 export type OptionsWithoutUrl<
@@ -50,6 +51,10 @@ export type DeepcrawlConfig =
     });
 
 export interface DeepcrawlClientContext extends ClientRetryPluginContext {}
+
+export type DeepcrawlClient = CRC<
+  typeof import('@deepcrawl/contracts').contract
+>;
 
 /**
  * Base error class that preserves oRPC structure while providing enhanced developer experience

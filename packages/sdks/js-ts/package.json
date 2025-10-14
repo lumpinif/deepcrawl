@@ -1,6 +1,6 @@
 {
   "name": "deepcrawl",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "JavaScript/TypeScript SDK for Deepcrawl API - A powerful web scraping and crawling service",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -11,6 +11,12 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types-public.d.ts",
+      "import": "./dist/types-public.mjs",
+      "require": "./dist/types-public.js",
+      "default": "./dist/types-public.js"
     }
   },
   "files": [
@@ -20,8 +26,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsup src/index.ts src/types-public.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts src/types-public.ts --format cjs,esm --dts --watch",
     "check": "biome check --write && pnpm typecheck",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run check && pnpm run clean && pnpm run build",
