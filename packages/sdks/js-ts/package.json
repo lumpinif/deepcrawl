@@ -1,40 +1,61 @@
 {
   "name": "deepcrawl",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "JavaScript/TypeScript SDK for Deepcrawl API - A powerful web scraping and crawling service",
+  "type": "module",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./types": {
-      "types": "./dist/types-public.d.ts",
-      "import": "./dist/types-public.mjs",
-      "require": "./dist/types-public.js",
-      "default": "./dist/types-public.js"
+      "import": {
+        "types": "./dist/types-public.d.ts",
+        "default": "./dist/types-public.js"
+      },
+      "require": {
+        "types": "./dist/types-public.d.cts",
+        "default": "./dist/types-public.cjs"
+      }
     },
     "./types/utils": {
-      "types": "./dist/types-utils.d.ts",
-      "import": "./dist/types-utils.mjs",
-      "require": "./dist/types-utils.js",
-      "default": "./dist/types-utils.js"
+      "import": {
+        "types": "./dist/types-utils.d.ts",
+        "default": "./dist/types-utils.js"
+      },
+      "require": {
+        "types": "./dist/types-utils.d.cts",
+        "default": "./dist/types-utils.cjs"
+      }
     },
     "./zod/v4": {
-      "types": "./dist/zod-v4.d.ts",
-      "import": "./dist/zod-v4.mjs",
-      "require": "./dist/zod-v4.js",
-      "default": "./dist/zod-v4.js"
+      "import": {
+        "types": "./dist/zod-v4.d.ts",
+        "default": "./dist/zod-v4.js"
+      },
+      "require": {
+        "types": "./dist/zod-v4.d.cts",
+        "default": "./dist/zod-v4.cjs"
+      }
     },
     "./schemas": {
-      "types": "./dist/schemas-public.d.ts",
-      "import": "./dist/schemas-public.mjs",
-      "require": "./dist/schemas-public.js",
-      "default": "./dist/schemas-public.js"
+      "import": {
+        "types": "./dist/schemas-public.d.ts",
+        "default": "./dist/schemas-public.js"
+      },
+      "require": {
+        "types": "./dist/schemas-public.d.cts",
+        "default": "./dist/schemas-public.cjs"
+      }
     }
   },
   "files": [
@@ -79,11 +100,6 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "packageManager": "pnpm@10.12.1",
-  "peerDependencies": {
-    "typescript": ">=5.0.0",
-    "zod": "^4.1.12"
   },
   "dependencies": {
     "zod": "^4.1.12"
