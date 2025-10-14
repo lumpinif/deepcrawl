@@ -39,12 +39,12 @@ Keep this module server-only.
 ```ts title="src/tools/deepcrawl-tools.ts"
 import { tool } from 'ai';
 import {
-  GetMarkdownOptionsSchema,
-  GetMarkdownResponse,
-  ReadUrlOptionsSchema,
-  ReadUrlResponse,
   ExtractLinksOptionsSchema,
-  ExtractLinksResponse,
+  type ExtractLinksResponse,
+  GetMarkdownOptionsSchema,
+  type GetMarkdownResponse,
+  ReadUrlOptionsSchema,
+  type ReadUrlResponse,
 } from 'deepcrawl/types';
 import { deepcrawl } from '../lib/deepcrawl';
 
@@ -63,7 +63,8 @@ export const extractLinks = tool({
 });
 
 export const getMarkdown = tool({
-  description: 'Convert a public page into clean markdown using Deepcrawl getMarkdown.',
+  description:
+    'Convert a public page into clean markdown using Deepcrawl getMarkdown.',
   parameters: GetMarkdownOptionsSchema,
   async execute({ url, ...options }) {
     const markdown = await deepcrawl.getMarkdown(url, options);
@@ -72,7 +73,8 @@ export const getMarkdown = tool({
 });
 
 export const readUrl = tool({
-  description: 'Fetch metadata, markdown, and optional cleaned HTML via Deepcrawl readUrl.',
+  description:
+    'Fetch metadata, markdown, and optional cleaned HTML via Deepcrawl readUrl.',
   parameters: ReadUrlOptionsSchema,
   async execute({ url, ...options }) {
     const response = await deepcrawl.readUrl({
@@ -101,7 +103,7 @@ export const deepcrawlTools = {
 ```ts title="src/agent/deepcrawl-agent.ts"
 import {
   Experimental_Agent as Agent,
-  Experimental_InferAgentUIMessage as InferAgentUIMessage,
+  type Experimental_InferAgentUIMessage as InferAgentUIMessage,
 } from 'ai';
 import { deepcrawlTools } from '../tools/deepcrawl-tools';
 
@@ -116,7 +118,9 @@ export const deepcrawlResearchAgent = new Agent({
   tools: deepcrawlTools,
 });
 
-export type DeepcrawlAgentUIMessage = InferAgentUIMessage<typeof deepcrawlResearchAgent>;
+export type DeepcrawlAgentUIMessage = InferAgentUIMessage<
+  typeof deepcrawlResearchAgent
+>;
 ```
 
 ## 4. API route
@@ -132,6 +136,7 @@ export async function POST(request: Request) {
     messages: await validateUIMessages({ messages }),
   });
 }
+
 ```
 
 ## 5. Client hook (optional)
@@ -147,20 +152,21 @@ export function Chat() {
     useChat<DeepcrawlAgentUIMessage>({ api: '/api/agent' });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form className="space-y-4" onSubmit={handleSubmit}>
       <div className="space-y-2">
         {messages.map((message) => (
           <div key={message.id}>
-            <strong>{message.role}:</strong> {message.content?.map((part) => part.text).join(' ')}
+            <strong>{message.role}:</strong>{' '}
+            {message.content?.map((part) => part.text).join(' ')}
           </div>
         ))}
       </div>
       <input
         className="w-full rounded border px-3 py-2"
-        value={input}
+        disabled={isLoading}
         onChange={(event) => setInput(event.target.value)}
         placeholder="Ask about hono.dev..."
-        disabled={isLoading}
+        value={input}
       />
     </form>
   );
