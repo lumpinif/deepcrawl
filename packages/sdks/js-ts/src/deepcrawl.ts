@@ -46,7 +46,7 @@ import {
   DeepcrawlServerError,
   DeepcrawlValidationError,
   type OptionsWithoutUrl,
-} from './types';
+} from './_types';
 
 const DEFAULT_API_BASE_URL = 'https://api.deepcrawl.dev';
 

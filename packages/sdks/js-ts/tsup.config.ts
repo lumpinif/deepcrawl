@@ -5,6 +5,7 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   clean: true,
   noExternal: ['@deepcrawl/contracts', '@deepcrawl/types'],
+  external: [/^zod/],
   treeshake: true,
   splitting: false,
   minify: true,
