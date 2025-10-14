@@ -1,3 +1,4 @@
+import type { z } from 'zod/v4';
 import type {
   ActivityLogEntrySchema,
   ExportFormatSchema,
@@ -5,8 +6,7 @@ import type {
   GetManyLogsSortColumnSchema,
   GetManyLogsSortDirectionSchema,
   JoinedRequestPathSchema,
-} from '@deepcrawl/types/schemas';
-import type { z } from 'zod/v4';
+} from '../logs/schemas';
 
 export type JoinedRequestPath = z.infer<typeof JoinedRequestPathSchema>;
 

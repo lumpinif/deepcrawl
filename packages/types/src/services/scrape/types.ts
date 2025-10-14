@@ -1,11 +1,11 @@
+import type { z } from 'zod/v4';
 import type {
   FetchOptionsSchema,
   MetaFilesSchema,
   SafeHeadersSchema,
   ScrapedDataSchema,
   ScrapeOptionsSchema,
-} from '@deepcrawl/types/schemas';
-import type { z } from 'zod/v4';
+} from '../scrape/schemas';
 
 /**
  * Type representing meta files (robots.txt, sitemap.xml) extracted from a website.

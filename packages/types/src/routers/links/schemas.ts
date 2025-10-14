@@ -1,22 +1,23 @@
+import { z } from 'zod/v4';
+import { BaseErrorResponseSchema } from '../../common/response-schemas';
+import { OptionalBoolWithDefault } from '../../common/utils';
 import {
   DEFAULT_CACHE_OPTIONS,
   DEFAULT_LINK_EXTRACTION_OPTIONS,
   DEFAULT_LINKS_OPTIONS,
   DEFAULT_TREE_OPTIONS,
-} from '@deepcrawl/types/configs';
+} from '../../configs';
+import { MetricsOptionsSchema, MetricsSchema } from '../../metrics/schemas';
+import { CacheOptionsSchema } from '../../services/cache/schemas';
 import {
-  BaseErrorResponseSchema,
-  CacheOptionsSchema,
   ExtractedLinksSchema,
   LinkExtractionOptionsSchema,
-  MetricsOptionsSchema,
-  MetricsSchema,
-  PageMetadataSchema,
+} from '../../services/link/schemas';
+import { PageMetadataSchema } from '../../services/metadata/schemas';
+import {
   ScrapedDataSchema,
   ScrapeOptionsSchema,
-} from '@deepcrawl/types/schemas';
-import { OptionalBoolWithDefault } from '@deepcrawl/types/utils';
-import { z } from 'zod/v4';
+} from '../../services/scrape/schemas';
 
 const {
   folderFirst,

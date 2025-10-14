@@ -1,20 +1,19 @@
+import { z } from 'zod/v4';
+import { BaseErrorResponseSchema } from '../../common/response-schemas';
+import { OptionalBoolWithDefault } from '../../common/utils';
 import {
   DEFAULT_CACHE_OPTIONS,
   DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
   DEFAULT_READ_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
-} from '@deepcrawl/types/configs';
+} from '../../configs';
+import { MetricsOptionsSchema, MetricsSchema } from '../../metrics/schemas';
+import { CacheOptionsSchema } from '../../services/cache/schemas';
+import { MarkdownConverterOptionsSchema } from '../../services/markdown/schemas';
 import {
-  BaseErrorResponseSchema,
-  CacheOptionsSchema,
-  MarkdownConverterOptionsSchema,
-  MetricsOptionsSchema,
-  MetricsSchema,
   ScrapedDataSchema,
   ScrapeOptionsSchema,
-} from '@deepcrawl/types/schemas';
-import { OptionalBoolWithDefault } from '@deepcrawl/types/utils';
-import { z } from 'zod/v4';
+} from '../../services/scrape/schemas';
 
 /* NOTE: IN ZOD V4: The input type of all z.coerce schemas is now unknown. THIS MIGHT BREAKES CURRENT TYPES */
 

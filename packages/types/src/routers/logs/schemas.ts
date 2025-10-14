@@ -1,24 +1,25 @@
+import { z } from 'zod/v4';
 import {
   GET_MANY_LOGS_DEFAULT_LIMIT,
   GET_MANY_LOGS_DEFAULT_OFFSET,
   GET_MANY_LOGS_MAX_LIMIT,
   GET_MANY_LOGS_SORT_COLUMNS,
   GET_MANY_LOGS_SORT_DIRECTIONS,
-} from '@deepcrawl/types/configs/default';
+} from '../../configs/default';
 import {
-  GetMarkdownOptionsSchema,
   LinksErrorResponseSchema,
   LinksOptionsSchema,
   LinksSuccessResponseSchema,
   LinksSuccessResponseWithoutTreeSchema,
   LinksSuccessResponseWithTreeSchema,
   LinksTreeSchema,
+} from '../links/schemas';
+import {
+  GetMarkdownOptionsSchema,
   ReadErrorResponseSchema,
   ReadOptionsSchema,
   ReadSuccessResponseSchema,
-} from '@deepcrawl/types/schemas';
-
-import { z } from 'zod/v4';
+} from '../read/schemas';
 
 /**
  * Schema for a joined request path

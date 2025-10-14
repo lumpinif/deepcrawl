@@ -1,3 +1,4 @@
+import type { z } from 'zod/v4';
 import type {
   CheerioOptionsSchema,
   ElementPatternSchema,
@@ -6,8 +7,7 @@ import type {
   HTMLRewriterOptionsSchema,
   ReaderCleaningOptionsSchema,
   ReaderOptionsSchema,
-} from '@deepcrawl/types/schemas';
-import type { z } from 'zod/v4';
+} from '../html-cleaning/schemas';
 
 /**
  * Type representing configuration options for HTML cleaning with the cheerio-reader processor.

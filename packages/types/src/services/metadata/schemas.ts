@@ -1,6 +1,6 @@
-import { DEFAULT_METADATA_OPTIONS } from '@deepcrawl/types/configs';
-import { OptionalBoolWithDefault } from '@deepcrawl/types/utils';
 import { z } from 'zod/v4';
+import { OptionalBoolWithDefault } from '../../common/utils';
+import { DEFAULT_METADATA_OPTIONS } from '../../configs';
 
 const {
   title,

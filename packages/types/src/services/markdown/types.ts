@@ -1,5 +1,5 @@
-import type { MarkdownConverterOptionsSchema } from '@deepcrawl/types/schemas';
 import type { z } from 'zod/v4';
+import type { MarkdownConverterOptionsSchema } from '../markdown/schemas';
 
 /**
  * Type representing options for controlling HTML to Markdown conversion.

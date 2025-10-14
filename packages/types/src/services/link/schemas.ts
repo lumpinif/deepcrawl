@@ -1,6 +1,6 @@
-import { DEFAULT_LINK_EXTRACTION_OPTIONS } from '@deepcrawl/types/configs';
-import { OptionalBoolWithDefault } from '@deepcrawl/types/utils';
 import { z } from 'zod/v4';
+import { OptionalBoolWithDefault } from '../../common/utils';
+import { DEFAULT_LINK_EXTRACTION_OPTIONS } from '../../configs';
 
 const { includeExternal, includeMedia, removeQueryParams } =
   DEFAULT_LINK_EXTRACTION_OPTIONS;

@@ -1,9 +1,9 @@
+import { z } from 'zod/v4';
+import { OptionalBoolWithDefault } from '../../common/utils';
 import {
   DEFAULT_HTML_REWRITER_OPTIONS,
   DEFAULT_READER_CLEANING_OPTIONS,
-} from '@deepcrawl/types/configs';
-import { OptionalBoolWithDefault } from '@deepcrawl/types/utils';
-import { z } from 'zod/v4';
+} from '../../configs';
 
 /**
  * Configuration schema for HTML cleaning with the cheerio-reader processor.

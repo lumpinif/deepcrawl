@@ -1,3 +1,4 @@
+import type { z } from 'zod/v4';
 import type {
   LinksErrorResponseSchema,
   LinksOptionsSchema,
@@ -10,9 +11,7 @@ import type {
   SkippedUrlSchema,
   TreeOptionsSchema,
   VisitedUrlSchema,
-} from '@deepcrawl/types/schemas';
-
-import type { z } from 'zod/v4';
+} from '../links/schemas';
 
 /**
  * Type representing the order of links within each folder.

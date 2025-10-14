@@ -1,3 +1,5 @@
+import { z } from 'zod/v4';
+import { OptionalBoolWithDefault } from '../../common/utils';
 import {
   COMMON_HEADERS,
   DEFAULT_FETCH_OPTIONS,
@@ -5,15 +7,12 @@ import {
   DEFAULT_METADATA_OPTIONS,
   DEFAULT_READER_CLEANING_OPTIONS,
   DEFAULT_SCRAPE_OPTIONS,
-} from '@deepcrawl/types/configs';
+} from '../../configs';
 import {
   HTMLRewriterOptionsSchema,
-  MetadataOptionsSchema,
-  PageMetadataSchema,
   ReaderCleaningOptionsSchema,
-} from '@deepcrawl/types/schemas';
-import { OptionalBoolWithDefault } from '@deepcrawl/types/utils';
-import { z } from 'zod/v4';
+} from '../html-cleaning/schemas';
+import { MetadataOptionsSchema, PageMetadataSchema } from '../metadata/schemas';
 
 /**
  * Schema for meta files (robots.txt, sitemap.xml) extracted from a website.

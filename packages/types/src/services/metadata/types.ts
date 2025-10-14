@@ -1,8 +1,8 @@
+import type { z } from 'zod/v4';
 import type {
   MetadataOptionsSchema,
   PageMetadataSchema,
-} from '@deepcrawl/types/schemas';
-import type { z } from 'zod/v4';
+} from '../metadata/schemas';
 
 /**
  * Type representing options for controlling metadata extraction.

@@ -1,14 +1,13 @@
-import {
-  CacheOptionsSchema,
-  MarkdownConverterOptionsSchema,
-  MetricsOptionsSchema,
-  type ReadErrorResponseSchema,
-  type ReadOptionsSchema,
-  type ReadResponseBaseSchema,
-  type ReadSuccessResponseSchema,
-} from '@deepcrawl/types/schemas';
-
 import type { z } from 'zod/v4';
+import { MetricsOptionsSchema } from '../../metrics/schemas';
+import { CacheOptionsSchema } from '../../services/cache/schemas';
+import { MarkdownConverterOptionsSchema } from '../../services/markdown/schemas';
+import type {
+  ReadErrorResponseSchema,
+  ReadOptionsSchema,
+  ReadResponseBaseSchema,
+  ReadSuccessResponseSchema,
+} from '../read/schemas';
 
 /**
  * Configuration options for read operations.

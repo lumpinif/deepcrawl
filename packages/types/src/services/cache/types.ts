@@ -1,5 +1,5 @@
-import type { CacheOptionsSchema } from '@deepcrawl/types/schemas';
 import type { z } from 'zod/v4';
+import type { CacheOptionsSchema } from '../cache/schemas';
 
 /**
  * @default { enabled: true }

@@ -1,6 +1,6 @@
-import { DEFAULT_METRICS_OPTIONS } from '@deepcrawl/types/configs/default';
-import { OptionalBoolWithDefault } from '@deepcrawl/types/utils';
 import z from 'zod/v4';
+import { OptionalBoolWithDefault } from '../common/utils';
+import { DEFAULT_METRICS_OPTIONS } from '../configs/default';
 
 const { enable } = DEFAULT_METRICS_OPTIONS;
 

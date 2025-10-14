@@ -1,8 +1,8 @@
+import type { z } from 'zod/v4';
 import type {
   ExtractedLinksSchema,
   LinkExtractionOptionsSchema,
-} from '@deepcrawl/types/schemas';
-import type { z } from 'zod/v4';
+} from '../link/schemas';
 
 /**
  * Type representing configuration options for link extraction behavior.

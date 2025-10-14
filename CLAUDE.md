@@ -366,16 +366,16 @@ Always use dedicated export paths for better tree-shaking and clearer separation
 
 ```typescript
 // SDK Client
-import { DeepcrawlApp } from 'deepcrawl';
+import { DeepcrawlApp } from "deepcrawl";
 
 // Types (use 'import type' for type-only imports)
-import type { ReadUrlOptions, ReadUrlResponse } from 'deepcrawl/types';
+import type { ReadUrlOptions, ReadUrlResponse } from "deepcrawl/types";
 
 // Schemas (for runtime validation)
-import { ReadUrlOptionsSchema } from 'deepcrawl/schemas';
+import { ReadUrlOptionsSchema } from "deepcrawl/schemas";
 
 // Utilities
-import { formatDuration, getMetrics } from 'deepcrawl/utils';
+import { formatDuration, getMetrics } from "deepcrawl/utils";
 ```
 
 **Never import types, schemas, or utils from the main `'deepcrawl'` package** - always use the dedicated paths.
@@ -466,3 +466,30 @@ Based on `.claude/CLAUDE.md` (Ultracite/Biome rules):
   - Observability enabled for production monitoring
   - Service bindings for inter-worker communication
 - Always avoid using 'any' type assertion whenever possible
+
+## Critical: Avoiding Circular Dependencies in @deepcrawl/types
+
+**NEVER import from barrel exports within the same package!**
+
+Files inside `packages/types/src/` must use relative imports to avoid circular dependencies:
+
+```typescript
+// ❌ WRONG - Causes circular dependency runtime errors
+import { MetricsSchema } from "@deepcrawl/types/schemas";
+
+// ✅ CORRECT - Use relative imports within the package
+import { MetricsSchema } from "../../metrics/schemas";
+import { CacheOptionsSchema } from "../../services/cache/schemas";
+```
+
+**Why this matters:**
+
+- Barrel exports (`@deepcrawl/types/schemas`) re-export files from within the package
+- Importing from the barrel creates circular dependencies during runtime (tsx, node)
+- TypeScript compilation and IDE work fine, but runtime execution fails
+- External packages (workers, SDK, contracts) SHOULD use barrel exports for convenience
+
+**Rule of thumb:**
+
+- Internal (within `@deepcrawl/types`): Always use relative imports
+- External (from other packages): Always use barrel exports (`@deepcrawl/types/schemas`)
