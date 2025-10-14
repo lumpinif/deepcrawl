@@ -387,6 +387,376 @@ components:
             cheerioOptions: {}
             readerOptions: {}
           fetchOptions: {}
+    ReadUrlOptions:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The URL to read and extract content from
+          examples:
+            - https://example.com
+            - example.com
+        markdown:
+          type: boolean
+          default: true
+          description: Whether to extract markdown from the page.
+          examples:
+            - true
+            - false
+        rawHtml:
+          type: boolean
+          default: false
+          description: Whether to return raw HTML.
+          examples:
+            - false
+            - true
+        cacheOptions:
+          $ref: '#/components/schemas/CacheOptions'
+          description: >-
+            Cache configuration for read operation based on KV put options
+            except for `metadata`
+          examples:
+            - enabled: true
+              expirationTtl: 345600
+        markdownConverterOptions:
+          type: object
+          properties:
+            preferNativeParser:
+              type: boolean
+              default: false
+              title: Prefer Native Parser
+              description: >-
+                Use native window DOMParser when available instead of fallback
+                parser (default: false)
+              examples:
+                - false
+                - true
+            codeFence:
+              type: string
+              default: '```'
+              title: Code Fence
+              description: 'Characters used to wrap code blocks (default: "```")'
+              examples:
+                - '```'
+                - ~~~
+            bulletMarker:
+              type: string
+              default: '*'
+              title: Bullet Marker
+              description: Character used for unordered list items
+              examples:
+                - '*'
+                - '-'
+                - +
+            codeBlockStyle:
+              enum:
+                - indented
+                - fenced
+              default: fenced
+              title: Code Block Style
+              description: >-
+                How to format code blocks - either indented (4 spaces) or fenced
+                (with code fence characters)
+              examples:
+                - fenced
+                - indented
+            emDelimiter:
+              type: string
+              default: _
+              title: Emphasis Delimiter
+              description: 'Characters used to wrap emphasized (italic) text (default: _)'
+              examples:
+                - _
+                - '*'
+            strongDelimiter:
+              type: string
+              default: '**'
+              title: Strong Delimiter
+              description: 'Characters used to wrap strong (bold) text (default: **)'
+              examples:
+                - '**'
+                - __
+            strikeDelimiter:
+              type: string
+              default: ~~
+              title: Strike Delimiter
+              description: 'Characters used to wrap strikethrough text (default: ~~)'
+              examples:
+                - ~~
+            ignore:
+              type: array
+              items:
+                type: string
+              title: Ignore Elements
+              description: >-
+                HTML elements to completely ignore (including their content)
+                during conversion
+              examples:
+                - - script
+                  - style
+                - - nav
+                  - footer
+            blockElements:
+              type: array
+              items:
+                type: string
+              title: Block Elements
+              description: >-
+                HTML elements to treat as block elements (surrounded with blank
+                lines)
+              examples:
+                - - div
+                  - section
+                - - article
+                  - aside
+            maxConsecutiveNewlines:
+              type: integer
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+              exclusiveMinimum: 0
+              default: 3
+              title: Max Consecutive Newlines
+              description: Maximum number of consecutive newlines to preserve in output
+              examples:
+                - 3
+                - 2
+                - 1
+            lineStartEscape:
+              type: array
+              prefixItems:
+                - not: {}
+                - type: string
+              title: Line Start Escape
+              description: >-
+                Pattern and replacement for escaping special characters at line
+                start
+              examples:
+                - - /^(\d+\.)/
+                  - \$1
+            globalEscape:
+              type: array
+              prefixItems:
+                - not: {}
+                - type: string
+              title: Global Escape
+              description: Pattern and replacement for escaping special characters globally
+              examples:
+                - - /([*_`])/g
+                  - \$1
+            textReplace:
+              type: array
+              items:
+                type: array
+                prefixItems:
+                  - not: {}
+                  - type: string
+              title: Text Replace
+              description: >-
+                Array of pattern-replacement pairs for custom text
+                transformations
+              examples:
+                - - - /\s+/g
+                    - ' '
+                - - - /&nbsp;/g
+                    - ' '
+                  - - /&amp;/g
+                    - '&'
+            keepDataImages:
+              type: boolean
+              default: false
+              title: Keep Data Images
+              description: >-
+                Whether to preserve images with data: URIs (can be up to 1MB
+                each) (default: false)
+              examples:
+                - false
+                - true
+            useLinkReferenceDefinitions:
+              type: boolean
+              default: false
+              title: Use Link Reference Definitions
+              description: >-
+                Format links using reference definitions at bottom instead of
+                inline (default: false)
+              examples:
+                - false
+                - true
+            useInlineLinks:
+              type: boolean
+              default: true
+              title: Use Inline Links
+              description: >-
+                Wrap URL text in <> instead of []() syntax when text matches URL
+                (default: true)
+              examples:
+                - true
+                - false
+          default:
+            preferNativeParser: false
+            codeFence: '```'
+            bulletMarker: '*'
+            codeBlockStyle: fenced
+            emDelimiter: _
+            strongDelimiter: '**'
+            strikeDelimiter: ~~
+            maxConsecutiveNewlines: 3
+            keepDataImages: false
+            useLinkReferenceDefinitions: false
+            useInlineLinks: true
+          title: MarkdownConverterOptions
+          description: Options for markdown conversion.
+          examples:
+            - preferNativeParser: false
+              codeFence: '```'
+              bulletMarker: '*'
+              codeBlockStyle: fenced
+              emDelimiter: _
+              strongDelimiter: '**'
+              strikeDelimiter: ~~
+              maxConsecutiveNewlines: 3
+              keepDataImages: false
+              useLinkReferenceDefinitions: false
+              useInlineLinks: true
+        metricsOptions:
+          type: object
+          properties:
+            enable:
+              type: boolean
+              default: true
+              description: Whether to enable metrics.
+              examples:
+                - true
+                - false
+          default:
+            enable: true
+          description: Options for metrics.
+          examples:
+            - enable: true
+            - false
+        metadata:
+          type: boolean
+          default: true
+          description: Whether to extract metadata from the page.
+          examples:
+            - true
+            - false
+        cleanedHtml:
+          type: boolean
+          default: false
+          description: Whether to return cleaned HTML.
+          examples:
+            - false
+            - true
+        robots:
+          type: boolean
+          default: false
+          description: Whether to fetch and parse robots.txt.
+          examples:
+            - false
+            - true
+        sitemapXML:
+          type: boolean
+          default: false
+          description: >-
+            ( NOTE: sitemapXML is not stable yet, please use with caution. It
+            may not work as expected. ) Whether to fetch and parse sitemap.xml.
+          examples:
+            - false
+            - true
+        metadataOptions:
+          $ref: '#/components/schemas/MetadataOptions'
+          description: Options for metadata extraction.
+          examples:
+            - title: true
+              description: true
+              language: true
+              canonical: true
+              robots: true
+              author: true
+              keywords: true
+              favicon: true
+              openGraph: true
+              twitter: true
+        cleaningProcessor:
+          enum:
+            - cheerio-reader
+            - html-rewriter
+          default: cheerio-reader
+          description: The cleaning processor to use.
+          examples:
+            - cheerio-reader
+            - html-rewriter
+        htmlRewriterOptions:
+          $ref: '#/components/schemas/HTMLRewriterOptions'
+          description: Options for HTML cleaning with html-rewriter.
+          examples:
+            - extractMainContent: true
+              removeBase64Images: true
+        readerCleaningOptions:
+          $ref: '#/components/schemas/ReaderCleaningOptions'
+          description: Options for HTML cleaning with cheerio-reader.
+          examples:
+            - readerOptions:
+                debug: true
+        fetchOptions:
+          $ref: '#/components/schemas/FetchOptions'
+          description: Options for the fetch request.
+          examples:
+            - method: GET
+              headers:
+                User-Agent: Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)
+                Accept: >-
+                  text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                Accept-Language: en-US,en;q=0.5
+              redirect: follow
+      required:
+        - url
+      title: ReadOptions
+      description: Configuration options for read operation
+      examples:
+        - url: https://example.com
+          markdown: true
+          rawHtml: false
+          cacheOptions:
+            enabled: true
+            expirationTtl: 345600
+          metricsOptions:
+            enable: true
+          metadata: true
+          cleanedHtml: false
+          robots: false
+          sitemapXML: false
+          metadataOptions:
+            title: true
+            description: true
+            language: true
+            canonical: true
+            robots: true
+            author: true
+            keywords: true
+            favicon: true
+            openGraph: true
+            twitter: true
+          markdownConverterOptions:
+            preferNativeParser: false
+            codeFence: '```'
+            bulletMarker: '*'
+            codeBlockStyle: fenced
+            emDelimiter: _
+            strongDelimiter: '**'
+            strikeDelimiter: ~~
+            maxConsecutiveNewlines: 3
+            keepDataImages: false
+            useLinkReferenceDefinitions: false
+            useInlineLinks: true
+          cleaningProcessor: cheerio-reader
+          htmlRewriterOptions:
+            extractMainContent: true
+            removeBase64Images: true
+          readerCleaningOptions:
+            cheerioOptions: {}
+            readerOptions: {}
+          fetchOptions: {}
     ReadSuccessResponse:
       type: object
       properties:
@@ -788,6 +1158,711 @@ components:
       examples:
         - url: https://example.com
           tree: true
+    GetLinksOptions:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The URL to extract links from. Must be a valid URL string.
+          examples:
+            - https://example.com
+            - example.com
+        tree:
+          type: boolean
+          default: true
+          description: 'Whether to build a site map tree. Default: true'
+          examples:
+            - true
+            - false
+        linkExtractionOptions:
+          $ref: '#/components/schemas/LinkExtractionOptions'
+          title: LinkExtractionOptions
+          description: 'Options for link extraction. Default: [object Object]'
+          examples:
+            - includeExternal: false
+              includeMedia: false
+              removeQueryParams: true
+        cacheOptions:
+          $ref: '#/components/schemas/CacheOptions'
+          description: >-
+            Cache configuration for links operation based on KV put options
+            except for `metadata`
+          examples:
+            - enabled: true
+              expirationTtl: 345600
+        metricsOptions:
+          type: object
+          properties:
+            enable:
+              type: boolean
+              default: true
+              description: Whether to enable metrics.
+              examples:
+                - true
+                - false
+          default:
+            enable: true
+          description: Options for metrics for links operation.
+          examples:
+            - enable: true
+            - false
+        folderFirst:
+          type: boolean
+          default: true
+          description: >-
+            Whether to place folders before leaf nodes in the tree. Default:
+            true
+          examples:
+            - true
+            - false
+        linksOrder:
+          enum:
+            - page
+            - alphabetical
+          default: page
+          description: >-
+            How to order links within each folder: "page" (preserve original
+            order) or "alphabetical" (sort A→Z by URL). Default: page
+          examples:
+            - alphabetical
+            - page
+        extractedLinks:
+          type: boolean
+          default: true
+          description: >-
+            Whether to include extracted links for each node in the tree.
+            Default: true
+          examples:
+            - true
+            - false
+        subdomainAsRootUrl:
+          type: boolean
+          default: true
+          description: >-
+            Whether to treat subdomain as root URL. If false, subdomain will be
+            excluded from root URL. e.g., if false: rootUrl:
+            `https://swr.vercel.app` -> `https://vercel.app`. Default: true
+          examples:
+            - true
+            - false
+        isPlatformUrl:
+          type: boolean
+          default: false
+          description: >-
+            Whether the URL is a platform URL. If true, the targetUrl will be
+            the platform URL. e.g., if true: targetUrl: `https://github.com` ->
+            `https://github.com/lumpinif`. Default: false
+          examples:
+            - false
+            - true
+        metadata:
+          type: boolean
+          default: true
+          description: Whether to extract metadata from the page.
+          examples:
+            - true
+            - false
+        cleanedHtml:
+          type: boolean
+          default: false
+          description: Whether to return cleaned HTML.
+          examples:
+            - false
+            - true
+        robots:
+          type: boolean
+          default: false
+          description: Whether to fetch and parse robots.txt.
+          examples:
+            - false
+            - true
+        sitemapXML:
+          type: boolean
+          default: false
+          description: >-
+            ( NOTE: sitemapXML is not stable yet, please use with caution. It
+            may not work as expected. ) Whether to fetch and parse sitemap.xml.
+          examples:
+            - false
+            - true
+        metadataOptions:
+          $ref: '#/components/schemas/MetadataOptions'
+          description: Options for metadata extraction.
+          examples:
+            - title: true
+              description: true
+              language: true
+              canonical: true
+              robots: true
+              author: true
+              keywords: true
+              favicon: true
+              openGraph: true
+              twitter: true
+        cleaningProcessor:
+          enum:
+            - cheerio-reader
+            - html-rewriter
+          default: cheerio-reader
+          description: The cleaning processor to use.
+          examples:
+            - cheerio-reader
+            - html-rewriter
+        htmlRewriterOptions:
+          $ref: '#/components/schemas/HTMLRewriterOptions'
+          description: Options for HTML cleaning with html-rewriter.
+          examples:
+            - extractMainContent: true
+              removeBase64Images: true
+        readerCleaningOptions:
+          $ref: '#/components/schemas/ReaderCleaningOptions'
+          description: Options for HTML cleaning with cheerio-reader.
+          examples:
+            - readerOptions:
+                debug: true
+        fetchOptions:
+          $ref: '#/components/schemas/FetchOptions'
+          description: Options for the fetch request.
+          examples:
+            - method: GET
+              headers:
+                User-Agent: Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)
+                Accept: >-
+                  text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                Accept-Language: en-US,en;q=0.5
+              redirect: follow
+      required:
+        - url
+      title: LinksOptions
+      description: Configuration options for links extraction operation
+      examples:
+        - url: https://example.com
+          tree: true
+    ExtractedLinksOptions:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The URL to extract links from. Must be a valid URL string.
+          examples:
+            - https://example.com
+            - example.com
+        tree:
+          type: boolean
+          default: true
+          description: 'Whether to build a site map tree. Default: true'
+          examples:
+            - true
+            - false
+        linkExtractionOptions:
+          $ref: '#/components/schemas/LinkExtractionOptions'
+          title: LinkExtractionOptions
+          description: 'Options for link extraction. Default: [object Object]'
+          examples:
+            - includeExternal: false
+              includeMedia: false
+              removeQueryParams: true
+        cacheOptions:
+          $ref: '#/components/schemas/CacheOptions'
+          description: >-
+            Cache configuration for links operation based on KV put options
+            except for `metadata`
+          examples:
+            - enabled: true
+              expirationTtl: 345600
+        metricsOptions:
+          type: object
+          properties:
+            enable:
+              type: boolean
+              default: true
+              description: Whether to enable metrics.
+              examples:
+                - true
+                - false
+          default:
+            enable: true
+          description: Options for metrics for links operation.
+          examples:
+            - enable: true
+            - false
+        folderFirst:
+          type: boolean
+          default: true
+          description: >-
+            Whether to place folders before leaf nodes in the tree. Default:
+            true
+          examples:
+            - true
+            - false
+        linksOrder:
+          enum:
+            - page
+            - alphabetical
+          default: page
+          description: >-
+            How to order links within each folder: "page" (preserve original
+            order) or "alphabetical" (sort A→Z by URL). Default: page
+          examples:
+            - alphabetical
+            - page
+        extractedLinks:
+          type: boolean
+          default: true
+          description: >-
+            Whether to include extracted links for each node in the tree.
+            Default: true
+          examples:
+            - true
+            - false
+        subdomainAsRootUrl:
+          type: boolean
+          default: true
+          description: >-
+            Whether to treat subdomain as root URL. If false, subdomain will be
+            excluded from root URL. e.g., if false: rootUrl:
+            `https://swr.vercel.app` -> `https://vercel.app`. Default: true
+          examples:
+            - true
+            - false
+        isPlatformUrl:
+          type: boolean
+          default: false
+          description: >-
+            Whether the URL is a platform URL. If true, the targetUrl will be
+            the platform URL. e.g., if true: targetUrl: `https://github.com` ->
+            `https://github.com/lumpinif`. Default: false
+          examples:
+            - false
+            - true
+        metadata:
+          type: boolean
+          default: true
+          description: Whether to extract metadata from the page.
+          examples:
+            - true
+            - false
+        cleanedHtml:
+          type: boolean
+          default: false
+          description: Whether to return cleaned HTML.
+          examples:
+            - false
+            - true
+        robots:
+          type: boolean
+          default: false
+          description: Whether to fetch and parse robots.txt.
+          examples:
+            - false
+            - true
+        sitemapXML:
+          type: boolean
+          default: false
+          description: >-
+            ( NOTE: sitemapXML is not stable yet, please use with caution. It
+            may not work as expected. ) Whether to fetch and parse sitemap.xml.
+          examples:
+            - false
+            - true
+        metadataOptions:
+          $ref: '#/components/schemas/MetadataOptions'
+          description: Options for metadata extraction.
+          examples:
+            - title: true
+              description: true
+              language: true
+              canonical: true
+              robots: true
+              author: true
+              keywords: true
+              favicon: true
+              openGraph: true
+              twitter: true
+        cleaningProcessor:
+          enum:
+            - cheerio-reader
+            - html-rewriter
+          default: cheerio-reader
+          description: The cleaning processor to use.
+          examples:
+            - cheerio-reader
+            - html-rewriter
+        htmlRewriterOptions:
+          $ref: '#/components/schemas/HTMLRewriterOptions'
+          description: Options for HTML cleaning with html-rewriter.
+          examples:
+            - extractMainContent: true
+              removeBase64Images: true
+        readerCleaningOptions:
+          $ref: '#/components/schemas/ReaderCleaningOptions'
+          description: Options for HTML cleaning with cheerio-reader.
+          examples:
+            - readerOptions:
+                debug: true
+        fetchOptions:
+          $ref: '#/components/schemas/FetchOptions'
+          description: Options for the fetch request.
+          examples:
+            - method: GET
+              headers:
+                User-Agent: Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)
+                Accept: >-
+                  text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                Accept-Language: en-US,en;q=0.5
+              redirect: follow
+      required:
+        - url
+      title: LinksOptions
+      description: Configuration options for links extraction operation
+      examples:
+        - url: https://example.com
+          tree: true
+    LinksSuccessResponseWithTree:
+      type: object
+      properties:
+        success:
+          const: true
+          description: Indicates that the operation was successful
+          examples:
+            - true
+        targetUrl:
+          type: string
+          description: The URL that was requested to be processed
+          examples:
+            - https://example.com
+        timestamp:
+          type: string
+          description: ISO timestamp when the request was processed
+          examples:
+            - '2024-01-15T10:30:00.000Z'
+        requestId:
+          type: string
+          description: Unique identifier (request ID) for the activity log entry
+          examples:
+            - 123e4567-e89b-12d3-a456-426614174000
+        cached:
+          type: boolean
+          description: Whether the result was returned from cache
+          examples:
+            - false
+        ancestors:
+          type: array
+          items:
+            type: string
+          description: Array of parent URLs leading to this URL
+          examples:
+            - https://example.com
+        metrics:
+          type: object
+          properties:
+            readableDuration:
+              type: string
+              description: Human-readable representation of the operation duration
+              examples:
+                - 0.2s
+            durationMs:
+              type: number
+              description: Duration of the operation in milliseconds
+              examples:
+                - 200
+            startTimeMs:
+              type: number
+              description: Timestamp in milliseconds when the operation started
+              examples:
+                - 1704067800000
+            endTimeMs:
+              type: number
+              description: Timestamp in milliseconds when the operation finished
+              examples:
+                - 1704067800200
+          required:
+            - readableDuration
+            - durationMs
+            - startTimeMs
+            - endTimeMs
+          title: Metrics
+          description: Metrics for the links extraction operation
+          examples:
+            - readableDuration: 0.2s
+              durationMs: 200
+              startTimeMs: 1704067800000
+              endTimeMs: 1704067800200
+        tree:
+          type: object
+          properties:
+            url:
+              type: string
+              description: The URL of this page
+              examples:
+                - https://example.com/about
+            rootUrl:
+              type: string
+              description: The root URL of the website being crawled
+              examples:
+                - https://example.com
+            name:
+              type: string
+              description: The display name or title of this page
+              examples:
+                - About Us
+            totalUrls:
+              type: number
+              description: Total number of URLs discovered in the entire tree
+              examples:
+                - 150
+            lastUpdated:
+              type: string
+              description: ISO timestamp when this page was last crawled
+              examples:
+                - '2024-01-15T10:30:00.000Z'
+            lastVisited:
+              anyOf:
+                - type: string
+                - type: 'null'
+              description: >-
+                ISO timestamp when this page was last visited (null if never
+                visited)
+              examples:
+                - '2024-01-15T10:30:00.000Z'
+            error:
+              type: string
+              description: Error message if there was an issue processing this page
+              examples:
+                - 'Failed to fetch: 404 Not Found'
+            metadata:
+              $ref: '#/components/schemas/PageMetadata'
+              title: PageMetadata
+              description: Extracted metadata from the page (title, description, etc.)
+            cleanedHtml:
+              type: string
+              description: Cleaned HTML content of the page
+            extractedLinks:
+              $ref: '#/components/schemas/ExtractedLinks'
+              title: ExtractedLinks
+              description: Links found on this page, categorized by type
+            skippedUrls:
+              $ref: '#/components/schemas/SkippedLinks'
+              title: SkippedLinks
+              description: URLs that were skipped during processing with reasons
+            children:
+              type: array
+              items:
+                $ref: '#/components/schemas/LinksTree'
+              title: LinksTree
+              description: >-
+                Array of child LinksTree nodes, each representing a page found
+                under this URL. This creates a recursive tree structure for the
+                entire website hierarchy.
+              examples:
+                - url: https://example.com/about/team
+                  name: Team
+                  lastUpdated: '2024-01-15T10:35:00.000Z'
+                  children: []
+                - url: https://example.com/about/history
+                  name: History
+                  lastUpdated: '2024-01-15T10:36:00.000Z'
+                  children:
+                    - url: https://example.com/about/history/founding
+                      name: Company Founding
+                      lastUpdated: '2024-01-15T10:37:00.000Z'
+          required:
+            - url
+            - lastUpdated
+          title: LinksTree
+          description: >-
+            Site map tree starting from the root URL (required when tree
+            generation is enabled)
+          examples:
+            - url: https://example.com/about
+              rootUrl: https://example.com
+              name: About Us
+              totalUrls: 150
+              lastUpdated: '2024-01-15T10:30:00.000Z'
+              lastVisited: '2024-01-15T10:30:00.000Z'
+              metadata:
+                title: About Us - Example Company
+                description: Learn more about our company history and mission.
+                language: en
+                canonical: https://example.com/about
+                robots: index,follow
+                author: Example Company
+                keywords:
+                  - about
+                  - company
+                  - history
+                favicon: https://example.com/favicon.ico
+                ogTitle: About Us - Example Company
+                ogDescription: Learn more about our company history and mission.
+                ogImage: https://example.com/og-about.jpg
+                ogUrl: https://example.com/about
+                twitterCard: summary_large_image
+                twitterTitle: About Us - Example Company
+                twitterDescription: Learn more about our company history and mission.
+                twitterImage: https://example.com/twitter-about.jpg
+                isIframeAllowed: true
+              extractedLinks:
+                internal:
+                  - https://example.com/about/team
+                  - https://example.com/about/history
+                  - https://example.com/contact
+                external:
+                  - https://partner-company.com
+                  - https://industry-association.org
+                media:
+                  images:
+                    - https://example.com/images/office-photo.jpg
+                    - https://example.com/images/team-photo.jpg
+                  videos:
+                    - https://example.com/videos/company-intro.mp4
+                  documents:
+                    - https://example.com/files/company-brochure.pdf
+              children:
+                - url: https://example.com/about/team
+                  name: Our Team
+                  lastUpdated: '2024-01-15T10:35:00.000Z'
+                  children: []
+                - url: https://example.com/about/history
+                  name: Company History
+                  lastUpdated: '2024-01-15T10:36:00.000Z'
+                  children:
+                    - url: https://example.com/about/history/founding
+                      name: Company Founding
+                      lastUpdated: '2024-01-15T10:37:00.000Z'
+                      children: []
+      required:
+        - success
+        - targetUrl
+        - timestamp
+        - requestId
+        - cached
+        - tree
+    LinksSuccessResponseWithoutTree:
+      type: object
+      properties:
+        success:
+          const: true
+          description: Indicates that the operation was successful
+          examples:
+            - true
+        targetUrl:
+          type: string
+          description: The URL that was requested to be processed
+          examples:
+            - https://example.com
+        timestamp:
+          type: string
+          description: ISO timestamp when the request was processed
+          examples:
+            - '2024-01-15T10:30:00.000Z'
+        requestId:
+          type: string
+          description: Unique identifier (request ID) for the activity log entry
+          examples:
+            - 123e4567-e89b-12d3-a456-426614174000
+        cached:
+          type: boolean
+          description: Whether the result was returned from cache
+          examples:
+            - false
+        ancestors:
+          type: array
+          items:
+            type: string
+          description: Array of parent URLs leading to this URL
+          examples:
+            - https://example.com
+        metrics:
+          type: object
+          properties:
+            readableDuration:
+              type: string
+              description: Human-readable representation of the operation duration
+              examples:
+                - 0.2s
+            durationMs:
+              type: number
+              description: Duration of the operation in milliseconds
+              examples:
+                - 200
+            startTimeMs:
+              type: number
+              description: Timestamp in milliseconds when the operation started
+              examples:
+                - 1704067800000
+            endTimeMs:
+              type: number
+              description: Timestamp in milliseconds when the operation finished
+              examples:
+                - 1704067800200
+          required:
+            - readableDuration
+            - durationMs
+            - startTimeMs
+            - endTimeMs
+          title: Metrics
+          description: Metrics for the links extraction operation
+          examples:
+            - readableDuration: 0.2s
+              durationMs: 200
+              startTimeMs: 1704067800000
+              endTimeMs: 1704067800200
+        title:
+          type: string
+          description: The title of the webpage (optional, may be missing for some pages)
+          examples:
+            - Example Website - Home Page
+        description:
+          type: string
+          description: The meta description of the webpage
+          examples:
+            - >-
+              This is an example website demonstrating web scraping
+              capabilities.
+        metadata:
+          $ref: '#/components/schemas/PageMetadata'
+          title: PageMetadata
+          description: Extracted metadata from the page (title, description, etc.)
+        cleanedHtml:
+          type: string
+          description: The sanitized version of the HTML with unnecessary elements removed
+          examples:
+            - <div><h1>Example Website</h1><p>Main content...</p></div>
+        metaFiles:
+          type: object
+          properties:
+            robots:
+              type: string
+              description: Content of the robots.txt file
+              examples:
+                - |-
+                  User-agent: *
+                  Allow: /
+            sitemapXML:
+              type: string
+              description: Content of the sitemap.xml file
+              examples:
+                - >-
+                  <?xml version="1.0" encoding="UTF-8"?>
+
+                  <urlset
+                  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>
+          title: MetaFiles
+          description: The metadata files like robots.txt and sitemap.xml
+        skippedUrls:
+          $ref: '#/components/schemas/SkippedLinks'
+          title: SkippedLinks
+          description: URLs that were skipped during processing with reasons
+        extractedLinks:
+          $ref: '#/components/schemas/ExtractedLinks'
+          title: ExtractedLinks
+          description: Links found on this page, categorized by type
+      required:
+        - success
+        - targetUrl
+        - timestamp
+        - requestId
+        - cached
     LinksSuccessResponse:
       anyOf:
         - type: object
@@ -3767,6 +4842,279 @@ paths:
               - example.com
           allowEmptyValue: true
           allowReserved: true
+        - name: tree
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+            description: 'Whether to build a site map tree. Default: true'
+            examples:
+              - true
+              - false
+          allowEmptyValue: true
+          allowReserved: true
+        - name: linkExtractionOptions
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/LinkExtractionOptions'
+            title: LinkExtractionOptions
+            description: 'Options for link extraction. Default: [object Object]'
+            examples:
+              - includeExternal: false
+                includeMedia: false
+                removeQueryParams: true
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: cacheOptions
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/CacheOptions'
+            description: >-
+              Cache configuration for links operation based on KV put options
+              except for `metadata`
+            examples:
+              - enabled: true
+                expirationTtl: 345600
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: metricsOptions
+          in: query
+          required: false
+          schema:
+            type: object
+            properties:
+              enable:
+                type: boolean
+                default: true
+                description: Whether to enable metrics.
+                examples:
+                  - true
+                  - false
+            default:
+              enable: true
+            description: Options for metrics for links operation.
+            examples:
+              - enable: true
+              - false
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: folderFirst
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+            description: >-
+              Whether to place folders before leaf nodes in the tree. Default:
+              true
+            examples:
+              - true
+              - false
+          allowEmptyValue: true
+          allowReserved: true
+        - name: linksOrder
+          in: query
+          required: false
+          schema:
+            enum:
+              - page
+              - alphabetical
+            default: page
+            description: >-
+              How to order links within each folder: "page" (preserve original
+              order) or "alphabetical" (sort A→Z by URL). Default: page
+            examples:
+              - alphabetical
+              - page
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: extractedLinks
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+            description: >-
+              Whether to include extracted links for each node in the tree.
+              Default: true
+            examples:
+              - true
+              - false
+          allowEmptyValue: true
+          allowReserved: true
+        - name: subdomainAsRootUrl
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+            description: >-
+              Whether to treat subdomain as root URL. If false, subdomain will
+              be excluded from root URL. e.g., if false: rootUrl:
+              `https://swr.vercel.app` -> `https://vercel.app`. Default: true
+            examples:
+              - true
+              - false
+          allowEmptyValue: true
+          allowReserved: true
+        - name: isPlatformUrl
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+            description: >-
+              Whether the URL is a platform URL. If true, the targetUrl will be
+              the platform URL. e.g., if true: targetUrl: `https://github.com`
+              -> `https://github.com/lumpinif`. Default: false
+            examples:
+              - false
+              - true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: metadata
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: true
+            description: Whether to extract metadata from the page.
+            examples:
+              - true
+              - false
+          allowEmptyValue: true
+          allowReserved: true
+        - name: cleanedHtml
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+            description: Whether to return cleaned HTML.
+            examples:
+              - false
+              - true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: robots
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+            description: Whether to fetch and parse robots.txt.
+            examples:
+              - false
+              - true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: sitemapXML
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+            description: >-
+              ( NOTE: sitemapXML is not stable yet, please use with caution. It
+              may not work as expected. ) Whether to fetch and parse
+              sitemap.xml.
+            examples:
+              - false
+              - true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: metadataOptions
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/MetadataOptions'
+            description: Options for metadata extraction.
+            examples:
+              - title: true
+                description: true
+                language: true
+                canonical: true
+                robots: true
+                author: true
+                keywords: true
+                favicon: true
+                openGraph: true
+                twitter: true
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: cleaningProcessor
+          in: query
+          required: false
+          schema:
+            enum:
+              - cheerio-reader
+              - html-rewriter
+            default: cheerio-reader
+            description: The cleaning processor to use.
+            examples:
+              - cheerio-reader
+              - html-rewriter
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: htmlRewriterOptions
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/HTMLRewriterOptions'
+            description: Options for HTML cleaning with html-rewriter.
+            examples:
+              - extractMainContent: true
+                removeBase64Images: true
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: readerCleaningOptions
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ReaderCleaningOptions'
+            description: Options for HTML cleaning with cheerio-reader.
+            examples:
+              - readerOptions:
+                  debug: true
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
+        - name: fetchOptions
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/FetchOptions'
+            description: Options for the fetch request.
+            examples:
+              - method: GET
+                headers:
+                  User-Agent: Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)
+                  Accept: >-
+                    text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+                  Accept-Language: en-US,en;q=0.5
+                redirect: follow
+          style: deepObject
+          explode: true
+          allowEmptyValue: true
+          allowReserved: true
       responses:
         '200':
           description: OK
@@ -4685,147 +6033,7 @@ paths:
                       - requestId
                       - cached
                       - tree
-                  - type: object
-                    properties:
-                      success:
-                        const: true
-                        description: Indicates that the operation was successful
-                        examples:
-                          - true
-                      targetUrl:
-                        type: string
-                        description: The URL that was requested to be processed
-                        examples:
-                          - https://example.com
-                      timestamp:
-                        type: string
-                        description: ISO timestamp when the request was processed
-                        examples:
-                          - '2024-01-15T10:30:00.000Z'
-                      requestId:
-                        type: string
-                        description: >-
-                          Unique identifier (request ID) for the activity log
-                          entry
-                        examples:
-                          - 123e4567-e89b-12d3-a456-426614174000
-                      cached:
-                        type: boolean
-                        description: Whether the result was returned from cache
-                        examples:
-                          - false
-                      ancestors:
-                        type: array
-                        items:
-                          type: string
-                        description: Array of parent URLs leading to this URL
-                        examples:
-                          - https://example.com
-                      metrics:
-                        type: object
-                        properties:
-                          readableDuration:
-                            type: string
-                            description: >-
-                              Human-readable representation of the operation
-                              duration
-                            examples:
-                              - 0.2s
-                          durationMs:
-                            type: number
-                            description: Duration of the operation in milliseconds
-                            examples:
-                              - 200
-                          startTimeMs:
-                            type: number
-                            description: >-
-                              Timestamp in milliseconds when the operation
-                              started
-                            examples:
-                              - 1704067800000
-                          endTimeMs:
-                            type: number
-                            description: >-
-                              Timestamp in milliseconds when the operation
-                              finished
-                            examples:
-                              - 1704067800200
-                        required:
-                          - readableDuration
-                          - durationMs
-                          - startTimeMs
-                          - endTimeMs
-                        title: Metrics
-                        description: Metrics for the links extraction operation
-                        examples:
-                          - readableDuration: 0.2s
-                            durationMs: 200
-                            startTimeMs: 1704067800000
-                            endTimeMs: 1704067800200
-                      title:
-                        type: string
-                        description: >-
-                          The title of the webpage (optional, may be missing for
-                          some pages)
-                        examples:
-                          - Example Website - Home Page
-                      description:
-                        type: string
-                        description: The meta description of the webpage
-                        examples:
-                          - >-
-                            This is an example website demonstrating web
-                            scraping capabilities.
-                      metadata:
-                        $ref: '#/components/schemas/PageMetadata'
-                        title: PageMetadata
-                        description: >-
-                          Extracted metadata from the page (title, description,
-                          etc.)
-                      cleanedHtml:
-                        type: string
-                        description: >-
-                          The sanitized version of the HTML with unnecessary
-                          elements removed
-                        examples:
-                          - >-
-                            <div><h1>Example Website</h1><p>Main
-                            content...</p></div>
-                      metaFiles:
-                        type: object
-                        properties:
-                          robots:
-                            type: string
-                            description: Content of the robots.txt file
-                            examples:
-                              - |-
-                                User-agent: *
-                                Allow: /
-                          sitemapXML:
-                            type: string
-                            description: Content of the sitemap.xml file
-                            examples:
-                              - >-
-                                <?xml version="1.0" encoding="UTF-8"?>
-
-                                <urlset
-                                xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>
-                        title: MetaFiles
-                        description: The metadata files like robots.txt and sitemap.xml
-                      skippedUrls:
-                        $ref: '#/components/schemas/SkippedLinks'
-                        title: SkippedLinks
-                        description: URLs that were skipped during processing with reasons
-                      extractedLinks:
-                        $ref: '#/components/schemas/ExtractedLinks'
-                        title: ExtractedLinks
-                        description: Links found on this page, categorized by type
-                    required:
-                      - success
-                      - targetUrl
-                      - timestamp
-                      - requestId
-                      - cached
+                  - $ref: '#/components/schemas/LinksSuccessResponseWithoutTree'
                 title: LinksSuccessResponse
                 description: >-
                   Successful response from the links extraction operation.
@@ -6721,147 +7929,7 @@ paths:
                       - requestId
                       - cached
                       - tree
-                  - type: object
-                    properties:
-                      success:
-                        const: true
-                        description: Indicates that the operation was successful
-                        examples:
-                          - true
-                      targetUrl:
-                        type: string
-                        description: The URL that was requested to be processed
-                        examples:
-                          - https://example.com
-                      timestamp:
-                        type: string
-                        description: ISO timestamp when the request was processed
-                        examples:
-                          - '2024-01-15T10:30:00.000Z'
-                      requestId:
-                        type: string
-                        description: >-
-                          Unique identifier (request ID) for the activity log
-                          entry
-                        examples:
-                          - 123e4567-e89b-12d3-a456-426614174000
-                      cached:
-                        type: boolean
-                        description: Whether the result was returned from cache
-                        examples:
-                          - false
-                      ancestors:
-                        type: array
-                        items:
-                          type: string
-                        description: Array of parent URLs leading to this URL
-                        examples:
-                          - https://example.com
-                      metrics:
-                        type: object
-                        properties:
-                          readableDuration:
-                            type: string
-                            description: >-
-                              Human-readable representation of the operation
-                              duration
-                            examples:
-                              - 0.2s
-                          durationMs:
-                            type: number
-                            description: Duration of the operation in milliseconds
-                            examples:
-                              - 200
-                          startTimeMs:
-                            type: number
-                            description: >-
-                              Timestamp in milliseconds when the operation
-                              started
-                            examples:
-                              - 1704067800000
-                          endTimeMs:
-                            type: number
-                            description: >-
-                              Timestamp in milliseconds when the operation
-                              finished
-                            examples:
-                              - 1704067800200
-                        required:
-                          - readableDuration
-                          - durationMs
-                          - startTimeMs
-                          - endTimeMs
-                        title: Metrics
-                        description: Metrics for the links extraction operation
-                        examples:
-                          - readableDuration: 0.2s
-                            durationMs: 200
-                            startTimeMs: 1704067800000
-                            endTimeMs: 1704067800200
-                      title:
-                        type: string
-                        description: >-
-                          The title of the webpage (optional, may be missing for
-                          some pages)
-                        examples:
-                          - Example Website - Home Page
-                      description:
-                        type: string
-                        description: The meta description of the webpage
-                        examples:
-                          - >-
-                            This is an example website demonstrating web
-                            scraping capabilities.
-                      metadata:
-                        $ref: '#/components/schemas/PageMetadata'
-                        title: PageMetadata
-                        description: >-
-                          Extracted metadata from the page (title, description,
-                          etc.)
-                      cleanedHtml:
-                        type: string
-                        description: >-
-                          The sanitized version of the HTML with unnecessary
-                          elements removed
-                        examples:
-                          - >-
-                            <div><h1>Example Website</h1><p>Main
-                            content...</p></div>
-                      metaFiles:
-                        type: object
-                        properties:
-                          robots:
-                            type: string
-                            description: Content of the robots.txt file
-                            examples:
-                              - |-
-                                User-agent: *
-                                Allow: /
-                          sitemapXML:
-                            type: string
-                            description: Content of the sitemap.xml file
-                            examples:
-                              - >-
-                                <?xml version="1.0" encoding="UTF-8"?>
-
-                                <urlset
-                                xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>
-                        title: MetaFiles
-                        description: The metadata files like robots.txt and sitemap.xml
-                      skippedUrls:
-                        $ref: '#/components/schemas/SkippedLinks'
-                        title: SkippedLinks
-                        description: URLs that were skipped during processing with reasons
-                      extractedLinks:
-                        $ref: '#/components/schemas/ExtractedLinks'
-                        title: ExtractedLinks
-                        description: Links found on this page, categorized by type
-                    required:
-                      - success
-                      - targetUrl
-                      - timestamp
-                      - requestId
-                      - cached
+                  - $ref: '#/components/schemas/LinksSuccessResponseWithoutTree'
                 title: LinksSuccessResponse
                 description: >-
                   Successful response from the links extraction operation.
@@ -9965,159 +11033,8 @@ paths:
                                   - requestId
                                   - cached
                                   - tree
-                              - type: object
-                                properties:
-                                  success:
-                                    const: true
-                                    description: >-
-                                      Indicates that the operation was
-                                      successful
-                                    examples:
-                                      - true
-                                  targetUrl:
-                                    type: string
-                                    description: The URL that was requested to be processed
-                                    examples:
-                                      - https://example.com
-                                  timestamp:
-                                    type: string
-                                    description: >-
-                                      ISO timestamp when the request was
-                                      processed
-                                    examples:
-                                      - '2024-01-15T10:30:00.000Z'
-                                  requestId:
-                                    type: string
-                                    description: >-
-                                      Unique identifier (request ID) for the
-                                      activity log entry
-                                    examples:
-                                      - 123e4567-e89b-12d3-a456-426614174000
-                                  cached:
-                                    type: boolean
-                                    description: Whether the result was returned from cache
-                                    examples:
-                                      - false
-                                  ancestors:
-                                    type: array
-                                    items:
-                                      type: string
-                                    description: Array of parent URLs leading to this URL
-                                    examples:
-                                      - https://example.com
-                                  metrics:
-                                    type: object
-                                    properties:
-                                      readableDuration:
-                                        type: string
-                                        description: >-
-                                          Human-readable representation of the
-                                          operation duration
-                                        examples:
-                                          - 0.2s
-                                      durationMs:
-                                        type: number
-                                        description: >-
-                                          Duration of the operation in
-                                          milliseconds
-                                        examples:
-                                          - 200
-                                      startTimeMs:
-                                        type: number
-                                        description: >-
-                                          Timestamp in milliseconds when the
-                                          operation started
-                                        examples:
-                                          - 1704067800000
-                                      endTimeMs:
-                                        type: number
-                                        description: >-
-                                          Timestamp in milliseconds when the
-                                          operation finished
-                                        examples:
-                                          - 1704067800200
-                                    required:
-                                      - readableDuration
-                                      - durationMs
-                                      - startTimeMs
-                                      - endTimeMs
-                                    title: Metrics
-                                    description: Metrics for the links extraction operation
-                                    examples:
-                                      - readableDuration: 0.2s
-                                        durationMs: 200
-                                        startTimeMs: 1704067800000
-                                        endTimeMs: 1704067800200
-                                  title:
-                                    type: string
-                                    description: >-
-                                      The title of the webpage (optional, may be
-                                      missing for some pages)
-                                    examples:
-                                      - Example Website - Home Page
-                                  description:
-                                    type: string
-                                    description: The meta description of the webpage
-                                    examples:
-                                      - >-
-                                        This is an example website demonstrating
-                                        web scraping capabilities.
-                                  metadata:
-                                    $ref: '#/components/schemas/PageMetadata'
-                                    title: PageMetadata
-                                    description: >-
-                                      Extracted metadata from the page (title,
-                                      description, etc.)
-                                  cleanedHtml:
-                                    type: string
-                                    description: >-
-                                      The sanitized version of the HTML with
-                                      unnecessary elements removed
-                                    examples:
-                                      - >-
-                                        <div><h1>Example Website</h1><p>Main
-                                        content...</p></div>
-                                  metaFiles:
-                                    type: object
-                                    properties:
-                                      robots:
-                                        type: string
-                                        description: Content of the robots.txt file
-                                        examples:
-                                          - |-
-                                            User-agent: *
-                                            Allow: /
-                                      sitemapXML:
-                                        type: string
-                                        description: Content of the sitemap.xml file
-                                        examples:
-                                          - >-
-                                            <?xml version="1.0" encoding="UTF-8"?>
-
-                                            <urlset
-                                            xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>
-                                    title: MetaFiles
-                                    description: >-
-                                      The metadata files like robots.txt and
-                                      sitemap.xml
-                                  skippedUrls:
-                                    $ref: '#/components/schemas/SkippedLinks'
-                                    title: SkippedLinks
-                                    description: >-
-                                      URLs that were skipped during processing
-                                      with reasons
-                                  extractedLinks:
-                                    $ref: '#/components/schemas/ExtractedLinks'
-                                    title: ExtractedLinks
-                                    description: >-
-                                      Links found on this page, categorized by
-                                      type
-                                required:
-                                  - success
-                                  - targetUrl
-                                  - timestamp
-                                  - requestId
-                                  - cached
+                              - $ref: >-
+                                  #/components/schemas/LinksSuccessResponseWithoutTree
                             title: LinksSuccessResponse
                             description: >-
                               Successful response from the links extraction
@@ -12924,159 +13841,8 @@ paths:
                                   - requestId
                                   - cached
                                   - tree
-                              - type: object
-                                properties:
-                                  success:
-                                    const: true
-                                    description: >-
-                                      Indicates that the operation was
-                                      successful
-                                    examples:
-                                      - true
-                                  targetUrl:
-                                    type: string
-                                    description: The URL that was requested to be processed
-                                    examples:
-                                      - https://example.com
-                                  timestamp:
-                                    type: string
-                                    description: >-
-                                      ISO timestamp when the request was
-                                      processed
-                                    examples:
-                                      - '2024-01-15T10:30:00.000Z'
-                                  requestId:
-                                    type: string
-                                    description: >-
-                                      Unique identifier (request ID) for the
-                                      activity log entry
-                                    examples:
-                                      - 123e4567-e89b-12d3-a456-426614174000
-                                  cached:
-                                    type: boolean
-                                    description: Whether the result was returned from cache
-                                    examples:
-                                      - false
-                                  ancestors:
-                                    type: array
-                                    items:
-                                      type: string
-                                    description: Array of parent URLs leading to this URL
-                                    examples:
-                                      - https://example.com
-                                  metrics:
-                                    type: object
-                                    properties:
-                                      readableDuration:
-                                        type: string
-                                        description: >-
-                                          Human-readable representation of the
-                                          operation duration
-                                        examples:
-                                          - 0.2s
-                                      durationMs:
-                                        type: number
-                                        description: >-
-                                          Duration of the operation in
-                                          milliseconds
-                                        examples:
-                                          - 200
-                                      startTimeMs:
-                                        type: number
-                                        description: >-
-                                          Timestamp in milliseconds when the
-                                          operation started
-                                        examples:
-                                          - 1704067800000
-                                      endTimeMs:
-                                        type: number
-                                        description: >-
-                                          Timestamp in milliseconds when the
-                                          operation finished
-                                        examples:
-                                          - 1704067800200
-                                    required:
-                                      - readableDuration
-                                      - durationMs
-                                      - startTimeMs
-                                      - endTimeMs
-                                    title: Metrics
-                                    description: Metrics for the links extraction operation
-                                    examples:
-                                      - readableDuration: 0.2s
-                                        durationMs: 200
-                                        startTimeMs: 1704067800000
-                                        endTimeMs: 1704067800200
-                                  title:
-                                    type: string
-                                    description: >-
-                                      The title of the webpage (optional, may be
-                                      missing for some pages)
-                                    examples:
-                                      - Example Website - Home Page
-                                  description:
-                                    type: string
-                                    description: The meta description of the webpage
-                                    examples:
-                                      - >-
-                                        This is an example website demonstrating
-                                        web scraping capabilities.
-                                  metadata:
-                                    $ref: '#/components/schemas/PageMetadata'
-                                    title: PageMetadata
-                                    description: >-
-                                      Extracted metadata from the page (title,
-                                      description, etc.)
-                                  cleanedHtml:
-                                    type: string
-                                    description: >-
-                                      The sanitized version of the HTML with
-                                      unnecessary elements removed
-                                    examples:
-                                      - >-
-                                        <div><h1>Example Website</h1><p>Main
-                                        content...</p></div>
-                                  metaFiles:
-                                    type: object
-                                    properties:
-                                      robots:
-                                        type: string
-                                        description: Content of the robots.txt file
-                                        examples:
-                                          - |-
-                                            User-agent: *
-                                            Allow: /
-                                      sitemapXML:
-                                        type: string
-                                        description: Content of the sitemap.xml file
-                                        examples:
-                                          - >-
-                                            <?xml version="1.0" encoding="UTF-8"?>
-
-                                            <urlset
-                                            xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>
-                                    title: MetaFiles
-                                    description: >-
-                                      The metadata files like robots.txt and
-                                      sitemap.xml
-                                  skippedUrls:
-                                    $ref: '#/components/schemas/SkippedLinks'
-                                    title: SkippedLinks
-                                    description: >-
-                                      URLs that were skipped during processing
-                                      with reasons
-                                  extractedLinks:
-                                    $ref: '#/components/schemas/ExtractedLinks'
-                                    title: ExtractedLinks
-                                    description: >-
-                                      Links found on this page, categorized by
-                                      type
-                                required:
-                                  - success
-                                  - targetUrl
-                                  - timestamp
-                                  - requestId
-                                  - cached
+                              - $ref: >-
+                                  #/components/schemas/LinksSuccessResponseWithoutTree
                             title: LinksSuccessResponse
                             description: >-
                               Successful response from the links extraction
@@ -16834,165 +17600,8 @@ paths:
                                         - requestId
                                         - cached
                                         - tree
-                                    - type: object
-                                      properties:
-                                        success:
-                                          const: true
-                                          description: >-
-                                            Indicates that the operation was
-                                            successful
-                                          examples:
-                                            - true
-                                        targetUrl:
-                                          type: string
-                                          description: >-
-                                            The URL that was requested to be
-                                            processed
-                                          examples:
-                                            - https://example.com
-                                        timestamp:
-                                          type: string
-                                          description: >-
-                                            ISO timestamp when the request was
-                                            processed
-                                          examples:
-                                            - '2024-01-15T10:30:00.000Z'
-                                        requestId:
-                                          type: string
-                                          description: >-
-                                            Unique identifier (request ID) for the
-                                            activity log entry
-                                          examples:
-                                            - 123e4567-e89b-12d3-a456-426614174000
-                                        cached:
-                                          type: boolean
-                                          description: >-
-                                            Whether the result was returned from
-                                            cache
-                                          examples:
-                                            - false
-                                        ancestors:
-                                          type: array
-                                          items:
-                                            type: string
-                                          description: Array of parent URLs leading to this URL
-                                          examples:
-                                            - https://example.com
-                                        metrics:
-                                          type: object
-                                          properties:
-                                            readableDuration:
-                                              type: string
-                                              description: >-
-                                                Human-readable representation of the
-                                                operation duration
-                                              examples:
-                                                - 0.2s
-                                            durationMs:
-                                              type: number
-                                              description: >-
-                                                Duration of the operation in
-                                                milliseconds
-                                              examples:
-                                                - 200
-                                            startTimeMs:
-                                              type: number
-                                              description: >-
-                                                Timestamp in milliseconds when the
-                                                operation started
-                                              examples:
-                                                - 1704067800000
-                                            endTimeMs:
-                                              type: number
-                                              description: >-
-                                                Timestamp in milliseconds when the
-                                                operation finished
-                                              examples:
-                                                - 1704067800200
-                                          required:
-                                            - readableDuration
-                                            - durationMs
-                                            - startTimeMs
-                                            - endTimeMs
-                                          title: Metrics
-                                          description: >-
-                                            Metrics for the links extraction
-                                            operation
-                                          examples:
-                                            - readableDuration: 0.2s
-                                              durationMs: 200
-                                              startTimeMs: 1704067800000
-                                              endTimeMs: 1704067800200
-                                        title:
-                                          type: string
-                                          description: >-
-                                            The title of the webpage (optional, may
-                                            be missing for some pages)
-                                          examples:
-                                            - Example Website - Home Page
-                                        description:
-                                          type: string
-                                          description: The meta description of the webpage
-                                          examples:
-                                            - >-
-                                              This is an example website demonstrating
-                                              web scraping capabilities.
-                                        metadata:
-                                          $ref: '#/components/schemas/PageMetadata'
-                                          title: PageMetadata
-                                          description: >-
-                                            Extracted metadata from the page (title,
-                                            description, etc.)
-                                        cleanedHtml:
-                                          type: string
-                                          description: >-
-                                            The sanitized version of the HTML with
-                                            unnecessary elements removed
-                                          examples:
-                                            - >-
-                                              <div><h1>Example Website</h1><p>Main
-                                              content...</p></div>
-                                        metaFiles:
-                                          type: object
-                                          properties:
-                                            robots:
-                                              type: string
-                                              description: Content of the robots.txt file
-                                              examples:
-                                                - |-
-                                                  User-agent: *
-                                                  Allow: /
-                                            sitemapXML:
-                                              type: string
-                                              description: Content of the sitemap.xml file
-                                              examples:
-                                                - >-
-                                                  <?xml version="1.0" encoding="UTF-8"?>
-
-                                                  <urlset
-                                                  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>
-                                          title: MetaFiles
-                                          description: >-
-                                            The metadata files like robots.txt and
-                                            sitemap.xml
-                                        skippedUrls:
-                                          $ref: '#/components/schemas/SkippedLinks'
-                                          title: SkippedLinks
-                                          description: >-
-                                            URLs that were skipped during processing
-                                            with reasons
-                                        extractedLinks:
-                                          $ref: '#/components/schemas/ExtractedLinks'
-                                          title: ExtractedLinks
-                                          description: >-
-                                            Links found on this page, categorized by
-                                            type
-                                      required:
-                                        - success
-                                        - targetUrl
-                                        - timestamp
-                                        - requestId
-                                        - cached
+                                    - $ref: >-
+                                        #/components/schemas/LinksSuccessResponseWithoutTree
                                   title: LinksSuccessResponse
                                   description: >-
                                     Successful response from the links
@@ -19338,165 +19947,8 @@ paths:
                                         - requestId
                                         - cached
                                         - tree
-                                    - type: object
-                                      properties:
-                                        success:
-                                          const: true
-                                          description: >-
-                                            Indicates that the operation was
-                                            successful
-                                          examples:
-                                            - true
-                                        targetUrl:
-                                          type: string
-                                          description: >-
-                                            The URL that was requested to be
-                                            processed
-                                          examples:
-                                            - https://example.com
-                                        timestamp:
-                                          type: string
-                                          description: >-
-                                            ISO timestamp when the request was
-                                            processed
-                                          examples:
-                                            - '2024-01-15T10:30:00.000Z'
-                                        requestId:
-                                          type: string
-                                          description: >-
-                                            Unique identifier (request ID) for the
-                                            activity log entry
-                                          examples:
-                                            - 123e4567-e89b-12d3-a456-426614174000
-                                        cached:
-                                          type: boolean
-                                          description: >-
-                                            Whether the result was returned from
-                                            cache
-                                          examples:
-                                            - false
-                                        ancestors:
-                                          type: array
-                                          items:
-                                            type: string
-                                          description: Array of parent URLs leading to this URL
-                                          examples:
-                                            - https://example.com
-                                        metrics:
-                                          type: object
-                                          properties:
-                                            readableDuration:
-                                              type: string
-                                              description: >-
-                                                Human-readable representation of the
-                                                operation duration
-                                              examples:
-                                                - 0.2s
-                                            durationMs:
-                                              type: number
-                                              description: >-
-                                                Duration of the operation in
-                                                milliseconds
-                                              examples:
-                                                - 200
-                                            startTimeMs:
-                                              type: number
-                                              description: >-
-                                                Timestamp in milliseconds when the
-                                                operation started
-                                              examples:
-                                                - 1704067800000
-                                            endTimeMs:
-                                              type: number
-                                              description: >-
-                                                Timestamp in milliseconds when the
-                                                operation finished
-                                              examples:
-                                                - 1704067800200
-                                          required:
-                                            - readableDuration
-                                            - durationMs
-                                            - startTimeMs
-                                            - endTimeMs
-                                          title: Metrics
-                                          description: >-
-                                            Metrics for the links extraction
-                                            operation
-                                          examples:
-                                            - readableDuration: 0.2s
-                                              durationMs: 200
-                                              startTimeMs: 1704067800000
-                                              endTimeMs: 1704067800200
-                                        title:
-                                          type: string
-                                          description: >-
-                                            The title of the webpage (optional, may
-                                            be missing for some pages)
-                                          examples:
-                                            - Example Website - Home Page
-                                        description:
-                                          type: string
-                                          description: The meta description of the webpage
-                                          examples:
-                                            - >-
-                                              This is an example website demonstrating
-                                              web scraping capabilities.
-                                        metadata:
-                                          $ref: '#/components/schemas/PageMetadata'
-                                          title: PageMetadata
-                                          description: >-
-                                            Extracted metadata from the page (title,
-                                            description, etc.)
-                                        cleanedHtml:
-                                          type: string
-                                          description: >-
-                                            The sanitized version of the HTML with
-                                            unnecessary elements removed
-                                          examples:
-                                            - >-
-                                              <div><h1>Example Website</h1><p>Main
-                                              content...</p></div>
-                                        metaFiles:
-                                          type: object
-                                          properties:
-                                            robots:
-                                              type: string
-                                              description: Content of the robots.txt file
-                                              examples:
-                                                - |-
-                                                  User-agent: *
-                                                  Allow: /
-                                            sitemapXML:
-                                              type: string
-                                              description: Content of the sitemap.xml file
-                                              examples:
-                                                - >-
-                                                  <?xml version="1.0" encoding="UTF-8"?>
-
-                                                  <urlset
-                                                  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>
-                                          title: MetaFiles
-                                          description: >-
-                                            The metadata files like robots.txt and
-                                            sitemap.xml
-                                        skippedUrls:
-                                          $ref: '#/components/schemas/SkippedLinks'
-                                          title: SkippedLinks
-                                          description: >-
-                                            URLs that were skipped during processing
-                                            with reasons
-                                        extractedLinks:
-                                          $ref: '#/components/schemas/ExtractedLinks'
-                                          title: ExtractedLinks
-                                          description: >-
-                                            Links found on this page, categorized by
-                                            type
-                                      required:
-                                        - success
-                                        - targetUrl
-                                        - timestamp
-                                        - requestId
-                                        - cached
+                                    - $ref: >-
+                                        #/components/schemas/LinksSuccessResponseWithoutTree
                                   title: LinksSuccessResponse
                                   description: >-
                                     Successful response from the links
@@ -22836,147 +23288,7 @@ paths:
                       - requestId
                       - cached
                       - tree
-                  - type: object
-                    properties:
-                      success:
-                        const: true
-                        description: Indicates that the operation was successful
-                        examples:
-                          - true
-                      targetUrl:
-                        type: string
-                        description: The URL that was requested to be processed
-                        examples:
-                          - https://example.com
-                      timestamp:
-                        type: string
-                        description: ISO timestamp when the request was processed
-                        examples:
-                          - '2024-01-15T10:30:00.000Z'
-                      requestId:
-                        type: string
-                        description: >-
-                          Unique identifier (request ID) for the activity log
-                          entry
-                        examples:
-                          - 123e4567-e89b-12d3-a456-426614174000
-                      cached:
-                        type: boolean
-                        description: Whether the result was returned from cache
-                        examples:
-                          - false
-                      ancestors:
-                        type: array
-                        items:
-                          type: string
-                        description: Array of parent URLs leading to this URL
-                        examples:
-                          - https://example.com
-                      metrics:
-                        type: object
-                        properties:
-                          readableDuration:
-                            type: string
-                            description: >-
-                              Human-readable representation of the operation
-                              duration
-                            examples:
-                              - 0.2s
-                          durationMs:
-                            type: number
-                            description: Duration of the operation in milliseconds
-                            examples:
-                              - 200
-                          startTimeMs:
-                            type: number
-                            description: >-
-                              Timestamp in milliseconds when the operation
-                              started
-                            examples:
-                              - 1704067800000
-                          endTimeMs:
-                            type: number
-                            description: >-
-                              Timestamp in milliseconds when the operation
-                              finished
-                            examples:
-                              - 1704067800200
-                        required:
-                          - readableDuration
-                          - durationMs
-                          - startTimeMs
-                          - endTimeMs
-                        title: Metrics
-                        description: Metrics for the links extraction operation
-                        examples:
-                          - readableDuration: 0.2s
-                            durationMs: 200
-                            startTimeMs: 1704067800000
-                            endTimeMs: 1704067800200
-                      title:
-                        type: string
-                        description: >-
-                          The title of the webpage (optional, may be missing for
-                          some pages)
-                        examples:
-                          - Example Website - Home Page
-                      description:
-                        type: string
-                        description: The meta description of the webpage
-                        examples:
-                          - >-
-                            This is an example website demonstrating web
-                            scraping capabilities.
-                      metadata:
-                        $ref: '#/components/schemas/PageMetadata'
-                        title: PageMetadata
-                        description: >-
-                          Extracted metadata from the page (title, description,
-                          etc.)
-                      cleanedHtml:
-                        type: string
-                        description: >-
-                          The sanitized version of the HTML with unnecessary
-                          elements removed
-                        examples:
-                          - >-
-                            <div><h1>Example Website</h1><p>Main
-                            content...</p></div>
-                      metaFiles:
-                        type: object
-                        properties:
-                          robots:
-                            type: string
-                            description: Content of the robots.txt file
-                            examples:
-                              - |-
-                                User-agent: *
-                                Allow: /
-                          sitemapXML:
-                            type: string
-                            description: Content of the sitemap.xml file
-                            examples:
-                              - >-
-                                <?xml version="1.0" encoding="UTF-8"?>
-
-                                <urlset
-                                xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">...</urlset>
-                        title: MetaFiles
-                        description: The metadata files like robots.txt and sitemap.xml
-                      skippedUrls:
-                        $ref: '#/components/schemas/SkippedLinks'
-                        title: SkippedLinks
-                        description: URLs that were skipped during processing with reasons
-                      extractedLinks:
-                        $ref: '#/components/schemas/ExtractedLinks'
-                        title: ExtractedLinks
-                        description: Links found on this page, categorized by type
-                    required:
-                      - success
-                      - targetUrl
-                      - timestamp
-                      - requestId
-                      - cached
+                  - $ref: '#/components/schemas/LinksSuccessResponseWithoutTree'
                   - type: object
                     properties:
                       requestId:
