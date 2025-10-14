@@ -5,7 +5,7 @@ import {
   GetManyLogsResponseSchema,
   GetOneLogOptionsSchema,
   GetOneLogResponseSchema,
-} from '@deepcrawl/types/routers/logs';
+} from '@deepcrawl/types/schemas';
 import { oc } from '@orpc/contract';
 import { errorSpec } from '../errors';
 import type { Inputs, Outputs } from '../index';

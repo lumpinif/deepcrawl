@@ -1,8 +1,8 @@
+import { LinksSuccessResponse } from '@deepcrawl/types';
 import {
   LinksOptionsSchema,
-  LinksSuccessResponse,
   LinksSuccessResponseSchema,
-} from '@deepcrawl/types';
+} from '@deepcrawl/types/schemas';
 import { oc } from '@orpc/contract';
 import type { Inputs, Outputs } from '.';
 import { errorSpec } from './errors';

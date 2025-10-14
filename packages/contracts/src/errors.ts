@@ -1,7 +1,7 @@
 import {
   LinksErrorResponseSchema,
   ReadErrorResponseSchema,
-} from '@deepcrawl/types/index';
+} from '@deepcrawl/types/schemas';
 import type { ErrorMap, ErrorMapItem } from '@orpc/contract';
 import { oo } from '@orpc/openapi';
 import { z } from 'zod/v4';

@@ -1,9 +1,9 @@
+import type { ReadStringResponse } from '@deepcrawl/types';
 import {
   GetMarkdownOptionsSchema,
   ReadOptionsSchema,
-  type ReadStringResponse,
   ReadSuccessResponseSchema,
-} from '@deepcrawl/types';
+} from '@deepcrawl/types/schemas';
 import { oc } from '@orpc/contract';
 import { z } from 'zod/v4';
 import type { Inputs, Outputs } from '.';
