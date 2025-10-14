@@ -34,3 +34,5 @@ export type * from '@deepcrawl/types/types';
 
 /* Utils Only (no types or schemas) */
 export * from '@deepcrawl/types/utils';
+
+export * from './types';
