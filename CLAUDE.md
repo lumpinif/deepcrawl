@@ -338,18 +338,47 @@ The TypeScript SDK has a complete test suite using Vitest:
 The TypeScript SDK (`deepcrawl`) provides:
 
 - **Client library** for Deepcrawl API
-- **Methods**: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`
+- **Methods**: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`, `getManyLogs()`, `getOneLog()`
 - **Built with tsup** for both CommonJS and ESM formats
 - **Published to npm** with version management
 - **RPC-First Design**: Uses oRPC's RPCLink for efficient communication
 - **Universal Runtime Support**: Works in Node.js, browsers, Edge Runtime, and Server Actions
 - **Automatic Header Forwarding**: In Next.js Server Actions, automatically extracts auth headers
-- **Custom Error Classes**:
+- **Dedicated Export Paths** for better tree-shaking:
+  - `deepcrawl` - Main SDK client (`DeepcrawlApp`)
+  - `deepcrawl/types` - All TypeScript types and error classes
+  - `deepcrawl/schemas` - All Zod schemas for validation
+  - `deepcrawl/utils` - Utility functions (`formatDuration`, `getMetrics`, `getUserMessage`)
+- **Custom Error Classes** (import from `deepcrawl/types`):
   - `DeepcrawlError`: Base error class
   - `DeepcrawlAuthError`: Authentication failures
   - `DeepcrawlNetworkError`: Network issues
   - `DeepcrawlReadError`: Read operation errors
   - `DeepcrawlLinksError`: Link extraction errors
+  - `DeepcrawlRateLimitError`: Rate limiting errors
+  - `DeepcrawlValidationError`: Invalid request parameters
+  - `DeepcrawlNotFoundError`: Resource not found
+  - `DeepcrawlServerError`: Server-side errors
+
+### SDK Import Patterns
+
+Always use dedicated export paths for better tree-shaking and clearer separation:
+
+```typescript
+// SDK Client
+import { DeepcrawlApp } from 'deepcrawl';
+
+// Types (use 'import type' for type-only imports)
+import type { ReadUrlOptions, ReadUrlResponse } from 'deepcrawl/types';
+
+// Schemas (for runtime validation)
+import { ReadUrlOptionsSchema } from 'deepcrawl/schemas';
+
+// Utilities
+import { formatDuration, getMetrics } from 'deepcrawl/utils';
+```
+
+**Never import types, schemas, or utils from the main `'deepcrawl'` package** - always use the dedicated paths.
 
 ## Worker Development
 
