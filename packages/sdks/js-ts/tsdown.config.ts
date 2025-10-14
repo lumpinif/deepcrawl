@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
   entry: [
@@ -13,10 +13,7 @@ export default defineConfig({
   noExternal: ['@deepcrawl/contracts', '@deepcrawl/types'],
   external: [/^zod/],
   treeshake: true,
-  splitting: false,
   minify: true,
   target: 'es2020',
-  dts: {
-    resolve: true,
-  },
+  dts: true,
 });
