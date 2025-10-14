@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { MarkdownConverterOptions } from 'deepcrawl';
+import type { MarkdownConverterOptions } from 'deepcrawl/types';
 import { useCallback, useRef, useState } from 'react';
 import {
   usePlaygroundCoreSelector,

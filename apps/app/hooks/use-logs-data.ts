@@ -4,7 +4,7 @@ import type {
   GetManyLogsResponseMeta,
   GetManyLogsSortColumn,
   GetManyLogsSortDirection,
-} from '@deepcrawl/types/routers/logs';
+} from 'deepcrawl/types';
 import { useMemo } from 'react';
 import { getLogStatus } from '@/components/logs/logs-columns';
 import type { FilterOption } from '@/components/logs/logs-filter-popover';

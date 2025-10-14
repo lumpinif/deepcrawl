@@ -9,7 +9,7 @@
 
 'use client';
 
-import type { CacheOptions } from 'deepcrawl';
+import type { CacheOptions } from 'deepcrawl/types';
 import { useEffect } from 'react';
 import {
   PlaygroundProvider,

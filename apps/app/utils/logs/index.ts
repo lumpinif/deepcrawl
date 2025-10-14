@@ -4,10 +4,8 @@ import {
   resolveGetManyLogsOptions,
   toISOStringBoundary,
 } from '@deepcrawl/contracts/logs';
-import {
-  GetManyLogsOptionsSchema,
-  normalizeGetManyLogsPagination,
-} from '@deepcrawl/types/routers/logs';
+import { GetManyLogsOptionsSchema } from 'deepcrawl/schemas';
+import { normalizeGetManyLogsPagination } from 'deepcrawl/types/utils';
 import type { z } from 'zod/v4';
 import {
   DEFAULT_LOGS_DATE_RANGE_PRESET,

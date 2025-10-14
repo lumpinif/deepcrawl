@@ -5,7 +5,7 @@
  * Handles URL synchronization and local state preservation.
  */
 
-import { ReadOptionsSchema } from '@deepcrawl/types';
+import { ReadOptionsSchema } from 'deepcrawl/schemas';
 import { DEFAULT_READ_OPTIONS_FOR_HOOK } from './defaults';
 import type { ReadUrlOptionsWithoutUrl } from './types';
 import { useOperationOptions } from './use-operation-options';

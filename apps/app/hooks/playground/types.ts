@@ -6,13 +6,15 @@
  */
 
 import {
-  type ExtractLinksResponse,
   GetMarkdownOptionsSchema,
-  type GetMarkdownResponse,
   LinksOptionsSchema,
   ReadOptionsSchema,
-  type ReadUrlResponse,
-} from 'deepcrawl';
+} from 'deepcrawl/schemas';
+import type {
+  ExtractLinksResponse,
+  GetMarkdownResponse,
+  ReadUrlResponse,
+} from 'deepcrawl/types';
 import type { UseQueryStateOptions } from 'nuqs';
 import type z from 'zod/v4';
 

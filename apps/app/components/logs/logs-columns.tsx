@@ -1,5 +1,4 @@
 import type { GetManyLogsResponse } from '@deepcrawl/contracts';
-import type { ExportFormat } from '@deepcrawl/types/routers/logs';
 import { DataGridColumnHeader } from '@deepcrawl/ui/components/reui/data-grid-column-header';
 // import {
 //   DataGridTableRowSelect,
@@ -18,6 +17,7 @@ import {
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
 import type { ColumnDef, Row } from '@tanstack/react-table';
 import { formatDate } from 'date-fns';
+import type { ExportFormat } from 'deepcrawl/types';
 import { Download, Ellipsis } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';

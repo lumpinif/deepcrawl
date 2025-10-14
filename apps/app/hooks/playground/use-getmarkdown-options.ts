@@ -5,7 +5,7 @@
  * Handles URL synchronization and local state preservation.
  */
 
-import { GetMarkdownOptionsSchema } from 'deepcrawl';
+import { GetMarkdownOptionsSchema } from 'deepcrawl/schemas';
 import { DEFAULT_GET_MARKDOWN_OPTIONS_FOR_HOOK } from './defaults';
 import type { GetMarkdownOptionsWithoutUrl } from './types';
 import { useOperationOptions } from './use-operation-options';

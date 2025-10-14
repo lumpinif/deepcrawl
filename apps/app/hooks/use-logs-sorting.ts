@@ -2,11 +2,11 @@ import {
   GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
   GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
 } from '@deepcrawl/types/configs/default';
+import type { SortingState } from '@tanstack/react-table';
 import type {
   GetManyLogsSortColumn,
   GetManyLogsSortDirection,
-} from '@deepcrawl/types/routers/logs';
-import type { SortingState } from '@tanstack/react-table';
+} from 'deepcrawl/types';
 import { useMemo, useState } from 'react';
 
 const COLUMN_TO_SORT_COLUMN: Record<string, GetManyLogsSortColumn> = {

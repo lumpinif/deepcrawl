@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
-import type { CacheOptions } from 'deepcrawl';
+import type { CacheOptions } from 'deepcrawl/types';
 import { useCallback, useRef, useState } from 'react';
 import { usePlaygroundOptionsSelector } from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';

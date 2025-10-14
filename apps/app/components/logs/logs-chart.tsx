@@ -1,6 +1,5 @@
 'use client';
 
-import type { ActivityLogEntry } from '@deepcrawl/types/routers/logs';
 import {
   Card,
   CardAction,
@@ -17,6 +16,7 @@ import {
   ChartTooltipContent,
 } from '@deepcrawl/ui/components/ui/chart';
 import { formatDate } from 'date-fns';
+import type { ActivityLogEntry } from 'deepcrawl/types';
 import { useMemo } from 'react';
 import {
   Area,

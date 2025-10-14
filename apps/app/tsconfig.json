@@ -9,6 +9,9 @@
       "@deepcrawl/auth/*": ["../../packages/auth/src/*"],
       "@deepcrawl/types/*": ["../../packages/types/src/*"],
       "deepcrawl": ["../../packages/sdks/js-ts/src/index.ts"],
+      "deepcrawl/types": ["../../packages/sdks/js-ts/src/types-public.ts"],
+      "deepcrawl/schemas": ["../../packages/sdks/js-ts/src/schemas-public.ts"],
+      "deepcrawl/types/utils": ["../../packages/sdks/js-ts/src/types-utils.ts"],
       "@deepcrawl/contracts/*": ["../../packages/contracts/src/*"]
     },
 

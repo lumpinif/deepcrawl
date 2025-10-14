@@ -1,13 +1,5 @@
 'use client';
 
-import type {
-  LinksOptions,
-  MarkdownConverterOptions,
-  MetadataOptions,
-  ReadOptions,
-  ScrapeOptions,
-  TreeOptions,
-} from '@deepcrawl/types';
 import {
   DEFAULT_LINKS_OPTIONS,
   DEFAULT_MARKDOWN_CONVERTER_OPTIONS,
@@ -48,6 +40,14 @@ import {
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
 import { cn } from '@deepcrawl/ui/lib/utils';
+import type {
+  LinksOptions,
+  MarkdownConverterOptions,
+  MetadataOptions,
+  ReadOptions,
+  ScrapeOptions,
+  TreeOptions,
+} from 'deepcrawl/types';
 import {
   Bot,
   FileCheck2,

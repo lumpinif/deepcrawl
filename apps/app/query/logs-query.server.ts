@@ -5,11 +5,8 @@ import type {
   GetManyLogsResponse,
 } from '@deepcrawl/contracts';
 import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
-import {
-  // GetManyLogsOptionsSchema,
-  normalizeGetManyLogsPagination,
-} from '@deepcrawl/types/routers/logs';
 import { DeepcrawlApp } from 'deepcrawl';
+import { normalizeGetManyLogsPagination } from 'deepcrawl/types';
 import { headers } from 'next/headers';
 
 // import { z } from 'zod/v4';

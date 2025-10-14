@@ -5,7 +5,7 @@
  * Handles URL synchronization and local state preservation.
  */
 
-import { LinksOptionsSchema } from '@deepcrawl/types';
+import { LinksOptionsSchema } from 'deepcrawl/schemas';
 import { DEFAULT_EXTRACT_LINKS_OPTIONS_FOR_HOOK } from './defaults';
 import type { ExtractLinksOptionsWithoutUrl } from './types';
 import { useOperationOptions } from './use-operation-options';

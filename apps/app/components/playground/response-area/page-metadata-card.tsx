@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@deepcrawl/ui/components/ui/card';
 
-import type { PageMetadata } from 'deepcrawl';
+import type { PageMetadata } from 'deepcrawl/types';
 
 /**
  * MetadataItem component for displaying key-value pairs

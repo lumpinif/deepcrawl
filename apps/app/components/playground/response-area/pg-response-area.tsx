@@ -11,7 +11,7 @@ import type {
   ExtractLinksResponse,
   GetMarkdownResponse,
   ReadUrlResponse,
-} from 'deepcrawl';
+} from 'deepcrawl/types';
 import { ChevronUp, ExternalLink, Share } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';

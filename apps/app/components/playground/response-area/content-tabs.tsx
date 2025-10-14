@@ -32,7 +32,7 @@ import type {
   ExtractLinksResponse,
   LinksTree,
   ReadUrlResponse,
-} from 'deepcrawl';
+} from 'deepcrawl/types';
 import {
   Code2,
   Copy,

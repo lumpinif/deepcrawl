@@ -8,14 +8,14 @@ import type {
   ReadUrlOptions,
   ReadUrlResponse,
 } from '@deepcrawl/contracts';
+import { DeepcrawlApp } from 'deepcrawl';
 import {
-  DeepcrawlApp,
   DeepcrawlAuthError,
   DeepcrawlError,
   DeepcrawlLinksError,
   DeepcrawlNetworkError,
   DeepcrawlReadError,
-} from 'deepcrawl';
+} from 'deepcrawl/types';
 import { headers } from 'next/headers';
 import type { PlaygroundResponse } from '@/hooks/playground/types';
 
