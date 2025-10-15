@@ -3,4 +3,72 @@ title: Cron Job
 description: How to use Cron Job with Deepcrawl.
 ---
 
-How to use Cron Job with Deepcrawl.
+Cron jobs let you run Deepcrawl tasks on a schedule so you can keep data fresh without touching the dashboard.
+
+## What is Vercel Cron Jobs?
+[Vercel Cron Jobs](https://vercel.com/docs/cron-jobs) are built-in timers that ping a route in your deployment at the exact times you specify. Each schedule triggers an HTTP request to the path you configure (for example, `/api/cron/deepcrawl`), so you can place automation inside a standard Vercel Function.
+
+## Before you start
+- Next.js 15 App Router project deployed to Vercel.
+- A `DEEPCRAWL_API_KEY` in your Vercel environment variables.
+- `deepcrawl` npm package installed (`pnpm add deepcrawl`).
+
+## Step-by-step: schedule a Deepcrawl task
+1. **Describe the schedule in `vercel.json`.** This example runs every week on Sunday at midnight (UTC).
+
+   ```json title="vercel.json"
+   {
+     "crons": [
+       {
+         "path": "/api/cron/deepcrawl",
+         "schedule": "0 0 * * 0"
+       }
+     ]
+   }
+   ```
+
+2. **Create a shared Deepcrawl client.** Keep the client server-only so your API key never reaches the browser.
+
+   ```ts title="lib/deepcrawl.ts"
+   import { DeepcrawlApp } from 'deepcrawl';
+
+   export const deepcrawl = new DeepcrawlApp({
+     apiKey: process.env.DEEPCRAWL_API_KEY as string,
+   });
+   ```
+
+3. **Handle the cron request in an API route.** This handler crawls a docs page, extracts the markdown content and metadata to watch for content changes over time.
+
+   ```ts title="app/api/cron/deepcrawl/route.ts"
+   import { deepcrawl } from '@/lib/deepcrawl';
+
+   export const runtime = 'edge'; // optional, works with serverless too
+
+   export async function GET() {
+     const response = await deepcrawl.readUrl({
+       url: 'https://example.com/docs',
+       markdown: true,
+       metadata: true,
+     });
+
+     console.log('Deepcrawl content snapshot', {
+       metadata: response.metadata,
+       contentLength: response.markdown?.length ?? 0,
+     });
+
+     return Response.json({
+       ok: true,
+       checkedAt: new Date().toISOString(),
+       pageTitle: response.metadata?.title ?? null,
+       contentLength: response.markdown?.length ?? 0,
+     });
+   }
+   ```
+
+   Replace the URL with the page you want to monitor. You can expand this handler to compare the markdown content with previous snapshots stored in a database, send a Slack notification when content changes, or enqueue downstream work.
+
+4. **Deploy and verify.** Run `pnpm build && pnpm deploy` (or `vercel deploy`) so the cron schedule is uploaded. In the Vercel dashboard, open **Settings > Functions > Cron Jobs** to confirm the schedule and view the run history. The logs show the JSON response and any `console.log` output.
+
+## Testing locally
+Vercel does not fire cron jobs during `pnpm dev`, but you can test the function by visiting `http://localhost:3000/api/cron/deepcrawl` or issuing `curl http://localhost:3000/api/cron/deepcrawl`. Once deployed, Vercel executes the same handler with the cron schedule you defined.
+
