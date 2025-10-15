@@ -1,0 +1,96 @@
+---
+title: Context for AI
+description: Map any site with Deepcrawl extractLinks so agents fetch only what matters.
+---
+
+Few modern sites publish an `llms.txt` manifest, so most AI agents still crawl blindly or pull entire HTML pages into memory. Deepcrawl's `extractLinks` endpoint skips the guesswork by returning a live hierarchy of every reachable page without relying on static sitemaps or hand-curated lists.
+
+## Why `extractLinks` unlocks native web context
+- **No dependency on `sitemap.xml` or `llms.txt`.** Deepcrawl walks the public navigation the same way a browser does, so single-page apps and hybrid renderers expose their real structure automatically.
+- **Tree-first context.** The agent gets a lightweight link graph with titles, labels, and parents instead of megabytes of HTML. That keeps token usage low and makes it obvious where to explore next.
+- **Fewer hallucinations.** With a curated tree, the agent chooses specific targets before downloading content, limiting irrelevant fetches and summaries.
+
+<Callout type="info">
+Only a sliver of modern websites adopt `llms.txt` today. `extractLinks` gives you an always-fresh navigation tree so LLMs can tap into native web context without waiting for ecosystem adoption.
+</Callout>
+
+## Minimal Next.js 15 workflow
+Follow these steps to give your agent a precise site map without downloading whole documents.
+
+1. **Share a Deepcrawl client.**
+
+   ```ts title="lib/deepcrawl.ts"
+   import { DeepcrawlApp } from 'deepcrawl';
+
+   export const deepcrawl = new DeepcrawlApp({
+     apiKey: process.env.DEEPCRAWL_API_KEY!,
+   });
+   ```
+
+2. **Return the link tree from an API route.** Cap depth and link counts so you stay within the context window you want to spend.
+
+   ```ts title="app/api/context/tree/route.ts"
+   import { deepcrawl } from '@/lib/deepcrawl';
+
+   export const runtime = 'edge';
+
+   export async function GET() {
+     const result = await deepcrawl.extractLinks({
+       url: 'https://example.com',
+       tree: true,
+       depth: 2,
+       maxLinks: 150,
+       follow: { sameHost: true },
+     });
+
+     if (!('tree' in result)) {
+       return Response.json({ error: 'Tree unavailable' }, { status: 500 });
+     }
+
+     const { tree } = result;
+     return Response.json({
+       root: tree.url,
+       children: tree.children?.map((child) => ({
+         url: child.url,
+         title: child.title,
+         section: child.path.join(' > '),
+       })),
+     });
+   }
+   ```
+
+3. **Let the agent decide what to fetch.** Pull the tree first, then target the exact pages that matter before escalating to heavier endpoints like `readUrl`.
+
+   ```ts title="app/agent/research.ts"
+   import { deepcrawl } from '@/lib/deepcrawl';
+
+   export async function fetchPageSummary(url: string) {
+     const { tree } = await deepcrawl.extractLinks({ url, tree: true, depth: 1 });
+     const docsLink = tree.children?.find((child) =>
+       child.url.includes('/docs/')
+     );
+
+     if (!docsLink) {
+       return { url, note: 'No docs section found' };
+     }
+
+     const page = await deepcrawl.readUrl({
+       url: docsLink.url,
+       markdown: true,
+       metadata: true,
+     });
+
+     return {
+       choice: docsLink.url,
+       summary: page.markdown,
+       metadata: page.metadata,
+     };
+   }
+   ```
+
+## Token savings in practice
+- **Tree payloads stay small.** A few kilobytes describe hundreds of URLs, while full HTML pages often exceed 100 KB each.
+- **Selective fetches.** The agent only escalates to `readUrl` when a page is relevant, so you avoid summarizing entire sites just to find the right section.
+- **Reusable structure.** Cache the tree per domain and refresh it on a schedule; agents can reuse the navigation map without re-crawling, freeing tokens for reasoning.
+
+By combining `extractLinks` with your agent's decision layer, you deliver native web context that mirrors the site's navigation and keeps hallucinations in check without waiting for `llms.txt` support to become widespread.
