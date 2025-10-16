@@ -18,41 +18,11 @@ export const _ENABLE_LINKS_CACHE = true as const;
 
 /* -------------------------- GLOBAL CONFIGS -------------------------- */
 
-/* ------------------------- Default cache options ------------------------- */
+/* ------------------------- Default Cache Options ------------------------- */
 
 export const DEFAULT_CACHE_OPTIONS = {
   enabled: true,
   expirationTtl: 86400 * 2, // 2 days in seconds
-} as const;
-
-/* ------------------------- Link Extraction Services ------------------------- */
-
-// Framework-specific patterns to filter out
-export const FRAMEWORK_PATTERNS = [
-  // Next.js
-  '/_next/',
-  // React
-  '/static/js/',
-  '/static/css/',
-  '/static/media/',
-  // Vue
-  '/_nuxt/',
-  // Angular
-  '/assets/js/',
-  '/assets/css/',
-  // WordPress
-  '/wp-content/',
-  '/wp-includes/',
-  '/wp-admin/',
-  // Others
-  '/_sites/',
-  '/cdn-cgi/',
-];
-
-export const MEDIA_EXTENSIONS = {
-  images: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico'],
-  videos: ['.mp4', '.webm', '.ogg', '.mov', '.avi'],
-  documents: ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'],
 } as const;
 
 /* ------------------------- Metrics Services ------------------------- */
@@ -190,6 +160,36 @@ export const DEFAULT_GET_MANY_LOGS_OPTIONS = {
   orderBy: GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
   orderDir: GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
 } as const satisfies Readonly<z.infer<typeof GetManyLogsOptionsSchema>>;
+
+/* ------------------------- Link Extraction Services ------------------------- */
+
+// Framework-specific patterns to filter out
+export const FRAMEWORK_PATTERNS = [
+  // Next.js
+  '/_next/',
+  // React
+  '/static/js/',
+  '/static/css/',
+  '/static/media/',
+  // Vue
+  '/_nuxt/',
+  // Angular
+  '/assets/js/',
+  '/assets/css/',
+  // WordPress
+  '/wp-content/',
+  '/wp-includes/',
+  '/wp-admin/',
+  // Others
+  '/_sites/',
+  '/cdn-cgi/',
+];
+
+export const MEDIA_EXTENSIONS = {
+  images: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico'],
+  videos: ['.mp4', '.webm', '.ogg', '.mov', '.avi'],
+  documents: ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'],
+} as const;
 
 // TODO: CONSIDER ADD CUSTOMIZATION FOR MAXKIN AND MAXVISITEDURLS LIMITS
 
