@@ -1,9 +1,7 @@
 ---
 title: TypeScript
-description: TypeScript types and schemas for the Deepcrawl API.
+description: TypeScript types overview and cheat sheet for the Deepcrawl API.
 ---
-
-All the TypeScript types and schemas for the Deepcrawl API.
 
 ## Guides
 
@@ -12,3 +10,131 @@ All the TypeScript types and schemas for the Deepcrawl API.
 - **Use generated schemas**: Import schema exports from `deepcrawl/schemas` to validate request payloads and response data with Zod.
 - **Share contract types**: Reuse the definitions in `deepcrawl/types` to keep front-end and worker code in sync without duplicating interfaces.
 
+## Import Cheat Sheet
+
+The `deepcrawl/types` entry point mirrors the package layout under
+`packages/types`. Import the groups you need and let TypeScript guide you.
+
+### Routers (API Endpoints) Types
+
+```ts
+/* Read endpoints */
+import type {
+  GetMarkdownOptions,
+  GetMarkdownResponse,
+  ReadUrlOptions,
+  ReadUrlResponse,
+} from 'deepcrawl/types';
+
+/* Links endpoints */
+import type {
+  GetLinksOptions,
+  GetLinksResponse,
+  ExtractLinksOptions,
+  ExtractLinksResponse,
+} from 'deepcrawl/types';
+
+/* Logs endpoints */
+import type {
+  GetManyLogsOptions,
+  GetManyLogsResponse,
+  GetOneLogOptions,
+  GetOneLogResponse,
+  ExportResponseOptions,
+  ExportResponseOutput,
+} from 'deepcrawl/types';
+
+```
+
+### Services Types
+
+```ts
+// Services
+import type {
+  ScrapeOptions,
+  MarkdownConverterOptions,
+  LinkExtractionOptions,
+  MetadataOptions,
+} from 'deepcrawl/types';
+```
+
+### Metrics Types
+
+```ts
+// Metrics
+import type { MetricsOptions, Metrics } from 'deepcrawl/types';
+```
+
+### Common Helpers Types
+
+```ts
+// Common helpers
+import type {
+  ActivityLogEntry,
+  JoinedRequestPath,
+  LinksTree,
+  BaseSuccessResponse,
+} from 'deepcrawl/types';
+```
+
+### Utilities
+
+```ts
+// Utility functions
+import {
+  normalizeGetManyLogsPagination,
+  OptionalBoolWithDefault,
+} from 'deepcrawl/types/utils';
+
+const pagination = normalizeGetManyLogsPagination({ limit: 150, offset: -5 });
+const optionalFlagSchema = OptionalBoolWithDefault(true);
+```
+
+```ts
+// OptionalBoolWithDefault
+/**
+ * Optional boolean schema with default value.
+ * Convenient helper for common use case.
+ *
+ * @param defaultValue - The default boolean value
+ * @returns Zod schema with boolean parsing and default
+ */
+export const OptionalBoolWithDefault = (defaultValue: boolean) =>
+  z.boolean().default(defaultValue).optional();
+
+```
+
+```ts
+// normalizeGetManyLogsPagination
+/**
+ * @description Normalize get many logs pagination input
+ *
+ * @param input - Get many logs pagination input
+ * @returns Normalized get many logs pagination
+ *
+ * @example
+ * ```typescript
+ * import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs/utils';
+ *
+ * const normalized = normalizeGetManyLogsPagination({ limit: 150, offset: -5 });
+ * // Returns: { limit: 100, offset: 0 } (clamped to valid ranges)
+ * ```
+ */
+export function normalizeGetManyLogsPagination(
+  input: GetManyLogsPaginationInput = {},
+): NormalizedGetManyLogsPagination {
+  const { limit, offset } = input;
+  const limitNumber = Number(limit);
+  const offsetNumber = Number(offset);
+  const normalizedLimit = Number.isFinite(limitNumber)
+    ? Math.min(Math.max(Math.trunc(limitNumber), 1), 100)
+    : undefined;
+  const normalizedOffset = Number.isFinite(offsetNumber)
+    ? Math.max(Math.trunc(offsetNumber), 0)
+    : undefined;
+  return {
+    limit: normalizedLimit,
+    offset: normalizedOffset,
+  };
+}
+```

@@ -1,0 +1,90 @@
+---
+title: Schemas
+description: Zod schemas overview and cheat sheet for the Deepcrawl API.
+---
+
+## Guides
+
+- **Load schemas from one place**: `deepcrawl/schemas` aggregates every Zod
+  definition so downstream apps, Workers, and SDKs stay in sync.
+- **Validate requests and responses**: Pair these schemas with `deepcrawl/types`
+  to guarantee runtime validation matches TypeScript expectations.
+- **Avoid circular imports internally**: Inside `packages/types`, use relative
+  paths as documented in `schemas.ts`. External consumers should use the barrel.
+
+## Import Cheat Sheet
+
+### Common Schemas
+
+```ts
+import {
+  BaseErrorResponseSchema,
+  BaseSuccessResponseSchema,
+} from 'deepcrawl/schemas';
+```
+
+### Router Schemas
+
+```ts
+// Read endpoints
+import {
+  GetMarkdownOptionsSchema,
+  GetMarkdownResponseSchema,
+  ReadOptionsSchema,
+  ReadUrlResponseSchema,
+  ReadSuccessResponseSchema,
+  ReadErrorResponseSchema,
+} from 'deepcrawl/schemas';
+
+// Links endpoints
+import {
+  LinksOptionsSchema,
+  GetLinksOptionsSchema,
+  ExtractLinksOptionsSchema,
+  GetLinksResponseSchema,
+  GetLinksResponseWithTreeSchema,
+  GetLinksResponseWithoutTreeSchema,
+  ExtractLinksResponseSchema,
+  ExtractLinksResponseWithTreeSchema,
+  ExtractLinksResponseWithoutTreeSchema,
+  LinksSuccessResponseSchema,
+  LinksSuccessResponseWithTreeSchema,
+  LinksSuccessResponseWithoutTreeSchema,
+  LinksErrorResponseSchema,
+  LinksTreeSchema,
+} from 'deepcrawl/schemas';
+
+// Logs endpoints
+import {
+  GetManyLogsOptionsSchema,
+  GetManyLogsResponseSchema,
+  GetOneLogOptionsSchema,
+  GetOneLogResponseSchema,
+  ExportResponseOptionsSchema,
+  ExportResponseOutputSchema,
+  JoinedRequestPathSchema,
+} from 'deepcrawl/schemas';
+```
+
+### Metrics Schemas
+
+```ts
+import {
+  MetricsOptionsSchema,
+  MetricsSchema,
+} from 'deepcrawl/schemas';
+```
+
+### Service Schemas
+
+```ts
+import {
+  CacheOptionsSchema,
+  LinkExtractionOptionsSchema,
+  MarkdownConverterOptionsSchema,
+  MetadataOptionsSchema,
+  PageMetadataSchema,
+  ScrapeOptionsSchema,
+  ScrapedDataSchema,
+} from 'deepcrawl/schemas';
+```
