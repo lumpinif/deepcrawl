@@ -4,3 +4,50 @@ description: Frequently asked questions.
 ---
 
 This page will collect common questions and point to relevant guides and references.
+
+## General
+
+### Is Deepcrawl free to use?
+
+Yes. Deepcrawl is 100% free and open for anyone to deploy. Follow the self-hosting guide to provision the Next.js app, Workers, and SDK locally or on your own infrastructure.
+
+### How do I install the SDK?
+
+Run `pnpm add deepcrawl` (or `npm install` / `yarn add`). Then create a server-side client:
+
+```typescript
+import { DeepcrawlApp } from 'deepcrawl';
+
+export const deepcrawl = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY
+});
+```
+
+### Where do I find the latest types and schemas?
+
+Types live under `deepcrawl/types`, Zod schemas under `deepcrawl/schemas`, and the raw oRPC contracts in `packages/contracts`. The TypeScript reference docs walk through each export.
+
+### Why do requests fail in the browser?
+
+The SDK is server-only. Use Next.js Server Actions or API routes to proxy requests; never expose `DEEPCRAWL_API_KEY` to the client.
+
+## Development
+
+### Which command validates formatting and types?
+
+`pnpm check` runs Biome formatting, linting, and `pnpm typecheck`. Run it at the repo root before committing.
+
+### How do I reset my local Workers secrets?
+
+Re-copy the templates:
+
+```bash
+cp apps/workers/auth/.dev.vars.example apps/workers/auth/.dev.vars
+cp apps/workers/v0/.dev.vars.example apps/workers/v0/.dev.vars
+```
+
+Then rerun `wrangler secret put` for any values you store in Cloudflare.
+
+### What if my dev environment cannot reach Redis or KV?
+
+Check the bindings in `wrangler.jsonc` and ensure Upstash/Cloudflare credentials are present. For local-only testing, switch to in-memory fallbacks defined in `packages/auth` and `packages/contracts`.

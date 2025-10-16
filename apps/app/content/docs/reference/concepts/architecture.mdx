@@ -1,6 +1,83 @@
 ---
-title: Architecture
-description: Architecture of Deepcrawl.
+title: Architecture Overview
+description: Structure, key apps and packages, and local development.
 ---
 
-Architecture of Deepcrawl
+Deepcrawl is organised as a pnpm + Turbo monorepo. Everything—from the
+dashboard to Workers and SDKs—lives in one workspace so changes stay in sync.
+
+## Repository Map
+
+```text
+apps/
+  app/               Next.js dashboard + documentation
+  workers/
+    auth/            Cloudflare Worker handling auth flows
+    v0/              Core API Worker (queue + fetch)
+packages/
+  ui/                Shared React UI kit for the dashboard
+  auth/              Auth helpers used by app and Workers
+  contracts/         Shared oRPC contracts
+  db/                Database clients, migrations, and utilities
+  sdks/js-ts/        TypeScript SDK exposed on npm
+  types/             Runtime-agnostic type definitions
+  typescript-config/ Base tsconfig files for all packages
+  eslint-config/     Shared linting rules
+scripts/             Utility scripts for CI and tooling
+```
+
+Turborepo coordinates builds so only affected packages recompile. Each package
+declares `"workspace:*"` dependencies to keep versions aligned.
+
+## Apps and Workers
+
+- **apps/app**: Next.js 15 app with the dashboard UI, docs, and API routes. Run
+  `pnpm -C apps/app dev` for local development.
+- **apps/workers/auth**: Cloudflare Worker that manages sign-in, tokens, and
+  secrets. Uses Wrangler for deploys.
+- **apps/workers/v0**: Worker that runs crawl jobs, queues, and webhook hooks.
+
+Workers share code from `packages/auth`, `packages/contracts`, and `packages/db`.
+The dashboard consumes the same contracts so every API call stays type-safe.
+
+## Shared Packages
+
+- **packages/ui**: Reusable components built with shadcn/ui, Tailwind config, and design tokens used
+  by the dashboard.
+- **packages/auth**: Session helpers, token validation, and cookie utilities.
+- **packages/contracts**: oRPC definitions that power typed clients across app,
+  Workers, and SDK.
+- **packages/db/**: Prisma clients, seed scripts, and database helpers. Run
+  database scripts via `pnpm db:sync`.
+- **packages/sdks/js-ts**: Distributed SDK (tsdown). Exports clients,
+  schemas, and types for third-party use.
+- **packages/types**, **packages/typescript-config**, **packages/eslint-config**:
+  Workspace-wide TypeScript and linting defaults.
+
+## Tooling and Scripts
+
+- `pnpm install` installs everything.
+- `pnpm dev` starts the dashboard, Workers, and any background services.
+- `pnpm build` compiles all packages with Turbo caching.
+- `pnpm check` runs Biome formatting, linting, type-checking, and dependency
+  audits.
+- Every package exposes its own scripts (for example `pnpm -C packages/sdks/js-ts test`).
+
+Workspace configs live at the repo root:
+
+- `turbo.json` orchestrates pipelines and caching.
+- `pnpm-workspace.yaml` declares which folders are part of the workspace.
+- `biome.jsonc` enforces formatting and lint rules consistently.
+
+## Local Development Flow
+
+1. Install dependencies, copy env templates, and fill in secrets.
+2. Start the dashboard via `pnpm -C apps/app dev:workers` to proxy
+   Cloudflare Workers locally.
+3. Work inside the relevant package, exporting helpers through the shared barrel
+   files where needed.
+4. Run `pnpm check` before committing to catch format or type issues.
+
+Because each feature has contracts, UI, and Worker logic in one repo, you can
+update all layers in a single pull request and rely on shared types to prevent
+breakage.

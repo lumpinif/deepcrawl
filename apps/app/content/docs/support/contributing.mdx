@@ -3,10 +3,60 @@ title: Contributing
 description: How to contribute to Deepcrawl.
 ---
 
-Thank you for contributing!
+We always welcome contributions!
 
-This page will cover:
-- Local setup and dev scripts
-- Coding standards and linting
-- Commit style and PR guidelines
-- Issue templates and triage
+## Local Setup
+
+1. Fork and clone the repo.
+2. Install dependencies with `pnpm install` (Node.js 20+ required).
+3. Copy environment templates and fill secrets:
+   - `cp apps/app/.env.example apps/app/.env.local`
+   - `cp apps/workers/auth/.dev.vars.example apps/workers/auth/.dev.vars`
+   - `cp apps/workers/v0/.dev.vars.example apps/workers/v0/.dev.vars`
+4. Run `pnpm -C apps/app dev` for the dashboard, add `dev:workers` when you need Worker proxies.
+
+## Development Workflow
+
+- Keep changes scoped: update contracts, app, workers, and SDK together when the feature spans layers.
+- Use `pnpm dev` to run the whole workspace, `pnpm build` for a production build, and `pnpm check` before pushing.
+- Write tests near the code (Vitest for SDK, integration tests inside apps/workers as needed).
+- Prefer reusable utilities in `packages/*`; export them through the package index.
+
+## Coding Standards
+
+- TypeScript-first: strict configs from `packages/typescript-config`.
+- Formatting: Biome with 2-space indent, single quotes, semicolons, trailing commas.
+- React: PascalCase component files, `use-*.ts` for hooks, kebab-case for other files.
+- Resolve lint warnings—do not silence rules unless discussed.
+
+Biome runs in `pnpm check`, but you can run `pnpm biome check --write` inside any package if you need to auto-fix formatting before committing.
+
+## Commit Style
+
+We use scoped Conventional Commits: `<scope>[:subscope]:<type> message`.
+
+Examples:
+
+- `app:feat add job status badge to dashboard`
+- `pkg:ui:fix correct Button loading state`
+- `workers:v0:chore add queue retries`
+- `scripts:ref log slow routes`
+
+Guidelines:
+
+- Subject ≤ 72 chars, imperative mood.
+- Reference issues (`#123`) or follow-up notes in the body when relevant.
+- Squash commits per PR if requested, but keep messages descriptive during development.
+
+## Pull Requests
+
+- Link the corresponding issue and describe the change with screenshots for UI updates.
+- Confirm `pnpm check` passes—this aggregates Biome formatting, linting, and TypeScript checks—and mention any additional tests run.
+- Flag breaking changes or migrations in the PR summary.
+- Request a review early if architectural decisions need consensus.
+
+## Issues and Triage
+
+- Use the issue templates to report bugs or propose enhancements.
+- Label requests with area scopes (`app`, `workers`, `pkg`, `docs`) to help routing.
+- Assign yourself before starting work to avoid duplicate efforts.
