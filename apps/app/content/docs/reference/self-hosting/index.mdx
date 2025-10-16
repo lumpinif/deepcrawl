@@ -4,3 +4,67 @@ description: How to self-host Deepcrawl.
 ---
 
 This page will include instructions for self-hosting Deepcrawl.
+
+## Prerequisites
+
+- Node.js 20 or later
+- `pnpm` for workspace commands
+- Wrangler CLI for Cloudflare Worker deployments
+- Access to the project repo: [https://github.com/lumpinif/deepcrawl](https://github.com/lumpinif/deepcrawl)
+
+## 1. Install Dependencies
+
+```bash
+pnpm install
+```
+
+Run this inside the repo root to install shared packages, the Next.js dashboard, and worker dependencies.
+
+## 2. Prepare Environment Templates
+
+Copy the provided templates so you can edit them locally:
+
+```bash
+cp apps/app/.env.example apps/app/.env.local
+cp apps/workers/auth/.dev.vars.example apps/workers/auth/.dev.vars
+cp apps/workers/v0/.dev.vars.example apps/workers/v0/.dev.vars
+```
+
+These files include placeholders for the API key, base URL, and Wrangler-specific tokens.
+
+## 3. Fill In Secrets
+
+Edit each file and set the required values:
+
+- `apps/app/.env.local`: `DEEPCRAWL_API_KEY`, optional `DEEPCRAWL_BASE_URL`
+- `apps/workers/auth/.dev.vars`: Worker API key, JWT secrets, session salts
+- `apps/workers/v0/.dev.vars`: Worker API key, webhook signing secret, storage bindings
+
+Keep secrets out of version control—these templates are ignored by Git.
+
+## 4. Run the Next.js Dashboard
+
+```bash
+pnpm -C apps/app dev
+```
+
+This boots the dashboard with the server-side API client. Confirm the environment variables load correctly by signing in and running a sample crawl.
+
+## 5. Run Workers Locally
+
+```bash
+pnpm -C apps/app dev:workers
+```
+
+This command launches the dashboard and proxies the Workers so you can test auth flows end-to-end.
+
+## 6. Deploy Workers With Wrangler
+
+Before deploying, log into Cloudflare and ensure the secrets above are set via `wrangler secret put`.
+
+```bash
+pnpm -C apps/workers/auth deploy
+pnpm -C apps/workers/v0 deploy
+```
+
+Each script uses the corresponding `wrangler.jsonc` configuration and operator secrets. Confirm the deployed routes respond as expected.
