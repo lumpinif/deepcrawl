@@ -111,11 +111,16 @@ export const PlaygroundOperationClientContent = ({
     >
       <PageTitle
         className="mx-auto mt-28 mb-10 w-full text-center md:mt-[18svh]"
-        description="API Playground for Deepcrawl"
+        description="Transform any website data AI ready"
         desPos="top"
         title="What would you like to see?"
+        titleClassName="mb-2"
         titleSize="3xl"
-      />
+      >
+        <span className="text-muted-foreground">
+          API Playground for Deepcrawl
+        </span>
+      </PageTitle>
       <div className="mx-auto flex w-full flex-col gap-4 sm:max-w-4/5">
         <PromptInput
           className={cn('relative w-full', className)}

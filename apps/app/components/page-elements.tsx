@@ -35,7 +35,9 @@ export function PageTitle({
   className,
   description,
   titleSize,
+  children,
   desPos = 'bottom',
+  titleClassName,
 }: {
   title:
     | string
@@ -44,6 +46,8 @@ export function PageTitle({
   description?: string;
   desPos?: 'top' | 'bottom';
   titleSize?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+  titleClassName?: string;
+  children?: React.ReactNode;
 } & React.HTMLAttributes<HTMLDivElement>) {
   const titleSizeCN = titleSize
     ? `text-${titleSize}`
@@ -52,7 +56,13 @@ export function PageTitle({
   const renderTitle = () => {
     if (typeof title === 'string') {
       return (
-        <h1 className={cn('text-wrap break-words font-semibold', titleSizeCN)}>
+        <h1
+          className={cn(
+            'text-wrap break-words font-semibold',
+            titleSizeCN,
+            titleClassName,
+          )}
+        >
           {title}
         </h1>
       );
@@ -69,6 +79,7 @@ export function PageTitle({
         className: cn(
           'text-wrap break-words font-semibold',
           titleSizeCN,
+          titleClassName,
           el.props.className,
         ),
       });
@@ -86,6 +97,7 @@ export function PageTitle({
       {description && desPos === 'bottom' && (
         <p className="text-muted-foreground">{description}</p>
       )}
+      {children}
     </div>
   );
 }
