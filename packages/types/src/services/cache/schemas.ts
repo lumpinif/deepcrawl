@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 import { OptionalBoolWithDefault } from '../../common/utils';
 import { DEFAULT_CACHE_OPTIONS } from '../../configs';
 
-const { enabled } = DEFAULT_CACHE_OPTIONS;
+const { enabled, expirationTtl } = DEFAULT_CACHE_OPTIONS;
 
 /**
  * Cache configuration schema for Cloudflare KV storage operations.
@@ -18,7 +18,7 @@ const { enabled } = DEFAULT_CACHE_OPTIONS;
  * ```typescript
  * const cacheConfig = {
  *   enabled: true,
- *   expirationTtl: 3600  // Cache for 1 hour
+ *   expirationTtl: 3600  // Cache for 1 hour in seconds
  * };
  * ```
  */
@@ -41,10 +41,12 @@ export const CacheOptionsSchema = z
     expirationTtl: z
       .number()
       .min(60) // 1 minute
+      .default(expirationTtl)
       .optional()
       .meta({
         description:
           'The number that represents when to expire the key-value pair in seconds from now. The minimum value is 60',
+        default: expirationTtl,
         examples: [60],
       }),
   })
