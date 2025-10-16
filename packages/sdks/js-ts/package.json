@@ -1,6 +1,6 @@
 {
   "name": "deepcrawl",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "JavaScript/TypeScript SDK for Deepcrawl API - A powerful web scraping and crawling service",
   "type": "module",
   "main": "./dist/index.js",
