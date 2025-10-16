@@ -8,22 +8,24 @@ dashboard to Workers and SDKs—lives in one workspace so changes stay in sync.
 
 ## Repository Map
 
-```text
-apps/
-  app/               Next.js dashboard + documentation
-  workers/
-    auth/            Cloudflare Worker handling auth flows
-    v0/              Core API Worker (queue + fetch)
-packages/
-  ui/                Shared React UI kit for the dashboard
-  auth/              Auth helpers used by app and Workers
-  contracts/         Shared oRPC contracts
-  db/                Database clients, migrations, and utilities
-  sdks/js-ts/        TypeScript SDK exposed on npm
-  types/             Runtime-agnostic type definitions
-  typescript-config/ Base tsconfig files for all packages
-  eslint-config/     Shared linting rules
-scripts/             Utility scripts for CI and tooling
+```files
+deepcrawl
+├── apps/
+│   ├── app (www + Next.js dashboard + documentation)
+│   ├── workers (Core APIs - Cloudflare Workers)
+│   │   ├── auth
+│   │   └── v0
+├── packages/
+│   ├── ui/                ( Shared React UI kit for the dashboard )
+│   ├── auth/              ( Auth helpers used by app and Workers )
+│   ├── contracts/         ( Shared oRPC contracts )
+│   ├── db/                ( Database clients, migrations, and utilities )
+│   ├── sdks/
+│   │   └── js-ts/         ( TypeScript SDK exposed on npm )
+│   ├── types/             ( Runtime-agnostic type definitions )
+│   ├── typescript-config/ ( Base tsconfig files for all packages )
+│   └── eslint-config/     ( Shared linting rules )
+└── scripts/               ( Utility scripts for CI and tooling )
 ```
 
 Turborepo coordinates builds so only affected packages recompile. Each package

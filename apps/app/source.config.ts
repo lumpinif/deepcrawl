@@ -1,8 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-import { remarkNpm } from 'fumadocs-core/mdx-plugins';
+import { remarkMdxFiles, remarkNpm } from 'fumadocs-core/mdx-plugins';
 import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import { createGenerator, remarkAutoTypeTable } from 'fumadocs-typescript';
 
@@ -30,6 +29,7 @@ export default defineConfig({
   mdxOptions: {
     remarkPlugins: [
       remarkNpm,
+      remarkMdxFiles,
       [
         remarkAutoTypeTable,
         {
