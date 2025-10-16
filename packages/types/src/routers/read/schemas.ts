@@ -425,3 +425,21 @@ export const ReadSuccessResponseSchema = ReadResponseBaseSchema.extend({
       },
     ],
   });
+
+/**
+ * Alias for {@link ReadSuccessResponseSchema} that matches the `ReadUrlResponse`
+ */
+export const ReadUrlResponseSchema = ReadSuccessResponseSchema;
+
+/**
+ * Simple string schema representing the response from the GET /read endpoint.
+ * Matches {@link GetMarkdownResponse} at the type level.
+ */
+export const GetMarkdownResponseSchema = z.string().meta({
+  title: 'GetMarkdownResponse',
+  description:
+    'Plain markdown string returned by the GET /read endpoint when converting a page to markdown.',
+  examples: [
+    '# Example Domain\n\nThis domain is for use in illustrative examples in documents.',
+  ],
+});

@@ -771,6 +771,46 @@ export const LinksSuccessResponseSchema = z
     ],
   });
 
+/**
+ * Alias for {@link LinksSuccessResponseSchema} that matches the `GetLinksResponse`
+ * union exported from `deepcrawl/types`.
+ */
+export const GetLinksResponseSchema = LinksSuccessResponseSchema;
+
+/**
+ * Alias for {@link LinksSuccessResponseSchema} that matches the `ExtractLinksResponse`
+ * union exported from `deepcrawl/types`.
+ */
+export const ExtractLinksResponseSchema = LinksSuccessResponseSchema;
+
+/**
+ * Alias for {@link LinksSuccessResponseWithTreeSchema} that matches the `GetLinksResponseWithTree`
+ * union exported from `deepcrawl/types`.
+ */
+export const GetLinksResponseWithTreeSchema =
+  LinksSuccessResponseWithTreeSchema;
+
+/**
+ * Alias for {@link LinksSuccessResponseWithTreeSchema} that matches the `ExtractLinksResponseWithTree`
+ * union exported from `deepcrawl/types`.
+ */
+export const ExtractLinksResponseWithTreeSchema =
+  LinksSuccessResponseWithTreeSchema;
+
+/**
+ * Alias for {@link LinksSuccessResponseWithoutTreeSchema} that matches the `GetLinksResponseWithoutTree`
+ * union exported from `deepcrawl/types`.
+ */
+export const GetLinksResponseWithoutTreeSchema =
+  LinksSuccessResponseWithoutTreeSchema;
+
+/**
+ * Alias for {@link LinksSuccessResponseWithoutTreeSchema} that matches the `ExtractLinksResponseWithoutTree`
+ * union exported from `deepcrawl/types`.
+ */
+export const ExtractLinksResponseWithoutTreeSchema =
+  LinksSuccessResponseWithoutTreeSchema;
+
 export const LinksErrorResponseSchema = BaseErrorResponseSchema.extend({
   /* LinksTree - Partial site map tree if available, or undefined if no tree could be generated */
   tree: LinksTreeSchema.optional().meta({
