@@ -18,7 +18,7 @@ For lighter GET-only usage (no request body), see [`getLinks`](/docs/features/li
 
 ## Request formats
 
-### REST (POST)
+### REST (POST /links)
 
 ```bash
 curl \
@@ -27,26 +27,21 @@ curl \
   -X POST "https://api.deepcrawl.dev/links" \
   -d '{
     "url": "https://example.com",
-    "tree": true,
-    "metadata": true,
-    "metricsOptions": { "enable": true }
+    ...extractLinksOptions, // see below
   }'
 ```
 
-### Node SDK
+### Node SDK - `extractLinks()`
 
 ```ts
 import { DeepcrawlApp } from 'deepcrawl';
 
 const deepcrawl = new DeepcrawlApp({
-  apiKey: process.env.DEEPCRAWL_API_KEY!,
+  apiKey: process.env.DEEPCRAWL_API_KEY as string,
 });
 
-const tree = await deepcrawl.extractLinks({
-  url: 'https://example.com',
-  tree: true,
-  metadata: true,
-  metricsOptions: { enable: true },
+const tree = await deepcrawl.extractLinks('https://example.com', {
+  ...extractLinksOptions,
 });
 
 console.log(tree.tree?.children?.length);
@@ -65,7 +60,9 @@ Key controls:
 - `metadata`, `cleanedHtml`, `robots`, `sitemapXML`, `metaFiles`: mirror the read endpoint options to enrich tree nodes.
 - `cacheOptions` & `metricsOptions`: same behavior as other endpoints.
 
-## Response structure - `ExtractLinksResponse` is a union of two shapes.
+## Response structure - `ExtractLinksResponse`
+
+- This is a union of two shapes:
 
   1. `ExtractLinksResponseWithTree` (when `tree` is enabled in options) – includes a `tree` hierarchy you can traverse, and metadata is nested in the tree node.
   2. `ExtractLinksResponseWithoutTree` (when `tree` is false in options) – omits `tree`, returning only extracted links and metadata.
@@ -93,30 +90,51 @@ Errors follow the standard schema:
   name="LinksErrorResponse"
 />
 
-Example snippet:
+Example response:
+
+- With tree:
 
 ```json
 {
-   requestId: "123e4567-e89b-12d3-a456-426614174000",
-   success: true,
-   cached: false,
-   targetUrl: "https://example.com",
-   timestamp: "2024-01-15T10:30:00.000Z",
-   ancestors: ["https://example.com"],
-   tree: {
-     url: "https://example.com",
-     name: "Home",
-     lastUpdated: "2024-01-15T10:30:00.000Z",
-     metadata: { title: "Example", description: "..." },
-     extractedLinks: { internal: [...], external: [...] },
-     children: [...]
-   },
-   metrics: {
-    readableDuration: "0.54s",
-    durationMs: 540
+  requestId: '123e4567-e89b-12d3-a456-426614174000',
+  success: true,
+  cached: false,
+  targetUrl: "https://example.com",
+  timestamp: "2024-01-15T10:30:00.000Z",
+  ancestors: ["https://example.com"],
+  tree: {
+    url: "https://example.com",
+    name: "Home",
+    lastUpdated: "2024-01-15T10:30:00.000Z",
+    metadata: { title: "Example", description: "..." },
+    extractedLinks: { internal: [...], external: [...] },
+    children: [...]
   }
 }
 ```
+
+- Without tree:
+
+```json
+{
+  requestId: '123e4567-e89b-12d3-a456-426614174000',
+  success: true,
+  cached: false,
+  targetUrl: "https://example.com",
+  timestamp: "2024-01-15T10:30:00.000Z",
+  title: "Example Website",
+  description: "Welcome to our site",
+  metadata: { title: "Example", description: "..." },
+  extractedLinks: { internal: [...], external: [...] }
+}
+```
+
+Errors use the shared schema:
+
+<AutoTypeTable
+  path="../../packages/types/src/routers/links/types.ts"
+  name="LinksErrorResponse"
+/>
 
 ## Logs & observability
 - Logged under `links-extractLinks` with full request/response data.

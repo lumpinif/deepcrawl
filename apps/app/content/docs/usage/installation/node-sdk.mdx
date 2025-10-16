@@ -298,11 +298,55 @@ app.listen(3000);
   </Tab>
 </Tabs>
 
-## Customizing requests
-- **baseUrl:** point to your self-hosted worker (`https://<your-worker>.workers.dev/rpc`).
-- **headers:** pass cookies or session headers when running inside Next.js middleware/route handlers.
-- **fetch:** supply a custom implementation (e.g., `undici`), or add proxy agents via `fetchOptions.agent`.
-- **cacheOptions / metricsOptions / linkExtractionOptions:** share the same shapes as the REST API; see the [API reference](/docs/api) for schema details.
+
+## Client Options Overview
+
+
+```ts
+import { DeepcrawlApp } from 'deepcrawl';
+
+export const deepcrawl = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY as string,
+  baseUrl: process.env.DEEPCRAWL_API_URL, // optional self-hosted origin
+  ...deepcrawlConfig, // see below
+});
+```
+
+You can override `fetch`, `fetchOptions`, or `headers` during construction if
+you need custom agents, proxies, or tracing metadata.
+
+`DeepcrawlConfig`
+
+<AutoTypeTable
+  path="../../packages/sdks/js-ts/src/_types/index.ts"
+  name="DeepcrawlConfig"
+/>
+
+`DeepcrawlFetchOptions`
+
+<AutoTypeTable
+  path="../../packages/sdks/js-ts/src/_types/index.ts"
+  name="DeepcrawlFetchOptions"
+/>
+
+## Base Hosts & Authentication
+
+- **Production host**: `https://api.deepcrawl.dev`.
+- **Self-hosted Worker**: pass `baseUrl` to `new DeepcrawlApp({ baseUrl })` or
+  send requests directly to your Worker origin.
+- **Authentication**: send `Authorization: Bearer <DEEPCRAWL_API_KEY>` or
+  `x-api-key: <DEEPCRAWL_API_KEY>`. Dashboard sessions may also forward signed
+  cookies; prefer API keys for automation.
+- **Content types**: POST endpoints expect JSON (UTF-8); GET endpoints accept
+  query parameters that map to the option types below.
+
+### Rate limits & retries
+
+- Workers return `429` with code `RATE_LIMITED` and a `retryAfter` duration
+  (seconds).
+- The SDK automatically retries idempotent operations (`getMarkdown`, `readUrl`,
+  `extractLinks`) with exponential backoff unless the error is explicitly typed.
+- Enable caching (`cacheOptions`) to reduce repeated calls and token costs.
 
 ## What’s next
 - Explore the [SDK reference](/docs/sdk) for every method, type, and option.

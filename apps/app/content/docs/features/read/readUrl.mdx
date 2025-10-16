@@ -14,7 +14,7 @@ If you only need markdown, the lighter [`getMarkdown`](/docs/features/read/getMa
 
 ## Request formats
 
-### REST (POST)
+### REST (POST /read)
 
 ```bash
 curl \
@@ -23,17 +23,14 @@ curl \
   -X POST "https://api.deepcrawl.dev/read" \
   -d '{
     "url": "https://example.com",
-    "metadata": true,
-    "markdown": true,
-    "cleanedHtml": true,
-    "metricsOptions": { "enable": true }
+    ...readUrlOptions, // see below
   }'
 ```
 
 - Authentication can be an API key header or session cookies from the dashboard.
 - POST requests accept the full option set (see below); omit fields to fall back to defaults.
 
-### Node SDK
+### Node SDK - `readUrl()`
 
 ```ts
 import { DeepcrawlApp } from 'deepcrawl';
@@ -42,12 +39,8 @@ const deepcrawl = new DeepcrawlApp({
   apiKey: process.env.DEEPCRAWL_API_KEY as string,
 });
 
-const result = await deepcrawl.readUrl({
-  url: 'https://example.com',
-  metadata: true,
-  markdown: true,
-  cleanedHtml: false,
-  metricsOptions: { enable: true },
+const result = await deepcrawl.readUrl('https://example.com', {
+  ...readUrlOptions,
 });
 
 console.log(result.metadata?.title);

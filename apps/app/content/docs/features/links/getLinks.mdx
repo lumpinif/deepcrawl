@@ -18,26 +18,43 @@ For deeper customization (tree generation, exclusion patterns, metadata, metrics
 
 ## Request format
 
+### REST (GET /links)
 ```bash
 curl \
   -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
   "https://api.deepcrawl.dev/links?url=https://example.com"
 ```
+  - Optionally, add query parameters mirroring the POST options (tree, metadata, cleanedHtml, link extraction toggles, etc.).
 
-- Add query parameters mirroring the POST options (tree, metadata, cleanedHtml, link extraction toggles, etc.).
-- Responses default to the same structure as `extractLinks`—tree data when `tree=true`, otherwise only extracted links.
+### Node SDK - `getLinks()`
+```ts
+import { DeepcrawlApp } from 'deepcrawl';
+
+const deepcrawl = new DeepcrawlApp({
+  apiKey: process.env.DEEPCRAWL_API_KEY as string,
+});
+
+const links = await deepcrawl.getLinks('https://example.com', {
+  ...getLinksOptions,
+});
+```
+
+- Responses default to the same structure as [`extractLinks`](/docs/features/links/extractLinks)—tree data when `tree=true`, otherwise only extracted links.
 
 ## Query parameters - `GetLinksOptions`
+
+- Even though this is a GET request, the available fields align with `GetLinksOptions`. Send them as query parameters (e.g., `tree=true`, `metadata=true`, `includeExternal=false`).
 
 <AutoTypeTable
   path="../../packages/contracts/src/links.ts"
   name="GetLinksOptions"
 />
 
-Even though this is a GET request, the available fields align with `GetLinksOptions`. Send them as query parameters (e.g., `tree=true`, `metadata=true`, `includeExternal=false`).
 
-## Response structure - `GetLinksResponse` is a union of two shapes.
+## Response structure - `GetLinksResponse`
 
+- This is a union of two shapes:
+ 
   1. `GetLinksResponseWithTree` (when `tree` is enabled in options) – includes a `tree` hierarchy you can traverse, and metadata is nested in the tree node.
   2. `GetLinksResponseWithoutTree` (when `tree` is false in options) – omits `tree`, returning only extracted links and metadata.
 
@@ -56,6 +73,45 @@ Even though this is a GET request, the available fields align with `GetLinksOpti
 
 Type safely narrow by checking `if ('tree' in response && response.tree)` before reading the tree.
 </Callout>
+
+Example response:
+
+- With tree:
+
+```json
+{
+  requestId: '123e4567-e89b-12d3-a456-426614174000',
+  success: true,
+  cached: false,
+  targetUrl: "https://example.com",
+  timestamp: "2024-01-15T10:30:00.000Z",
+  ancestors: ["https://example.com"],
+  tree: {
+    url: "https://example.com",
+    name: "Home",
+    lastUpdated: "2024-01-15T10:30:00.000Z",
+    metadata: { title: "Example", description: "..." },
+    extractedLinks: { internal: [...], external: [...] },
+    children: [...]
+  }
+}
+```
+
+- Without tree:
+
+```json
+{
+  requestId: '123e4567-e89b-12d3-a456-426614174000',
+  success: true,
+  cached: false,
+  targetUrl: "https://example.com",
+  timestamp: "2024-01-15T10:30:00.000Z",
+  title: "Example Website",
+  description: "Welcome to our site",
+  metadata: { title: "Example", description: "..." },
+  extractedLinks: { internal: [...], external: [...] }
+}
+```
 
 Errors use the shared schema:
 

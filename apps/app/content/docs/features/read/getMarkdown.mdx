@@ -14,31 +14,29 @@ For richer page context (metadata, cleaned HTML, robots, metrics), use [`readUrl
 
 ## Request formats
 
-### REST
+### REST (GET /read) 
 
 ```bash
 curl \
   -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
-  "https://api.deepcrawl.dev/read?url=https://example.com"
+  "https://api.deepcrawl.dev/read?url=https://example.com&...getMarkdownOptions" // see below
 ```
 
 - Authenticate with an API key header or dashboard session cookies.
 - Responses are returned as `text/markdown; charset=utf-8`.
 - Add query parameters to control caching or markdown conversion (see options below).
 
-### Node SDK
+### Node SDK - `getMarkdown()`
 
 ```ts
 import { DeepcrawlApp } from 'deepcrawl';
 
 const deepcrawl = new DeepcrawlApp({
-  apiKey: process.env.DEEPCRAWL_API_KEY!,
+  apiKey: process.env.DEEPCRAWL_API_KEY as string,
 });
 
 const markdown = await deepcrawl.getMarkdown('https://example.com', {
-  markdownConverterOptions: {
-    useInlineLinks: true,
-  },
+ ...getMarkdownOptions,
 });
 ```
 
