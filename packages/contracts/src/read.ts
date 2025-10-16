@@ -2,7 +2,7 @@ import type { ReadStringResponse } from '@deepcrawl/types';
 import {
   GetMarkdownOptionsSchema,
   ReadOptionsSchema,
-  ReadSuccessResponseSchema,
+  ReadUrlResponseSchema,
 } from '@deepcrawl/types/schemas';
 import { oc } from '@orpc/contract';
 import { z } from 'zod/v4';
@@ -16,7 +16,7 @@ const readOC = oc.errors({
   READ_ERROR_RESPONSE: errorSpec.READ_ERROR_RESPONSE,
 });
 
-export const readGETContract = readOC
+export const getMarkdownContract = readOC
   .route({
     tags,
     path: '/',
@@ -42,7 +42,7 @@ export type GetMarkdownOptions = Inputs['read']['getMarkdown'];
 // export type GetMarkdownOutput = Outputs['read']['getMarkdown']; // Blob type is the workaround but we want to return a text/markdown string response
 export type GetMarkdownResponse = ReadStringResponse;
 
-export const readPOSTContract = readOC
+export const readUrlContract = readOC
   .route({
     tags,
     path: '/',
@@ -51,7 +51,7 @@ export const readPOSTContract = readOC
     description: `Endpoint: POST \`api.deepcrawl.dev/read\`\n\nRead a URL and return the full detailed result object. This is a POST request can handle more complex requests and use cases.`,
   })
   .input(ReadOptionsSchema)
-  .output(ReadSuccessResponseSchema);
+  .output(ReadUrlResponseSchema);
 
 export type ReadUrlOptions = Inputs['read']['readUrl'];
 export type ReadUrlResponse = Outputs['read']['readUrl'];

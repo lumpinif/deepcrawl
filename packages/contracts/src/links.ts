@@ -1,9 +1,13 @@
 import { LinksSuccessResponse } from '@deepcrawl/types';
 import {
-  LinksOptionsSchema,
-  LinksSuccessResponseSchema,
-  type LinksSuccessResponseWithoutTreeSchema,
-  type LinksSuccessResponseWithTreeSchema,
+  ExtractLinksOptionsSchema,
+  ExtractLinksResponseSchema,
+  type ExtractLinksResponseWithoutTreeSchema,
+  type ExtractLinksResponseWithTreeSchema,
+  GetLinksOptionsSchema,
+  GetLinksResponseSchema,
+  type GetLinksResponseWithoutTreeSchema,
+  type GetLinksResponseWithTreeSchema,
 } from '@deepcrawl/types/schemas';
 import { oc } from '@orpc/contract';
 import type z from 'zod/v4';
@@ -17,7 +21,7 @@ const linksOC = oc.errors({
   LINKS_ERROR_RESPONSE: errorSpec.LINKS_ERROR_RESPONSE,
 });
 
-export const linksGETContract = linksOC
+export const getLinksContract = linksOC
   .route({
     tags,
     path: '/',
@@ -25,11 +29,11 @@ export const linksGETContract = linksOC
     summary: 'Get page links',
     description: `Endpoint: GET \`api.deepcrawl.dev/links?url=example.com\`\n\nDirectly return page links from the request URL as a string response.`,
   })
-  .input(LinksOptionsSchema)
+  .input(GetLinksOptionsSchema)
   /* LinksSuccessResponse is a union of two shapes.
   LinksSuccessResponseWithTree (when tree is enabled in options) – includes a tree hierarchy you can traverse, and metadata is nested in the tree node.
   LinksSuccessResponseWithoutTree (when tree is false in options) – omits tree, returning only extracted links and metadata. */
-  .output(LinksSuccessResponseSchema);
+  .output(GetLinksResponseSchema);
 
 export type GetLinksOptions = Inputs['links']['getLinks'];
 /**
@@ -39,21 +43,21 @@ export type GetLinksResponse = Outputs['links']['getLinks'];
 
 /** Helper types for type narrowing
  * Type representing a successful links extraction response with tree.
- * @see {@link LinksSuccessResponseWithTreeSchema}
+ * @see {@link GetLinksResponseWithTreeSchema}
  */
 export type GetLinksResponseWithTree = z.infer<
-  typeof LinksSuccessResponseWithTreeSchema
+  typeof GetLinksResponseWithTreeSchema
 >;
 
 /** Helper types for type narrowing
  * Type representing a successful links extraction response without tree.
- * @see {@link LinksSuccessResponseWithoutTreeSchema}
+ * @see {@link GetLinksResponseWithoutTreeSchema}
  */
 export type GetLinksResponseWithoutTree = z.output<
-  typeof LinksSuccessResponseWithoutTreeSchema
+  typeof GetLinksResponseWithoutTreeSchema
 >;
 
-export const linksPOSTContract = linksOC
+export const ExtractLinksContract = linksOC
   .route({
     tags,
     path: '/',
@@ -61,8 +65,8 @@ export const linksPOSTContract = linksOC
     summary: 'Extract links from a URL',
     description: `Endpoint: POST \`api.deepcrawl.dev/links\`\n\nExtract links from a URL and return the full detailed result object. This is a POST request can handle more complex requests and use cases.`,
   })
-  .input(LinksOptionsSchema)
-  .output(LinksSuccessResponseSchema);
+  .input(ExtractLinksOptionsSchema)
+  .output(ExtractLinksResponseSchema);
 
 export type ExtractLinksOptions = Inputs['links']['extractLinks'];
 /**
@@ -72,15 +76,15 @@ export type ExtractLinksResponse = Outputs['links']['extractLinks'];
 
 /** Helper types for type narrowing
  * Type representing a successful links extraction response with tree.
- * @see {@link LinksSuccessResponseWithTreeSchema}
+ * @see {@link ExtractLinksResponseWithTreeSchema}
  */
 export type ExtractLinksResponseWithTree = z.infer<
-  typeof LinksSuccessResponseWithTreeSchema
+  typeof ExtractLinksResponseWithTreeSchema
 >;
 /** Helper types for type narrowing
  * Type representing a successful links extraction response without tree.
- * @see {@link LinksSuccessResponseWithoutTreeSchema}
+ * @see {@link ExtractLinksResponseWithoutTreeSchema}
  */
 export type ExtractLinksResponseWithoutTree = z.output<
-  typeof LinksSuccessResponseWithoutTreeSchema
+  typeof ExtractLinksResponseWithoutTreeSchema
 >;
