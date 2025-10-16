@@ -9,6 +9,28 @@ description: Fetch extracted links for a page via GET /links.
 Link extraction works by parsing the actual HTML content of your target page—no sitemap.xml, robots.txt, or other configuration files needed. Deepcrawl intelligently discovers links by analyzing the page structure, making it work on any website regardless of their SEO setup.
 </Callout>
 
+## How does `Links Tree` look like in real usage?
+
+This abbreviated snapshot comes from a real crawl of `hono.dev`, if you are logged into the dashboard already [click this url](https://api.deepcrawl.dev/links?url=hono.dev) from your browser to see the raw response, or you can try it out from [here in playground](http://deepcrawl.dev/app?op=extractLinks&url=hono.dev).
+
+```files
+hono.dev
+├── https://hono.dev/docs
+│   ├── https://hono.dev/docs/concepts 
+│   │   ├── https://hono.dev/docs/concepts/motivation
+│   │   └── https://hono.dev/docs/concepts/routers
+│   ├── https://hono.dev/docs/getting-started 
+│   │   └── https://hono.dev/docs/getting-started/basic
+│   ├── https://hono.dev/docs/api 
+│   │   └── https://hono.dev/docs/api/hono
+├── https://hono.dev/examples
+│   ├── https://hono.dev/examples/web-api                
+│   ├── https://hono.dev/examples/proxy    
+├── https://hono.dev/llms.txt
+├── https://hono.dev/llms-full.txt         
+└── https://hono.dev/llms-small.txt             
+```
+
 ## When to use this endpoint
 - You want to preview link extraction results without constructing a POST payload.
 - You’re integrating from environments that only allow GET (e.g., low-code tooling, browser tabs using cookie auth).
