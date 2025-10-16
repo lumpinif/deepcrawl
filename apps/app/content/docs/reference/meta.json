@@ -2,9 +2,9 @@
   "title": "Reference",
   "pages": [
     "[API Reference](https://api.deepcrawl.dev/docs)",
-    "...defaults",
     "...typescript",
     "...schemas",
+    "...defaults",
     "...self-hosting",
     "concepts"
   ]
