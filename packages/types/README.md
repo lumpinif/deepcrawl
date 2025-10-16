@@ -120,7 +120,7 @@ The read router provides types for web page content extraction operations.
   - `htmlRewriterOptions`: Optional object - HTML Rewriter processor options
   - `readerCleaningOptions`: Optional object - Cheerio Reader processor options
   - `fetchOptions`: Optional object - Fetch request options
-  - `cacheOptions`: Optional object - Cache configuration (default: 4 days TTL)
+  - `cacheOptions`: Optional object - Cache configuration (default: 2 days TTL)
   - `metricsOptions`: Optional object - Performance tracking (default: enabled)
 
 - **`ReadResponse`** - Union type: `string | ReadSuccessResponse | ReadErrorResponse`
@@ -196,7 +196,7 @@ The links router provides types for link extraction and site mapping operations.
     - `includeExternal`: boolean (default: false)
     - `includeMedia`: boolean (default: false)
     - `removeQueryParams`: boolean (default: true)
-  - `cacheOptions`: Optional object - Cache configuration (default: 4 days TTL)
+  - `cacheOptions`: Optional object - Cache configuration (default: 2 days TTL)
   - `metricsOptions`: Optional object - Enable performance tracking (default: enabled)
 
 - **`LinksResponse`** - Union type: `LinksSuccessResponse | LinksErrorResponse`
