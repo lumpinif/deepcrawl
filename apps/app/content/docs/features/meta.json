@@ -1,4 +1,4 @@
 {
   "title": "Features and Endpoints",
-  "pages": ["read", "links"]
+  "pages": ["read", "links", "activity-logs"]
 }
