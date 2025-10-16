@@ -1,0 +1,4 @@
+{
+  "title": "Activity Logs",
+  "pages": ["get-one-log", "get-many-logs", "export-response"]
+}

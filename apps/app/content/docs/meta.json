@@ -12,6 +12,7 @@
     "---Features and Endpoints---",
     "...features/read",
     "...features/links",
+    "features/activity-logs",
     "---Integrations---",
     "...integrations",
     "---Reference---",

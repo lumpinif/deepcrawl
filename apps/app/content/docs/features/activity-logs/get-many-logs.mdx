@@ -1,0 +1,102 @@
+---
+title: Get Many Logs
+description: Paginated activity log history with filters for path, status, and dates.
+---
+
+List historic Deepcrawl requests with filters for time range, endpoint, success
+status, and pagination. This endpoint is optimised for quick scans—it returns
+metadata about each run without replaying the stored response payloads.
+
+<Callout type="warn">
+  `getManyLogs` does not return original response bodies. To inspect the
+  original payload for a given log, call
+  [`getOneLog`](/docs/features/activity-logs/get-one-log) or
+  [`exportResponse`](/docs/features/activity-logs/export-response).
+</Callout>
+
+## Endpoint
+
+- `POST https://api.deepcrawl.dev/logs`
+- Body accepts JSON options; authentication uses bearer tokens.
+
+## Request Options – `GetManyLogsOptions`
+
+<AutoTypeTable
+  path="../../packages/contracts/src/logs/index.ts"
+  name="GetManyLogsOptions"
+/>
+
+Any missing fields are normalized via `resolveGetManyLogsOptions`, so you can send an empty body to receive the latest logs.
+
+## Example Request
+
+```bash
+curl "https://api.deepcrawl.dev/logs" \
+  -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "path": "read-readUrl",
+    "success": true,
+    "startDate": "2025-01-01T00:00:00.000Z",
+    "limit": 10
+  }'
+```
+
+### TypeScript SDK
+
+```typescript
+import { DeepcrawlApp } from 'deepcrawl';
+
+const dc = new DeepcrawlApp({ apiKey: process.env.DEEPCRAWL_API_KEY! });
+const params: GetManyLogsOptions = {
+  path: 'links-extractLinks',
+  startDate: '2025-01-01T00:00:00.000Z',
+  endDate: '2025-01-31T23:59:59.999Z',
+  limit: 25
+};
+const { logs, meta }: GetManyLogsResponse = await dc.getManyLogs(params);
+
+if (meta.hasMore) {
+  console.log(`Next page offset: ${meta.nextOffset}`);
+}
+```
+
+## Response – `GetManyLogsResponse`
+
+<AutoTypeTable
+  path="../../packages/contracts/src/logs/index.ts"
+  name="GetManyLogsResponse"
+/>
+
+```json
+{
+  "logs": [
+    {
+      "id": "log_123",
+      "path": "links-extractLinks",
+      "success": true,
+      "requestOptions": {
+        "url": "https://example.com",
+        "tree": true
+      },
+      "requestTimestamp": "2025-01-12T12:45:33.000Z"
+    }
+  ],
+  "meta": {
+    "limit": 10,
+    "offset": 0,
+    "hasMore": true,
+    "nextOffset": 10,
+    "orderBy": "requestTimestamp",
+    "orderDir": "desc",
+    "startDate": "2025-01-01T00:00:00.000Z",
+    "endDate": "2025-01-31T23:59:59.999Z"
+  }
+}
+```
+
+## Tips
+
+- When paginating, pass `offset: meta.nextOffset` from the previous response.
+- Combine `path` and `success` filters to isolate failing requests.
+- Use the dashboard query builder for previews, then copy the generated query into automation.

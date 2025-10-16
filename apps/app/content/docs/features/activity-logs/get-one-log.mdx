@@ -1,0 +1,84 @@
+---
+title: Get One Log
+description: Get a single activity log with original response by ID.
+---
+
+Use this endpoint to inspect the full details of a single crawl request. It
+returns the original request options and the original response so you can
+debug exactly what Deepcrawl processed.
+
+
+## Endpoint
+
+- `GET https://api.deepcrawl.dev/logs?id={requestId}`
+- Requires authentication header (`Authorization: Bearer <token>` when calling the worker directly).
+
+## Request Options – `GetOneLogOptions`
+
+<AutoTypeTable
+  path="../../packages/contracts/src/logs/index.ts"
+  name="GetOneLogOptions"
+/>
+
+- `id` *(string, required)* — Request/response identifier returned by any Deepcrawl operation.
+
+## Example Request
+
+```bash
+curl "https://api.deepcrawl.dev/logs?id=log_123" \
+  -H "Authorization: Bearer $DEEPCRAWL_API_KEY"
+```
+
+### TypeScript SDK
+
+```typescript
+import { DeepcrawlApp } from 'deepcrawl';
+
+const dc = new DeepcrawlApp({ apiKey: process.env.DEEPCRAWL_API_KEY! });
+const params: GetOneLogOptions = { id: 'log_123' };
+const log: GetOneLogResponse = await dc.getOneLog(params);
+
+if (log.path === 'read-readUrl' && log.success && log.response) {
+  const page: ReadUrlResponse = log.response; // fully typed success payload
+  console.log(page.markdown);
+} else if (log.path === 'links-extractLinks' && log.success && log.response) {
+  const links: ExtractLinksResponse = log.response;
+  console.log(links.tree?.children?.length ?? 0);
+}
+```
+
+## Response – `GetOneLogResponse`
+
+<AutoTypeTable
+  path="../../packages/contracts/src/logs/index.ts"
+  name="GetOneLogResponse"
+/>
+
+The response is a discriminated union keyed by `path`:
+
+- `read-getMarkdown`: `response` is the markdown string or `GetMarkdownResponse` (string).
+- `read-readUrl`: `response` narrows to `ReadUrlResponse`, giving you the full typed payload returned by the `readUrl` endpoint.
+- `links-getLinks` / `links-extractLinks`: `response` narrows to `GetLinksResponse` / `ExtractLinksResponse` so link trees and metadata stay typed.
+
+```json
+{
+  "id": "log_123",
+  "path": "read-readUrl",
+  "success": true,
+  "requestOptions": {
+    "url": "https://example.com",
+    "markdown": true
+  },
+  "response": {
+    "markdown": "# Example Page",
+    "links": ["https://example.com/about"]
+  },
+  "requestTimestamp": "2025-01-10T14:20:00.000Z"
+}
+```
+
+## Error Responses
+
+- `404` if the log ID does not exist for the authenticated account.
+- `401` if the session or API key is missing or invalid.
+- `429` if the rate limit for `logs.getOne` is exceeded.

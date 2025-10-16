@@ -1,0 +1,102 @@
+---
+title: Export Response
+description: Export the response data from a specific operation.
+---
+
+Download the payload behind any log entry without rerunning the crawl. The
+worker reconstructs the original response and converts it to a convenient
+format for reports or debugging.
+
+## Endpoint
+
+- `GET https://api.deepcrawl.dev/logs/export?id={requestId}&format={format}`
+- Requires authentication (same as the other logs endpoints).
+
+## Formats
+
+| Format | When to use | Notes |
+| ------ | ----------- | ----- |
+| `json` | Default view of the response object | Works for every endpoint. Returns the full discriminated union. |
+| `markdown` | You only need rendered markdown content | Supported for `read-getMarkdown` and successful `read-readUrl` calls that generated markdown. |
+| `links` | You need the structured links tree | Works for `links-getLinks` and `links-extractLinks` responses that included `tree: true`. |
+
+## Request Options – `ExportResponseOptions`
+
+<AutoTypeTable
+  path="../../packages/contracts/src/logs/index.ts"
+  name="ExportResponseOptions"
+/>
+
+<Callout type="warning">
+  Logs created via `read-getMarkdown` store the payload as a plain string. The
+  export endpoint always returns that string, even if you request `json` or
+  `links` format.
+</Callout>
+
+## Example Request
+
+```bash
+curl "https://api.deepcrawl.dev/logs/export?id=log_456&format=markdown" \
+  -H "Authorization: Bearer $DEEPCRAWL_API_KEY"
+```
+
+### TypeScript SDK
+
+```typescript
+import { DeepcrawlApp } from 'deepcrawl';
+
+const dc = new DeepcrawlApp({ apiKey: process.env.DEEPCRAWL_API_KEY! });
+
+const params: ExportResponseOptions = {
+  id: 'log_456',
+  format: 'markdown'
+};
+const result: ExportResponseOutput = await dc.exportResponse(params);
+
+console.log(result);
+```
+
+## Response – `ExportResponseOutput`
+
+<AutoTypeTable
+  path="../../packages/contracts/src/logs/index.ts"
+  name="ExportResponseOutput"
+/>
+
+## Sample Outputs
+
+- `format=json`
+
+  ```json
+  {
+    "path": "read-readUrl",
+    "success": true,
+    "markdown": "# Example Page",
+    "metadata": { "title": "Example Page" }
+  }
+  ```
+
+- `format=links`
+
+  ```json
+  {
+    "href": "https://example.com",
+    "children": [
+      { "href": "https://example.com/about", "text": "About" }
+    ]
+  }
+  ```
+
+- `format=markdown`
+
+  ```markdown
+  # Example Page
+
+  Deepcrawl extracted this markdown from https://example.com.
+  ```
+
+## Errors
+
+- `400 INVALID_EXPORT_FORMAT` if a format is not supported for the log’s path.
+- `404 NOT_FOUND` when the request ID does not belong to the authenticated account.
+- `401 UNAUTHORIZED` for missing or invalid credentials.
