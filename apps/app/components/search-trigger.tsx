@@ -5,12 +5,13 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@deepcrawl/ui/components/ui/input-group';
-import { Kbd } from '@deepcrawl/ui/components/ui/kbd';
+import { Kbd, KbdGroup } from '@deepcrawl/ui/components/ui/kbd';
+import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
 import { useSearchContext } from 'fumadocs-ui/provider';
 import { SearchIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
-interface SearchTriggerProps {
+interface SearchTriggerProps extends React.HTMLAttributes<HTMLDivElement> {
   placeholder?: string;
   className?: string;
 }
@@ -18,21 +19,24 @@ interface SearchTriggerProps {
 export function SearchTrigger({
   placeholder = 'Try searching for pages...',
   className,
+  ...props
 }: SearchTriggerProps) {
+  const isMac = useIsMac();
   const { setOpenSearch } = useSearchContext();
 
   useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === '/' && !event.ctrlKey && !event.metaKey) {
-        const target = event.target as HTMLElement;
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || e.key === '/') {
+        const target = e.target as HTMLElement;
         if (
-          target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.isContentEditable
+          (target instanceof HTMLElement && target.isContentEditable) ||
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement ||
+          target instanceof HTMLSelectElement
         ) {
           return;
         }
-        event.preventDefault();
+        e.preventDefault();
         setOpenSearch(true);
       }
     }
@@ -44,7 +48,7 @@ export function SearchTrigger({
   }, [setOpenSearch]);
 
   return (
-    <InputGroup className={className}>
+    <InputGroup className={className} {...props}>
       <InputGroupInput
         onClick={() => {
           setOpenSearch(true);
@@ -57,7 +61,10 @@ export function SearchTrigger({
         <SearchIcon />
       </InputGroupAddon>
       <InputGroupAddon align="inline-end">
-        <Kbd>/</Kbd>
+        <KbdGroup>
+          <Kbd className="border">{isMac ? '⌘' : 'Ctrl'}</Kbd>
+          <Kbd className="border">K</Kbd>
+        </KbdGroup>
       </InputGroupAddon>
     </InputGroup>
   );

@@ -18,6 +18,7 @@ import Link from 'next/link';
 import type { NavigationMode } from '@/components/providers';
 import { DeepcrawlLogo } from '../deepcrawl-logo';
 import { LayoutToggle } from '../layout-toggle';
+import { SearchTrigger } from '../search-trigger';
 import { UserDropdown } from '../user/user-dropdown';
 
 export interface SiteHeaderProps {
@@ -32,6 +33,7 @@ export interface SiteHeaderProps {
   enableGithubLink?: boolean;
   logoScale?: number;
   logoTransformY?: number;
+  enableSearchDialog?: boolean;
 }
 
 export function SiteHeader({
@@ -41,6 +43,7 @@ export function SiteHeader({
   enableTitle = true,
   enableDocsLink = true,
   enableGithubLink = true,
+  enableSearchDialog = true,
   enableThemeToggle = false,
   enableLayoutToggle = false,
   enableLayoutViewToggle = true,
@@ -97,6 +100,13 @@ export function SiteHeader({
 
         <div className="ml-auto flex items-center gap-1">
           {[
+            enableSearchDialog && (
+              <SearchTrigger
+                className="max-sm:hidden"
+                key="search"
+                placeholder="Search for docs"
+              />
+            ),
             enableThemeToggle && <ThemeToggle key="theme" />,
             enableLayoutToggle && (
               <LayoutToggle currentMode={navigationMode} key="layout" />
@@ -145,18 +155,17 @@ export function SiteHeader({
             ),
           ]
             .filter(Boolean)
-            .map((item, index, array) => (
-              <>
-                {item}
-                {index < array.length - 1 && (
-                  <Separator
-                    className="data-[orientation=vertical]:h-4"
-                    key={`sep-${index}`}
-                    orientation="vertical"
-                  />
-                )}
-              </>
-            ))}
+            .flatMap((item, index, array) => [
+              item,
+              index < array.length - 1 && (
+                <Separator
+                  className="data-[orientation=vertical]:h-4"
+                  key={`sep-${index}`}
+                  orientation="vertical"
+                />
+              ),
+            ])
+            .filter(Boolean)}
 
           {(enableGithubLink ||
             enableThemeToggle ||
