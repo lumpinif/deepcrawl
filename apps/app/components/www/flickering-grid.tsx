@@ -61,6 +61,7 @@ interface FlickeringGridProps extends React.HTMLAttributes<HTMLDivElement> {
   textColor?: string;
   fontSize?: number;
   fontWeight?: number | string;
+  textOffsetY?: number; // Vertical offset in pixels (positive = down, negative = up)
 }
 
 export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
@@ -75,6 +76,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
   text = '',
   fontSize = 140,
   fontWeight = 600,
+  textOffsetY = 0,
   ...props
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -116,7 +118,11 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         maskCtx.font = `${fontWeight} ${fontSize}px "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
         maskCtx.textAlign = 'center';
         maskCtx.textBaseline = 'middle';
-        maskCtx.fillText(text, width / (2 * dpr), height / (2 * dpr));
+        maskCtx.fillText(
+          text,
+          width / (2 * dpr),
+          height / (2 * dpr) + textOffsetY,
+        );
         maskCtx.restore();
       }
 
@@ -148,7 +154,15 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         }
       }
     },
-    [memoizedColor, squareSize, gridGap, text, fontSize, fontWeight],
+    [
+      memoizedColor,
+      squareSize,
+      gridGap,
+      text,
+      fontSize,
+      fontWeight,
+      textOffsetY,
+    ],
   );
 
   const setupCanvas = useCallback(
