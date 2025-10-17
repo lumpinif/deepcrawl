@@ -1,6 +1,7 @@
 'use client';
 
 import type { Session } from '@deepcrawl/auth/types';
+import { GitHubIcon } from '@deepcrawl/ui/components/icons/provider-icons';
 import { ThemeToggle } from '@deepcrawl/ui/components/theme/toggle';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Separator } from '@deepcrawl/ui/components/ui/separator';
@@ -28,6 +29,7 @@ export interface SiteHeaderProps {
   enableLayoutToggle?: boolean;
   enableDocsLink?: boolean;
   enableLayoutViewToggle?: boolean;
+  enableGithubLink?: boolean;
   logoScale?: number;
   logoTransformY?: number;
 }
@@ -38,6 +40,7 @@ export function SiteHeader({
   navigationMode,
   enableTitle = true,
   enableDocsLink = true,
+  enableGithubLink = true,
   enableThemeToggle = false,
   enableLayoutToggle = false,
   enableLayoutViewToggle = true,
@@ -93,54 +96,78 @@ export function SiteHeader({
         )}
 
         <div className="ml-auto flex items-center gap-1">
-          {enableThemeToggle && <ThemeToggle />}
-
-          {enableThemeToggle && enableLayoutToggle && (
-            <Separator
-              className="data-[orientation=vertical]:h-4"
-              orientation="vertical"
-            />
-          )}
-
-          {enableLayoutToggle && <LayoutToggle currentMode={navigationMode} />}
-
-          {enableDocsLink && enableLayoutToggle && (
-            <Separator
-              className="data-[orientation=vertical]:h-4"
-              orientation="vertical"
-            />
-          )}
-
-          {enableDocsLink && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  asChild
-                  className="text-muted-foreground"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <Link
-                    className="font-medium text-muted-foreground text-sm hover:text-foreground"
-                    href="/docs"
+          {[
+            enableThemeToggle && <ThemeToggle key="theme" />,
+            enableLayoutToggle && (
+              <LayoutToggle currentMode={navigationMode} key="layout" />
+            ),
+            enableDocsLink && (
+              <Tooltip key="docs">
+                <TooltipTrigger asChild>
+                  <Button
+                    asChild
+                    className="text-muted-foreground"
+                    size="icon"
+                    variant="ghost"
                   >
-                    <IconBook />
-                    <span className="sr-only">Docs</span>
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Docs</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
+                    <Link
+                      className="font-medium text-muted-foreground text-sm hover:text-foreground"
+                      href="/docs"
+                    >
+                      <IconBook />
+                      <span className="sr-only">Docs</span>
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Docs</p>
+                </TooltipContent>
+              </Tooltip>
+            ),
+            enableGithubLink && (
+              <Button
+                asChild
+                className="text-muted-foreground"
+                key="github"
+                size="icon"
+                variant="ghost"
+              >
+                <Link
+                  className="font-medium text-muted-foreground text-sm hover:text-foreground"
+                  href="https://github.com/lumpinif/deepcrawl"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <GitHubIcon className="size-4" />
+                  <span className="sr-only">Github</span>
+                </Link>
+              </Button>
+            ),
+          ]
+            .filter(Boolean)
+            .map((item, index, array) => (
+              <>
+                {item}
+                {index < array.length - 1 && (
+                  <Separator
+                    className="data-[orientation=vertical]:h-4"
+                    key={`sep-${index}`}
+                    orientation="vertical"
+                  />
+                )}
+              </>
+            ))}
 
-          {(enableThemeToggle || enableLayoutToggle || enableDocsLink) && (
+          {(enableGithubLink ||
+            enableThemeToggle ||
+            enableLayoutToggle ||
+            enableDocsLink) && (
             <Separator
               className="mr-1 data-[orientation=vertical]:h-4"
               orientation="vertical"
             />
           )}
+
           {session ? (
             <UserDropdown
               enableLayoutViewToggle={enableLayoutViewToggle}
