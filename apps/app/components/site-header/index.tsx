@@ -102,9 +102,9 @@ export function SiteHeader({
           {[
             enableSearchDialog && (
               <SearchTrigger
-                className="max-sm:hidden"
+                className="!bg-background-subtle mr-1 h-8 w-48 max-sm:hidden"
                 key="search"
-                placeholder="Search for docs"
+                placeholder="Search docs..."
               />
             ),
             enableThemeToggle && <ThemeToggle key="theme" />,
