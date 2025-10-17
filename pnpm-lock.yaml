@@ -185,6 +185,9 @@ importers:
       cmdk:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      color-bits:
+        specifier: ^1.1.1
+        version: 1.1.1
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -5720,6 +5723,9 @@ packages:
 
   collapse-white-space@2.1.0:
     resolution: {integrity: sha512-loKTxY1zCOuG4j9f6EPnuyyYkf58RnhhWTvRoZEokgB+WbdXehfjFviyOVYkqzEWz1Q5kRiZdBYS5SwxbQYwzw==}
+
+  color-bits@1.1.1:
+    resolution: {integrity: sha512-KOU0xOussQ1b7jDqEb2wx89ZGdCepRI30c0LZRUrjcb6zS0sgfxYt0UmocvG6EhTvbraJZQjZZn7wN10tFWgjg==}
 
   color-convert@1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
@@ -16310,6 +16316,8 @@ snapshots:
   code-block-writer@13.0.3: {}
 
   collapse-white-space@2.1.0: {}
+
+  color-bits@1.1.1: {}
 
   color-convert@1.9.3:
     dependencies:

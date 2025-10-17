@@ -57,6 +57,7 @@
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
+    "color-bits": "^1.1.1",
     "date-fns": "^4.1.0",
     "deepcrawl": "workspace:*",
     "deepmerge-ts": "^7.1.5",
