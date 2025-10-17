@@ -9,6 +9,10 @@ import {
 } from '@tabler/icons-react';
 import { BASE_APP_PATH } from '@/config';
 
+export function absoluteUrl(path: string) {
+  return `${process.env.NEXT_PUBLIC_APP_URL}${path}`;
+}
+
 export const getAppRoute = (path?: string) => {
   const root = BASE_APP_PATH.startsWith('/')
     ? BASE_APP_PATH

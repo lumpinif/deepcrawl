@@ -1,6 +1,7 @@
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
 import { SidebarInset } from '@deepcrawl/ui/components/ui/sidebar';
 import { cn } from '@deepcrawl/ui/lib/utils';
+import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
@@ -9,6 +10,33 @@ import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { authGetSession } from '@/query/auth-query.server';
+
+const title = 'Dashboard';
+const description = 'Dashboard and Playground for Deepcrawl';
+
+export const metadata: Metadata = {
+  title,
+  description,
+  // openGraph: {
+  //   images: [
+  //     {
+  //       url: `/og?title=${encodeURIComponent(
+  //         title
+  //       )}&description=${encodeURIComponent(description)}`,
+  //     },
+  //   ],
+  // },
+  twitter: {
+    card: 'summary_large_image',
+    // images: [
+    //   {
+    //     url: `/og?title=${encodeURIComponent(
+    //       title
+    //     )}&description=${encodeURIComponent(description)}`,
+    //   },
+    // ],
+  },
+};
 
 export default async function DashboardLayout({
   children,

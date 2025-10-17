@@ -6,7 +6,64 @@ import {
 } from 'fumadocs-ui/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx-components';
+import { absoluteUrl } from '@/lib/navigation-config';
 import { source } from '@/lib/source';
+
+export const revalidate = false;
+export const dynamic = 'force-static';
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  return source.generateParams();
+}
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug?: string[] }>;
+}) {
+  const params = await props.params;
+  const page = source.getPage(params.slug);
+
+  if (!page) {
+    notFound();
+  }
+
+  const doc = page.data;
+
+  if (!(doc.title && doc.description)) {
+    notFound();
+  }
+
+  return {
+    title: `${doc.title}`,
+    description: doc.description,
+    openGraph: {
+      title: doc.title,
+      description: doc.description,
+      type: 'article',
+      url: absoluteUrl(page.url),
+      // images: [
+      //   {
+      //     url: `/og?title=${encodeURIComponent(
+      //       doc.title,
+      //     )}&description=${encodeURIComponent(doc.description)}`,
+      //   },
+      // ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: doc.title,
+      description: doc.description,
+      // images: [
+      //   {
+      //     url: `/og?title=${encodeURIComponent(
+      //       doc.title,
+      //     )}&description=${encodeURIComponent(doc.description)}`,
+      //   },
+      // ],
+      creator: '@felixlu1018',
+    },
+  };
+}
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -43,23 +100,4 @@ export default async function Page(props: {
       </DocsBody>
     </DocsPage>
   );
-}
-
-export async function generateStaticParams() {
-  return source.generateParams();
-}
-
-export async function generateMetadata(props: {
-  params: Promise<{ slug?: string[] }>;
-}) {
-  const params = await props.params;
-  const page = source.getPage(params.slug);
-  if (!page) {
-    notFound();
-  }
-
-  return {
-    title: page.data.title,
-    description: page.data.description,
-  };
 }
