@@ -21,7 +21,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
 
     const apiKey = xApiKey ?? authHeader?.split(' ')[1];
 
-    logDebug('🔑 apiKey:', apiKey);
+    logDebug('🔑 API key provided:', apiKey);
 
     if (!apiKey) {
       logDebug('🔑 No API key provided, skipping to next auth method');

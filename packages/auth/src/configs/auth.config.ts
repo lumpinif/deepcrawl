@@ -179,6 +179,7 @@ export function createAuthConfig(env: Env) {
           maxRequests: BA_API_KEY_RATE_LIMIT.maxRequests,
           timeWindow: BA_API_KEY_RATE_LIMIT.timeWindow,
         },
+        enableSessionForAPIKeys: true,
         apiKeyHeaders: ['x-api-key'],
         enableMetadata: true,
         permissions: {

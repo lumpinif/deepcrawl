@@ -80,6 +80,10 @@ export default class extends WorkerEntrypoint<AppContext['Bindings']> {
       }),
     });
 
+    logDebug(
+      `🧑 User session data found: ${Boolean(sessionData?.session && sessionData?.user)}`,
+    );
+
     const dbEndTime = performance.now();
     logDebug(
       `💾 Database query took: ${((dbEndTime - dbStartTime) / 1000).toFixed(3)}s`,
