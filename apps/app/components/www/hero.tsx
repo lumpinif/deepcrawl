@@ -54,7 +54,7 @@ export const Hero = () => (
         className="text-border/30 transition-colors duration-100 ease-out hover:text-border sm:col-span-1"
         showBorderStrips={true}
       /> */}
-      <div className="relative col-span-12 space-y-4 overflow-hidden px-4 py-44 text-center sm:px-8">
+      <div className="relative col-span-12 space-y-4 overflow-hidden px-4 py-52 text-center sm:px-8">
         <div className="absolute inset-0 z-[-10] size-full">
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-30% from-transparent to-background" />
           <FlickeringGrid
@@ -66,16 +66,17 @@ export const Hero = () => (
             maxOpacity={0.15}
             squareSize={3}
             text="npm i deepcrawl"
-            textOffsetY={240}
+            textOffsetY={250}
           />
         </div>
-        <h1 className="font-semibold text-4xl leading-tight tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+        <h1 className="-translate-y-12 font-semibold text-5xl leading-tight tracking-tighter md:text-6xl lg:text-7xl 2xl:text-8xl">
           Deepcrawl
         </h1>
-        <p className="mx-auto max-w-2xl text-balance text-lg text-muted-foreground md:text-2xl">
-          Free and open-source toolkit that makes any website data AI ready
+        <p className="-translate-y-12 mx-auto max-w-2xl text-balance text-lg text-muted-foreground md:text-2xl">
+          Free and open-source agentic toolkit that makes any website data AI
+          ready
         </p>
-        <div className="mx-auto flex w-fit flex-col items-center gap-8 pt-4">
+        <div className="-translate-y-12 mx-auto flex w-fit flex-col items-center gap-8 pt-4">
           <Installer />
         </div>
       </div>

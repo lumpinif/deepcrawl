@@ -28,13 +28,13 @@ export const Installer = () => {
   const Icon = isCopied ? CheckIcon : CopyIcon;
 
   return (
-    <div className="flex w-fit items-center gap-3">
-      <div className="group relative flex items-center gap-3 rounded-md border bg-background text-foreground">
-        <pre className="group-hover:!text-foreground w-full whitespace-pre-wrap py-2 pl-4 font-semibold text-sm transition-all dark:text-muted-foreground">
+    <div className="flex w-fit flex-col gap-y-4">
+      <div className="group relative flex items-center gap-2 rounded-md border bg-background text-foreground">
+        <pre className="group-hover:!text-foreground w-full whitespace-pre-wrap py-2 text-center font-semibold text-sm transition-all dark:text-muted-foreground">
           {CODE}
         </pre>
         <Button
-          className="!bg-transparent rounded-sm text-muted-foreground group-hover:text-foreground"
+          className="!bg-transparent absolute right-0 rounded-sm text-muted-foreground group-hover:text-foreground"
           onClick={copyToClipboard}
           size="icon"
           variant="ghost"
@@ -42,9 +42,18 @@ export const Installer = () => {
           <Icon className="h-4 w-4" />
         </Button>
       </div>
-      <Button asChild variant="outline">
-        <Link href="/docs">Read the docs</Link>
-      </Button>
+      <div className="flex items-center gap-x-4">
+        <Button asChild variant="default">
+          <Link href="/docs">Get Started</Link>
+        </Button>
+        <Button
+          asChild
+          className="!bg-background text-muted-foreground"
+          variant="outline"
+        >
+          <Link href="/app">Visit Playground</Link>
+        </Button>
+      </div>
     </div>
   );
 };
