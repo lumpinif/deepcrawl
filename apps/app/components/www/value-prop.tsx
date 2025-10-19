@@ -43,28 +43,44 @@ const VALUE_ITEMS = [
     title: 'Free to anyone and Self-Hostable',
     description:
       '100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of Deepcrawl without server maintenance overhead.',
-    illustration: <CpuArchitecture />,
+    illustration: (
+      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 not-dark:shadow-md transition-opacity duration-700">
+        <CpuArchitecture />
+      </div>
+    ),
   },
   {
     label: 'Resilient Edge',
     title: 'Worldwide CDN, Instant Retries',
     description:
       'Every request lands on the Cloudflare edge with automatic retries, configurable smart cache controls, for bursty workflows.',
-    illustration: <DottedWorldMap />,
+    illustration: (
+      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 not-dark:shadow-md transition-opacity duration-700">
+        <DottedWorldMap />
+      </div>
+    ),
   },
   {
     label: 'SDK Ergonomics',
     title: 'Developer-first Tooling',
     description:
       'The super lightweight typeScript SDK ships the same contracts, types, and schemas we use to build Deepcrawl, and typed errors as the worker plus playground parity straight from install.',
-    illustration: <CpuArchitecture />,
+    illustration: (
+      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 not-dark:shadow-md transition-opacity duration-700">
+        <CpuArchitecture />
+      </div>
+    ),
   },
   {
     label: 'Typed Contracts',
     title: 'Type Safety Across Every Surface',
     description:
       'Shared OpenAPI, oRPC, and Zod schemas keep workers, dashboard, and SDK aligned so inputs validate once and stay consistent from compile to runtime.',
-    illustration: <TiltedScroll />,
+    illustration: (
+      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 not-dark:shadow-md transition-opacity duration-700">
+        <TiltedScroll />
+      </div>
+    ),
   },
 ] as const;
 
