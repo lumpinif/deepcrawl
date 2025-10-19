@@ -16,7 +16,11 @@ export function TiltedScroll({
 }: TiltedScrollProps) {
   return (
     <div
-      className={cn('flex size-full items-center justify-center', className)}
+      className={cn(
+        'flex size-full items-center justify-center',
+        'fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700',
+        className,
+      )}
     >
       <div className="relative overflow-hidden [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent,black_5rem),linear-gradient(to_left,transparent,black_5rem),linear-gradient(to_bottom,transparent,black_5rem),linear-gradient(to_top,transparent,black_5rem)]">
         <div className="grid h-[300px] w-[350px] animate-skew-scroll grid-cols-1 gap-5">

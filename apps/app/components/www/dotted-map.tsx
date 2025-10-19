@@ -4,7 +4,10 @@ import DottedMap from 'dotted-map';
 
 export function DottedWorldMap() {
   return (
-    <div aria-hidden className="relative size-full">
+    <div
+      aria-hidden
+      className="fade-in-0 will-change relative size-full size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700"
+    >
       <div className="absolute inset-0 z-10 m-auto size-fit">
         <div className="relative z-[1] flex size-fit w-fit items-center gap-2 rounded-[--radius] border bg-background px-3 py-1 font-medium text-xs shadow-black/5 shadow-md dark:bg-muted">
           <span className="text-sm">🇫🇷</span> Last connection from Paris, France
