@@ -176,74 +176,77 @@ type ContentScrollAreaCardProps =
   | TreeCardProps
   | JsonCardProps;
 
-const TreeViewCard = React.memo(({ content }: { content: LinksTree }) => {
-  const [expandKey, setExpandKey] = React.useState(0);
-  const [expandAll, setExpandAll] = React.useState(true);
-  const [enableCopyOnClick] = React.useState(true);
+export const TreeViewCard = React.memo(
+  ({ content, className }: { content: LinksTree; className?: string }) => {
+    const [expandKey, setExpandKey] = React.useState(0);
+    const [expandAll, setExpandAll] = React.useState(true);
+    const [enableCopyOnClick] = React.useState(true);
 
-  const linksTreeData = content;
+    const linksTreeData = content;
 
-  const treeData = React.useMemo(
-    () => transformLinksTreeToTreeData(linksTreeData, enableCopyOnClick),
-    [linksTreeData, enableCopyOnClick],
-  );
+    const treeData = React.useMemo(
+      () => transformLinksTreeToTreeData(linksTreeData, enableCopyOnClick),
+      [linksTreeData, enableCopyOnClick],
+    );
 
-  const handleExpandAll = React.useCallback(() => {
-    setExpandAll(true);
-    setExpandKey((prev) => prev + 1);
-  }, []);
+    const handleExpandAll = React.useCallback(() => {
+      setExpandAll(true);
+      setExpandKey((prev) => prev + 1);
+    }, []);
 
-  const handleCollapseAll = React.useCallback(() => {
-    setExpandAll(false);
-    setExpandKey((prev) => prev + 1);
-  }, []);
+    const handleCollapseAll = React.useCallback(() => {
+      setExpandAll(false);
+      setExpandKey((prev) => prev + 1);
+    }, []);
 
-  return (
-    <>
-      <CardHeader className="border-b pt-6">
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <CardTitle>Links Tree</CardTitle>
-            <CardDescription>
-              Extracted links tree map for AI Agents
-            </CardDescription>
+    return (
+      <>
+        <CardHeader className={cn('border-b pt-6', className)}>
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <CardTitle>Links Tree</CardTitle>
+              <CardDescription>
+                Extracted links tree map for AI Agents
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="text-muted-foreground"
+                    onClick={handleExpandAll}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <ListChevronsUpDown className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Expand all links</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="text-muted-foreground"
+                    onClick={handleCollapseAll}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <CopyMinus className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Collapse all links</TooltipContent>
+              </Tooltip>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="text-muted-foreground"
-                  onClick={handleExpandAll}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <ListChevronsUpDown className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Expand all links</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="text-muted-foreground"
-                  onClick={handleCollapseAll}
-                  size="icon"
-                  variant="ghost"
-                >
-                  <CopyMinus className="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Collapse all links</TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="scrollbar-thin scrollbar-thumb-rounded-full size-full min-h-0 flex-1 overflow-auto px-2 py-6">
-        <TreeView data={treeData} expandAll={expandAll} key={expandKey} />
-      </CardContent>
-    </>
-  );
-});
+        </CardHeader>
+        <CardContent className="scrollbar-thin scrollbar-thumb-rounded-full size-full min-h-0 flex-1 overflow-auto px-2 py-6">
+          <TreeView data={treeData} expandAll={expandAll} key={expandKey} />
+        </CardContent>
+      </>
+    );
+  },
+);
+
 TreeViewCard.displayName = 'TreeViewCard';
 
 const ContentScrollAreaCard = React.memo(
