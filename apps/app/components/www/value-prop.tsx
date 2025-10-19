@@ -14,17 +14,17 @@ import { TiltedScroll } from './tilted-scroll';
 
 const VALUE_ITEMS = [
   {
-    label: 'Lightning Fast',
+    label: 'Lightning Fast Content Extraction',
     title: 'Better Performance by Default',
     description:
-      'Edge-native workers on V8 engine — the same engine used by Chromium and Node.js — deliver results in milliseconds without headless browsers or virtual DOM overhead, with Deepcrawl specially optimized parsers.',
+      'Edge-native Workers on V8 engine returns response in milliseconds with Deepcrawl specially optimized parsers and tuned HTML cleaners, KV caching, and no headless browser tax or virtual DOM overhead required.',
     illustration: <DisplayCards />,
   },
   {
-    label: 'Optimized for LLMs',
-    title: 'Optimized for LLM pipelines',
+    label: 'Better LLM-Ready Context',
+    title: 'Optimized for pipelines and fewer tokens',
     description:
-      "Deepcrawl's Links-tree intelligence helps agents strategically plan next steps while optimizing token usage for superior context management, outperforming manifests like llms.txt or traditional sitemap.xml.",
+      'Deepcrawl assembles markdown, metadata, and link trees from any target URL without relying on sitemap.xml, so agents plan crawls with real topology and fewer wasted tokens comparing to other manifests like llms.txt.',
     illustration: (
       <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl border bg-background-subtle pb-10 opacity-100 not-dark:shadow-md transition-opacity duration-700">
         <TreeViewCard
@@ -39,32 +39,32 @@ const VALUE_ITEMS = [
     ),
   },
   {
-    label: 'Global CDN',
-    title: 'Global CDN, resilient APIs',
+    label: 'Open Core And Transparency',
+    title: 'Free to anyone and Self-Hostable',
     description:
-      'Requests terminate on a worldwide footprint with built-in retries, and intelligent caching.',
+      '100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of Deepcrawl without server maintenance overhead.',
+    illustration: <CpuArchitecture />,
+  },
+  {
+    label: 'Resilient Edge',
+    title: 'Worldwide CDN, Instant Retries',
+    description:
+      'Every request lands on the Cloudflare edge with automatic retries, configurable smart cache controls, for bursty workflows.',
     illustration: <DottedWorldMap />,
   },
   {
-    label: 'Type Safety',
-    title: 'Full type safety, plug-in schemas',
+    label: 'SDK Ergonomics',
+    title: 'Developer-first Tooling',
     description:
-      'Shared contracts across OpenAPI, REST, oRPC, and workers ensure every response is typed, validated, and ready to slot into your checks.',
+      'The super lightweight typeScript SDK ships the same contracts, types, and schemas we use to build Deepcrawl, and typed errors as the worker plus playground parity straight from install.',
+    illustration: <CpuArchitecture />,
+  },
+  {
+    label: 'Typed Contracts',
+    title: 'Type Safety Across Every Surface',
+    description:
+      'Shared OpenAPI, oRPC, and Zod schemas keep workers, dashboard, and SDK aligned so inputs validate once and stay consistent from compile to runtime.',
     illustration: <TiltedScroll />,
-  },
-  {
-    label: 'Developer-first SDK',
-    title: 'Developer-first SDK experience',
-    description:
-      'First-party TypeScript SDK exposes ergonomic helpers, and playground parity straight from install.',
-    illustration: <CpuArchitecture />,
-  },
-  {
-    label: 'Free and open',
-    title: 'Free and open',
-    description:
-      'MIT-licensed, bring-your-own infra—no paywalls, credits, or surprise pricing.',
-    illustration: <CpuArchitecture />,
   },
 ] as const;
 
