@@ -31,6 +31,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
   apiMetrics,
   badgeVariant = 'flex',
   variant = 'default',
+  enableTooltip = true,
 }: {
   className?: string;
   contentClassName?: string;
@@ -40,6 +41,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
   apiMetrics?: ReadUrlResponse['metrics'] | ExtractLinksResponse['metrics'];
   badgeVariant?: 'inline' | 'flex';
   variant?: 'default' | 'extractLinks';
+  enableTooltip?: boolean;
 }) {
   const metricsRef = useRef<HTMLDivElement>(null);
   const [PGDuration, setPGDuration] = useState(0);
@@ -82,6 +84,38 @@ export const MetricsDisplay = memo(function MetricsDisplay({
     const rootUrl = treeData?.url;
     const lastUpdated = treeData?.lastUpdated;
 
+    const rootUrlContent = (
+      <div
+        className={cn(
+          'group flex items-center justify-between gap-1 text-nowrap',
+          badgeVariant === 'inline' && 'gap-2',
+        )}
+      >
+        <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+          Root URL
+        </span>
+        <span className="truncate break-words font-medium text-muted-foreground text-sm group-hover:text-foreground">
+          {rootUrl}
+        </span>
+      </div>
+    );
+
+    const totalUrlsContent = (
+      <div className="group flex items-center justify-between gap-1 text-nowrap">
+        <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+          Total URLs Extracted
+        </span>
+        <MetricsNumber
+          className="font-semibold text-2xl group-hover:text-foreground"
+          options={{
+            suffix: undefined,
+            format: undefined,
+          }}
+          value={totalUrls}
+        />
+      </div>
+    );
+
     return (
       <Card className={cn(className)} ref={metricsRef}>
         <CardContent className={cn('flex flex-col gap-2', contentClassName)}>
@@ -93,49 +127,28 @@ export const MetricsDisplay = memo(function MetricsDisplay({
             )}
           >
             <div className="flex flex-col gap-2">
-              {rootUrl && (
+              {rootUrl &&
+                (enableTooltip ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>{rootUrlContent}</TooltipTrigger>
+                    <TooltipContent side="top">
+                      <p>Root URL of the request url</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  rootUrlContent
+                ))}
+
+              {enableTooltip ? (
                 <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className={cn(
-                        'group flex items-center justify-between gap-1 text-nowrap',
-                        badgeVariant === 'inline' && 'gap-2',
-                      )}
-                    >
-                      <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
-                        Root URL
-                      </span>
-                      <span className="truncate break-words font-medium text-muted-foreground text-sm group-hover:text-foreground">
-                        {rootUrl}
-                      </span>
-                    </div>
-                  </TooltipTrigger>
+                  <TooltipTrigger asChild>{totalUrlsContent}</TooltipTrigger>
                   <TooltipContent side="top">
-                    <p>Root URL of the request url</p>
+                    <p>Total URLs extracted from the url</p>
                   </TooltipContent>
                 </Tooltip>
+              ) : (
+                totalUrlsContent
               )}
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="group flex items-center justify-between gap-1 text-nowrap">
-                    <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
-                      Total URLs Extracted
-                    </span>
-                    <MetricsNumber
-                      className="font-semibold text-2xl group-hover:text-foreground"
-                      options={{
-                        suffix: undefined,
-                        format: undefined,
-                      }}
-                      value={totalUrls}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Total URLs extracted from the url</p>
-                </TooltipContent>
-              </Tooltip>
             </div>
           </div>
 
@@ -200,58 +213,95 @@ export const MetricsDisplay = memo(function MetricsDisplay({
               </Badge>
             )}
             {/* Cached */}
-            {responseData?.cached && (
+            {responseData?.cached ? (
               <Badge
                 className="select-none font-mono text-green-600 text-xs"
                 variant="outline"
               >
                 Cached
               </Badge>
+            ) : (
+              <Badge
+                className="select-none font-mono text-green-600 text-xs"
+                variant="outline"
+              >
+                Not Cached
+              </Badge>
             )}
           </div>
           {/* Metrics */}
           <div className="flex flex-col gap-0">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div
-                  className={cn(
-                    'group flex items-center justify-between gap-1 text-nowrap',
-                    badgeVariant === 'inline' && 'gap-2',
-                  )}
-                >
-                  <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
-                    Current Playground
-                  </span>
-                  <MetricsNumber
-                    className="font-medium text-muted-foreground text-sm group-hover:text-foreground"
-                    formatTime={formatTime}
-                    value={PGDuration}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>Time taken of playground execution</p>
-              </TooltipContent>
-            </Tooltip>
-            {!isGetMarkdownResponse && (
+            {enableTooltip ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="group flex items-center justify-between gap-1 text-nowrap">
+                  <div
+                    className={cn(
+                      'group flex items-center justify-between gap-1 text-nowrap',
+                      badgeVariant === 'inline' && 'gap-2',
+                    )}
+                  >
                     <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
-                      API Response
+                      Current Playground
                     </span>
                     <MetricsNumber
-                      className="font-semibold text-2xl group-hover:text-foreground"
+                      className="font-medium text-muted-foreground text-sm group-hover:text-foreground"
                       formatTime={formatTime}
-                      value={APIDuration}
+                      value={PGDuration}
                     />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  <p>Time taken of Real API execution</p>
+                  <p>Time taken of playground execution</p>
                 </TooltipContent>
               </Tooltip>
+            ) : (
+              <div
+                className={cn(
+                  'group flex items-center justify-between gap-1 text-nowrap',
+                  badgeVariant === 'inline' && 'gap-2',
+                )}
+              >
+                <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                  Current Playground
+                </span>
+                <MetricsNumber
+                  className="font-medium text-muted-foreground text-sm group-hover:text-foreground"
+                  formatTime={formatTime}
+                  value={PGDuration}
+                />
+              </div>
             )}
+            {!isGetMarkdownResponse &&
+              (enableTooltip ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="group flex items-center justify-between gap-1 text-nowrap">
+                      <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                        API Response
+                      </span>
+                      <MetricsNumber
+                        className="font-semibold text-2xl group-hover:text-foreground"
+                        formatTime={formatTime}
+                        value={APIDuration}
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Time taken of Real API execution</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <div className="group flex items-center justify-between gap-1 text-nowrap">
+                  <span className="pointer-events-none text-muted-foreground text-xs group-hover:text-foreground">
+                    API Response
+                  </span>
+                  <MetricsNumber
+                    className="font-semibold text-2xl group-hover:text-foreground"
+                    formatTime={formatTime}
+                    value={APIDuration}
+                  />
+                </div>
+              ))}
           </div>
         </div>
 

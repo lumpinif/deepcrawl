@@ -1,60 +1,93 @@
-import { cn } from '@deepcrawl/ui/lib/utils';
-import { PerformanceMeter } from './performance-meter';
+'use client';
+
+import { Label } from '@deepcrawl/ui/components/ui/label';
+import { useState } from 'react';
+import { CpuArchitecture } from './cpu-architecture';
+import DisplayCards from './display-cards';
+import { DottedWorldMap } from './dotted-map';
+// import { PerformanceMeter } from './performance-meter';
+import GlowingStrokeRadarChart from './radar-chart-stats';
+import { TiltedScroll } from './tilted-scroll';
 
 const VALUE_ITEMS = [
   {
+    label: 'Lightning Fast',
     title: 'Better Performance by Default',
-    description: 'Edge-native workers stream results in milliseconds.',
-    illustration: <PerformanceMeter />,
+    description:
+      'Edge-native workers on V8 engine — the same engine used by Chromium and Node.js — deliver results in milliseconds without headless browsers or virtual DOM overhead, with Deepcrawl specially optimized parsers.',
+    illustration: <DisplayCards />,
   },
   {
+    label: 'Optimized for LLMs',
     title: 'Optimized for LLM pipelines',
     description:
       'Links-tree intelligence for agents to better plan their next steps and less tokens for better markdown extraction.',
+    illustration: <GlowingStrokeRadarChart />,
   },
   {
+    label: 'Global CDN',
     title: 'Global CDN, resilient APIs',
     description:
       'Requests terminate on a worldwide footprint with built-in retries, and intelligent caching.',
+    illustration: <DottedWorldMap />,
   },
   {
+    label: 'Type Safety',
     title: 'Full type safety, plug-in schemas',
     description:
       'Shared contracts across OpenAPI, REST, oRPC, and workers ensure every response is typed, validated, and ready to slot into your checks.',
+    illustration: <TiltedScroll />,
   },
   {
+    label: 'Developer-first SDK',
     title: 'Developer-first SDK experience',
     description:
       'First-party TypeScript SDK exposes ergonomic helpers, and playground parity straight from install.',
+    illustration: <CpuArchitecture />,
   },
   {
+    label: 'Free and open',
     title: 'Free and open',
     description:
       'MIT-licensed, bring-your-own infra—no paywalls, credits, or surprise pricing.',
+    illustration: <CpuArchitecture />,
   },
-];
+] as const;
 
-export const ValueProp = () => (
-  <div className="grid divide-x divide-y divide-border sm:grid-cols-3">
-    {VALUE_ITEMS.map((item, index) => (
-      <article
-        className={cn(
-          'flex flex-col gap-6 p-8',
-          index > 2 && 'sm:border-b-0',
-          (index === 2 || index === VALUE_ITEMS.length - 1) && 'sm:border-r-0',
-        )}
-        key={item.title}
-      >
-        {item.illustration}
-        <div className="space-y-2 text-pretty text-center">
-          <h3 className="font-semibold text-lg tracking-tight sm:text-xl">
-            {item.title}
-          </h3>
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            {item.description}
-          </p>
+export function ValueProp() {
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
+  return (
+    <div className="relative grid grid-cols-1 divide-x md:grid-cols-5">
+      <div className="md:col-span-2">
+        <div className="scrollbar-none flex gap-2 overflow-x-auto p-4 md:flex-col md:gap-4 md:p-4">
+          {VALUE_ITEMS.map((option, index) => (
+            <button
+              className={`w-64 flex-shrink-0 space-y-2 border p-4 text-left transition-colors duration-200 ease-out last:mr-0 md:mr-0 md:w-full md:p-6 ${
+                selectedIndex === index
+                  ? 'bg-background-subtle shadow-md'
+                  : 'hover:bg-background-subtle'
+              }`}
+              key={option.label}
+              onClick={() => setSelectedIndex(index)}
+              type="button"
+            >
+              <Label className="text-muted-foreground text-sm tracking-tight md:text-md lg:text-md">
+                {option.label}
+              </Label>
+              <h2 className="font-semibold text-foreground text-lg tracking-tight md:text-xl lg:text-xl">
+                {option.title}
+              </h2>
+            </button>
+          ))}
         </div>
-      </article>
-    ))}
-  </div>
-);
+      </div>
+      <div className="col-span-1 flex flex-col items-center justify-center gap-10 overflow-hidden p-4 md:col-span-3 md:gap-16 md:p-6">
+        {VALUE_ITEMS[selectedIndex]?.illustration}
+        <p className="max-w-md text-pretty text-center font-semibold font-semibold text-foreground text-lg tracking-tight tracking-tight md:text-xl lg:text-xl">
+          {VALUE_ITEMS[selectedIndex]?.description}
+        </p>
+      </div>
+    </div>
+  );
+}
