@@ -1,13 +1,10 @@
-import { ActionSuite } from '@/components/www/action-suite';
-import { CtaStrip } from '@/components/www/cta-strip';
-import { Faq } from '@/components/www/faq';
-import { Hero } from '@/components/www/hero';
-import { Integrations } from '@/components/www/integrations';
-import { Observability } from '@/components/www/observability';
-import { OpenSource } from '@/components/www/open-source';
-import { Pipeline } from '@/components/www/pipeline';
-import { Surfaces } from '@/components/www/surfaces';
-import { ValueProp } from '@/components/www/value-prop';
+import { ActionSuite } from '@/components/www/sections/action-suite';
+import { Faq } from '@/components/www/sections/faq';
+import { Hero } from '@/components/www/sections/hero';
+import { Observability } from '@/components/www/sections/observability';
+import { OpenSource } from '@/components/www/sections/open-source';
+import { Surfaces } from '@/components/www/sections/surfaces';
+import { ValueProp } from '@/components/www/sections/value-prop';
 
 export default function IndexPage() {
   return (
@@ -15,12 +12,9 @@ export default function IndexPage() {
       <Hero />
       <ValueProp />
       <ActionSuite />
-      <Pipeline />
       <Surfaces />
       <OpenSource />
       <Observability />
-      <Integrations />
-      <CtaStrip />
       <Faq />
     </div>
   );

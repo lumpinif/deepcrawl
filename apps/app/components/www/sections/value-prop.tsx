@@ -4,13 +4,11 @@ import { Label } from '@deepcrawl/ui/components/ui/label';
 import type { LinksTree } from 'deepcrawl/types';
 import { useState } from 'react';
 import { extractLinksResponseSample } from '@/lib/response-samples';
-import { TreeViewCard } from '../playground/response-area/content-tabs';
-import { CpuArchitecture } from './cpu-architecture';
-import DisplayCards from './display-cards';
-import { DottedWorldMap } from './dotted-map';
-// import { PerformanceMeter } from './performance-meter';
-// import GlowingStrokeRadarChart from './radar-chart-stats';
-import { TiltedScroll } from './tilted-scroll';
+import { TreeViewCard } from '../../playground/response-area/content-tabs';
+import { CpuArchitecture } from '../cpu-architecture';
+import DisplayCards from '../display-cards';
+import { DottedWorldMap } from '../dotted-map';
+import { TiltedScroll } from '../tilted-scroll';
 
 const VALUE_ITEMS = [
   {
@@ -40,7 +38,7 @@ const VALUE_ITEMS = [
   },
   {
     label: 'Open Core And Transparency',
-    title: 'Free to anyone and Self-Hostable',
+    title: 'Free to anyone and Open Source',
     description:
       '100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of Deepcrawl without server maintenance overhead.',
     illustration: (

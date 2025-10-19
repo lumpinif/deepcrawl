@@ -2,12 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
-import { Installer } from './installer';
+import { Installer } from '../installer';
 
 // Lazy load FlickeringGrid only when needed
 const FlickeringGrid = dynamic(
   () =>
-    import('./flickering-grid').then((mod) => ({
+    import('../flickering-grid').then((mod) => ({
       default: mod.FlickeringGrid,
     })),
   {
