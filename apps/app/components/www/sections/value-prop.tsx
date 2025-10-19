@@ -9,6 +9,7 @@ import { CpuArchitecture } from '../cpu-architecture';
 import DisplayCards from '../display-cards';
 import { DottedWorldMap } from '../dotted-map';
 import { FreeTag } from '../free-tag';
+import { Tick } from '../tick';
 import { TiltedScroll } from '../tilted-scroll';
 
 const VALUE_ITEMS = [
@@ -77,6 +78,7 @@ export function ValueProp() {
 
   return (
     <div className="relative grid grid-cols-1 divide-x md:grid-cols-5">
+      <Tick />
       <div className="md:col-span-2">
         <div className="scrollbar-none flex gap-2 overflow-x-auto p-4 md:flex-col md:gap-4 md:p-4">
           {VALUE_ITEMS.map((option, index) => (
