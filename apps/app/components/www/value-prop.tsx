@@ -1,12 +1,15 @@
 'use client';
 
 import { Label } from '@deepcrawl/ui/components/ui/label';
+import type { LinksTree } from 'deepcrawl/types';
 import { useState } from 'react';
+import { extractLinksResponseSample } from '@/lib/response-samples';
+import { TreeViewCard } from '../playground/response-area/content-tabs';
 import { CpuArchitecture } from './cpu-architecture';
 import DisplayCards from './display-cards';
 import { DottedWorldMap } from './dotted-map';
 // import { PerformanceMeter } from './performance-meter';
-import GlowingStrokeRadarChart from './radar-chart-stats';
+// import GlowingStrokeRadarChart from './radar-chart-stats';
 import { TiltedScroll } from './tilted-scroll';
 
 const VALUE_ITEMS = [
@@ -21,8 +24,19 @@ const VALUE_ITEMS = [
     label: 'Optimized for LLMs',
     title: 'Optimized for LLM pipelines',
     description:
-      'Links-tree intelligence for agents to better plan their next steps and less tokens for better markdown extraction.',
-    illustration: <GlowingStrokeRadarChart />,
+      "Deepcrawl's Links-tree intelligence helps agents strategically plan next steps while optimizing token usage for superior context management, outperforming manifests like llms.txt or traditional sitemap.xml.",
+    illustration: (
+      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl border bg-background-subtle pb-10 opacity-100 not-dark:shadow-md transition-opacity duration-700">
+        <TreeViewCard
+          content={
+            extractLinksResponseSample.data &&
+            'tree' in extractLinksResponseSample.data
+              ? extractLinksResponseSample.data.tree
+              : ({} as LinksTree)
+          }
+        />
+      </div>
+    ),
   },
   {
     label: 'Global CDN',
@@ -82,9 +96,11 @@ export function ValueProp() {
           ))}
         </div>
       </div>
-      <div className="col-span-1 flex flex-col items-center justify-center gap-10 overflow-hidden p-4 md:col-span-3 md:gap-16 md:p-6">
-        {VALUE_ITEMS[selectedIndex]?.illustration}
-        <p className="max-w-md text-pretty text-center font-semibold font-semibold text-foreground text-lg tracking-tight tracking-tight md:text-xl lg:text-xl">
+      <div className="col-span-1 flex flex-col items-center justify-evenly overflow-hidden p-4 md:col-span-3 md:p-6">
+        <div className="size-full h-[32.5rem]">
+          {VALUE_ITEMS[selectedIndex]?.illustration}
+        </div>
+        <p className="flex h-1/4 max-w-md flex-none flex-col items-center justify-center text-pretty text-center font-semibold font-semibold text-foreground text-lg tracking-tight tracking-tight md:text-xl lg:text-xl">
           {VALUE_ITEMS[selectedIndex]?.description}
         </p>
       </div>

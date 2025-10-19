@@ -1,48 +1,20 @@
-import { cn } from '@deepcrawl/ui/lib/utils';
-import { type BorderEdge, BorderShader } from './border-shader';
-import { FlickeringGrid } from './flickering-grid';
+'use client';
+
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 import { Installer } from './installer';
 
-const COLUMNS = 12;
-const LAST_COLUMN = COLUMNS - 1;
-
-function Row({
-  boxNumber,
-  className,
-  borderEdges = [],
-}: {
-  boxNumber?: number | number[];
-  className?: string;
-  borderEdges?: BorderEdge[];
-}) {
-  return (
-    <div className={cn('hidden grid-cols-12 divide-x sm:grid', className)}>
-      {new Array(COLUMNS)
-        .fill(0)
-        .map((_, index) =>
-          (Array.isArray(boxNumber)
-            ? boxNumber.includes(index)
-            : index === boxNumber) && boxNumber !== undefined ? (
-            <BorderShader
-              borderEdges={borderEdges}
-              borderStripWidth={3}
-              className="text-border/30 transition-colors duration-100 ease-out hover:text-border sm:col-span-1"
-              key={index}
-              showBorderStrips={true}
-            />
-          ) : (
-            <div
-              className={cn(
-                'aspect-square',
-                index === LAST_COLUMN && 'border-r-0',
-              )}
-              key={index}
-            />
-          ),
-        )}
-    </div>
-  );
-}
+// Lazy load FlickeringGrid only when needed
+const FlickeringGrid = dynamic(
+  () =>
+    import('./flickering-grid').then((mod) => ({
+      default: mod.FlickeringGrid,
+    })),
+  {
+    ssr: false,
+    loading: () => <div className="h-full w-full" />,
+  },
+);
 
 export const Hero = () => (
   <section className="relative">
@@ -57,17 +29,19 @@ export const Hero = () => (
       <div className="relative col-span-12 space-y-4 overflow-hidden px-4 py-52 text-center sm:px-8">
         <div className="absolute inset-0 z-[-10] size-full">
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-30% from-transparent to-background" />
-          <FlickeringGrid
-            className="h-full w-full"
-            color="#6B7280"
-            flickerChance={0.15}
-            fontSize={100}
-            gridGap={9}
-            maxOpacity={0.15}
-            squareSize={3}
-            text="npm i deepcrawl"
-            textOffsetY={250}
-          />
+          <Suspense fallback={<div className="h-full w-full" />}>
+            <FlickeringGrid
+              className="h-full w-full"
+              color="#6B7280"
+              flickerChance={0.15}
+              fontSize={100}
+              gridGap={9}
+              maxOpacity={0.15}
+              squareSize={3}
+              text="npm i deepcrawl"
+              textOffsetY={250}
+            />
+          </Suspense>
         </div>
         <h1 className="-translate-y-12 font-semibold text-5xl leading-tight tracking-tighter md:text-6xl lg:text-7xl 2xl:text-8xl">
           Deepcrawl

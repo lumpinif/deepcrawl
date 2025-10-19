@@ -34,8 +34,7 @@ export const getRGBA = (
     }
 
     return Color.formatRGBA(Color.parse(cssColor));
-  } catch (e) {
-    console.error('Color parsing failed:', e);
+  } catch {
     return fallback;
   }
 };
@@ -89,25 +88,18 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
     return getRGBA(color);
   }, [color]);
 
-  const drawGrid = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      width: number,
-      height: number,
-      cols: number,
-      rows: number,
-      squares: Float32Array,
-      dpr: number,
-    ) => {
-      ctx.clearRect(0, 0, width, height);
+  // Memoized text mask - only recompute when text properties change
+  const textMaskRef = useRef<Uint8ClampedArray | null>(null);
+  const textMaskParamsRef = useRef({ width: 0, height: 0, dpr: 0 });
 
-      // Create a separate canvas for the text mask
+  const createTextMask = useCallback(
+    (width: number, height: number, dpr: number) => {
       const maskCanvas = document.createElement('canvas');
       maskCanvas.width = width;
       maskCanvas.height = height;
       const maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
       if (!maskCtx) {
-        return;
+        return null;
       }
 
       // Draw text on mask canvas
@@ -126,23 +118,54 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         maskCtx.restore();
       }
 
+      // Get the full image data once
+      return maskCtx.getImageData(0, 0, width, height).data;
+    },
+    [text, fontSize, fontWeight, textOffsetY],
+  );
+
+  const drawGrid = useCallback(
+    (
+      ctx: CanvasRenderingContext2D,
+      width: number,
+      height: number,
+      cols: number,
+      rows: number,
+      squares: Float32Array,
+      dpr: number,
+    ) => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Only recreate mask if dimensions or text changed
+      const maskParams = textMaskParamsRef.current;
+      if (
+        !textMaskRef.current ||
+        maskParams.width !== width ||
+        maskParams.height !== height ||
+        maskParams.dpr !== dpr
+      ) {
+        textMaskRef.current = createTextMask(width, height, dpr);
+        textMaskParamsRef.current = { width, height, dpr };
+      }
+
+      const maskData = textMaskRef.current;
+      const squareWidth = squareSize * dpr;
+      const squareHeight = squareSize * dpr;
+
       // Draw flickering squares with optimized RGBA colors
       for (let i = 0; i < cols; i++) {
+        const x = i * (squareSize + gridGap) * dpr;
         for (let j = 0; j < rows; j++) {
-          const x = i * (squareSize + gridGap) * dpr;
           const y = j * (squareSize + gridGap) * dpr;
-          const squareWidth = squareSize * dpr;
-          const squareHeight = squareSize * dpr;
 
-          const maskData = maskCtx.getImageData(
-            x,
-            y,
-            squareWidth,
-            squareHeight,
-          ).data;
-          const hasText = maskData.some(
-            (value, index) => index % 4 === 0 && value > 0,
-          );
+          // Check if this square intersects with text by sampling the mask
+          let hasText = false;
+          if (maskData && text) {
+            const centerX = Math.floor(x + squareWidth / 2);
+            const centerY = Math.floor(y + squareHeight / 2);
+            const pixelIndex = (centerY * width + centerX) * 4;
+            hasText = (maskData[pixelIndex] ?? 0) > 0;
+          }
 
           const opacity = squares[i * rows + j];
           const finalOpacity = hasText
@@ -154,15 +177,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         }
       }
     },
-    [
-      memoizedColor,
-      squareSize,
-      gridGap,
-      text,
-      fontSize,
-      fontWeight,
-      textOffsetY,
-    ],
+    [memoizedColor, squareSize, gridGap, text, createTextMask],
   );
 
   const setupCanvas = useCallback(
@@ -221,15 +236,30 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
     updateCanvasSize();
 
     let lastTime = 0;
+    let frameCount = 0;
+    const TARGET_FPS = 30; // Reduce FPS for better performance
+    const FRAME_INTERVAL = 1000 / TARGET_FPS;
+
     const animate = (time: number) => {
       if (!isInView) {
         return;
       }
 
-      const deltaTime = (time - lastTime) / 1000;
-      lastTime = time;
+      const deltaTime = time - lastTime;
 
-      updateSquares(gridParams.squares, deltaTime);
+      // Throttle to target FPS
+      if (deltaTime < FRAME_INTERVAL) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
+      lastTime = time - (deltaTime % FRAME_INTERVAL);
+      frameCount++;
+
+      // Update squares every frame
+      updateSquares(gridParams.squares, deltaTime / 1000);
+
+      // Draw every frame
       drawGrid(
         ctx,
         canvas.width,
@@ -239,11 +269,17 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         gridParams.squares,
         gridParams.dpr,
       );
+
       animationFrameId = requestAnimationFrame(animate);
     };
 
+    // Debounce resize updates for better performance
+    let resizeTimeout: NodeJS.Timeout;
     const resizeObserver = new ResizeObserver(() => {
-      updateCanvasSize();
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        updateCanvasSize();
+      }, 100);
     });
 
     resizeObserver.observe(container);
@@ -263,6 +299,7 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      clearTimeout(resizeTimeout);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
     };

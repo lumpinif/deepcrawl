@@ -16,6 +16,7 @@ import type {
   PlaygroundActions,
   PlaygroundOperationResponse,
 } from '@/hooks/playground/types';
+import { useIsHydrated } from '@/hooks/use-hydrated';
 import { MetricsNumber } from '../metrics-number';
 import { MetadataItem } from './page-metadata-card';
 
@@ -47,6 +48,7 @@ export const MetricsDisplay = memo(function MetricsDisplay({
   const [PGDuration, setPGDuration] = useState(0);
   const [APIDuration, setAPIDuration] = useState(0);
   const [totalUrls, setTotalUrls] = useState(0);
+  const isHydrated = useIsHydrated();
 
   const inView = useInView(metricsRef, { once: true });
 
@@ -305,8 +307,8 @@ export const MetricsDisplay = memo(function MetricsDisplay({
           </div>
         </div>
 
-        {/* Timestamp */}
-        {timestamp && (
+        {/* Timestamp - only render on client to prevent hydration mismatch */}
+        {isHydrated && timestamp && (
           <div className="flex cursor-default items-center justify-between gap-1 text-muted-foreground text-xs">
             <span>{format(timestamp, 'MMM d, yyyy H:mm:ss')}</span>
             <span>
