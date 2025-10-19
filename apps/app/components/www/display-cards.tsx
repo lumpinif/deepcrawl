@@ -9,14 +9,14 @@ const metricsCards = [
   {
     id: 'card-bottom',
     className:
-      "[grid-area:stack] hover:-translate-y-15 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-300 hover:grayscale-0 before:left-0 before:top-0",
+      "[grid-area:stack] hover:-translate-y-15 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-400 hover:grayscale-0 before:left-0 before:top-0",
     method: 'POST' as const,
     cached: false,
   },
   {
     id: 'card-middle',
     className:
-      "[grid-area:stack] -translate-x-16 translate-y-10 hover:-translate-y-5 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-300 hover:grayscale-0 before:left-0 before:top-0",
+      "[grid-area:stack] -translate-x-16 translate-y-10 hover:-translate-y-5 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-400 hover:grayscale-0 before:left-0 before:top-0",
     method: 'GET' as const,
     cached: false,
   },
@@ -30,7 +30,7 @@ const metricsCards = [
 ] as const;
 
 const BASE_CARD_CLASSES =
-  'hover:-translate-y-10 h-36 w-[22rem] skew-y-[8deg] transition-transform duration-200 ease-out hover:border-white/30 will-change-transform transform-gpu';
+  'hover:-translate-y-10 h-36 w-[22rem] skew-y-[8deg] transition-transform duration-400 ease-out hover:border-white/30 will-change-transform transform-gpu';
 
 /**
  * Generate random number within a range

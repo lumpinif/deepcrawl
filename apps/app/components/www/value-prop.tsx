@@ -24,9 +24,9 @@ const VALUE_ITEMS = [
     label: 'Better LLM-Ready Context',
     title: 'Optimized for pipelines and fewer tokens',
     description:
-      'Deepcrawl assembles markdown, metadata, and link trees from any target URL without relying on sitemap.xml, so agents plan crawls with real topology and fewer wasted tokens comparing to other manifests like llms.txt.',
+      'Deepcrawl assembles markdown, metadata, and link trees from any target URL without relying on sitemap.xml, so agents plan next steps with real topology and fewer wasted tokens spending, potentially outperforming llms.txt.',
     illustration: (
-      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl border bg-background-subtle pb-10 opacity-100 not-dark:shadow-md transition-opacity duration-700">
+      <div className="fade-in-0 will-change relative size-full transform-gpu animate-in overflow-hidden rounded-xl border bg-background-subtle pb-10 opacity-100 not-dark:shadow-md transition-opacity duration-700">
         <TreeViewCard
           content={
             extractLinksResponseSample.data &&
@@ -44,7 +44,7 @@ const VALUE_ITEMS = [
     description:
       '100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of Deepcrawl without server maintenance overhead.',
     illustration: (
-      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 not-dark:shadow-md transition-opacity duration-700">
+      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
         <CpuArchitecture />
       </div>
     ),
@@ -55,7 +55,7 @@ const VALUE_ITEMS = [
     description:
       'Every request lands on the Cloudflare edge with automatic retries, configurable smart cache controls, for bursty workflows.',
     illustration: (
-      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 not-dark:shadow-md transition-opacity duration-700">
+      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
         <DottedWorldMap />
       </div>
     ),
@@ -66,8 +66,9 @@ const VALUE_ITEMS = [
     description:
       'The super lightweight typeScript SDK ships the same contracts, types, and schemas we use to build Deepcrawl, and typed errors as the worker plus playground parity straight from install.',
     illustration: (
-      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 not-dark:shadow-md transition-opacity duration-700">
-        <CpuArchitecture />
+      <div className="fade-in-0 will-change relative size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
+        <div className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(circle_at_center,transparent_30%,color-mix(in_oklch,var(--color-background)_85%,transparent)_78%,var(--color-background)_100%)]" />
+        <CpuArchitecture text="SDK" />
       </div>
     ),
   },
@@ -77,7 +78,7 @@ const VALUE_ITEMS = [
     description:
       'Shared OpenAPI, oRPC, and Zod schemas keep workers, dashboard, and SDK aligned so inputs validate once and stay consistent from compile to runtime.',
     illustration: (
-      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 not-dark:shadow-md transition-opacity duration-700">
+      <div className="fade-in-0 will-change size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
         <TiltedScroll />
       </div>
     ),
@@ -112,11 +113,11 @@ export function ValueProp() {
           ))}
         </div>
       </div>
-      <div className="col-span-1 flex flex-col items-center justify-evenly overflow-hidden p-4 md:col-span-3 md:p-6">
-        <div className="size-full h-[32.5rem]">
+      <div className="col-span-1 flex flex-col items-center justify-evenly overflow-hidden p-4 max-sm:gap-6 md:col-span-3 md:p-6">
+        <div className="h-[30rem] w-full flex-none">
           {VALUE_ITEMS[selectedIndex]?.illustration}
         </div>
-        <p className="flex h-1/4 max-w-md flex-none flex-col items-center justify-center text-pretty text-center font-semibold font-semibold text-foreground text-lg tracking-tight tracking-tight md:text-xl lg:text-xl">
+        <p className="flex min-h-0 max-w-md flex-grow flex-col items-center justify-center text-pretty text-center font-semibold font-semibold text-foreground text-lg tracking-tight tracking-tight md:text-xl lg:text-xl">
           {VALUE_ITEMS[selectedIndex]?.description}
         </p>
       </div>

@@ -244,52 +244,84 @@ const CpuArchitecture = ({
       </g>
       {/* Masks */}
       <defs>
-        <mask id="cpu-mask-1">
+        <mask
+          id="cpu-mask-1"
+          maskContentUnits="userSpaceOnUse"
+          maskUnits="userSpaceOnUse"
+        >
           <path
             d="M 10 20 h 79.5 q 5 0 5 5 v 24"
             stroke="white"
             strokeWidth="0.5"
           />
         </mask>
-        <mask id="cpu-mask-2">
+        <mask
+          id="cpu-mask-2"
+          maskContentUnits="userSpaceOnUse"
+          maskUnits="userSpaceOnUse"
+        >
           <path
             d="M 180 10 h -69.7 q -5 0 -5 5 v 24"
             stroke="white"
             strokeWidth="0.5"
           />
         </mask>
-        <mask id="cpu-mask-3">
+        <mask
+          id="cpu-mask-3"
+          maskContentUnits="userSpaceOnUse"
+          maskUnits="userSpaceOnUse"
+        >
           <path
             d="M 130 20 v 21.8 q 0 5 -5 5 h -10"
             stroke="white"
             strokeWidth="0.5"
           />
         </mask>
-        <mask id="cpu-mask-4">
+        <mask
+          id="cpu-mask-4"
+          maskContentUnits="userSpaceOnUse"
+          maskUnits="userSpaceOnUse"
+        >
           <path
             d="M 170 80 v -21.8 q 0 -5 -5 -5 h -50"
             stroke="white"
             strokeWidth="0.5"
           />
         </mask>
-        <mask id="cpu-mask-5">
+        <mask
+          id="cpu-mask-5"
+          maskContentUnits="userSpaceOnUse"
+          maskUnits="userSpaceOnUse"
+        >
           <path
             d="M 135 65 h 15 q 5 0 5 5 v 10 q 0 5 -5 5 h -39.8 q -5 0 -5 -5 v -20"
             stroke="white"
             strokeWidth="0.5"
           />
         </mask>
-        <mask id="cpu-mask-6">
+        <mask
+          id="cpu-mask-6"
+          maskContentUnits="userSpaceOnUse"
+          maskUnits="userSpaceOnUse"
+        >
           <path d="M 94.8 95 v -36" stroke="white" strokeWidth="0.5" />
         </mask>
-        <mask id="cpu-mask-7">
+        <mask
+          id="cpu-mask-7"
+          maskContentUnits="userSpaceOnUse"
+          maskUnits="userSpaceOnUse"
+        >
           <path
             d="M 88 88 v -15 q 0 -5 -5 -5 h -10 q -5 0 -5 -5 v -5 q 0 -5 5 -5 h 14"
             stroke="white"
             strokeWidth="0.5"
           />
         </mask>
-        <mask id="cpu-mask-8">
+        <mask
+          id="cpu-mask-8"
+          maskContentUnits="userSpaceOnUse"
+          maskUnits="userSpaceOnUse"
+        >
           <path
             d="M 30 30 h 25 q 5 0 5 5 v 6.5 q 0 5 5 5 h 20"
             stroke="white"
