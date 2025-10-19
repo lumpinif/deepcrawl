@@ -1,5 +1,5 @@
 export function Tick({
-  position = ['top-left', 'bottom-right'],
+  position = ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
 }: {
   position?: ('top-left' | 'top-right' | 'bottom-left' | 'bottom-right')[];
 }) {
