@@ -6,7 +6,6 @@ import { DeepcrawlLogoText } from '@/components/deepcrawl-logo';
 import { source } from './source';
 
 export const baseOptions: BaseLayoutProps = {
-  githubUrl: 'https://github.com/lumpinif/deepcrawl',
   nav: {
     title: <DeepcrawlLogoText />,
     transparentMode: 'top',

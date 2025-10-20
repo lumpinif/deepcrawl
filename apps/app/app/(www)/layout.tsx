@@ -1,3 +1,5 @@
+import GithubIcon from '@deepcrawl/ui/components/icons/github-icon';
+import { GitHubIcon } from '@deepcrawl/ui/components/icons/provider-icons';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import Link from 'next/link';
@@ -29,20 +31,31 @@ export default async function LandingLayout({
         {
           type: 'custom',
           secondary: true,
+          children: (
+            <Link
+              aria-label="GitHub"
+              className="mr-1 inline-flex items-center justify-center rounded-md p-2"
+              href="https://github.com/lumpinif/deepcrawl"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <GithubIcon />
+            </Link>
+          ),
+        },
+        {
+          type: 'custom',
+          secondary: true,
           children: user ? (
             <UserDropdown
-              className="mr-1 md:mt-1.5"
+              className="md:mt-1.5"
               enableLayoutViewToggle={false}
               redirectLogout={'/'}
               session={currentSession}
             />
           ) : (
             <>
-              <Button
-                asChild
-                className="mr-1 ml-2 max-md:hidden"
-                variant="outline"
-              >
+              <Button asChild className="ml-2 max-md:hidden" variant="outline">
                 <Link href="/login">Login</Link>
               </Button>
               <Link className="ml-1 md:hidden" href="/login">
@@ -53,7 +66,7 @@ export default async function LandingLayout({
         },
       ]}
       themeSwitch={{
-        enabled: false,
+        enabled: true,
       }}
     >
       {children}
