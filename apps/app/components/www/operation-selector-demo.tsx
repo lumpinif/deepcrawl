@@ -10,7 +10,11 @@ import {
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { useState } from 'react';
 import { DeepcrawlFeatures } from '@/lib/playground/operations-config';
-import { GetMarkdownGridIcon } from '../animate-ui/components/grid-icons';
+import {
+  ExportResponseGridIcon,
+  GetLinksGridIcon,
+  ListLogsGridIcon,
+} from '../animate-ui/components/grid-icons';
 import { Tick } from './tick';
 
 const FEATURES = [
@@ -18,7 +22,7 @@ const FEATURES = [
   {
     label: 'Get Links',
     operation: 'getLinks',
-    icon: GetMarkdownGridIcon,
+    icon: GetLinksGridIcon,
     endpoint: '/links',
     method: 'GET',
     description: 'Get all page links with a single URL request.',
@@ -26,7 +30,7 @@ const FEATURES = [
   {
     label: 'Get Many Logs',
     operation: 'getManyLogs',
-    icon: GetMarkdownGridIcon,
+    icon: ListLogsGridIcon,
     endpoint: '/logs',
     method: 'POST',
     description:
@@ -35,7 +39,7 @@ const FEATURES = [
   {
     label: 'Export Response',
     operation: 'exportResponse',
-    icon: GetMarkdownGridIcon,
+    icon: ExportResponseGridIcon,
     endpoint: '/logs/export',
     method: 'GET',
     description:
