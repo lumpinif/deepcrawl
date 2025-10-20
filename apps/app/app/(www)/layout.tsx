@@ -1,5 +1,4 @@
 import GithubIcon from '@deepcrawl/ui/components/icons/github-icon';
-import { GitHubIcon } from '@deepcrawl/ui/components/icons/provider-icons';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import Link from 'next/link';

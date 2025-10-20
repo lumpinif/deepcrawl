@@ -1,61 +1,71 @@
+import { cn } from '@deepcrawl/ui/lib/utils';
+import PyramidAnimation from '../ascii-pyramid';
+import { Globe } from '../globe';
+import { SecureShield } from '../secure-shield';
+import { Tick } from '../tick';
+
 const SURFACES = [
   {
-    heading: 'Deepcrawl Worker',
-    blurb:
-      'REST + oRPC APIs powering the crawl pipeline. Placeholder copy for platform overview.',
-    mock: (
-      <div className="h-44 w-full rounded-3xl border border-border/20 bg-gradient-to-tr from-muted/30 via-transparent to-muted/50" />
+    title: 'Deepcrawl Worker',
+    description: 'REST + oRPC APIs powering the backend workflow.',
+    illustration: (
+      <div className="relative flex size-full items-center justify-center overflow-hidden opacity-85 [mask-image:linear-gradient(to_top,transparent,black_50%)]">
+        <Globe className="md:-translate-x-3 md:max-w-[250px]" />
+      </div>
+    ),
+    className: 'pr-0',
+  },
+  {
+    title: 'Auth Worker',
+    description: 'Better Auth, OAuth, and passkeys out of the box.',
+    illustration: (
+      <div className="relative flex size-full items-center justify-center overflow-hidden p-6">
+        <SecureShield />
+      </div>
     ),
   },
   {
-    heading: 'Auth Worker',
-    blurb:
-      'Better Auth, OAuth, and passkeys out of the box. Placeholder copy for security story.',
-    mock: (
-      <div className="h-44 w-full rounded-3xl border border-border/20 bg-[radial-gradient(circle_at_center,theme(colors.muted/30),transparent_60%)]" />
-    ),
-  },
-  {
-    heading: 'Dashboard',
-    blurb:
-      'Next.js monitoring, playground, and key management interface. Placeholder copy for UI surface.',
-    mock: (
-      <div className="h-44 w-full rounded-3xl border border-border/20 bg-muted/10" />
+    title: 'Next.js Dashboard',
+    description:
+      'Optimized Next.js dashboard, monitoring, playground, and key management interface.',
+    illustration: (
+      <div className="flex size-full items-center justify-center overflow-hidden opacity-85 [mask-image:linear-gradient(to_top,transparent,black_30%)]">
+        <PyramidAnimation className="scale-[0.5]" edges={false} />
+      </div>
     ),
   },
 ];
 
 export const Surfaces = () => (
-  <section className="space-y-12 px-4 py-24 sm:px-8">
-    <div className="space-y-2 text-center">
-      <span className="font-semibold text-muted-foreground text-sm uppercase tracking-[0.2em]">
-        Product Surfaces
-      </span>
-      <h2 className="text-balance font-semibold text-3xl tracking-tight sm:text-4xl">
-        A full platform, not just an API endpoint
-      </h2>
-      <p className="mx-auto max-w-2xl text-base text-muted-foreground">
-        Each card gets its own animation later. For now the placeholder blocks
-        hint at visuals.
-      </p>
-    </div>
-    <div className="grid gap-6 sm:grid-cols-3">
-      {SURFACES.map((surface) => (
-        <article
-          className="flex flex-col gap-5 rounded-3xl border border-border/30 bg-card/60 p-6"
-          key={surface.heading}
-        >
-          {surface.mock}
-          <div className="space-y-2">
-            <h3 className="font-semibold text-lg tracking-tight">
-              {surface.heading}
+  <section className="relative px-4 py-24 sm:px-8" id="surfaces">
+    <Tick position={['bottom-left', 'bottom-right']} />
+    <div className="space-y-12">
+      <div className="space-y-3 text-center">
+        <h2 className="text-pretty font-semibold text-3xl tracking-tight sm:text-4xl">
+          A full platform provided, not just API endpoints
+        </h2>
+        <p className="mx-auto max-w-2xl text-base text-muted-foreground">
+          Not only does it include enhanced commonly used tools, but there are
+          also many more planned features coming soon!
+        </p>
+      </div>
+      <div className="grid divide-x divide-y border md:grid-cols-3">
+        {SURFACES.map((surface) => (
+          <div
+            className={cn(
+              'flex h-[350px] flex-col items-start justify-end gap-3 overflow-hidden p-6 md:h-[400px]',
+              surface.className,
+            )}
+            key={surface.title}
+          >
+            {surface.illustration}
+            <h3 className="font-semibold text-lg tracking-tighter">
+              {surface.title}
             </h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              {surface.blurb}
-            </p>
+            <p className="text-muted-foreground">{surface.description}</p>
           </div>
-        </article>
-      ))}
+        ))}
+      </div>
     </div>
   </section>
 );
