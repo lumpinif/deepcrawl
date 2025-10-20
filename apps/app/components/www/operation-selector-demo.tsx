@@ -60,7 +60,7 @@ export function OperationSelectorDemo({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'group/operation-card grid w-full select-none divide-border md:grid-cols-3',
+        'group/operation-card relative grid w-full select-none divide-border md:grid-cols-3',
         className,
       )}
     >
@@ -69,7 +69,7 @@ export function OperationSelectorDemo({ className }: { className?: string }) {
           className={cn(
             'group relative cursor-pointer rounded-none bg-background transition-all duration-200 ease-out hover:bg-input/25 hover:shadow-md 2xl:py-8 hover:dark:bg-accent/35',
             selectedOperation === feat.operation &&
-              '!bg-input/40 dark:!bg-accent/50 border border-ring/50 shadow-md dark:border-ring/70',
+              '!bg-input/40 dark:!bg-accent/50 shadow-md dark:border-ring/70',
           )}
           key={feat.operation}
           onClick={() => setSelectedOption(feat.operation)}

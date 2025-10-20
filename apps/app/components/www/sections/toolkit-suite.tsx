@@ -10,10 +10,14 @@ export const ToolkitSuite = () => (
         <H2>Multi-purposes Features And Endpoints</H2>
         <p className="mx-auto max-w-2xl text-base text-muted-foreground">
           Not only does it include enhanced commonly used tools, but there are
-          also many more planned features coming soon!
+          more requested features and endpoints are regularly added!
         </p>
       </div>
       <OperationSelectorDemo />
+      <p className="mx-auto w-fit text-pretty rounded-full border bg-background-subtle px-7 py-3 text-center font-semibold text-base text-primary/70 tracking-tight shadow-sm">
+        Headless Browser-rendering and asynchronous durable crawling are coming
+        soon!
+      </p>
     </div>
   </section>
 );

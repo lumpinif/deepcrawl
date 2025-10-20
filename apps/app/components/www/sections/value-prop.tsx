@@ -84,10 +84,10 @@ export function ValueProp() {
         <div className="scrollbar-none flex gap-2 overflow-x-auto p-4 md:flex-col md:gap-4 md:p-4">
           {VALUE_ITEMS.map((option, index) => (
             <button
-              className={`w-64 flex-shrink-0 space-y-2 border p-4 text-left transition-colors duration-200 ease-out last:mr-0 md:mr-0 md:w-full md:p-6 ${
+              className={`w-64 flex-shrink-0 space-y-2 border p-4 text-left transition-colors duration-300 ease-out last:mr-0 md:mr-0 md:w-full md:p-6 ${
                 selectedIndex === index
-                  ? 'bg-background-subtle shadow-md'
-                  : 'hover:bg-background-subtle'
+                  ? '!bg-background-subtle shadow-sm'
+                  : 'hover:dark:bg-background-subtle'
               }`}
               key={option.label}
               onClick={() => setSelectedIndex(index)}
