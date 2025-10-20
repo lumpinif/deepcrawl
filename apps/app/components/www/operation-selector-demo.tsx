@@ -14,9 +14,10 @@ import { DeepcrawlFeatures } from '@/lib/playground/operations-config';
 
 export function OperationSelectorDemo({ className }: { className?: string }) {
   const [selectedOperation, setSelectedOption] =
-    useState<DeepcrawlOperations>('readUrl');
+    useState<DeepcrawlOperations | null>(null);
   const [hoveredOperation, setHoveredOperation] =
     useState<DeepcrawlOperations | null>(null);
+
   return (
     <div
       className={cn(
