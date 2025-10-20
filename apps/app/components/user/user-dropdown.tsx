@@ -114,7 +114,10 @@ export function UserDropdown({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger
-        className={cn('outline-none ring-0 ring-transparent', className)}
+        className={cn(
+          'flex size-fit items-center justify-center outline-none ring-0 ring-transparent',
+          className,
+        )}
       >
         <UserAvatar user={user} />
       </DropdownMenuTrigger>
