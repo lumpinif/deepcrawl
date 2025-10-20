@@ -1,5 +1,6 @@
 import { Banner } from '@/components/www/banner';
 import { Faq } from '@/components/www/sections/faq';
+import { Footer } from '@/components/www/sections/footer';
 import { Hero } from '@/components/www/sections/hero';
 import { Surfaces } from '@/components/www/sections/surfaces';
 import { ToolkitSuite } from '@/components/www/sections/toolkit-suite';
@@ -14,6 +15,7 @@ export default function IndexPage() {
       <ToolkitSuite />
       <Surfaces />
       <Faq />
+      <Footer />
     </div>
   );
 }
