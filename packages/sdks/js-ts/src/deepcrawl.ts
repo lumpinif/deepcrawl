@@ -100,7 +100,7 @@ const ERROR_REGISTRY = {
  */
 function handleDeepcrawlError(
   error: unknown,
-  operation: 'read' | 'links',
+  operation: 'read' | 'links' | 'logs',
   fallbackMessage: string,
 ): never {
   // Handle oRPC errors with type-safe registry
@@ -781,7 +781,7 @@ export class DeepcrawlApp {
     const [error, data] = await this.safeClient.logs.listLogs(options || {});
 
     if (error) {
-      handleDeepcrawlError(error, 'read', 'Failed to fetch logs');
+      handleDeepcrawlError(error, 'logs', 'Failed to fetch logs');
     }
 
     return data as ListLogsResponse;
@@ -860,7 +860,7 @@ export class DeepcrawlApp {
     const [error, data] = await this.safeClient.logs.getOne(options);
 
     if (error) {
-      handleDeepcrawlError(error, 'read', 'Failed to fetch log');
+      handleDeepcrawlError(error, 'logs', 'Failed to fetch log');
     }
 
     return data as GetOneLogResponse;
@@ -924,7 +924,7 @@ export class DeepcrawlApp {
     const [error, data] = await this.safeClient.logs.exportResponse(options);
 
     if (error) {
-      handleDeepcrawlError(error, 'read', 'Failed to export response');
+      handleDeepcrawlError(error, 'logs', 'Failed to export response');
     }
 
     return data as ExportResponseOutput;
