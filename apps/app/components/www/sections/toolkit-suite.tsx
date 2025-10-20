@@ -4,7 +4,7 @@ import { Tick } from '../tick';
 
 export const ToolkitSuite = () => (
   <section className="relative px-4 py-24 sm:px-8">
-    <Tick position={['bottom-left', 'bottom-right']} />
+    <Tick position={['bottom-right']} />
     <div className="space-y-12">
       <div className="space-y-3 text-center">
         <H2>Multi-purposes Features And Endpoints</H2>

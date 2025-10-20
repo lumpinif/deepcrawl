@@ -6,6 +6,7 @@ import {
 } from '@deepcrawl/ui/components/ui/accordion';
 import { ChevronUp } from 'lucide-react';
 import { H2 } from '../h2';
+import { Tick } from '../tick';
 
 const FAQS = [
   {
@@ -60,7 +61,8 @@ const CONTENT = [
 
 export function Faq() {
   return (
-    <div className="py-24 sm:py-32">
+    <div className="relative py-24 sm:py-32">
+      <Tick position={['top-left', 'bottom-right']} />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-12">
           <div className="py-0 text-left md:py-4">

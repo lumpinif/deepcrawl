@@ -1,34 +1,202 @@
+import { cn } from '@deepcrawl/ui/lib/utils';
+
+type TickPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+type LineLength = {
+  base?: number;
+  md?: number;
+};
+
+type TickLineConfig = {
+  horizontal?: LineLength;
+  vertical?: LineLength;
+};
+
+type TickLengths =
+  | TickLineConfig
+  | Partial<Record<TickPosition, TickLineConfig>>;
+
+type CompleteLineLength = {
+  base: number;
+  md?: number;
+};
+
+type CompleteTickLineConfig = {
+  horizontal: CompleteLineLength;
+  vertical: CompleteLineLength;
+};
+
+type TickProps = {
+  length?: number;
+  lengths?: TickLengths;
+  position?: TickPosition[];
+};
+
+const DEFAULT_POSITIONS: TickPosition[] = [
+  'top-left',
+  'top-right',
+  'bottom-left',
+  'bottom-right',
+];
+
+const DEFAULT_LENGTHS: Record<TickPosition, CompleteTickLineConfig> = {
+  'top-left': {
+    horizontal: { base: 12, md: 22 },
+    vertical: { base: 12, md: 22 },
+  },
+  'top-right': {
+    horizontal: { base: 12, md: 22 },
+    vertical: { base: 12, md: 22 },
+  },
+  'bottom-left': {
+    horizontal: { base: 12, md: 22 },
+    vertical: { base: 12, md: 22 },
+  },
+  'bottom-right': {
+    horizontal: { base: 12, md: 22 },
+    vertical: { base: 12, md: 22 },
+  },
+};
+
+const CONTAINER_CLASSES: Record<TickPosition, string> = {
+  'top-left': '-left-[1px] top-0',
+  'top-right': '-right-[0.5px] top-0',
+  'bottom-left': '-left-[0.5px] bottom-0',
+  'bottom-right': '-right-[0.5px] bottom-0',
+};
+
+const BASE_CONTAINER_CLASS = 'absolute !z-30 max-lg:hidden';
+
 export function Tick({
-  position = ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
-}: {
-  position?: ('top-left' | 'top-right' | 'bottom-left' | 'bottom-right')[];
-}) {
+  length,
+  lengths,
+  position = DEFAULT_POSITIONS,
+}: TickProps) {
+  if (!position.length) {
+    return null;
+  }
+
+  const overrides = lengths ?? createLegacyLengths(length);
+
   return (
     <>
-      {position.includes('top-left') && (
-        <div className="-left-[1px] absolute top-0 z-30 max-lg:hidden">
-          <div className="-left-[6px] md:-left-[11px] absolute top-0 h-[12px] w-[12px] border-gray-400 border-t-[1px] md:top-0 md:h-[22px] md:w-[22px] dark:border-gray-500" />
-          <div className="-top-[6px] md:-top-[11px] absolute left-0 h-[12px] w-[12px] border-gray-400 border-l-[1px] md:h-[22px] md:w-[22px] dark:border-gray-500" />
-        </div>
-      )}
-      {position.includes('top-right') && (
-        <div className="-right-[1px] absolute top-0 z-30 max-lg:hidden">
-          <div className="-left-[6px] md:-left-[11px] absolute top-0 h-[12px] w-[12px] border-gray-400 border-t-[1px] md:top-0 md:h-[22px] md:w-[22px] dark:border-gray-500" />
-          <div className="-top-[6px] md:-top-[11px] absolute left-0 h-[12px] w-[12px] border-gray-400 border-l-[1px] md:h-[22px] md:w-[22px] dark:border-gray-500" />
-        </div>
-      )}
-      {position.includes('bottom-left') && (
-        <div className="-left-[1px] absolute bottom-0 z-30 max-lg:hidden">
-          <div className="-left-[11px] absolute top-0 h-[22px] w-[22px] border-gray-400 border-t-[1px] dark:border-gray-500" />
-          <div className="-top-[11px] absolute left-0 h-[22px] w-[22px] border-gray-400 border-l-[1px] dark:border-gray-500" />
-        </div>
-      )}
-      {position.includes('bottom-right') && (
-        <div className="-right-[1px] absolute bottom-0 z-30 max-lg:hidden">
-          <div className="-left-[6px] md:-left-[11px] absolute top-0 h-[12px] w-[12px] border-gray-400 border-t-[1px] md:top-0 md:h-[22px] md:w-[22px] dark:border-gray-500" />
-          <div className="-top-[6px] md:-top-[11px] absolute left-0 h-[12px] w-[12px] border-gray-400 border-l-[1px] md:h-[22px] md:w-[22px] dark:border-gray-500" />
-        </div>
-      )}
+      {position.map((pos) => {
+        const config = resolveConfig(pos, overrides);
+
+        return (
+          <div
+            className={cn(BASE_CONTAINER_CLASS, CONTAINER_CLASSES[pos])}
+            key={pos}
+          >
+            <div
+              className={buildLineClasses('horizontal', config.horizontal)}
+            />
+            <div className={buildLineClasses('vertical', config.vertical)} />
+          </div>
+        );
+      })}
     </>
   );
+}
+
+function resolveConfig(
+  position: TickPosition,
+  lengths?: TickLengths,
+): CompleteTickLineConfig {
+  const defaults = DEFAULT_LENGTHS[position];
+
+  const globalOverride = isLineConfig(lengths) ? lengths : undefined;
+  const positionOverride = isPositionMap(lengths)
+    ? lengths[position]
+    : undefined;
+
+  return {
+    horizontal: mergeLineLength(
+      defaults.horizontal,
+      globalOverride?.horizontal,
+      positionOverride?.horizontal,
+    ),
+    vertical: mergeLineLength(
+      defaults.vertical,
+      globalOverride?.vertical,
+      positionOverride?.vertical,
+    ),
+  };
+}
+
+function buildLineClasses(
+  axis: 'horizontal' | 'vertical',
+  lengths: CompleteLineLength,
+) {
+  const base = Math.max(0, Math.round(lengths.base));
+  const baselineClasses = [
+    'absolute',
+    'border-zinc-300',
+    'dark:border-zinc-500',
+    axis === 'horizontal' ? 'top-0 border-t-[1px]' : 'left-0 border-l-[1px]',
+    `h-[${base}px]`,
+    `w-[${base}px]`,
+    axis === 'horizontal'
+      ? `-left-[${Math.round(base / 2)}px]`
+      : `-top-[${Math.round(base / 2)}px]`,
+  ];
+
+  const md = lengths.md ? Math.max(0, Math.round(lengths.md)) : undefined;
+
+  if (md) {
+    baselineClasses.push(
+      `md:h-[${md}px]`,
+      `md:w-[${md}px]`,
+      axis === 'horizontal'
+        ? `md:-left-[${Math.round(md / 2)}px]`
+        : `md:-top-[${Math.round(md / 2)}px]`,
+    );
+  }
+
+  return cn(...baselineClasses);
+}
+
+function mergeLineLength(
+  defaults: CompleteLineLength,
+  globalOverride?: LineLength,
+  positionOverride?: LineLength,
+): CompleteLineLength {
+  return {
+    base: positionOverride?.base ?? globalOverride?.base ?? defaults.base,
+    md: positionOverride?.md ?? globalOverride?.md ?? defaults.md,
+  };
+}
+
+function createLegacyLengths(length?: number): TickLineConfig | undefined {
+  if (typeof length !== 'number') {
+    return;
+  }
+
+  return {
+    horizontal: { base: length, md: length * 2 },
+    vertical: { base: length, md: length * 2 },
+  };
+}
+
+function isPositionMap(
+  value: TickLengths | undefined,
+): value is Partial<Record<TickPosition, TickLineConfig>> {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  return (
+    'top-left' in value ||
+    'top-right' in value ||
+    'bottom-left' in value ||
+    'bottom-right' in value
+  );
+}
+
+function isLineConfig(value: TickLengths | undefined): value is TickLineConfig {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  return !isPositionMap(value);
 }

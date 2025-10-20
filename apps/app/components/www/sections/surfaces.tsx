@@ -39,7 +39,7 @@ const SURFACES = [
 
 export const Surfaces = () => (
   <section className="relative px-4 py-24 sm:px-8" id="surfaces">
-    <Tick position={['bottom-left', 'bottom-right']} />
+    <Tick position={['bottom-left']} />
     <div className="space-y-12">
       <div className="space-y-3 text-center">
         <H2>A full platform included, not just API endpoints</H2>

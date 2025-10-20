@@ -9,26 +9,61 @@ import {
 } from '@deepcrawl/ui/components/ui/card';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { useState } from 'react';
-import type { DeepcrawlOperations } from '@/hooks/playground/types';
 import { DeepcrawlFeatures } from '@/lib/playground/operations-config';
+import { GetMarkdownGridIcon } from '../animate-ui/components/grid-icons';
+import { Tick } from './tick';
+
+const FEATURES = [
+  ...DeepcrawlFeatures,
+  {
+    label: 'Get Links',
+    operation: 'getLinks',
+    icon: GetMarkdownGridIcon,
+    endpoint: '/links',
+    method: 'GET',
+    description: 'Get all page links with a single URL request.',
+  },
+  {
+    label: 'Get Many Logs',
+    operation: 'getManyLogs',
+    icon: GetMarkdownGridIcon,
+    endpoint: '/logs',
+    method: 'POST',
+    description:
+      'Retrieve many activity logs with request options, pagination, and filtering support.',
+  },
+  {
+    label: 'Export Response',
+    operation: 'exportResponse',
+    icon: GetMarkdownGridIcon,
+    endpoint: '/logs/export',
+    method: 'GET',
+    description:
+      'Export the original response data from a specific request by request ID and format.',
+  },
+] as const;
+
+type Feature = (typeof FEATURES)[number];
 
 export function OperationSelectorDemo({ className }: { className?: string }) {
-  const [selectedOperation, setSelectedOption] =
-    useState<DeepcrawlOperations | null>(null);
-  const [hoveredOperation, setHoveredOperation] =
-    useState<DeepcrawlOperations | null>(null);
+  const [selectedOperation, setSelectedOption] = useState<
+    Feature['operation'] | null
+  >(null);
+  const [hoveredOperation, setHoveredOperation] = useState<
+    Feature['operation'] | null
+  >(null);
 
   return (
     <div
       className={cn(
-        'group/operation-card grid w-full select-none gap-2 p-1 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]',
+        'group/operation-card grid w-full select-none divide-border md:grid-cols-3',
         className,
       )}
     >
-      {DeepcrawlFeatures.map((feat) => (
+      {FEATURES.map((feat, _index) => (
         <Card
           className={cn(
-            'group relative cursor-pointer bg-background transition-all duration-200 ease-out hover:bg-input/25 hover:shadow-md 2xl:py-8 hover:dark:bg-accent/35',
+            'group relative cursor-pointer rounded-none bg-background transition-all duration-200 ease-out hover:bg-input/25 hover:shadow-md 2xl:py-8 hover:dark:bg-accent/35',
             selectedOperation === feat.operation &&
               '!bg-input/40 dark:!bg-accent/50 border border-ring/50 shadow-md dark:border-ring/70',
           )}
@@ -37,6 +72,10 @@ export function OperationSelectorDemo({ className }: { className?: string }) {
           onMouseEnter={() => setHoveredOperation(feat.operation)}
           onMouseLeave={() => setHoveredOperation(null)}
         >
+          <Tick
+            length={12}
+            position={_index === 0 || _index === 1 ? ['bottom-right'] : []}
+          />
           <div
             className={cn(
               'absolute top-2 left-2 flex items-center justify-center opacity-0 transition-all duration-200 ease-out group-hover:opacity-100',
