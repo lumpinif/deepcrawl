@@ -59,7 +59,7 @@ const VALUE_ITEMS = [
       'The super lightweight typeScript SDK ships the same contracts, types, and schemas we use to build Deepcrawl, and typed errors as the worker plus playground parity straight from install.',
     illustration: (
       <div className="fade-in-0 will-change relative size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
-        <div className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(circle_at_center,transparent_45%,color-mix(in_oklch,var(--color-background)_85%,transparent)_62%,var(--color-background)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(circle_at_center,transparent_40%,color-mix(in_oklch,var(--color-background)_90%,transparent)_75%,var(--color-background)_100%)]" />
         <SDKCodeblock className="flex items-center justify-center" />
       </div>
     ),
@@ -106,7 +106,7 @@ export function ValueProp() {
         <div className="h-[30rem] w-full flex-none">
           {VALUE_ITEMS[selectedIndex]?.illustration}
         </div>
-        <p className="flex min-h-0 max-w-md flex-grow flex-col items-center justify-center text-pretty text-center font-semibold font-semibold text-foreground text-lg tracking-tight tracking-tight md:text-xl lg:text-xl">
+        <p className="flex min-h-0 max-w-md flex-grow flex-col items-center justify-center text-pretty text-center font-semibold text-foreground text-lg tracking-tight md:text-xl lg:text-xl">
           {VALUE_ITEMS[selectedIndex]?.description}
         </p>
       </div>
