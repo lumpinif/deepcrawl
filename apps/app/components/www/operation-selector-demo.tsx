@@ -77,7 +77,7 @@ export function OperationSelectorDemo({ className }: { className?: string }) {
           onMouseLeave={() => setHoveredOperation(null)}
         >
           <Tick
-            length={12}
+            length={6}
             position={_index === 0 || _index === 1 ? ['bottom-right'] : []}
           />
           <div

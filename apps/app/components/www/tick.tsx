@@ -137,7 +137,7 @@ function buildLineProps(
   const base = Math.max(0, Math.round(lengths.base));
   const baselineClasses = [
     'absolute',
-    'border-zinc-300',
+    'border-gray-400',
     'dark:border-zinc-500',
     axis === 'horizontal' ? 'top-0 border-t-[1px]' : 'left-0 border-l-[1px]',
     axis === 'horizontal'
