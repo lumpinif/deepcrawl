@@ -148,7 +148,7 @@ export function SiteHeader({
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  <GitHubIcon className="size-4 md:size-5" />
+                  <GitHubIcon className="size-[1.4rem]" />
                   <span className="sr-only">Github</span>
                 </Link>
               </Button>
