@@ -30,7 +30,7 @@ export const getManyLogsContract = logsOC
     path: '/',
     method: 'POST',
     summary: 'Get activity logs',
-    description: `Endpoint: POST \`api.deepcrawl.dev/logs\`\n\nRetrieve activity logs with original responses with request options. Returns paginated results with optional filtering by path, success status, and date range.`,
+    description: `Endpoint: POST \`api.deepcrawl.dev/logs\`\n\nRetrieve activity logs with request options. Returns paginated results with optional filtering by path, success status, and date range.`,
   })
   .input(GetManyLogsOptionsSchema)
   .output(GetManyLogsResponseSchema);
