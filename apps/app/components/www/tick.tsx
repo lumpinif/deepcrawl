@@ -1,4 +1,5 @@
 import { cn } from '@deepcrawl/ui/lib/utils';
+import type { CSSProperties } from 'react';
 
 type TickPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
@@ -88,10 +89,8 @@ export function Tick({
             className={cn(BASE_CONTAINER_CLASS, CONTAINER_CLASSES[pos])}
             key={pos}
           >
-            <div
-              className={buildLineClasses('horizontal', config.horizontal)}
-            />
-            <div className={buildLineClasses('vertical', config.vertical)} />
+            <div {...buildLineProps('horizontal', config.horizontal)} />
+            <div {...buildLineProps('vertical', config.vertical)} />
           </div>
         );
       })}
@@ -124,36 +123,60 @@ function resolveConfig(
   };
 }
 
-function buildLineClasses(
+type TickLineStyle = CSSProperties & {
+  '--tick-line-offset'?: string;
+  '--tick-line-offset-md'?: string;
+  '--tick-line-size'?: string;
+  '--tick-line-size-md'?: string;
+};
+
+function buildLineProps(
   axis: 'horizontal' | 'vertical',
   lengths: CompleteLineLength,
-) {
+): { className: string; style: TickLineStyle } {
   const base = Math.max(0, Math.round(lengths.base));
   const baselineClasses = [
     'absolute',
     'border-zinc-300',
     'dark:border-zinc-500',
     axis === 'horizontal' ? 'top-0 border-t-[1px]' : 'left-0 border-l-[1px]',
-    `h-[${base}px]`,
-    `w-[${base}px]`,
     axis === 'horizontal'
-      ? `-left-[${Math.round(base / 2)}px]`
-      : `-top-[${Math.round(base / 2)}px]`,
+      ? 'w-[var(--tick-line-size)]'
+      : 'h-[var(--tick-line-size)]',
+    axis === 'horizontal'
+      ? 'h-[var(--tick-line-size)]'
+      : 'w-[var(--tick-line-size)]',
+    axis === 'horizontal'
+      ? '-left-[var(--tick-line-offset)]'
+      : '-top-[var(--tick-line-offset)]',
   ];
 
-  const md = lengths.md ? Math.max(0, Math.round(lengths.md)) : undefined;
+  const style: TickLineStyle = {
+    '--tick-line-offset': `${Math.round(base / 2)}px`,
+    '--tick-line-size': `${base}px`,
+  };
 
-  if (md) {
+  const md =
+    lengths.md !== undefined ? Math.max(0, Math.round(lengths.md)) : undefined;
+
+  if (md !== undefined) {
     baselineClasses.push(
-      `md:h-[${md}px]`,
-      `md:w-[${md}px]`,
       axis === 'horizontal'
-        ? `md:-left-[${Math.round(md / 2)}px]`
-        : `md:-top-[${Math.round(md / 2)}px]`,
+        ? 'md:w-[var(--tick-line-size-md)]'
+        : 'md:h-[var(--tick-line-size-md)]',
+      axis === 'horizontal'
+        ? 'md:h-[var(--tick-line-size-md)]'
+        : 'md:w-[var(--tick-line-size-md)]',
+      axis === 'horizontal'
+        ? 'md:-left-[var(--tick-line-offset-md)]'
+        : 'md:-top-[var(--tick-line-offset-md)]',
     );
+
+    style['--tick-line-offset-md'] = `${Math.round(md / 2)}px`;
+    style['--tick-line-size-md'] = `${md}px`;
   }
 
-  return cn(...baselineClasses);
+  return { className: cn(...baselineClasses), style };
 }
 
 function mergeLineLength(
