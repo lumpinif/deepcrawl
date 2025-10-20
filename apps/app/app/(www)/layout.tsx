@@ -54,14 +54,9 @@ export default async function LandingLayout({
               session={currentSession}
             />
           ) : (
-            <>
-              <Button asChild className="ml-2 max-md:hidden" variant="outline">
-                <Link href="/login">Login</Link>
-              </Button>
-              <Link className="ml-1 md:hidden" href="/login">
-                Login
-              </Link>
-            </>
+            <Button asChild className="ml-1" size={'sm'} variant="outline">
+              <Link href="/login">Login</Link>
+            </Button>
           ),
         },
       ]}
