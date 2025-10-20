@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 import { Installer } from '../installer';
+import { Tick } from '../tick';
 
 // Lazy load FlickeringGrid only when needed
 const FlickeringGrid = dynamic(
@@ -18,7 +19,8 @@ const FlickeringGrid = dynamic(
 
 export const Hero = () => (
   <section className="relative sm:grid sm:grid-cols-12 sm:divide-x">
-    <div className="relative col-span-12 space-y-4 overflow-hidden px-4 py-60 text-center sm:px-8 md:py-72">
+    <Tick position={['top-left']} />
+    <div className="relative col-span-12 space-y-4 overflow-hidden px-4 py-60 text-center sm:px-8 md:py-64">
       <div className="absolute inset-0 z-[-10] size-full">
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-30% from-transparent to-background" />
         <Suspense fallback={<div className="h-full w-full" />}>
