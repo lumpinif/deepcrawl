@@ -2,7 +2,7 @@ export default function GithubIcon({ className = '' }: { className?: string }) {
   return (
     <svg
       className={`fill-current text-foreground ${className}`}
-      fill="none"
+      fill="currentColor"
       height="24"
       viewBox="0 0 90 90"
       width="24"

@@ -51,8 +51,12 @@ export function UserDropdownSkeleton() {
 
 function UserAvatar({ user }: { user: Session['user'] | LDSUser | undefined }) {
   return (
-    <Avatar className="size-6 cursor-pointer rounded-full ring-0 ring-transparent">
-      <AvatarImage alt={user?.name} src={user?.image || ''} />
+    <Avatar className="flex size-6 cursor-pointer items-center justify-center overflow-hidden rounded-full ring-0 ring-transparent">
+      <AvatarImage
+        alt={user?.name}
+        className="size-6 rounded-full"
+        src={user?.image || ''}
+      />
       <AvatarFallback className="rounded-full">
         {user?.name?.charAt(0).toUpperCase() ||
           user?.email?.charAt(0).toUpperCase() || (

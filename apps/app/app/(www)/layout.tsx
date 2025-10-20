@@ -48,7 +48,7 @@ export default async function LandingLayout({
           secondary: true,
           children: user ? (
             <UserDropdown
-              className="md:mt-1.5"
+              // className="md:mt-1.5"
               enableLayoutViewToggle={false}
               redirectLogout={'/'}
               session={currentSession}
