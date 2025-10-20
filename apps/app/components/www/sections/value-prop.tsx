@@ -5,10 +5,10 @@ import type { LinksTree } from 'deepcrawl/types';
 import { useState } from 'react';
 import { extractLinksResponseSample } from '@/lib/response-samples';
 import { TreeViewCard } from '../../playground/response-area/content-tabs';
-import { CpuArchitecture } from '../cpu-architecture';
 import DisplayCards from '../display-cards';
 import { DottedWorldMap } from '../dotted-map';
 import { FreeTag } from '../free-tag';
+import { SDKCodeblock } from '../sdk-codeblock';
 import { Tick } from '../tick';
 import { TiltedScroll } from '../tilted-scroll';
 
@@ -59,8 +59,8 @@ const VALUE_ITEMS = [
       'The super lightweight typeScript SDK ships the same contracts, types, and schemas we use to build Deepcrawl, and typed errors as the worker plus playground parity straight from install.',
     illustration: (
       <div className="fade-in-0 will-change relative size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
-        <div className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(circle_at_center,transparent_30%,color-mix(in_oklch,var(--color-background)_85%,transparent)_78%,var(--color-background)_100%)]" />
-        <CpuArchitecture text="SDK" />
+        <div className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(circle_at_center,transparent_45%,color-mix(in_oklch,var(--color-background)_85%,transparent)_62%,var(--color-background)_100%)]" />
+        <SDKCodeblock className="flex items-center justify-center" />
       </div>
     ),
   },
