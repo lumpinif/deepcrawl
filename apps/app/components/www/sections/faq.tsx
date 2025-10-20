@@ -1,14 +1,13 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@deepcrawl/ui/components/ui/accordion';
+import { ChevronUp } from 'lucide-react';
+import { H2 } from '../h2';
+
 const FAQS = [
-  {
-    question: 'Is Deepcrawl really free to self-host?',
-    answer:
-      'Placeholder answer referencing MIT license and deploy instructions. Will tighten copy once pricing model is confirmed.',
-  },
-  {
-    question: 'How do rate limits work during early access?',
-    answer:
-      'Placeholder answer summarizing sensible defaults and how teams can request adjustments.',
-  },
   {
     question: 'What happens to my data after a crawl?',
     answer:
@@ -21,34 +20,80 @@ const FAQS = [
   },
 ];
 
-export const Faq = () => (
-  <section className="space-y-10 px-4 pt-24 pb-48 sm:px-8">
-    <div className="space-y-2 text-center">
-      <span className="font-semibold text-muted-foreground text-sm uppercase tracking-[0.2em]">
-        FAQs
-      </span>
-      <h2 className="font-semibold text-3xl tracking-tight sm:text-4xl">
-        Answers to the first questions new teams ask
-      </h2>
-      <p className="mx-auto max-w-2xl text-base text-muted-foreground">
-        Placeholder responses keep structure in place so we can swap in
-        finalized messaging later.
-      </p>
-    </div>
-    <dl className="mx-auto grid max-w-3xl gap-6 text-left">
-      {FAQS.map((faq) => (
-        <div
-          className="rounded-3xl border border-border/30 bg-muted/20 p-6"
-          key={faq.question}
-        >
-          <dt className="font-semibold text-lg tracking-tight">
-            {faq.question}
-          </dt>
-          <dd className="mt-2 text-muted-foreground text-sm leading-relaxed">
-            {faq.answer}
-          </dd>
+const CONTENT = [
+  {
+    title: 'Is Deepcrawl free to use and self-host?',
+    value: 'self-hosting',
+    content:
+      'Yes. Deepcrawl is 100% free and open for anyone to deploy. Follow the self-hosting guide to provision the Next.js app, Workers, and SDK locally or on your own infrastructure.',
+  },
+  {
+    title: 'How fast is Deepcrawl compared to Firecrawl?',
+    value: 'speed-comparison',
+    content:
+      'Deepcrawl is faster than Firecrawl on general by a lot, ranging from 5x to 100x faster in some cases. Deepcrawl uses the Cloudflare Workers platform to fetch and process pages with v8 engine, which is much faster than Firecrawl.',
+  },
+  {
+    title: 'What are the planned features coming soon?',
+    value: 'planned-features',
+    content:
+      'We are releasing new endpoints and features regularly, such as Browser-rendering support for page screenshot, parsing PDF, asyncronous crawling support, built-in web searching integrations, MCP server, and more planned features.',
+  },
+  {
+    title: 'How do I install the SDK?',
+    value: 'install-sdk',
+    content:
+      'Run `pnpm add deepcrawl` (or `npm install` / `bun install`). Then create a server-side client. Check the documentation for more details.',
+  },
+  {
+    title: 'How do I learn to use Deepcrawl?',
+    value: 'learn-to-use-deepcrawl',
+    content: 'Visit the documentation to learn how to use the SDK and API.',
+  },
+  {
+    title: 'How can I contribute to Deepcrawl?',
+    value: 'contribute-to-deepcrawl',
+    content:
+      'Visit the documentation to learn how to contribute to the project. Contributions are welcome! Please read the CONTRIBUTING.md file for details.',
+  },
+];
+
+export function Faq() {
+  return (
+    <div className="py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-12">
+          <div className="py-0 text-left md:py-4">
+            <H2>FAQs</H2>
+            <p className="text-base text-muted-foreground">
+              Frequently asked questions about Deepcrawl.
+            </p>
+          </div>
+          <div className="col-span-2 border-t px-3 sm:px-4 md:border-none">
+            <Accordion
+              className="flex w-full flex-col divide-y"
+              type="multiple"
+            >
+              {CONTENT.map((item) => (
+                <AccordionItem
+                  className="py-4"
+                  key={item.value}
+                  value={item.value}
+                >
+                  <AccordionTrigger className="w-full text-left">
+                    <div className="font-medium text-base text-primary md:text-lg">
+                      {item.title}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="pt-2 text-muted-foreground">{item.content}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
-      ))}
-    </dl>
-  </section>
-);
+      </div>
+    </div>
+  );
+}
