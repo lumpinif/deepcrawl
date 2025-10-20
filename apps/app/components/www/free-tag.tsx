@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export function FreeTag() {
   return (
-    <div className="fade-in-0 will-change flex size-full size-full transform-gpu animate-in flex-col items-center justify-center overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
+    <div className="fade-in-0 will-change flex size-full transform-gpu animate-in flex-col items-center justify-center overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
       <div className="relative flex h-24 w-72 items-center">
         <svg
           className="absolute inset-0 size-full text-muted"
@@ -22,7 +22,7 @@ export function FreeTag() {
         <span>Free to anyone</span>
         <Link
           className="flex items-center gap-2 underline underline-offset-4"
-          href="https://github.com/deepcrawl/deepcrawl"
+          href="https://github.com/lumpinif/deepcrawl"
           rel="noopener noreferrer"
           target="_blank"
         >
