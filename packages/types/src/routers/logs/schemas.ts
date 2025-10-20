@@ -1,10 +1,10 @@
 import { z } from 'zod/v4';
 import {
-  GET_MANY_LOGS_DEFAULT_LIMIT,
-  GET_MANY_LOGS_DEFAULT_OFFSET,
-  GET_MANY_LOGS_MAX_LIMIT,
-  GET_MANY_LOGS_SORT_COLUMNS,
-  GET_MANY_LOGS_SORT_DIRECTIONS,
+  LIST_LOGS_DEFAULT_LIMIT,
+  LIST_LOGS_DEFAULT_OFFSET,
+  LIST_LOGS_MAX_LIMIT,
+  LIST_LOGS_SORT_COLUMNS,
+  LIST_LOGS_SORT_DIRECTIONS,
 } from '../../configs/default';
 import {
   LinksErrorResponseSchema,
@@ -260,30 +260,183 @@ export const ActivityLogEntrySchema = z.discriminatedUnion('path', [
   }),
 ]);
 
+export const ActivityLogEntrySchemaWithoutResponse = z.discriminatedUnion(
+  'path',
+  [
+    z.object({
+      /**
+       * Unique identifier for the activity log entry
+       */
+      id: z.string().meta({
+        description:
+          'Unique identifier (request ID) for the activity log entry',
+      }),
+      /**
+       * Request path discriminator for `read-getMarkdown` endpoint
+       *
+       * When path is `'read-getMarkdown'`:
+       * - `requestOptions` will be typed as {@link GetMarkdownOptionsSchema GetMarkdownOptions}
+       * - `response` will be typed as `string` (markdown content) when success is true
+       */
+      path: z.literal('read-getMarkdown'),
+
+      /**
+       * Whether the request was successful
+       */
+      success: z.boolean(),
+      /**
+       * Original request options for the `getMarkdown` endpoint
+       * @type {GetMarkdownOptions}
+       */
+      requestOptions: GetMarkdownOptionsSchema,
+      /**
+       * Request timestamp for getMarkdown endpoint only
+       * @type {string}
+       */
+      requestTimestamp: z.string().meta({
+        description: 'Request timestamp for getMarkdown',
+        examples: ['2025-09-12T10:30:00.000Z'],
+      }),
+    }),
+    z.object({
+      /**
+       * Unique identifier for the activity log entry
+       */
+      id: z.string().meta({
+        description: 'Unique identifier for the activity log entry',
+      }),
+      /**
+       * Request path discriminator for `read-readUrl` endpoint
+       *
+       * When path is `'read-readUrl'`:
+       * - `requestOptions` will be typed as {@link ReadOptionsSchema ReadOptions}
+       * - `response` will be typed as {@link ReadSuccessResponseSchema ReadSuccessResponse} | {@link ReadErrorResponseSchema ReadErrorResponse}
+       */
+      path: z.literal('read-readUrl'),
+      /**
+       * Whether the request was successful
+       */
+      success: z.boolean(),
+      /**
+       * Original request options for the `readUrl` endpoint
+       * @type {ReadOptions}
+       */
+      requestOptions: ReadOptionsSchema,
+      /**
+       * Error response for the `readUrl` endpoint
+       * @type {ReadErrorResponse}
+       */
+      error: ReadErrorResponseSchema.optional(),
+      /**
+       * Request timestamp for readUrl endpoint
+       * @type {string}
+       */
+      requestTimestamp: z.string().meta({
+        description: 'Request timestamp for readUrl',
+        examples: ['2025-09-12T10:30:00.000Z'],
+      }),
+    }),
+    z.object({
+      /**
+       * Unique identifier for the activity log entry
+       */
+      id: z.string().meta({
+        description: 'Unique identifier for the activity log entry',
+      }),
+      /**
+       * Request path discriminator for `links-getLinks` endpoint
+       *
+       * When path is `'links-getLinks'`:
+       * - `requestOptions` will be typed as {@link LinksOptionsSchema LinksOptions}
+       * - `response` will be typed as {@link LinksSuccessResponseSchema LinksSuccessResponse} | {@link LinksErrorResponseSchema LinksErrorResponse}
+       */
+      path: z.literal('links-getLinks'),
+      /**
+       * Whether the request was successful
+       */
+      success: z.boolean(),
+      /**
+       * Original request options for the `getLinks` endpoint
+       * @type {LinksOptions}
+       */
+      requestOptions: LinksOptionsSchema,
+      /**
+       * Error response for the `getLinks` endpoint
+       * @type {LinksErrorResponse}
+       */
+      error: LinksErrorResponseSchema.optional(),
+      /**
+       * Request timestamp for getLinks endpoint
+       * @type {string}
+       */
+      requestTimestamp: z.string().meta({
+        description: 'Request timestamp for getLinks',
+        examples: ['2025-09-12T10:30:00.000Z'],
+      }),
+    }),
+    z.object({
+      /**
+       * Unique identifier for the activity log entry
+       */
+      id: z.string().meta({
+        description: 'Unique identifier for the activity log entry',
+      }),
+      /**
+       * Request path discriminator for `links-extractLinks` endpoint
+       *
+       * When path is `'links-extractLinks'`:
+       * - `requestOptions` will be typed as {@link LinksOptionsSchema LinksOptions}
+       * - `response` will be typed as {@link LinksSuccessResponseSchema LinksSuccessResponse} | {@link LinksErrorResponseSchema LinksErrorResponse}
+       */
+      path: z.literal('links-extractLinks'),
+      /**
+       * Whether the request was successful
+       */
+      success: z.boolean(),
+      /**
+       * Original request options for the `extractLinks` endpoint
+       * @type {LinksOptions}
+       */
+      requestOptions: LinksOptionsSchema,
+      /**
+       * Error response for the `extractLinks` endpoint
+       * @type {LinksErrorResponse}
+       */
+      error: LinksErrorResponseSchema.optional(),
+      /**
+       * Request timestamp for extractLinks endpoint
+       * @type {string}
+       */
+      requestTimestamp: z.string().meta({
+        description: 'Request timestamp for extractLinks',
+        examples: ['2025-09-12T10:30:00.000Z'],
+      }),
+    }),
+  ],
+);
+
 /**
  * Input schema for fetching activity logs
  */
-export const GetManyLogsSortColumnSchema = z
-  .enum(GET_MANY_LOGS_SORT_COLUMNS)
-  .meta({
-    description: 'Column key to sort activity logs by',
-    examples: GET_MANY_LOGS_SORT_COLUMNS,
-  });
+export const ListLogsSortColumnSchema = z.enum(LIST_LOGS_SORT_COLUMNS).meta({
+  description: 'Column key to sort activity logs by',
+  examples: LIST_LOGS_SORT_COLUMNS,
+});
 
-export const GetManyLogsSortDirectionSchema = z
-  .enum(GET_MANY_LOGS_SORT_DIRECTIONS)
+export const ListLogsSortDirectionSchema = z
+  .enum(LIST_LOGS_SORT_DIRECTIONS)
   .meta({
     description: 'Sort direction',
-    examples: GET_MANY_LOGS_SORT_DIRECTIONS,
+    examples: LIST_LOGS_SORT_DIRECTIONS,
   });
 
-export const GetManyLogsOptionsSchema = z.object({
+export const ListLogsOptionsSchema = z.object({
   limit: z
     .number()
     .int()
     .min(1)
-    .max(GET_MANY_LOGS_MAX_LIMIT)
-    .default(GET_MANY_LOGS_DEFAULT_LIMIT)
+    .max(LIST_LOGS_MAX_LIMIT)
+    .default(LIST_LOGS_DEFAULT_LIMIT)
     .optional()
     .meta({
       description: 'Maximum number of logs to return',
@@ -292,7 +445,7 @@ export const GetManyLogsOptionsSchema = z.object({
     .number()
     .int()
     .min(0)
-    .default(GET_MANY_LOGS_DEFAULT_OFFSET)
+    .default(LIST_LOGS_DEFAULT_OFFSET)
     .optional()
     .meta({
       description: 'Number of logs to skip for pagination',
@@ -310,11 +463,11 @@ export const GetManyLogsOptionsSchema = z.object({
   endDate: z.iso.datetime().optional().meta({
     description: 'Filter logs until this date (ISO 8601)',
   }),
-  orderBy: GetManyLogsSortColumnSchema.optional().meta({
+  orderBy: ListLogsSortColumnSchema.optional().meta({
     description:
       'Column to sort by. Defaults to requestTimestamp when omitted.',
   }),
-  orderDir: GetManyLogsSortDirectionSchema.optional().meta({
+  orderDir: ListLogsSortDirectionSchema.optional().meta({
     description: 'Sort direction. Defaults to desc when omitted.',
   }),
 });
@@ -322,7 +475,7 @@ export const GetManyLogsOptionsSchema = z.object({
 /**
  * Output schema for activity logs response
  */
-export const GetManyLogsResponseMetaSchema = z.object({
+export const ListLogsResponseMetaSchema = z.object({
   limit: z.number().int().min(1).meta({
     description: 'Effective limit applied to the result set',
   }),
@@ -336,10 +489,10 @@ export const GetManyLogsResponseMetaSchema = z.object({
     description:
       'Offset to request the next page. Null when no additional data exists.',
   }),
-  orderBy: GetManyLogsSortColumnSchema.meta({
+  orderBy: ListLogsSortColumnSchema.meta({
     description: 'Column key used for sorting',
   }),
-  orderDir: GetManyLogsSortDirectionSchema.meta({
+  orderDir: ListLogsSortDirectionSchema.meta({
     description: 'Sort direction applied to the result set',
   }),
   startDate: z.string().optional().meta({
@@ -352,12 +505,13 @@ export const GetManyLogsResponseMetaSchema = z.object({
   }),
 });
 
-export const GetManyLogsResponseSchema = z
+export const ListLogsResponseSchema = z
   .object({
-    logs: z.array(ActivityLogEntrySchema).meta({
-      description: 'Array of activity log entries with responses',
+    logs: z.array(ActivityLogEntrySchemaWithoutResponse).meta({
+      description:
+        'Array of activity log entries with request options and no response reconstruction payload',
     }),
-    meta: GetManyLogsResponseMetaSchema.meta({
+    meta: ListLogsResponseMetaSchema.meta({
       description: 'Pagination and filtering metadata for the response',
     }),
   })

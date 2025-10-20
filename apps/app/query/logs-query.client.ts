@@ -1,12 +1,12 @@
 import {
   type ExportResponseOptions,
   type ExportResponseOutput,
-  type GetManyLogsOptions,
-  type GetManyLogsOptionsOverrides,
-  type GetManyLogsResponse,
-  resolveGetManyLogsOptions,
+  type ListLogsOptions,
+  type ListLogsOptionsOverrides,
+  type ListLogsResponse,
+  resolveListLogsOptions,
 } from '@deepcrawl/contracts';
-import { serializeGetManyLogsOptions } from '@/utils/logs';
+import { serializeListLogsOptions } from '@/utils/logs';
 
 const LOGS_ENDPOINT = '/api/deepcrawl/logs';
 const LOGS_EXPORT_ENDPOINT = '/api/deepcrawl/logs/export';
@@ -51,12 +51,12 @@ function buildLogsEndpoint(query: string): string {
   }
 }
 
-export async function getManyDeepcrawlLogs(
-  params: GetManyLogsOptions | GetManyLogsOptionsOverrides = {},
-): Promise<GetManyLogsResponse> {
-  const resolvedParams = resolveGetManyLogsOptions(params);
+export async function listDeepcrawlLogs(
+  params: ListLogsOptions | ListLogsOptionsOverrides = {},
+): Promise<ListLogsResponse> {
+  const resolvedParams = resolveListLogsOptions(params);
 
-  const searchParams = serializeGetManyLogsOptions(resolvedParams);
+  const searchParams = serializeListLogsOptions(resolvedParams);
   const query = searchParams.toString();
   const endpoint = buildLogsEndpoint(query);
 
@@ -82,7 +82,7 @@ export async function getManyDeepcrawlLogs(
     throw new Error(message);
   }
 
-  const data = (await response.json()) as GetManyLogsResponse;
+  const data = (await response.json()) as ListLogsResponse;
   return data;
 }
 

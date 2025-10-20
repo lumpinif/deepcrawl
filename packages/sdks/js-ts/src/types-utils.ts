@@ -10,14 +10,14 @@
  * OptionalBoolWithDefault,
  *
  * // Pagination normalization
- * normalizeGetManyLogsPagination
+ * normalizeListLogsPagination
  * } from 'deepcrawl/types/utils';
  *
  * // Example: Create optional boolean schema with default
  * const schema = OptionalBoolWithDefault(true);
  *
  * // Example: Normalize pagination input
- * const normalized = normalizeGetManyLogsPagination({ limit: 150, offset: -5 });
+ * const normalized = normalizeListLogsPagination({ limit: 150, offset: -5 });
  *
  * // Returns: { limit: 100, offset: 0 } (clamped to valid ranges)
  * ```

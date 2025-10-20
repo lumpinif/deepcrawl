@@ -1,10 +1,10 @@
 /* NOTE: ENSURE ALL DEFAULT VALUES ARE 100% BUILD-TIME KNOWN */
 
 import type z from 'zod/v4';
-import type { GetManyLogsOptionsSchema } from '../routers/logs/schemas';
+import type { ListLogsOptionsSchema } from '../routers/logs/schemas';
 import type {
-  GetManyLogsSortColumn,
-  GetManyLogsSortDirection,
+  ListLogsSortColumn,
+  ListLogsSortDirection,
 } from '../routers/logs/types';
 
 /* -------------------------- INTERNAL CONFIGS -------------------------- */
@@ -133,12 +133,12 @@ export const DEFAULT_LINKS_OPTIONS = {
 
 /* ------------------------- Logs ------------------------- */
 
-export const GET_MANY_LOGS_DEFAULT_LIMIT = 5;
-export const GET_MANY_LOGS_MAX_LIMIT = 100;
-export const GET_MANY_LOGS_DEFAULT_OFFSET = 0;
-export const GET_MANY_LOGS_DEFAULT_WINDOW_IN_DAYS = 2;
+export const LIST_LOGS_DEFAULT_LIMIT = 5;
+export const LIST_LOGS_MAX_LIMIT = 100;
+export const LIST_LOGS_DEFAULT_OFFSET = 0;
+export const LIST_LOGS_DEFAULT_WINDOW_IN_DAYS = 2;
 
-export const GET_MANY_LOGS_SORT_COLUMNS = [
+export const LIST_LOGS_SORT_COLUMNS = [
   'requestTimestamp',
   'path',
   'requestUrl',
@@ -146,20 +146,20 @@ export const GET_MANY_LOGS_SORT_COLUMNS = [
   'id',
 ] as const;
 
-export const GET_MANY_LOGS_SORT_DIRECTIONS = ['asc', 'desc'] as const;
+export const LIST_LOGS_SORT_DIRECTIONS = ['asc', 'desc'] as const;
 
-export const GET_MANY_LOGS_DEFAULT_SORT_COLUMN: (typeof GET_MANY_LOGS_SORT_COLUMNS)[number] =
-  'requestTimestamp' as const satisfies Readonly<GetManyLogsSortColumn>;
+export const LIST_LOGS_DEFAULT_SORT_COLUMN: (typeof LIST_LOGS_SORT_COLUMNS)[number] =
+  'requestTimestamp' as const satisfies Readonly<ListLogsSortColumn>;
 
-export const GET_MANY_LOGS_DEFAULT_SORT_DIRECTION: (typeof GET_MANY_LOGS_SORT_DIRECTIONS)[number] =
-  'desc' as const satisfies Readonly<GetManyLogsSortDirection>;
+export const LIST_LOGS_DEFAULT_SORT_DIRECTION: (typeof LIST_LOGS_SORT_DIRECTIONS)[number] =
+  'desc' as const satisfies Readonly<ListLogsSortDirection>;
 
-export const DEFAULT_GET_MANY_LOGS_OPTIONS = {
-  limit: GET_MANY_LOGS_DEFAULT_LIMIT,
-  offset: GET_MANY_LOGS_DEFAULT_OFFSET,
-  orderBy: GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
-  orderDir: GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-} as const satisfies Readonly<z.infer<typeof GetManyLogsOptionsSchema>>;
+export const DEFAULT_LIST_LOGS_OPTIONS = {
+  limit: LIST_LOGS_DEFAULT_LIMIT,
+  offset: LIST_LOGS_DEFAULT_OFFSET,
+  orderBy: LIST_LOGS_DEFAULT_SORT_COLUMN,
+  orderDir: LIST_LOGS_DEFAULT_SORT_DIRECTION,
+} as const satisfies Readonly<z.infer<typeof ListLogsOptionsSchema>>;
 
 /* ------------------------- Link Extraction Services ------------------------- */
 

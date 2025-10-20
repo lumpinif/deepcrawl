@@ -5,12 +5,12 @@ import type {
   ExportResponseOutput,
   ExtractLinksOptions,
   ExtractLinksResponse,
-  GetManyLogsOptions,
-  GetManyLogsResponse,
   GetMarkdownOptions,
   GetMarkdownResponse,
   GetOneLogOptions,
   GetOneLogResponse,
+  ListLogsOptions,
+  ListLogsResponse,
   ReadUrlOptions,
   ReadUrlResponse,
 } from '@deepcrawl/contracts';
@@ -715,39 +715,36 @@ export class DeepcrawlApp {
   /**
    * ---
    *
-   * @method async `getManyLogs()` - Retrieve activity logs with reconstructed responses and full type safety through discriminated unions.
-   * @returns {Promise<GetManyLogsResponse>} Promise<{@link GetManyLogsResponse}> - Array of {@link ActivityLogEntry} with discriminated union type safety.
-   * @param options getManyLogsOptions ({@link GetManyLogsOptions options?: GetManyLogOptions}) - Optional filters for logs retrieval
+   * @method async `listLogs()` - Retrieve activity logs with request options and full type safety through discriminated unions.
+   * @note RESPONSE NOT INCLUDED - USE `getOneLog()` or `exportResponse()` TO GET THE ORIGINAL RESPONSE.
+   * @returns {Promise<ListLogsResponse>} Promise<{@link ListLogsResponse}> - Array of {@link ActivityLogEntry} with discriminated union type safety.
+   * @param options listLogsOptions ({@link ListLogsOptions options?: ListLogsOptions}) - Optional filters for logs listing
    *
    * Each log entry uses a discriminated union based on the `path` field, enabling precise type narrowing:
    *
    * - **`read-getMarkdown`**: Returns markdown content as a string
    *   - `requestOptions`: {@link GetMarkdownOptions}
-   *   - `response`: `string` (markdown content)
    *
    * - **`read-readUrl`**: Returns structured page content with metadata
    *   - `requestOptions`: {@link ReadOptions}
-   *   - `response`: {@link ReadSuccessResponse} | {@link ReadErrorResponse}
    *
    * - **`links-getLinks`**: Extracts links from a page (GET request)
    *   - `requestOptions`: {@link LinksOptions}
-   *   - `response`: {@link LinksSuccessResponse} | {@link LinksErrorResponse}
    *
    * - **`links-extractLinks`**: Extracts links from a page (POST request)
    *   - `requestOptions`: {@link LinksOptions}
-   *   - `response`: {@link LinksSuccessResponse} | {@link LinksErrorResponse}
    *
    * @example Basic usage
    * ```typescript
-   * import { DeepcrawlApp, GetManyLogsResponse } from 'deepcrawl';
+   * import { DeepcrawlApp, ListLogsResponse } from 'deepcrawl';
    *
    * const dc = new DeepcrawlApp({ apiKey: 'your-api-key' });
    *
    * // Get recent logs (default: 20)
-   * const logs: GetManyLogsResponse = await dc.getManyLogs();
+   * const logs: ListLogsResponse = await dc.listLogs();
    *
    * // With filters
-   * const filteredLogs: GetManyLogsResponse = await dc.getManyLogs({
+   * const filteredLogs: ListLogsResponse = await dc.listLogs({
    *   limit: 50,
    *   offset: 0,
    *   path: 'read-getMarkdown',
@@ -759,29 +756,17 @@ export class DeepcrawlApp {
    *
    * @example Type narrowing with discriminated union
    * ```typescript
-   * const { logs } = await dc.getManyLogs();
+   * const { logs } = await dc.listLogs();
    *
    * for (const log of logs) {
    *   // TypeScript automatically narrows types based on path
    *   if (log.path === 'read-getMarkdown') {
-   *     // log.response is typed as string
    *     // log.requestOptions is typed as GetMarkdownOptions
    *     console.log('Markdown URL:', log.requestOptions.url);
-   *     console.log('Content length:', log.response.length);
    *   } else if (log.path === 'read-readUrl') {
-   *     // log.response is typed as ReadSuccessResponse | ReadErrorResponse
    *     // log.requestOptions is typed as ReadOptions
-   *     if ('success' in log.response && log.response.success) {
-   *       console.log('Page title:', log.response.title);
-   *       console.log('Markdown enabled:', log.requestOptions.markdown);
-   *     }
    *   } else if (log.path === 'links-getLinks' || log.path === 'links-extractLinks') {
-   *     // log.response is typed as LinksSuccessResponse | LinksErrorResponse
    *     // log.requestOptions is typed as LinksOptions
-   *     if ('success' in log.response && log.response.success) {
-   *       console.log('Total links:', log.response.totalLinks);
-   *       console.log('Tree enabled:', log.requestOptions.tree);
-   *     }
    *   }
    * }
    * ```
@@ -792,16 +777,14 @@ export class DeepcrawlApp {
    * @throws `DeepcrawlRateLimitError` Rate limit exceeded - {@link DeepcrawlRateLimitError}
    *
    */
-  async getManyLogs(
-    options?: GetManyLogsOptions,
-  ): Promise<GetManyLogsResponse> {
-    const [error, data] = await this.safeClient.logs.getMany(options || {});
+  async listLogs(options?: ListLogsOptions): Promise<ListLogsResponse> {
+    const [error, data] = await this.safeClient.logs.listLogs(options || {});
 
     if (error) {
       handleDeepcrawlError(error, 'read', 'Failed to fetch logs');
     }
 
-    return data as GetManyLogsResponse;
+    return data as ListLogsResponse;
   }
 
   /**

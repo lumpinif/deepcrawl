@@ -15,10 +15,10 @@ export type {
 export type {
   ExportResponseOptions,
   ExportResponseOutput,
-  GetManyLogsOptions,
-  GetManyLogsResponse,
   GetOneLogOptions,
   GetOneLogResponse,
+  ListLogsOptions,
+  ListLogsResponse,
 } from '@deepcrawl/contracts/logs';
 
 /* Read */

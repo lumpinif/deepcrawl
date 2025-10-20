@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  GET_MANY_LOGS_DEFAULT_LIMIT,
-  GET_MANY_LOGS_DEFAULT_OFFSET,
+  LIST_LOGS_DEFAULT_LIMIT,
+  LIST_LOGS_DEFAULT_OFFSET,
 } from '@deepcrawl/types/configs/default';
 import { DataGrid } from '@deepcrawl/ui/components/reui/data-grid';
 import { Button } from '@deepcrawl/ui/components/ui/button';
@@ -23,8 +23,8 @@ import { LogsDataGridCard } from './logs-data-grid-card';
 
 export function ActivityLogsSkeleton() {
   const [pagination] = useState<PaginationState>({
-    pageIndex: GET_MANY_LOGS_DEFAULT_OFFSET,
-    pageSize: GET_MANY_LOGS_DEFAULT_LIMIT,
+    pageIndex: LIST_LOGS_DEFAULT_OFFSET,
+    pageSize: LIST_LOGS_DEFAULT_LIMIT,
   });
   const [sorting] = useState<SortingState>([{ id: 'timestamp', desc: true }]);
 

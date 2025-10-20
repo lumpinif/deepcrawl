@@ -1,9 +1,9 @@
-import type { GetManyLogsOptions } from '@deepcrawl/contracts/logs';
+import type { ListLogsOptions } from '@deepcrawl/contracts/logs';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getManyLogsQueryOptionsClient } from '@/query/query-options.client';
+import { listLogsQueryOptionsClient } from '@/query/query-options.client';
 
 /**
  * Suspense-friendly
  */
-export const useSuspenseGetManyLogs = (params: GetManyLogsOptions) =>
-  useSuspenseQuery(getManyLogsQueryOptionsClient(params));
+export const useSuspenseListLogs = (params: ListLogsOptions) =>
+  useSuspenseQuery(listLogsQueryOptionsClient(params));

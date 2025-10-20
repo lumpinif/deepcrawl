@@ -1,25 +1,25 @@
 import type {
-  GetManyLogsPaginationInput,
-  NormalizedGetManyLogsPagination,
+  ListLogsPaginationInput,
+  NormalizedListLogsPagination,
 } from './types';
 
 /**
- * @description Normalize get many logs pagination input
+ * @description Normalize list logs pagination input
  *
- * @param input - Get many logs pagination input
- * @returns Normalized get many logs pagination
+ * @param input - List logs pagination input
+ * @returns Normalized list logs pagination
  *
  * @example
  * ```typescript
- * import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs/utils';
+ * import { normalizeListLogsPagination } from '@deepcrawl/types/routers/logs/utils';
  *
- * const normalized = normalizeGetManyLogsPagination({ limit: 150, offset: -5 });
+ * const normalized = normalizeListLogsPagination({ limit: 150, offset: -5 });
  * // Returns: { limit: 100, offset: 0 } (clamped to valid ranges)
  * ```
  */
-export function normalizeGetManyLogsPagination(
-  input: GetManyLogsPaginationInput = {},
-): NormalizedGetManyLogsPagination {
+export function normalizeListLogsPagination(
+  input: ListLogsPaginationInput = {},
+): NormalizedListLogsPagination {
   const { limit, offset } = input;
   const limitNumber = Number(limit);
   const offsetNumber = Number(offset);

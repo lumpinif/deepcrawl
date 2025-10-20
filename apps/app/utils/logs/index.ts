@@ -1,11 +1,11 @@
 import {
   createDefaultLogsDateRange,
-  type GetManyLogsOptions,
-  resolveGetManyLogsOptions,
+  type ListLogsOptions,
+  resolveListLogsOptions,
   toISOStringBoundary,
 } from '@deepcrawl/contracts/logs';
-import { GetManyLogsOptionsSchema } from 'deepcrawl/schemas';
-import { normalizeGetManyLogsPagination } from 'deepcrawl/types/utils';
+import { ListLogsOptionsSchema } from 'deepcrawl/schemas';
+import { normalizeListLogsPagination } from 'deepcrawl/types/utils';
 import type { z } from 'zod/v4';
 import {
   DEFAULT_LOGS_DATE_RANGE_PRESET,
@@ -14,20 +14,20 @@ import {
 } from '@/lib/logs/config';
 import type { LogsDateRange } from '@/lib/logs/types';
 
-export function createDefaultGetManyLogsOptions(
+export function createDefaultListLogsOptions(
   referenceDate: Date = new Date(),
-): GetManyLogsOptions {
-  return resolveGetManyLogsOptions(undefined, referenceDate);
+): ListLogsOptions {
+  return resolveListLogsOptions(undefined, referenceDate);
 }
 
 type SearchParamsRecord = Readonly<
   Record<string, string | string[] | null | undefined>
 >;
 
-export type GetManyLogsSearchParamsLike = URLSearchParams | SearchParamsRecord;
+export type ListLogsSearchParamsLike = URLSearchParams | SearchParamsRecord;
 
 function getFirstValue(
-  source: GetManyLogsSearchParamsLike,
+  source: ListLogsSearchParamsLike,
   key: string,
 ): string | undefined {
   if (source instanceof URLSearchParams) {
@@ -43,7 +43,7 @@ function getFirstValue(
 }
 
 function parseNumberParam(
-  source: GetManyLogsSearchParamsLike,
+  source: ListLogsSearchParamsLike,
   key: string,
 ): number | undefined {
   const value = getFirstValue(source, key);
@@ -55,7 +55,7 @@ function parseNumberParam(
 }
 
 function parseBooleanParam(
-  source: GetManyLogsSearchParamsLike,
+  source: ListLogsSearchParamsLike,
   key: string,
 ): boolean | undefined {
   const value = getFirstValue(source, key);
@@ -71,25 +71,25 @@ function parseBooleanParam(
   return;
 }
 
-export type ParseGetManyLogsSearchParamsSuccess = {
+export type ParseListLogsSearchParamsSuccess = {
   readonly success: true;
-  readonly options: GetManyLogsOptions;
-  readonly raw: z.infer<typeof GetManyLogsOptionsSchema>;
+  readonly options: ListLogsOptions;
+  readonly raw: z.infer<typeof ListLogsOptionsSchema>;
 };
 
-export type ParseGetManyLogsSearchParamsFailure = {
+export type ParseListLogsSearchParamsFailure = {
   readonly success: false;
   readonly error: z.ZodError;
 };
 
-export type ParseGetManyLogsSearchParamsResult =
-  | ParseGetManyLogsSearchParamsSuccess
-  | ParseGetManyLogsSearchParamsFailure;
+export type ParseListLogsSearchParamsResult =
+  | ParseListLogsSearchParamsSuccess
+  | ParseListLogsSearchParamsFailure;
 
-export function parseGetManyLogsSearchParams(
-  source: GetManyLogsSearchParamsLike,
+export function parseListLogsSearchParams(
+  source: ListLogsSearchParamsLike,
   referenceDate: Date = new Date(),
-): ParseGetManyLogsSearchParamsResult {
+): ParseListLogsSearchParamsResult {
   const raw = {
     limit: parseNumberParam(source, 'limit'),
     offset: parseNumberParam(source, 'offset'),
@@ -101,7 +101,7 @@ export function parseGetManyLogsSearchParams(
     orderDir: getFirstValue(source, 'orderDir'),
   };
 
-  const validation = GetManyLogsOptionsSchema.safeParse(raw);
+  const validation = ListLogsOptionsSchema.safeParse(raw);
   if (!validation.success) {
     return {
       success: false,
@@ -109,7 +109,7 @@ export function parseGetManyLogsSearchParams(
     };
   }
 
-  const options = resolveGetManyLogsOptions(validation.data, referenceDate);
+  const options = resolveListLogsOptions(validation.data, referenceDate);
   return {
     success: true,
     options,
@@ -117,11 +117,11 @@ export function parseGetManyLogsSearchParams(
   };
 }
 
-export function serializeGetManyLogsOptions(
-  options: GetManyLogsOptions,
+export function serializeListLogsOptions(
+  options: ListLogsOptions,
 ): URLSearchParams {
   const searchParams = new URLSearchParams();
-  const { limit, offset } = normalizeGetManyLogsPagination(options);
+  const { limit, offset } = normalizeListLogsPagination(options);
 
   if (limit !== undefined) {
     searchParams.set('limit', limit.toString());

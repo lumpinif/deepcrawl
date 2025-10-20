@@ -1,12 +1,9 @@
 'use server';
 
-import type {
-  GetManyLogsOptions,
-  GetManyLogsResponse,
-} from '@deepcrawl/contracts';
-import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
+import type { ListLogsOptions, ListLogsResponse } from '@deepcrawl/contracts';
+import { resolveListLogsOptions } from '@deepcrawl/contracts';
 import { DeepcrawlApp } from 'deepcrawl';
-import { normalizeGetManyLogsPagination } from 'deepcrawl/types';
+import { normalizeListLogsPagination } from 'deepcrawl/types';
 import { headers } from 'next/headers';
 
 // import { z } from 'zod/v4';
@@ -16,11 +13,11 @@ const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 /**
  * Deepcrawl Server API Call:
  */
-export async function dcGetManyLogs(
-  params?: GetManyLogsOptions,
-): Promise<GetManyLogsResponse> {
+export async function dcListLogs(
+  params?: ListLogsOptions,
+): Promise<ListLogsResponse> {
   try {
-    const resolvedParams = resolveGetManyLogsOptions(params);
+    const resolvedParams = resolveListLogsOptions(params);
     const requestHeaders = await headers();
     const dc = new DeepcrawlApp({
       baseUrl: DEEPCRAWL_BASE_URL,
@@ -28,7 +25,7 @@ export async function dcGetManyLogs(
     });
 
     // DISABLED VALIDATION FOR NOW
-    // const validation = GetManyLogsOptionsSchema.safeParse(params);
+    // const validation = ListLogsOptionsSchema.safeParse(params);
 
     // if (!validation.success) {
     //   console.error(
@@ -38,8 +35,8 @@ export async function dcGetManyLogs(
     //   throw new Error('[SERVER_LOGS] Invalid Deepcrawl log parameters');
     // }
 
-    const normalized = normalizeGetManyLogsPagination(resolvedParams);
-    return await dc.getManyLogs({ ...resolvedParams, ...normalized });
+    const normalized = normalizeListLogsPagination(resolvedParams);
+    return await dc.listLogs({ ...resolvedParams, ...normalized });
   } catch (error) {
     console.error('Failed to fetch Deepcrawl logs:', error);
     throw new Error(

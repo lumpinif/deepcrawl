@@ -1,4 +1,4 @@
-import type { GetManyLogsResponse } from '@deepcrawl/contracts';
+import type { ListLogsResponse } from '@deepcrawl/contracts';
 import { DataGridColumnHeader } from '@deepcrawl/ui/components/reui/data-grid-column-header';
 // import {
 //   DataGridTableRowSelect,
@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 import { exportLogResponse } from '@/query/logs-query.client';
 import { copyToClipboard } from '@/utils/clipboard';
 
-export type ActivityLogEntry = GetManyLogsResponse['logs'][number];
+export type ActivityLogEntry = ListLogsResponse['logs'][number];
 
 export function getLogUrl(log: ActivityLogEntry): string {
   return log.requestOptions.url;

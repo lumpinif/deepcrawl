@@ -1,31 +1,31 @@
-import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
+import { resolveListLogsOptions } from '@deepcrawl/contracts';
 import type {
   ActivityLogEntry,
-  GetManyLogsResponseMeta,
-  GetManyLogsSortColumn,
-  GetManyLogsSortDirection,
+  ListLogsResponseMeta,
+  ListLogsSortColumn,
+  ListLogsSortDirection,
 } from 'deepcrawl/types';
 import { useMemo } from 'react';
 import { getLogStatus } from '@/components/logs/logs-columns';
 import type { FilterOption } from '@/components/logs/logs-filter-popover';
-import { useSuspenseGetManyLogs } from '@/hooks/logs.hooks';
+import { useSuspenseListLogs } from '@/hooks/logs.hooks';
 import type { LogsDateRange } from '@/lib/logs/types';
 
 export interface UseLogsDataOptions {
   dateRange: LogsDateRange;
   limit: number;
   offset: number;
-  orderBy: GetManyLogsSortColumn;
-  orderDir: GetManyLogsSortDirection;
+  orderBy: ListLogsSortColumn;
+  orderDir: ListLogsSortDirection;
   searchQuery: string;
   selectedStatuses: string[];
   selectedPaths: string[];
 }
 
 export interface UseLogsDataReturn {
-  logs: ReturnType<typeof useSuspenseGetManyLogs>['data']['logs'];
-  filteredLogs: ReturnType<typeof useSuspenseGetManyLogs>['data']['logs'];
-  meta: ReturnType<typeof useSuspenseGetManyLogs>['data']['meta'];
+  logs: ReturnType<typeof useSuspenseListLogs>['data']['logs'];
+  filteredLogs: ReturnType<typeof useSuspenseListLogs>['data']['logs'];
+  meta: ReturnType<typeof useSuspenseListLogs>['data']['meta'];
   statusOptions: FilterOption[];
   pathOptions: FilterOption[];
   hasNextPage: boolean;
@@ -44,7 +44,7 @@ export function useLogsData({
 }: UseLogsDataOptions): UseLogsDataReturn {
   const queryOptions = useMemo(
     () =>
-      resolveGetManyLogsOptions({
+      resolveListLogsOptions({
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         limit,
@@ -55,10 +55,10 @@ export function useLogsData({
     [dateRange.endDate, dateRange.startDate, limit, offset, orderBy, orderDir],
   );
 
-  const { data } = useSuspenseGetManyLogs(queryOptions);
+  const { data } = useSuspenseListLogs(queryOptions);
 
   const logs = data.logs as ActivityLogEntry[];
-  const meta = data.meta as GetManyLogsResponseMeta;
+  const meta = data.meta as ListLogsResponseMeta;
 
   // Apply client-side filters
   const filteredLogs = useMemo(() => {

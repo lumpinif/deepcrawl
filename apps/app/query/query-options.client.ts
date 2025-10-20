@@ -1,6 +1,6 @@
 import type { ListDeviceSessions, Session } from '@deepcrawl/auth/types';
-import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
-import type { GetManyLogsOptions } from '@deepcrawl/contracts/logs';
+import { resolveListLogsOptions } from '@deepcrawl/contracts';
+import type { ListLogsOptions } from '@deepcrawl/contracts/logs';
 import { queryOptions } from '@tanstack/react-query';
 import {
   getFullOrganization,
@@ -11,7 +11,7 @@ import {
   listSessions,
   listUserPasskeys,
 } from '@/query/auth-query.client';
-import { getManyDeepcrawlLogs } from './logs-query.client';
+import { listDeepcrawlLogs } from './logs-query.client';
 import { baseQueryOptions } from './query.client';
 import { userQueryKeys } from './query-keys';
 
@@ -113,11 +113,11 @@ export const apiKeysQueryOptionsClient = () =>
  * Uses the internal API route so credentials stay server-side
  * Provides full type inference for useQuery, prefetchQuery, etc.
  */
-export const getManyLogsQueryOptionsClient = (params?: GetManyLogsOptions) => {
-  const resolved = resolveGetManyLogsOptions(params);
+export const listLogsQueryOptionsClient = (params?: ListLogsOptions) => {
+  const resolved = resolveListLogsOptions(params);
   return queryOptions({
     queryKey: [...userQueryKeys.activityLogs, resolved],
-    queryFn: () => getManyDeepcrawlLogs(resolved),
+    queryFn: () => listDeepcrawlLogs(resolved),
     ...baseQueryOptions,
     refetchOnMount: true,
     refetchOnReconnect: true,

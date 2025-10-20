@@ -1,10 +1,10 @@
 import {
   ExportResponseOptionsSchema,
   ExportResponseOutputSchema,
-  GetManyLogsOptionsSchema,
-  GetManyLogsResponseSchema,
   GetOneLogOptionsSchema,
   GetOneLogResponseSchema,
+  ListLogsOptionsSchema,
+  ListLogsResponseSchema,
 } from '@deepcrawl/types/schemas';
 import { oc } from '@orpc/contract';
 import { errorSpec } from '../errors';
@@ -19,24 +19,24 @@ const logsOC = oc.errors({
   INVALID_EXPORT_FORMAT: errorSpec.INVALID_EXPORT_FORMAT,
 });
 
-/* ----------------------------------------------GET-LOGS---(Get multiple logs)------------------------------------------------------- */
+/* ----------------------------------------------LIST-LOGS---(List activity logs)------------------------------------------------------- */
 
 /**
- * Get multiple activity logs - POST method for complex query parameters
+ * List activity logs - POST method for complex query parameters
  */
-export const getManyLogsContract = logsOC
+export const listLogsContract = logsOC
   .route({
     tags,
     path: '/',
     method: 'POST',
-    summary: 'Get activity logs',
-    description: `Endpoint: POST \`api.deepcrawl.dev/logs\`\n\nRetrieve activity logs with request options. Returns paginated results with optional filtering by path, success status, and date range.`,
+    summary: 'List activity logs',
+    description: `Endpoint: POST \`api.deepcrawl.dev/logs\`\n\nRetrieve activity logs with request options but no response reconstruction payload. Returns paginated results with optional filtering by path, success status, and date range.`,
   })
-  .input(GetManyLogsOptionsSchema)
-  .output(GetManyLogsResponseSchema);
+  .input(ListLogsOptionsSchema)
+  .output(ListLogsResponseSchema);
 
-export type GetManyLogsOptions = Inputs['logs']['getMany'];
-export type GetManyLogsResponse = Outputs['logs']['getMany'];
+export type ListLogsOptions = Inputs['logs']['listLogs'];
+export type ListLogsResponse = Outputs['logs']['listLogs'];
 
 /* ----------------------------------------------GET-LOG---(Get single log)------------------------------------------------------- */
 

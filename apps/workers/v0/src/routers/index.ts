@@ -18,7 +18,7 @@ export const router = publicProcedures.router({
   },
   logs: {
     getOne: logsGETHandler,
-    getMany: logsPOSTHandler,
+    listLogs: logsPOSTHandler,
     exportResponse: logsExportHandler,
   },
 });

@@ -375,7 +375,7 @@ The logs router provides types for activity log retrieval and export operations.
 
 #### Key Types
 
-- **`GetManyLogsOptions`** - Paginated logs filtering
+- **`ListLogsOptions`** - Paginated logs filtering
   - `limit`: Optional number (default: 20, max: 100) - Max results per page
   - `offset`: Optional number (default: 0) - Skip first N results
   - `path`: Optional string - Filter by endpoint path (e.g., 'read-getMarkdown', 'links-extractLinks')
@@ -385,7 +385,7 @@ The logs router provides types for activity log retrieval and export operations.
   - `orderBy`: Optional string (default: 'requestTimestamp') - Sort column
   - `orderDir`: Optional 'asc' | 'desc' (default: 'desc') - Sort direction
 
-- **`GetManyLogsResponse`** - Paginated response with metadata
+- **`ListLogsResponse`** - Paginated response with metadata
   - `logs`: Array of ActivityLogEntry - Log entries with discriminated unions
   - `meta`: Object with pagination info
     - `limit`: number - Effective limit applied

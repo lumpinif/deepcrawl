@@ -1,26 +1,24 @@
 import {
-  DEFAULT_GET_MANY_LOGS_OPTIONS,
-  GET_MANY_LOGS_DEFAULT_LIMIT,
-  GET_MANY_LOGS_DEFAULT_OFFSET,
-  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
-  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-  GET_MANY_LOGS_DEFAULT_WINDOW_IN_DAYS,
-  GET_MANY_LOGS_SORT_COLUMNS,
-  GET_MANY_LOGS_SORT_DIRECTIONS,
+  DEFAULT_LIST_LOGS_OPTIONS,
+  LIST_LOGS_DEFAULT_LIMIT,
+  LIST_LOGS_DEFAULT_OFFSET,
+  LIST_LOGS_DEFAULT_SORT_COLUMN,
+  LIST_LOGS_DEFAULT_SORT_DIRECTION,
+  LIST_LOGS_DEFAULT_WINDOW_IN_DAYS,
+  LIST_LOGS_SORT_COLUMNS,
+  LIST_LOGS_SORT_DIRECTIONS,
 } from '@deepcrawl/types/configs/default';
 import type {
-  GetManyLogsSortColumn,
-  GetManyLogsSortDirection,
+  ListLogsSortColumn,
+  ListLogsSortDirection,
 } from '@deepcrawl/types/routers/logs';
 
-import type { GetManyLogsOptions } from './index';
+import type { ListLogsOptions } from './index';
 
-const SORT_COLUMN_SET = new Set<GetManyLogsSortColumn>(
-  GET_MANY_LOGS_SORT_COLUMNS,
-);
+const SORT_COLUMN_SET = new Set<ListLogsSortColumn>(LIST_LOGS_SORT_COLUMNS);
 
-const SORT_DIRECTION_SET = new Set<GetManyLogsSortDirection>(
-  GET_MANY_LOGS_SORT_DIRECTIONS,
+const SORT_DIRECTION_SET = new Set<ListLogsSortDirection>(
+  LIST_LOGS_SORT_DIRECTIONS,
 );
 
 export function toISOStringBoundary(
@@ -54,31 +52,31 @@ export function createDefaultLogsDateRange(
   };
 }
 
-export type GetManyLogsOptionsOverrides = Partial<GetManyLogsOptions>;
+export type ListLogsOptionsOverrides = Partial<ListLogsOptions>;
 
-export function resolveGetManyLogsOptions(
-  overrides: GetManyLogsOptionsOverrides = {},
+export function resolveListLogsOptions(
+  overrides: ListLogsOptionsOverrides = {},
   referenceDate: Date = new Date(),
-): GetManyLogsOptions {
+): ListLogsOptions {
   const { limit, offset, startDate, endDate, orderBy, orderDir, ...rest } =
     overrides;
 
   const defaultRange = createDefaultLogsDateRange(
     referenceDate,
-    GET_MANY_LOGS_DEFAULT_WINDOW_IN_DAYS,
+    LIST_LOGS_DEFAULT_WINDOW_IN_DAYS,
   );
 
   const resolvedLimit =
     typeof limit === 'number' && Number.isFinite(limit)
       ? limit
-      : GET_MANY_LOGS_DEFAULT_LIMIT;
+      : LIST_LOGS_DEFAULT_LIMIT;
   const resolvedOffset =
     typeof offset === 'number' && Number.isFinite(offset)
       ? offset
-      : GET_MANY_LOGS_DEFAULT_OFFSET;
+      : LIST_LOGS_DEFAULT_OFFSET;
 
   return {
-    ...DEFAULT_GET_MANY_LOGS_OPTIONS,
+    ...DEFAULT_LIST_LOGS_OPTIONS,
     ...rest,
     limit: resolvedLimit,
     offset: resolvedOffset,
@@ -87,13 +85,13 @@ export function resolveGetManyLogsOptions(
     endDate: typeof endDate === 'string' ? endDate : defaultRange.endDate,
     orderBy:
       typeof orderBy === 'string' &&
-      SORT_COLUMN_SET.has(orderBy as GetManyLogsSortColumn)
-        ? (orderBy as GetManyLogsSortColumn)
-        : GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
+      SORT_COLUMN_SET.has(orderBy as ListLogsSortColumn)
+        ? (orderBy as ListLogsSortColumn)
+        : LIST_LOGS_DEFAULT_SORT_COLUMN,
     orderDir:
       typeof orderDir === 'string' &&
-      SORT_DIRECTION_SET.has(orderDir as GetManyLogsSortDirection)
-        ? (orderDir as GetManyLogsSortDirection)
-        : GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-  } satisfies GetManyLogsOptions;
+      SORT_DIRECTION_SET.has(orderDir as ListLogsSortDirection)
+        ? (orderDir as ListLogsSortDirection)
+        : LIST_LOGS_DEFAULT_SORT_DIRECTION,
+  } satisfies ListLogsOptions;
 }

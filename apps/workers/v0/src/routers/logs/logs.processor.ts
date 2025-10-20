@@ -1,13 +1,13 @@
 import type {
   ExportResponseOptions,
   ExportResponseOutput,
-  GetManyLogsOptions,
-  GetManyLogsResponse,
   GetMarkdownOptions,
   GetOneLogOptions,
   GetOneLogResponse,
+  ListLogsOptions,
+  ListLogsResponse,
 } from '@deepcrawl/contracts';
-import { resolveGetManyLogsOptions } from '@deepcrawl/contracts';
+import { resolveListLogsOptions } from '@deepcrawl/contracts';
 import type { ActivityLog, ResponseRecord } from '@deepcrawl/db-d1';
 import {
   activityLog,
@@ -21,10 +21,10 @@ import {
   responseRecord,
 } from '@deepcrawl/db-d1';
 import {
-  GET_MANY_LOGS_DEFAULT_LIMIT,
-  GET_MANY_LOGS_DEFAULT_OFFSET,
-  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
-  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
+  LIST_LOGS_DEFAULT_LIMIT,
+  LIST_LOGS_DEFAULT_OFFSET,
+  LIST_LOGS_DEFAULT_SORT_COLUMN,
+  LIST_LOGS_DEFAULT_SORT_DIRECTION,
   type LinksErrorResponse,
   type LinksOptions,
   type LinksSuccessResponse,
@@ -34,10 +34,10 @@ import {
 } from '@deepcrawl/types';
 import type {
   ActivityLogEntry,
-  GetManyLogsSortColumn,
-  GetManyLogsSortDirection,
+  ListLogsSortColumn,
+  ListLogsSortDirection,
 } from '@deepcrawl/types/routers/logs';
-import { normalizeGetManyLogsPagination } from '@deepcrawl/types/routers/logs/utils';
+import { normalizeListLogsPagination } from '@deepcrawl/types/routers/logs/utils';
 import { ORPCError } from '@orpc/server';
 import type { ORPCContext } from '@/lib/context';
 
@@ -179,7 +179,7 @@ type ActivityLogSortableColumn =
   | typeof activityLog.id;
 
 const ORDERABLE_COLUMN_MAP: Record<
-  GetManyLogsSortColumn,
+  ListLogsSortColumn,
   ActivityLogSortableColumn
 > = {
   requestTimestamp: activityLog.requestTimestamp,
@@ -190,8 +190,8 @@ const ORDERABLE_COLUMN_MAP: Record<
 };
 
 function resolveOrderExpressions(
-  column: GetManyLogsSortColumn,
-  direction: GetManyLogsSortDirection,
+  column: ListLogsSortColumn,
+  direction: ListLogsSortDirection,
 ) {
   const targetColumn =
     ORDERABLE_COLUMN_MAP[column] ?? activityLog.requestTimestamp;
@@ -203,21 +203,21 @@ function resolveOrderExpressions(
 }
 
 /**
- * Fetch multiple activity logs with pagination and filtering
+ * List activity logs with pagination and filtering
  * @description Response reconstruction is not enabled by default
  */
-export async function getManyLogsWithReconstruction(
+export async function listLogs(
   c: ORPCContext,
-  options: GetManyLogsOptions,
-): Promise<GetManyLogsResponse> {
-  const resolvedOptions = resolveGetManyLogsOptions(options);
+  options: ListLogsOptions,
+): Promise<ListLogsResponse> {
+  const resolvedOptions = resolveListLogsOptions(options);
   const {
     path,
     success,
     startDate,
     endDate,
-    orderBy = GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
-    orderDir = GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
+    orderBy = LIST_LOGS_DEFAULT_SORT_COLUMN,
+    orderDir = LIST_LOGS_DEFAULT_SORT_DIRECTION,
   } = resolvedOptions;
 
   const startTimestamp = startDate ? Date.parse(startDate) : undefined;
@@ -239,11 +239,11 @@ export async function getManyLogsWithReconstruction(
       },
     });
   }
-  const normalized = normalizeGetManyLogsPagination(resolvedOptions);
+  const normalized = normalizeListLogsPagination(resolvedOptions);
   const sanitizedLimit =
-    normalized.limit ?? resolvedOptions.limit ?? GET_MANY_LOGS_DEFAULT_LIMIT;
+    normalized.limit ?? resolvedOptions.limit ?? LIST_LOGS_DEFAULT_LIMIT;
   const sanitizedOffset =
-    normalized.offset ?? resolvedOptions.offset ?? GET_MANY_LOGS_DEFAULT_OFFSET;
+    normalized.offset ?? resolvedOptions.offset ?? LIST_LOGS_DEFAULT_OFFSET;
 
   if (!Object.hasOwn(ORDERABLE_COLUMN_MAP, orderBy)) {
     throw new ORPCError('LOGS_INVALID_SORT', {
@@ -304,7 +304,7 @@ export async function getManyLogsWithReconstruction(
   const hasMore = rows.length > sanitizedLimit;
   const paginatedRows = hasMore ? rows.slice(0, sanitizedLimit) : rows;
 
-  // Reconstruct responses for each log entry
+  // Reconstruct request options for each log entry
   const reconstructedLogs: ActivityLogEntry[] = paginatedRows.map(
     (log: {
       activityLog: ActivityLog;

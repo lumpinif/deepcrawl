@@ -1,10 +1,10 @@
 /* NOTE: ENSURE ALL DEFAULT VALUES ARE 100% BUILD-TIME KNOWN */
 
 import type z from 'zod/v4';
-import type { GetManyLogsOptionsSchema } from '../routers/logs/schemas';
+import type { ListLogsOptionsSchema } from '../routers/logs/schemas';
 import type {
-  GetManyLogsSortColumn,
-  GetManyLogsSortDirection,
+  ListLogsSortColumn,
+  ListLogsSortDirection,
 } from '../routers/logs/types';
 
 export const MAX_KIN_LIMIT = 30;
@@ -247,14 +247,14 @@ export const GET_MANY_LOGS_SORT_COLUMNS = [
 export const GET_MANY_LOGS_SORT_DIRECTIONS = ['asc', 'desc'] as const;
 
 export const GET_MANY_LOGS_DEFAULT_SORT_COLUMN: (typeof GET_MANY_LOGS_SORT_COLUMNS)[number] =
-  'requestTimestamp' as const satisfies Readonly<GetManyLogsSortColumn>;
+  'requestTimestamp' as const satisfies Readonly<ListLogsSortColumn>;
 
 export const GET_MANY_LOGS_DEFAULT_SORT_DIRECTION: (typeof GET_MANY_LOGS_SORT_DIRECTIONS)[number] =
-  'desc' as const satisfies Readonly<GetManyLogsSortDirection>;
+  'desc' as const satisfies Readonly<ListLogsSortDirection>;
 
 export const DEFAULT_GET_MANY_LOGS_OPTIONS = {
   limit: GET_MANY_LOGS_DEFAULT_LIMIT,
   offset: GET_MANY_LOGS_DEFAULT_OFFSET,
   orderBy: GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
   orderDir: GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
-} as const satisfies Readonly<z.infer<typeof GetManyLogsOptionsSchema>>;
+} as const satisfies Readonly<z.infer<typeof ListLogsOptionsSchema>>;

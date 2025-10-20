@@ -72,8 +72,8 @@ import type {
 
   // Activity Logs
   ActivityLogEntry,
-  GetManyLogsOptions,
-  GetManyLogsResponse,
+  ListLogsOptions,
+  ListLogsResponse,
   GetOneLogOptions,
 
   // Metadata & Metrics
@@ -109,7 +109,7 @@ import {
   GetMarkdownOptionsSchema,
   ExtractLinksOptionsSchema,
   GetLinksOptionsSchema,
-  GetManyLogsOptionsSchema,
+  ListLogsOptionsSchema,
   GetOneLogOptionsSchema,
 
   // Response Schemas
@@ -117,7 +117,7 @@ import {
   GetMarkdownResponseSchema,
   ExtractLinksResponseSchema,
   GetLinksResponseSchema,
-  GetManyLogsResponseSchema,
+  ListLogsResponseSchema,
 
   // Metadata & Metrics
   MetadataSchema,
@@ -159,14 +159,14 @@ import {
   OptionalBoolWithDefault,
 
   // Pagination normalization
-  normalizeGetManyLogsPagination
+  normalizeListLogsPagination
 } from 'deepcrawl/types/utils';
 
 // Example: Create optional boolean schema with default
 const schema = OptionalBoolWithDefault(true);
 
 // Example: Normalize pagination input
-const normalized = normalizeGetManyLogsPagination({ limit: 150, offset: -5 });
+const normalized = normalizeListLogsPagination({ limit: 150, offset: -5 });
 // Returns: { limit: 100, offset: 0 } (clamped to valid ranges)
 ```
 
@@ -233,17 +233,17 @@ console.log(result.tree.internal);
 console.log(result.tree.socialMedia);
 ```
 
-### **getManyLogs(options?)**
+### **listLogs(options?)**
 
 Retrieve activity logs with paginated results and filtering.
 
 ```typescript
 import { DeepcrawlApp } from 'deepcrawl';
-import type { GetManyLogsOptions } from 'deepcrawl/types';
+import type { ListLogsOptions } from 'deepcrawl/types';
 
 const deepcrawl = new DeepcrawlApp({ apiKey: process.env.DEEPCRAWL_API_KEY });
 
-const result = await deepcrawl.getManyLogs({
+const result = await deepcrawl.listLogs({
   limit: 50,
   offset: 0,
   path: 'read-getMarkdown',
@@ -413,13 +413,13 @@ export function useScraping(apiKey: string) {
 'use server';
 
 import { DeepcrawlApp } from 'deepcrawl';
-import type { GetManyLogsResponse } from 'deepcrawl/types';
+import type { ListLogsResponse } from 'deepcrawl/types';
 
 const deepcrawl = new DeepcrawlApp({ apiKey: process.env.DEEPCRAWL_API_KEY });
 
 export async function getActivityLogs() {
   try {
-    const logs = await deepcrawl.getManyLogs({
+    const logs = await deepcrawl.listLogs({
       limit: 50,
       offset: 0
     });

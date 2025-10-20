@@ -5,7 +5,7 @@ import { DeepcrawlError } from 'deepcrawl/types';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { parseGetManyLogsSearchParams } from '@/utils/logs';
+import { parseListLogsSearchParams } from '@/utils/logs';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     });
 
     const searchParams = request.nextUrl.searchParams;
-    const parsed = parseGetManyLogsSearchParams(searchParams);
+    const parsed = parseListLogsSearchParams(searchParams);
 
     if (!parsed.success) {
       const error = z.treeifyError(parsed.error);
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const logs = await dc.getManyLogs(parsed.options);
+    const logs = await dc.listLogs(parsed.options);
 
     return NextResponse.json(logs, { status: 200 });
   } catch (error) {

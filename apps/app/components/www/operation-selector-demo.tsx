@@ -28,13 +28,13 @@ const FEATURES = [
     description: 'Get all page links with a single URL request.',
   },
   {
-    label: 'Get Many Logs',
-    operation: 'getManyLogs',
+    label: 'List Logs',
+    operation: 'listLogs',
     icon: ListLogsGridIcon,
     endpoint: '/logs',
     method: 'POST',
     description:
-      'Retrieve many activity logs with request options, pagination, and filtering support.',
+      'Retrieve activity logs with request options, pagination, and filtering support.',
   },
   {
     label: 'Export Response',

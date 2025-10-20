@@ -67,6 +67,6 @@ const defaultItems: TiltedScrollItem[] = [
   { id: '7', text: ' ▲ @packages/ui' },
   { id: '1', text: '📄 GetMarkdownResponse' },
   { id: '4', text: '📦 @packages/contracts' },
-  { id: '8', text: '📝 GetManyLogsResponse' },
+  { id: '8', text: '📝 ListLogsResponse' },
   { id: '5', text: '🛡️ @packages/auth' },
 ];

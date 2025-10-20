@@ -2,10 +2,10 @@ import type { z } from 'zod/v4';
 import type {
   ActivityLogEntrySchema,
   ExportFormatSchema,
-  GetManyLogsResponseMetaSchema,
-  GetManyLogsSortColumnSchema,
-  GetManyLogsSortDirectionSchema,
   JoinedRequestPathSchema,
+  ListLogsResponseMetaSchema,
+  ListLogsSortColumnSchema,
+  ListLogsSortDirectionSchema,
 } from '../logs/schemas';
 
 export type JoinedRequestPath = z.infer<typeof JoinedRequestPathSchema>;
@@ -18,26 +18,22 @@ export type ActivityLogEntry = z.infer<typeof ActivityLogEntrySchema>;
 /**
  * Type for the column to sort the logs by
  */
-export type GetManyLogsSortColumn = z.infer<typeof GetManyLogsSortColumnSchema>;
+export type ListLogsSortColumn = z.infer<typeof ListLogsSortColumnSchema>;
 
 /**
  * Type for the direction to sort the logs by
  */
-export type GetManyLogsSortDirection = z.infer<
-  typeof GetManyLogsSortDirectionSchema
->;
+export type ListLogsSortDirection = z.infer<typeof ListLogsSortDirectionSchema>;
 
 /**
  * Type for the meta data of the logs response
  */
-export type GetManyLogsResponseMeta = z.infer<
-  typeof GetManyLogsResponseMetaSchema
->;
+export type ListLogsResponseMeta = z.infer<typeof ListLogsResponseMetaSchema>;
 
 /**
  * Type for the pagination input of the logs response
  */
-export type GetManyLogsPaginationInput = {
+export type ListLogsPaginationInput = {
   readonly limit?: unknown;
   readonly offset?: unknown;
 };
@@ -45,7 +41,7 @@ export type GetManyLogsPaginationInput = {
 /**
  * Type for the normalized pagination input of the logs response
  */
-export type NormalizedGetManyLogsPagination = {
+export type NormalizedListLogsPagination = {
   readonly limit?: number;
   readonly offset?: number;
 };
@@ -53,12 +49,12 @@ export type NormalizedGetManyLogsPagination = {
 /** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
  * Type for get logs options (input)
  */
-// export type GetManyLogsOptions = z.infer<typeof GetManyLogsOptionsSchema>;
+// export type ListLogsOptions = z.infer<typeof ListLogsOptionsSchema>;
 
 /** @note: DO NOT EXPORT THIS TYPE AS IT IS EXPORTED FROM @deepcrawl/contracts ALREADY
- * Type for get logs response (output)
+ * Type for list logs response (output)
  */
-// export type GetManyLogsResponse = z.infer<typeof GetManyLogsResponseSchema>;
+// export type ListLogsResponse = z.infer<typeof ListLogsResponseSchema>;
 
 /* ----------------------------------------------GET-LOG---(Get single log)------------------------------------------------------- */
 

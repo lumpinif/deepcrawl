@@ -52,7 +52,7 @@ const RATE_LIMIT_RULES: Record<
       window: '60 s',
     },
   },
-  getMany: {
+  listLogs: {
     free: {
       limit: 30,
       window: '60 s',

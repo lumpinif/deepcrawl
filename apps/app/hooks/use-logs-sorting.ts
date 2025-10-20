@@ -1,15 +1,15 @@
 import {
-  GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
-  GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
+  LIST_LOGS_DEFAULT_SORT_COLUMN,
+  LIST_LOGS_DEFAULT_SORT_DIRECTION,
 } from '@deepcrawl/types/configs/default';
 import type { SortingState } from '@tanstack/react-table';
 import type {
-  GetManyLogsSortColumn,
-  GetManyLogsSortDirection,
+  ListLogsSortColumn,
+  ListLogsSortDirection,
 } from 'deepcrawl/types';
 import { useMemo, useState } from 'react';
 
-const COLUMN_TO_SORT_COLUMN: Record<string, GetManyLogsSortColumn> = {
+const COLUMN_TO_SORT_COLUMN: Record<string, ListLogsSortColumn> = {
   timestamp: 'requestTimestamp',
   path: 'path',
   url: 'requestUrl',
@@ -21,8 +21,8 @@ const INITIAL_SORTING: SortingState = [{ id: 'timestamp', desc: true }];
 export interface UseLogsSortingReturn {
   sorting: SortingState;
   setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
-  orderBy: GetManyLogsSortColumn;
-  orderDir: GetManyLogsSortDirection;
+  orderBy: ListLogsSortColumn;
+  orderDir: ListLogsSortDirection;
 }
 
 export function useLogsSorting(): UseLogsSortingReturn {
@@ -32,14 +32,14 @@ export function useLogsSorting(): UseLogsSortingReturn {
     const [primary] = sorting;
     if (!primary) {
       return {
-        orderBy: GET_MANY_LOGS_DEFAULT_SORT_COLUMN,
-        orderDir: GET_MANY_LOGS_DEFAULT_SORT_DIRECTION,
+        orderBy: LIST_LOGS_DEFAULT_SORT_COLUMN,
+        orderDir: LIST_LOGS_DEFAULT_SORT_DIRECTION,
       };
     }
 
     const mapped =
-      COLUMN_TO_SORT_COLUMN[primary.id] ?? GET_MANY_LOGS_DEFAULT_SORT_COLUMN;
-    const direction: GetManyLogsSortDirection =
+      COLUMN_TO_SORT_COLUMN[primary.id] ?? LIST_LOGS_DEFAULT_SORT_COLUMN;
+    const direction: ListLogsSortDirection =
       primary.desc === false ? 'asc' : 'desc';
 
     return {

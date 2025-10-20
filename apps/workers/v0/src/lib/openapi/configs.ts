@@ -4,8 +4,6 @@ import {
   ExtractLinksOptionsSchema,
   FetchOptionsSchema,
   GetLinksOptionsSchema,
-  GetManyLogsOptionsSchema,
-  GetManyLogsResponseSchema,
   GetOneLogOptionsSchema,
   GetOneLogResponseSchema,
   HTMLRewriterOptionsSchema,
@@ -16,6 +14,8 @@ import {
   LinksSuccessResponseWithoutTreeSchema,
   LinksSuccessResponseWithTreeSchema,
   LinksTreeSchema,
+  ListLogsOptionsSchema,
+  ListLogsResponseSchema,
   MetadataOptionsSchema,
   PageMetadataSchema,
   ReadErrorResponseSchema,
@@ -146,11 +146,11 @@ export const OpenAPISpecBaseOptions = {
     GetOneLogResponse: {
       schema: GetOneLogResponseSchema,
     },
-    GetManyLogsOptions: {
-      schema: GetManyLogsOptionsSchema,
+    ListLogsOptions: {
+      schema: ListLogsOptionsSchema,
     },
-    GetManyLogsResponse: {
-      schema: GetManyLogsResponseSchema,
+    ListLogsResponse: {
+      schema: ListLogsResponseSchema,
     },
   },
   components: {

@@ -338,7 +338,7 @@ The TypeScript SDK has a complete test suite using Vitest:
 The TypeScript SDK (`deepcrawl`) provides:
 
 - **Client library** for Deepcrawl API
-- **Methods**: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`, `getManyLogs()`, `getOneLog()`
+- **Methods**: `getMarkdown()`, `readUrl()`, `getLinks()`, `extractLinks()`, `listLogs()`, `getOneLog()`
 - **Built with tsup** for both CommonJS and ESM formats
 - **Published to npm** with version management
 - **RPC-First Design**: Uses oRPC's RPCLink for efficient communication

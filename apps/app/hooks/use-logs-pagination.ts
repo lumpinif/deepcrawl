@@ -1,6 +1,6 @@
 import {
-  GET_MANY_LOGS_DEFAULT_LIMIT,
-  GET_MANY_LOGS_DEFAULT_OFFSET,
+  LIST_LOGS_DEFAULT_LIMIT,
+  LIST_LOGS_DEFAULT_OFFSET,
 } from '@deepcrawl/types/configs/default';
 import type { PaginationState } from '@tanstack/react-table';
 import { useCallback, useState } from 'react';
@@ -14,8 +14,8 @@ export interface UseLogsPaginationReturn {
 }
 
 const INITIAL_PAGINATION: PaginationState = {
-  pageIndex: GET_MANY_LOGS_DEFAULT_OFFSET,
-  pageSize: GET_MANY_LOGS_DEFAULT_LIMIT,
+  pageIndex: LIST_LOGS_DEFAULT_OFFSET,
+  pageSize: LIST_LOGS_DEFAULT_LIMIT,
 };
 
 export function useLogsPagination(): UseLogsPaginationReturn {

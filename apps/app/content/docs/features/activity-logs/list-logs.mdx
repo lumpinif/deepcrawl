@@ -1,5 +1,5 @@
 ---
-title: Get Many Logs
+title: List Logs
 description: Paginated activity log history with filters for path, status, and dates.
 ---
 
@@ -8,7 +8,7 @@ status, and pagination. This endpoint is optimised for quick scans—it returns
 metadata about each run without replaying the stored response payloads.
 
 <Callout type="warn">
-  `getManyLogs` does not return original response bodies. To inspect the
+  `listLogs` does not return original response bodies. To inspect the
   original payload for a given log, call
   [`getOneLog`](/docs/features/activity-logs/get-one-log) or
   [`exportResponse`](/docs/features/activity-logs/export-response).
@@ -19,14 +19,14 @@ metadata about each run without replaying the stored response payloads.
 - `POST https://api.deepcrawl.dev/logs`
 - Body accepts JSON options; authentication uses bearer tokens.
 
-## Request Options – `GetManyLogsOptions`
+## Request Options – `ListLogsOptions`
 
 <AutoTypeTable
   path="../../packages/contracts/src/logs/index.ts"
-  name="GetManyLogsOptions"
+  name="ListLogsOptions"
 />
 
-Any missing fields are normalized via `resolveGetManyLogsOptions`, so you can send an empty body to receive the latest logs.
+Any missing fields are normalized via `resolveListLogsOptions`, so you can send an empty body to receive the latest logs.
 
 ## Example Request
 
@@ -48,24 +48,24 @@ curl "https://api.deepcrawl.dev/logs" \
 import { DeepcrawlApp } from 'deepcrawl';
 
 const dc = new DeepcrawlApp({ apiKey: process.env.DEEPCRAWL_API_KEY! });
-const params: GetManyLogsOptions = {
+const params: ListLogsOptions = {
   path: 'links-extractLinks',
   startDate: '2025-01-01T00:00:00.000Z',
   endDate: '2025-01-31T23:59:59.999Z',
   limit: 25
 };
-const { logs, meta }: GetManyLogsResponse = await dc.getManyLogs(params);
+const { logs, meta }: ListLogsResponse = await dc.listLogs(params);
 
 if (meta.hasMore) {
   console.log(`Next page offset: ${meta.nextOffset}`);
 }
 ```
 
-## Response – `GetManyLogsResponse`
+## Response – `ListLogsResponse`
 
 <AutoTypeTable
   path="../../packages/contracts/src/logs/index.ts"
-  name="GetManyLogsResponse"
+  name="ListLogsResponse"
 />
 
 ```json
