@@ -31,7 +31,7 @@ const CONTENT = [
     title: 'How fast is Deepcrawl compared to Firecrawl?',
     value: 'speed-comparison',
     content:
-      'Deepcrawl is faster than Firecrawl on general by a lot, ranging from 5x to 100x faster in some cases. Deepcrawl uses the Cloudflare Workers platform to fetch and process pages with v8 engine, which is much faster than Firecrawl.',
+      'Deepcrawl is faster than Firecrawl on general by a lot, ranging from 5x to 10x faster in some cases. Deepcrawl uses the Cloudflare Workers platform to fetch and process pages with v8 engine, which is much faster than Firecrawl.',
   },
   {
     title: 'What are the planned features coming soon?',

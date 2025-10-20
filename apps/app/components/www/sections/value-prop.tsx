@@ -8,28 +8,29 @@ import { TreeViewCard } from '../../playground/response-area/content-tabs';
 import DisplayCards from '../display-cards';
 import { DottedWorldMap } from '../dotted-map';
 import { FreeTag } from '../free-tag';
+import { H2 } from '../h2';
 import { SDKCodeblock } from '../sdk-codeblock';
 import { Tick } from '../tick';
 import { TiltedScroll } from '../tilted-scroll';
 
 const VALUE_ITEMS = [
   {
-    label: 'Lightning Fast Content Extraction',
+    label: '5-10x faster than Firecrawl on general',
     title: 'Better Performance by Default',
     description:
-      'Edge-native Workers on V8 engine returns response in milliseconds with Deepcrawl specially optimized parsers and tuned HTML cleaners, KV caching, and no headless browser tax or virtual DOM overhead required.',
+      "No headless browser tax or virtual DOM overhead required for simple HTML parsing! Edge-native Workers on V8 engine returns response in milliseconds with specially optimized Deepcrawl's parsers and tuned HTML cleaners, and smart dynamic caching controls.",
     illustration: <DisplayCards />,
   },
   {
-    label: 'Open Core And Transparency',
+    label: 'Open with full transparency',
     title: 'Free to anyone and Open Source',
     description:
       '100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of Deepcrawl without server maintenance overhead.',
     illustration: <FreeTag />,
   },
   {
-    label: 'Better LLM-Ready Context',
-    title: 'Optimized for pipelines and fewer tokens',
+    label: "Save your LLM's tokens with better context",
+    title: 'Optimized for AI, less tokens spent',
     description:
       'Deepcrawl assembles markdown, metadata, and link trees from any target URL without relying on sitemap.xml, so agents plan next steps with real topology and fewer wasted tokens spending, potentially outperforming llms.txt.',
     illustration: (
@@ -95,9 +96,9 @@ export function ValueProp() {
               <Label className="text-muted-foreground text-sm tracking-tight md:text-md lg:text-md">
                 {option.label}
               </Label>
-              <h2 className="font-semibold text-foreground text-lg tracking-tight md:text-xl lg:text-xl">
+              <H2 className="font-semibold text-foreground text-lg tracking-tight md:text-xl lg:text-2xl">
                 {option.title}
-              </h2>
+              </H2>
             </button>
           ))}
         </div>
