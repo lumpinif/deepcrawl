@@ -27,10 +27,10 @@ export const Hero = () => (
           <FlickeringGrid
             className="h-full w-full"
             color="#6B7280"
-            flickerChance={0.15}
+            flickerChance={0.18}
             fontSize={100}
-            gridGap={9}
-            maxOpacity={0.15}
+            gridGap={8}
+            maxOpacity={0.2}
             squareSize={3}
             text="npm i deepcrawl"
             textOffsetY={260}
