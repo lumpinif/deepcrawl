@@ -16,6 +16,25 @@ export type OptionsWithoutUrl<
   [K in keyof T as K extends 'url' ? never : K]: T[K];
 };
 
+export interface LogsInvalidDateRangeErrorData {
+  startDate?: string;
+  endDate?: string;
+  message: string;
+}
+
+export interface LogsInvalidSortErrorData {
+  orderBy: string;
+  allowed: string[];
+  message: string;
+}
+
+export interface InvalidExportFormatErrorData {
+  id: string;
+  path?: string;
+  format?: string;
+  message: string;
+}
+
 /**
  * Practical fetch options for Deepcrawl SDK
  * Only includes options that actually affect the HTTP transport layer to the worker
@@ -122,6 +141,24 @@ export abstract class DeepcrawlError<TData = unknown> extends Error {
     return error instanceof DeepcrawlNetworkError;
   }
 
+  static isLogsInvalidDateRangeError(
+    error: unknown,
+  ): error is DeepcrawlLogsInvalidDateRangeError {
+    return error instanceof DeepcrawlLogsInvalidDateRangeError;
+  }
+
+  static isLogsInvalidSortError(
+    error: unknown,
+  ): error is DeepcrawlLogsInvalidSortError {
+    return error instanceof DeepcrawlLogsInvalidSortError;
+  }
+
+  static isInvalidExportFormatError(
+    error: unknown,
+  ): error is DeepcrawlInvalidExportFormatError {
+    return error instanceof DeepcrawlInvalidExportFormatError;
+  }
+
   /**
    * Instance methods for fluent checking
    */
@@ -155,6 +192,18 @@ export abstract class DeepcrawlError<TData = unknown> extends Error {
 
   isNetwork(): this is DeepcrawlNetworkError {
     return this instanceof DeepcrawlNetworkError;
+  }
+
+  isLogsInvalidDateRange(): this is DeepcrawlLogsInvalidDateRangeError {
+    return this instanceof DeepcrawlLogsInvalidDateRangeError;
+  }
+
+  isLogsInvalidSort(): this is DeepcrawlLogsInvalidSortError {
+    return this instanceof DeepcrawlLogsInvalidSortError;
+  }
+
+  isInvalidExportFormat(): this is DeepcrawlInvalidExportFormatError {
+    return this instanceof DeepcrawlInvalidExportFormatError;
   }
 }
 
@@ -217,6 +266,64 @@ export class DeepcrawlLinksError extends DeepcrawlError<LinksErrorResponse> {
   // Preserve data.error for compatibility
   get error(): string {
     return this.data.error;
+  }
+}
+
+export class DeepcrawlLogsInvalidDateRangeError extends DeepcrawlError<LogsInvalidDateRangeErrorData> {
+  constructor(data: LogsInvalidDateRangeErrorData) {
+    super('LOGS_INVALID_DATE_RANGE', data.message, data, 400, true);
+  }
+
+  get userMessage(): string {
+    return this.message;
+  }
+
+  get startDate(): string | undefined {
+    return this.data.startDate;
+  }
+
+  get endDate(): string | undefined {
+    return this.data.endDate;
+  }
+}
+
+export class DeepcrawlLogsInvalidSortError extends DeepcrawlError<LogsInvalidSortErrorData> {
+  constructor(data: LogsInvalidSortErrorData) {
+    super('LOGS_INVALID_SORT', data.message, data, 400, true);
+  }
+
+  get userMessage(): string {
+    return this.message;
+  }
+
+  get orderBy(): string {
+    return this.data.orderBy;
+  }
+
+  get allowed(): string[] {
+    return this.data.allowed;
+  }
+}
+
+export class DeepcrawlInvalidExportFormatError extends DeepcrawlError<InvalidExportFormatErrorData> {
+  constructor(data: InvalidExportFormatErrorData) {
+    super('INVALID_EXPORT_FORMAT', data.message, data, 400, true);
+  }
+
+  get userMessage(): string {
+    return this.message;
+  }
+
+  get id(): string {
+    return this.data.id;
+  }
+
+  get path(): string | undefined {
+    return this.data.path;
+  }
+
+  get format(): string | undefined {
+    return this.data.format;
   }
 }
 

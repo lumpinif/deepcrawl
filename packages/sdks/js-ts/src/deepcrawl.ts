@@ -38,13 +38,19 @@ import {
   DeepcrawlAuthError,
   type DeepcrawlClientContext,
   type DeepcrawlConfig,
+  DeepcrawlInvalidExportFormatError,
   DeepcrawlLinksError,
+  DeepcrawlLogsInvalidDateRangeError,
+  DeepcrawlLogsInvalidSortError,
   DeepcrawlNetworkError,
   DeepcrawlNotFoundError,
   DeepcrawlRateLimitError,
   DeepcrawlReadError,
   DeepcrawlServerError,
   DeepcrawlValidationError,
+  type InvalidExportFormatErrorData,
+  type LogsInvalidDateRangeErrorData,
+  type LogsInvalidSortErrorData,
   type OptionsWithoutUrl,
 } from './_types';
 
@@ -76,6 +82,21 @@ const ERROR_REGISTRY = {
   LINKS_ERROR_RESPONSE: (
     orpcError: ORPCError<'LINKS_ERROR_RESPONSE', LinksErrorResponse>,
   ) => new DeepcrawlLinksError(orpcError.data),
+
+  LOGS_INVALID_DATE_RANGE: (
+    orpcError: ORPCError<
+      'LOGS_INVALID_DATE_RANGE',
+      LogsInvalidDateRangeErrorData
+    >,
+  ) => new DeepcrawlLogsInvalidDateRangeError(orpcError.data),
+
+  LOGS_INVALID_SORT: (
+    orpcError: ORPCError<'LOGS_INVALID_SORT', LogsInvalidSortErrorData>,
+  ) => new DeepcrawlLogsInvalidSortError(orpcError.data),
+
+  INVALID_EXPORT_FORMAT: (
+    orpcError: ORPCError<'INVALID_EXPORT_FORMAT', InvalidExportFormatErrorData>,
+  ) => new DeepcrawlInvalidExportFormatError(orpcError.data),
 
   // Infrastructure errors
   RATE_LIMITED: (
@@ -116,6 +137,27 @@ function handleDeepcrawlError(
       if (error.code === 'LINKS_ERROR_RESPONSE') {
         throw ERROR_REGISTRY.LINKS_ERROR_RESPONSE(
           error as ORPCError<'LINKS_ERROR_RESPONSE', LinksErrorResponse>,
+        );
+      }
+      if (error.code === 'LOGS_INVALID_DATE_RANGE') {
+        throw ERROR_REGISTRY.LOGS_INVALID_DATE_RANGE(
+          error as ORPCError<
+            'LOGS_INVALID_DATE_RANGE',
+            LogsInvalidDateRangeErrorData
+          >,
+        );
+      }
+      if (error.code === 'LOGS_INVALID_SORT') {
+        throw ERROR_REGISTRY.LOGS_INVALID_SORT(
+          error as ORPCError<'LOGS_INVALID_SORT', LogsInvalidSortErrorData>,
+        );
+      }
+      if (error.code === 'INVALID_EXPORT_FORMAT') {
+        throw ERROR_REGISTRY.INVALID_EXPORT_FORMAT(
+          error as ORPCError<
+            'INVALID_EXPORT_FORMAT',
+            InvalidExportFormatErrorData
+          >,
         );
       }
       if (error.code === 'RATE_LIMITED') {
