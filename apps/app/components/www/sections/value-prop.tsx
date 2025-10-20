@@ -21,6 +21,13 @@ const VALUE_ITEMS = [
     illustration: <DisplayCards />,
   },
   {
+    label: 'Open Core And Transparency',
+    title: 'Free to anyone and Open Source',
+    description:
+      '100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of Deepcrawl without server maintenance overhead.',
+    illustration: <FreeTag />,
+  },
+  {
     label: 'Better LLM-Ready Context',
     title: 'Optimized for pipelines and fewer tokens',
     description:
@@ -37,13 +44,6 @@ const VALUE_ITEMS = [
         />
       </div>
     ),
-  },
-  {
-    label: 'Open Core And Transparency',
-    title: 'Free to anyone and Open Source',
-    description:
-      '100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of Deepcrawl without server maintenance overhead.',
-    illustration: <FreeTag />,
   },
   {
     label: 'Resilient Edge',
