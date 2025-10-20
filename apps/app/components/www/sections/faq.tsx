@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@deepcrawl/ui/components/ui/accordion';
-import { ChevronUp } from 'lucide-react';
 import { H2 } from '../h2';
 import { Tick } from '../tick';
 
