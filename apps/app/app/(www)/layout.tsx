@@ -31,14 +31,18 @@ export default async function LandingLayout({
           secondary: true,
           children: user ? (
             <UserDropdown
-              className="mt-1.5"
+              className="mr-1 md:mt-1.5"
               enableLayoutViewToggle={false}
               redirectLogout={'/'}
               session={currentSession}
             />
           ) : (
             <>
-              <Button asChild className="ml-2 max-md:hidden" variant="outline">
+              <Button
+                asChild
+                className="mr-1 ml-2 max-md:hidden"
+                variant="outline"
+              >
                 <Link href="/login">Login</Link>
               </Button>
               <Link className="ml-1 md:hidden" href="/login">
