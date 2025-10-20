@@ -183,6 +183,11 @@
   #nd-sidebar > div[data-fd-if-empty] {
     @apply border-t-0!;
   }
+
+  /* Force border-b-0 when background is not transparent (when not scrolling down) */
+  #nd-nav:not(.bg-fd-background\/80) {
+    @apply !border-b-0 ;
+  }
 }
 
 @layer utilities {
