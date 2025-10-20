@@ -100,9 +100,9 @@ export function OperationSelector({
       {DeepcrawlFeatures.map((feat) => (
         <Card
           className={cn(
-            'group relative cursor-pointer transition-all duration-200 ease-out hover:bg-primary/80 hover:shadow-md 2xl:py-8 hover:dark:bg-background',
+            'group relative cursor-pointer bg-background transition-all duration-200 ease-out hover:bg-input/25 hover:shadow-md 2xl:py-8 hover:dark:bg-accent/35',
             selectedOperation === feat.operation &&
-              'border-ring bg-primary/95 shadow-md hover:bg-primary/95 dark:bg-background',
+              '!bg-input/40 dark:!bg-accent/50 border border-ring/50 shadow-md dark:border-ring/70',
           )}
           key={feat.operation}
           onClick={(e) => {
@@ -122,16 +122,7 @@ export function OperationSelector({
               selectedOperation === feat.operation && 'opacity-100',
             )}
           >
-            <Badge
-              className={cn(
-                'text-muted-foreground text-xs',
-                selectedOperation !== feat.operation &&
-                  'group-hover:text-primary-foreground dark:group-hover:text-muted-foreground',
-                selectedOperation === feat.operation &&
-                  'text-primary-foreground dark:text-primary',
-              )}
-              variant="outline"
-            >
+            <Badge className="text-xs" variant="outline">
               {feat.method} {feat.endpoint}
             </Badge>
           </div>
@@ -175,29 +166,13 @@ export function OperationSelector({
             />
           </div>
 
-          <CardContent
-            className={cn(
-              'space-y-2 text-center',
-              'group-hover:text-primary-foreground dark:group-hover:text-primary',
-              selectedOperation === feat.operation &&
-                'text-primary-foreground dark:text-primary',
-            )}
-          >
+          <CardContent className="space-y-2 text-center">
             <div className="flex items-center justify-center">
               <CardTitle className="flex items-center gap-2">
                 {feat.label}
               </CardTitle>
             </div>
-            <CardDescription
-              className={cn(
-                selectedOperation === feat.operation &&
-                  'text-primary-foreground dark:text-primary',
-                selectedOperation !== feat.operation &&
-                  'group-hover:text-primary-foreground dark:group-hover:text-primary',
-              )}
-            >
-              {feat.description}
-            </CardDescription>
+            <CardDescription>{feat.description}</CardDescription>
           </CardContent>
         </Card>
       ))}

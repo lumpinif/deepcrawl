@@ -143,7 +143,7 @@ const MotionGrid = ({
   );
 
   const inactiveCellClassName = React.useMemo(
-    () => cn('scale-100 bg-muted', cellInactiveClassName),
+    () => cn('scale-100 bg-primary/20', cellInactiveClassName),
     [cellInactiveClassName],
   );
 
