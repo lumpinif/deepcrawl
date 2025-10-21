@@ -35,7 +35,7 @@
     "wrangler": "^4.44.0",
     "zod": "^4.1.12"
   },
-  "packageManager": "pnpm@10.18.2",
+  "packageManager": "pnpm@10.18.3",
   "engines": {
     "node": ">=20"
   },
