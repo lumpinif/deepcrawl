@@ -8,6 +8,7 @@ import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { memo, useMemo } from 'react';
 import { toast } from 'sonner';
 import {
@@ -22,6 +23,7 @@ export const DetailedSDKImpl = memo(function DetailedSDKImpl({
 }: {
   className?: string;
 }) {
+  const router = useRouter();
   const requestUrl = usePlaygroundCoreSelector('requestUrl');
   const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
   const currentOptions = usePlaygroundOptionsSelector('currentOptions');
@@ -43,15 +45,26 @@ export const DetailedSDKImpl = memo(function DetailedSDKImpl({
         <Label className="font-medium text-muted-foreground text-xs">
           SDK Usage
         </Label>
-        <Button
-          className="w-fit select-none text-muted-foreground text-xs"
-          onClick={() => resetToDefaults(selectedOperation)}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          Reset all
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            className="w-fit select-none text-muted-foreground text-xs"
+            onClick={() => resetToDefaults(selectedOperation)}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            Reset Options
+          </Button>
+          <Button
+            className="w-fit select-none text-muted-foreground text-xs"
+            onClick={() => router.push('/app/api-keys')}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            Get API Key
+          </Button>
+        </div>
       </div>
 
       <CodeBlock
