@@ -93,11 +93,12 @@ export function PageTitle({
       {description && desPos === 'top' && (
         <p className="text-muted-foreground">{description}</p>
       )}
+      {desPos === 'bottom' && children}
       {renderTitle()}
       {description && desPos === 'bottom' && (
         <p className="text-muted-foreground">{description}</p>
       )}
-      {children}
+      {desPos === 'top' && children}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
 } from '@deepcrawl/ui/components/ai-elements/prompt-input';
 
 import { cn } from '@deepcrawl/ui/lib/utils';
+import { parseAsBoolean, useQueryState } from 'nuqs';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -45,7 +46,12 @@ export const PlaygroundOperationClientContent = ({
   className,
 }: PlaygroundOperationClientContentProps) => {
   const [isError, setIsError] = useState(false);
-  const [isDetailedBarOpen, setIsDetailedBarOpen] = useState(false);
+  const [isDetailedBarOpen, setIsDetailedBarOpen] = useQueryState(
+    'code',
+    parseAsBoolean.withDefault(false).withOptions({
+      history: 'push',
+    }),
+  );
 
   // Get state and actions from context
   const requestUrl = usePlaygroundCoreSelector('requestUrl');
@@ -109,9 +115,9 @@ export const PlaygroundOperationClientContent = ({
       id={PLAYGROUND_SECTION_ID}
     >
       <PageTitle
-        className="mx-auto mt-28 mb-10 w-full text-center md:mt-[18svh]"
-        description="Transform any website data AI ready"
-        desPos="top"
+        className="mx-auto mt-28 mb-10 w-full text-center md:mt-[13svh]"
+        description="Make any website data AI-ready for agents"
+        desPos="bottom"
         title="What would you like to see?"
         titleClassName="mb-2"
         titleSize="3xl"
