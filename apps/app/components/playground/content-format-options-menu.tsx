@@ -82,16 +82,6 @@ import {
 } from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
-// Union type for all possible content format options
-// {
-//   metadata?: boolean;
-//   cleanedHtml?: boolean;
-//   robots?: boolean;
-//   sitemapXML?: boolean;
-//   tree?: boolean;
-//   markdown?: boolean;
-//   rawHtml?: boolean;
-// };
 type ContentFormatOptions = Pick<
   ScrapeOptions,
   'metadata' | 'cleanedHtml' | 'robots' | 'sitemapXML'
@@ -174,16 +164,18 @@ const OPTION_DEFINITIONS = {
     badge: <Badge variant="secondary">Beta</Badge>,
     icon: <Network />,
   },
-} as const;
+} satisfies Record<
+  keyof ContentFormatOptions,
+  {
+    label: string;
+    tooltip: string;
+    icon: ReactElement | ElementType<IconProps>;
+    badge?: ReactElement;
+  }
+>;
 
 // Tree option field definitions !IMPORTANT!: TEHY ARE FLATTEND IN THE LINKSOPTIONS ROOT LEVEL INSTEAD OF A NESTED OBJECT
-const TREE_OPTION_FIELDS: Array<{
-  key: keyof TreeOptions;
-  label: string;
-  tooltip: string;
-  type: 'switch' | 'select';
-  options?: Array<{ value: string; label: string; tooltip?: string }>;
-}> = [
+const TREE_OPTION_FIELDS = [
   {
     key: 'folderFirst',
     label: 'Folders First',
@@ -228,14 +220,28 @@ const TREE_OPTION_FIELDS: Array<{
       },
     ],
   },
-];
+] satisfies ReadonlyArray<
+  | {
+      key: Exclude<keyof TreeOptions, 'linksOrder'>;
+      label: string;
+      tooltip: string;
+      type: 'switch';
+    }
+  | {
+      key: 'linksOrder';
+      label: string;
+      tooltip: string;
+      type: 'select';
+      options: ReadonlyArray<{
+        value: TreeOptions['linksOrder'];
+        label: string;
+        tooltip?: string;
+      }>;
+    }
+>;
 
 // Metadata field definitions
-const METADATA_FIELDS: Array<{
-  key: keyof MetadataOptions;
-  label: string;
-  tooltip: string;
-}> = [
+const METADATA_FIELDS = [
   {
     key: 'title',
     label: 'Title',
@@ -286,18 +292,14 @@ const METADATA_FIELDS: Array<{
     label: 'Twitter Cards',
     tooltip: 'Extract Twitter Card metadata (twitter:* properties)',
   },
-];
-
-// Markdown option field definitions
-const MARKDOWN_OPTION_FIELDS: Array<{
-  key: keyof typeof DEFAULT_MARKDOWN_CONVERTER_OPTIONS;
+] satisfies ReadonlyArray<{
+  key: keyof MetadataOptions;
   label: string;
   tooltip: string;
-  type: 'switch' | 'select' | 'number';
-  options?: Array<{ value: string; label: string }>;
-  min?: number;
-  max?: number;
-}> = [
+}>;
+
+// Markdown option field definitions
+const MARKDOWN_OPTION_FIELDS = [
   {
     key: 'preferNativeParser',
     label: 'Prefer Native Parser',
@@ -351,7 +353,15 @@ const MARKDOWN_OPTION_FIELDS: Array<{
     min: 1,
     max: 10,
   },
-];
+] satisfies ReadonlyArray<{
+  key: keyof typeof DEFAULT_MARKDOWN_CONVERTER_OPTIONS;
+  label: string;
+  tooltip: string;
+  type: 'switch' | 'select' | 'number';
+  options?: ReadonlyArray<{ value: string; label: string }>;
+  min?: number;
+  max?: number;
+}>;
 
 interface IconProps {
   className?: string;
@@ -740,7 +750,7 @@ export const ContentFormatOptionsMenu = memo(
                         <Select
                           onValueChange={(value) =>
                             onTreeOptionsChange?.({
-                              [key]: value as TreeOptions[keyof TreeOptions],
+                              [key]: value as TreeOptions['linksOrder'],
                             })
                           }
                           value={
