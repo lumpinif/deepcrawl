@@ -18,7 +18,7 @@ import {
 } from '@/contexts/playground-context';
 import type {
   DeepcrawlOperations,
-  OperationToOptions,
+  OperationOptions,
 } from '@/hooks/playground/types';
 
 // Helper function to convert smartbool values to boolean
@@ -46,11 +46,11 @@ interface OptionPreviewConfig<T = boolean | undefined> {
   condition: 'enabled' | 'always';
   operations: DeepcrawlOperations[] | 'all';
   colorClass: string;
-  getValue: (options: OperationToOptions[DeepcrawlOperations]) => T;
+  getValue: (options: OperationOptions) => T;
   shouldShow?: (
     value: T,
     operation: DeepcrawlOperations,
-    options: OperationToOptions[DeepcrawlOperations],
+    options: OperationOptions,
   ) => boolean;
 }
 

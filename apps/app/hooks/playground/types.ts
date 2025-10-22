@@ -51,6 +51,8 @@ export interface OperationToOptions {
   getMarkdown: GetMarkdownOptionsWithoutUrl;
 }
 
+export type OperationOptions = OperationToOptions[DeepcrawlOperations];
+
 export type OperationQueryStateMap = {
   [K in keyof OperationToOptions]: OperationQueryState<OperationToOptions[K]>;
 };
@@ -184,9 +186,7 @@ export interface PlaygroundCoreState {
 // Operation-specific options state with current operation focus
 export interface PlaygroundOptionsState {
   // Current operation's query state for direct access
-  currentQueryState: OperationQueryState<
-    OperationToOptions[DeepcrawlOperations]
-  >;
+  currentQueryState: OperationQueryState<OperationOptions>;
   // All operation states for cross-operation access
   operationQueryStates: OperationQueryStateMap;
   // Utility getter for any operation state
@@ -194,7 +194,7 @@ export interface PlaygroundOptionsState {
   // Option getter with operation narrowing
   getOptionFor: GetOptionFor;
   // Direct access to current operation options (convenience)
-  currentOptions: OperationToOptions[DeepcrawlOperations];
+  currentOptions: OperationOptions;
 }
 
 // All action functions for state updates

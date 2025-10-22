@@ -12,10 +12,14 @@ import {
   DEFAULT_READ_OPTIONS,
 } from '@deepcrawl/types/configs';
 import type {
+  DeepcrawlOperations,
   ExtractLinksOptionsWithoutUrl,
   GetMarkdownOptionsWithoutUrl,
+  OperationOptions,
   ReadUrlOptionsWithoutUrl,
 } from './types';
+
+/* NOTE: FOR_HOOK GENERALLY MEANS OPTIONS WITHOUT URL */
 
 /**
  * Hook-specific default options for readUrl operation.
@@ -37,3 +41,18 @@ export const DEFAULT_EXTRACT_LINKS_OPTIONS_FOR_HOOK: ExtractLinksOptionsWithoutU
  */
 export const DEFAULT_GET_MARKDOWN_OPTIONS_FOR_HOOK: GetMarkdownOptionsWithoutUrl =
   DEFAULT_GET_MARKDOWN_OPTIONS satisfies GetMarkdownOptionsWithoutUrl;
+
+export const DEFAULT_OPERATION_OPTIONS_FOR_HOOK: Record<
+  DeepcrawlOperations,
+  OperationOptions
+> = {
+  readUrl: DEFAULT_READ_OPTIONS_FOR_HOOK,
+  getMarkdown: DEFAULT_GET_MARKDOWN_OPTIONS_FOR_HOOK,
+  extractLinks: DEFAULT_EXTRACT_LINKS_OPTIONS_FOR_HOOK,
+};
+
+export const RESULT_IDENTIFIER: Record<DeepcrawlOperations, string> = {
+  readUrl: 'result',
+  getMarkdown: 'markdown',
+  extractLinks: 'links',
+};
