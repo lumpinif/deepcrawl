@@ -22,8 +22,8 @@ import {
 } from '../../lib/playground/scroll-anchors';
 import { useScrollToAnchor } from '../../utils/use-scroll-to-anchor';
 import { PageContainer, PageTitle } from '../page-elements';
-import { DetailedOptions } from './detailed-options';
 import { DetailedOptionsAccordion } from './detailed-options-accordion';
+import { DetailedSDKImpl } from './detailed-sdk-implementation';
 import { OperationSelector } from './operation-selector';
 import { PlaygroundOptionsMenusToolbar } from './playground-options-menus-toolbar';
 import { PlaygroundUrlInput } from './playground-url-input';
@@ -155,7 +155,7 @@ export const PlaygroundOperationClientContent = ({
             childrenProps={{ className: 'p-4' }}
             open={isDetailedBarOpen}
           >
-            <DetailedOptions />
+            <DetailedSDKImpl />
           </DetailedOptionsAccordion>
         </PromptInput>
       </div>
