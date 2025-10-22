@@ -18,6 +18,15 @@ import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Checkbox } from '@deepcrawl/ui/components/ui/checkbox';
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@deepcrawl/ui/components/ui/drawer';
+import {
   DropdownMenuPortal,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -39,6 +48,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@deepcrawl/ui/components/ui/tooltip';
+import { useMediaQuery } from '@deepcrawl/ui/hooks/use-media-query';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type {
   LinksOptions,
@@ -492,6 +502,7 @@ export const ContentFormatOptionsMenu = memo(
         },
       });
     };
+
     const [isOpen, setIsOpen] = useState(false);
     const [isMetadataSubOpen, setIsMetadataSubOpen] = useState(false);
     const [isTreeSubOpen, setIsTreeSubOpen] = useState(false);
@@ -500,6 +511,8 @@ export const ContentFormatOptionsMenu = memo(
       startAnimation: () => void;
       stopAnimation: () => void;
     }>(null);
+
+    const isDesktop = useMediaQuery('(min-width: 768px)');
 
     // Get operation-specific configuration
     const operationConfig =
@@ -1026,28 +1039,56 @@ export const ContentFormatOptionsMenu = memo(
                               </Label>
 
                               {/* Metadata sub-menu - only show when metadata is enabled */}
-                              {isMetadataEnabled && (
-                                <DropdownMenuSub
-                                  onOpenChange={setIsMetadataSubOpen}
-                                >
-                                  <DropdownMenuSubTrigger
-                                    className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/metadata:bg-muted group-hover/metadata:text-foreground"
-                                    icon={<Settings2 className="size-3" />}
+                              {isMetadataEnabled &&
+                                (isDesktop ? (
+                                  <DropdownMenuSub
+                                    onOpenChange={setIsMetadataSubOpen}
                                   >
-                                    <span className="font-medium text-xs uppercase">
-                                      Configure
-                                    </span>
-                                  </DropdownMenuSubTrigger>
-                                  <DropdownMenuPortal>
-                                    <DropdownMenuSubContent
-                                      className="min-w-80 p-4"
-                                      sideOffset={25}
+                                    <DropdownMenuSubTrigger
+                                      className="data-[state=open]:!text-foreground flex w-fit items-center gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/metadata:bg-muted group-hover/metadata:text-foreground"
+                                      icon={<Settings2 className="size-3" />}
                                     >
+                                      <span className="font-medium text-xs uppercase">
+                                        Configure
+                                      </span>
+                                    </DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                      <DropdownMenuSubContent
+                                        className="min-w-80 p-4"
+                                        sideOffset={25}
+                                      >
+                                        {renderMetadataSubContent()}
+                                      </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                  </DropdownMenuSub>
+                                ) : (
+                                  <Drawer>
+                                    <DrawerTrigger className="data-[state=open]:!text-foreground flex w-fit items-center gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/metadata:bg-muted group-hover/metadata:text-foreground">
+                                      <span className="font-medium text-xs uppercase">
+                                        Configure
+                                      </span>
+                                      <Settings2 className="ml-auto size-3" />
+                                    </DrawerTrigger>
+                                    <DrawerContent>
+                                      <DrawerHeader>
+                                        <DrawerTitle>
+                                          Metadata Options
+                                        </DrawerTitle>
+                                      </DrawerHeader>
                                       {renderMetadataSubContent()}
-                                    </DropdownMenuSubContent>
-                                  </DropdownMenuPortal>
-                                </DropdownMenuSub>
-                              )}
+                                      <DrawerFooter>
+                                        <DrawerClose>
+                                          <Button
+                                            className="w-full"
+                                            variant="outline"
+                                          >
+                                            Close
+                                          </Button>
+                                        </DrawerClose>
+                                      </DrawerFooter>
+                                    </DrawerContent>
+                                  </Drawer>
+                                ))}
                             </div>
                           </TooltipTrigger>
                           <TooltipContent align="start" side="bottom">
@@ -1098,28 +1139,54 @@ export const ContentFormatOptionsMenu = memo(
                               </Label>
 
                               {/* Tree sub-menu - only show when tree is enabled */}
-                              {isTreeEnabled && (
-                                <DropdownMenuSub
-                                  onOpenChange={setIsTreeSubOpen}
-                                >
-                                  <DropdownMenuSubTrigger
-                                    className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/tree:bg-muted group-hover/tree:text-foreground"
-                                    icon={<Settings2 className="size-3" />}
+                              {isTreeEnabled &&
+                                (isDesktop ? (
+                                  <DropdownMenuSub
+                                    onOpenChange={setIsTreeSubOpen}
                                   >
-                                    <span className="font-medium text-xs uppercase">
-                                      Configure
-                                    </span>
-                                  </DropdownMenuSubTrigger>
-                                  <DropdownMenuPortal>
-                                    <DropdownMenuSubContent
-                                      className="min-w-80 p-4"
-                                      sideOffset={25}
+                                    <DropdownMenuSubTrigger
+                                      className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/tree:bg-muted group-hover/tree:text-foreground"
+                                      icon={<Settings2 className="size-3" />}
                                     >
+                                      <span className="font-medium text-xs uppercase">
+                                        Configure
+                                      </span>
+                                    </DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                      <DropdownMenuSubContent
+                                        className="min-w-80 p-4"
+                                        sideOffset={25}
+                                      >
+                                        {renderTreeSubContent()}
+                                      </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                  </DropdownMenuSub>
+                                ) : (
+                                  <Drawer>
+                                    <DrawerTrigger className="data-[state=open]:!text-foreground flex w-fit items-center gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/tree:bg-muted group-hover/tree:text-foreground">
+                                      <span className="font-medium text-xs uppercase">
+                                        Configure
+                                      </span>
+                                      <Settings2 className="ml-auto size-3" />
+                                    </DrawerTrigger>
+                                    <DrawerContent>
+                                      <DrawerHeader>
+                                        <DrawerTitle>Tree Options</DrawerTitle>
+                                      </DrawerHeader>
                                       {renderTreeSubContent()}
-                                    </DropdownMenuSubContent>
-                                  </DropdownMenuPortal>
-                                </DropdownMenuSub>
-                              )}
+                                      <DrawerFooter>
+                                        <DrawerClose>
+                                          <Button
+                                            className="w-full"
+                                            variant="outline"
+                                          >
+                                            Close
+                                          </Button>
+                                        </DrawerClose>
+                                      </DrawerFooter>
+                                    </DrawerContent>
+                                  </Drawer>
+                                ))}
                             </div>
                           </TooltipTrigger>
                           <TooltipContent align="start" side="bottom">
@@ -1176,29 +1243,57 @@ export const ContentFormatOptionsMenu = memo(
                               </Label>
 
                               {/* Markdown sub-menu - only show when markdown is enabled */}
-                              {isMarkdownEnabled && (
-                                <DropdownMenuSub
-                                  onOpenChange={setIsMarkdownSubOpen}
-                                >
-                                  <DropdownMenuSubTrigger
-                                    className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/markdown:bg-muted group-hover/markdown:text-foreground"
-                                    icon={<Settings2 className="size-3" />}
+                              {isMarkdownEnabled &&
+                                (isDesktop ? (
+                                  <DropdownMenuSub
+                                    onOpenChange={setIsMarkdownSubOpen}
                                   >
-                                    <span className="font-medium text-xs uppercase">
-                                      Configure
-                                    </span>
-                                  </DropdownMenuSubTrigger>
-                                  <DropdownMenuPortal>
-                                    <DropdownMenuSubContent
-                                      alignOffset={-65}
-                                      className="min-w-80 p-4"
-                                      sideOffset={25}
+                                    <DropdownMenuSubTrigger
+                                      className="data-[state=open]:!text-foreground gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/markdown:bg-muted group-hover/markdown:text-foreground"
+                                      icon={<Settings2 className="size-3" />}
                                     >
+                                      <span className="font-medium text-xs uppercase">
+                                        Configure
+                                      </span>
+                                    </DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                      <DropdownMenuSubContent
+                                        alignOffset={-65}
+                                        className="min-w-80 p-4"
+                                        sideOffset={25}
+                                      >
+                                        {renderMarkdownSubContent()}
+                                      </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                  </DropdownMenuSub>
+                                ) : (
+                                  <Drawer>
+                                    <DrawerTrigger className="data-[state=open]:!text-foreground flex w-fit items-center gap-x-1 rounded-lg border px-2 py-0.5 text-muted-foreground transition-colors duration-200 ease-out group-hover/markdown:bg-muted group-hover/markdown:text-foreground">
+                                      <span className="font-medium text-xs uppercase">
+                                        Configure
+                                      </span>
+                                      <Settings2 className="ml-auto size-3" />
+                                    </DrawerTrigger>
+                                    <DrawerContent>
+                                      <DrawerHeader>
+                                        <DrawerTitle>
+                                          Markdown Options
+                                        </DrawerTitle>
+                                      </DrawerHeader>
                                       {renderMarkdownSubContent()}
-                                    </DropdownMenuSubContent>
-                                  </DropdownMenuPortal>
-                                </DropdownMenuSub>
-                              )}
+                                      <DrawerFooter>
+                                        <DrawerClose>
+                                          <Button
+                                            className="w-full"
+                                            variant="outline"
+                                          >
+                                            Close
+                                          </Button>
+                                        </DrawerClose>
+                                      </DrawerFooter>
+                                    </DrawerContent>
+                                  </Drawer>
+                                ))}
                             </div>
                           </TooltipTrigger>
                           <TooltipContent align="start" side="bottom">
