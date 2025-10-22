@@ -31,6 +31,16 @@ export const LinksOptionsSchemaWithoutUrl = LinksOptionsSchema.omit({
   url: true,
 });
 
+export type OperationSchemaMap = {
+  [Op in DeepcrawlOperations]: z.ZodType<OperationToOptions[Op]>;
+};
+
+export const OPERATION_SCHEMAS: OperationSchemaMap = {
+  readUrl: ReadUrlOptionsSchemaWithoutUrl,
+  getMarkdown: GetMarkdownOptionsSchemaWithoutUrl,
+  extractLinks: LinksOptionsSchemaWithoutUrl,
+};
+
 /* UPDATE: WE HAVE REMOVED SMARTBOOL BUT WE CAN STILL USE THE INPUT TYPES. NOTE: WE ARE USING INPUT TYPES HERE TO DEFINE THE OPTIONS, WHICH MAY CONTAIN SMARTBOOL(deprecated) AS STRING */
 export type GetMarkdownOptionsWithoutUrl = z.input<
   typeof GetMarkdownOptionsSchemaWithoutUrl

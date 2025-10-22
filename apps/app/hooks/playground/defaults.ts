@@ -42,7 +42,7 @@ export const DEFAULT_EXTRACT_LINKS_OPTIONS_FOR_HOOK: ExtractLinksOptionsWithoutU
 export const DEFAULT_GET_MARKDOWN_OPTIONS_FOR_HOOK: GetMarkdownOptionsWithoutUrl =
   DEFAULT_GET_MARKDOWN_OPTIONS satisfies GetMarkdownOptionsWithoutUrl;
 
-export const DEFAULT_OPERATION_OPTIONS_FOR_HOOK: Record<
+export const DEFAULT_OPERATION_OPTIONS: Record<
   DeepcrawlOperations,
   OperationOptions
 > = {
