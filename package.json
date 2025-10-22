@@ -10,7 +10,8 @@
     "typecheck": "turbo typecheck",
     "check": "pnpm install && turbo check && pnpm sherif:fix",
     "clean": "cd scripts && npx tsx clean.ts",
-    "clean:install": "cd scripts && npx tsx clean.ts && pnpm install"
+    "clean:install": "cd scripts && npx tsx clean.ts && pnpm install",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.5",
@@ -26,7 +27,7 @@
     "dotenv-cli": "^10.0.0",
     "hono": "^4.10.1",
     "husky": "^9.1.7",
-    "markdownlint-cli2": "^0.18.1",
+    "lint-staged": "^16.2.5",
     "rimraf": "^6.0.1",
     "shadcn": "^3.4.2",
     "turbo": "^2.5.8",
@@ -43,6 +44,7 @@
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
       "@vercel/speed-insights",
+      "better-sqlite3",
       "core-js-pure",
       "esbuild",
       "msw",
@@ -50,6 +52,21 @@
       "unrs-resolver",
       "vue-demi",
       "workerd"
+    ]
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,cjs,mjs,cts,mts}": [
+      "pnpm exec biome check --write"
+    ],
+    "apps/app/**/*.{ts,tsx,js,jsx}": [
+      "pnpm exec biome check --write",
+      "cd apps/app && pnpm exec eslint --fix"
+    ],
+    "*.{json,jsonc,yml,yaml}": [
+      "pnpm exec biome check --write"
+    ],
+    "*.{css,scss,pcss}": [
+      "pnpm exec biome check --write"
     ]
   }
 }

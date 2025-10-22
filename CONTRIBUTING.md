@@ -91,6 +91,190 @@ cd apps/app && pnpm dev:workers      # Dashboard + all workers
    pnpm sherif:fix      # Fix dependency issues
    ```
 
+## Local CI/CD & Quality Checks
+
+This project uses **Husky** for Git hooks and **lint-staged** for pre-commit checks to ensure code quality before commits reach the repository.
+
+### Automated Quality Gates
+
+#### Pre-Commit Hook (Fast)
+
+Runs automatically on every `git commit`:
+
+**What it does:**
+
+- **Biome** - Formats & lints TypeScript, JavaScript, JSON, YAML, and CSS files
+- **ESLint** - Additional linting for dashboard TypeScript/JSX files
+
+**Configuration:**
+
+- `package.json` → `lint-staged` - Hook configuration
+- `biome.jsonc` - Code formatting and linting rules
+
+**File patterns:**
+
+```json
+{
+  "*.{ts,tsx,js,jsx,cjs,mjs,cts,mts}": ["biome check --write"],
+  "apps/app/**/*.{ts,tsx,js,jsx}": ["biome check --write", "eslint --fix"],
+  "*.{json,jsonc,yml,yaml}": ["biome check --write"],
+  "*.{css,scss,pcss}": ["biome check --write"]
+}
+```
+
+**Speed:** Very fast (~1-5 seconds) - only processes staged files
+
+#### Pre-Push Hook (Comprehensive)
+
+Runs automatically on every `git push`:
+
+**What it does:**
+
+1. **Checks for [skip ci] flag** - Skips all checks if found in commit message
+2. **Lint + Typecheck** - Runs across all packages in parallel (`turbo run lint typecheck`)
+3. **Conditional SDK Tests** - Only runs if SDK-related files changed
+
+**Smart test execution:**
+
+- Tests run ONLY if changes affect:
+  - `packages/sdks/js-ts` - SDK source code
+  - `packages/types` - Type definitions
+  - `packages/contracts` - API contracts
+  - `apps/workers/v0/src` - Worker implementation
+- Tests skip if only dashboard, docs, or config files changed
+
+**Speed:** Medium (~10-30 seconds) - depends on changed packages
+
+### Bypassing Checks
+
+#### Skip All Checks (Use Sparingly)
+
+```bash
+# Option 1: Use git's native flag (skips local hooks only)
+git push --no-verify
+
+# Option 2: Include [skip ci] in commit message (skips local + CI)
+git commit -m "docs: update README [skip ci]"
+git push
+```
+
+**When to use:**
+
+- Emergency hotfixes
+- Documentation-only changes
+- Work-in-progress commits to feature branches
+
+⚠️ **Note:** Skipping checks means CI/CD may catch issues later. Use responsibly!
+
+### GitHub Actions (Remote CI)
+
+Our GitHub Actions workflows provide comprehensive CI/CD:
+
+#### Validate Workflow
+
+**Triggers:** Push to `main` or Pull Requests to `main`
+
+**Jobs:**
+
+1. **Lint & Typecheck** - Runs `turbo run lint typecheck` across all packages
+2. **Tests** - Runs SDK tests on Node.js 20.x and 22.x
+3. **SDK Build** - Verifies SDK package builds successfully
+
+**Skip behavior:** Respects `[skip ci]` or `[ci skip]` in commit messages
+
+#### Deployment Workflows
+
+**Auth Worker Deploy:**
+
+- Triggers on changes to `packages/auth/**` or `apps/workers/auth/**`
+- Syncs database schema to production
+- Deploys to Cloudflare Workers
+
+**V0 Worker Deploy:**
+
+- Triggers on changes to `apps/workers/v0/**`
+- Deploys to Cloudflare Workers with minification
+
+### Quality Check Commands
+
+Run these commands manually when needed:
+
+```bash
+# Root level (runs checks across all packages)
+pnpm check           # Full check: install + turbo check + sherif:fix
+pnpm typecheck       # Type check all packages
+pnpm sherif          # Check dependency consistency
+pnpm sherif:fix      # Fix dependency issues automatically
+
+# Package-specific checks
+cd apps/workers/v0
+pnpm check           # biome + mdlint + typecheck
+
+cd apps/workers/auth
+pnpm check           # biome + typecheck
+
+cd apps/app
+pnpm check           # install + lint:fix + typecheck + biome
+
+cd packages/sdks/js-ts
+pnpm check           # biome + typecheck
+pnpm test            # Run test suite
+```
+
+### Troubleshooting CI/CD Issues
+
+#### Pre-commit Hook Failing
+
+```bash
+# Check what's failing
+pnpm exec lint-staged --debug
+
+# Manually run checks on all staged files
+pnpm exec biome check --write
+
+# If ESLint fails (dashboard only)
+cd apps/app && pnpm exec eslint --fix
+```
+
+#### Pre-push Hook Failing
+
+```bash
+# Run checks manually to see errors
+pnpm turbo run lint typecheck --parallel
+
+# If SDK tests fail
+cd packages/sdks/js-ts && pnpm test
+
+# Skip and push anyway (emergency only)
+git push --no-verify
+```
+
+#### GitHub Actions Failing
+
+1. **Check the Actions tab** on GitHub for detailed logs
+2. **Run locally first:** `pnpm check` should catch most issues
+3. **Verify Node version:** Must be >= 20
+4. **Check dependencies:** Run `pnpm install` to sync lockfile
+5. **Review commit message:** Ensure it doesn't accidentally include `[skip ci]`
+
+### Best Practices
+
+✅ **Do:**
+
+- Let pre-commit hooks run automatically (they're fast)
+- Run `pnpm check` before pushing large changes
+- Use `[skip ci]` for documentation-only changes
+- Check GitHub Actions status before merging PRs
+- Keep commits focused and small for faster checks
+
+❌ **Don't:**
+
+- Habitually use `--no-verify` (defeats the purpose)
+- Push directly to `main` without PR review
+- Ignore type errors (they indicate real issues)
+- Skip tests when changing SDK or worker code
+- Commit without running hooks first
+
 ### Commit Messages
 
 Write clear, concise commit messages following these guidelines:
@@ -102,7 +286,7 @@ Write clear, concise commit messages following these guidelines:
 
 Examples:
 
-```
+```text
 feat: add pagination to activity logs endpoint
 fix: resolve race condition in cache invalidation
 docs: update SDK README with correct API signatures
@@ -372,7 +556,7 @@ Any other relevant information.
 
 Understanding the monorepo structure:
 
-```
+```text
 deepcrawl/
 ├── apps/
 │   ├── app/              # Next.js dashboard

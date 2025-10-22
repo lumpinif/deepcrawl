@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+set -e
+
+COMMIT_MESSAGE=$(git log -1 --pretty=%B 2>/dev/null || echo "")
+
+if [ -n "$COMMIT_MESSAGE" ] && printf '%s' "$COMMIT_MESSAGE" | grep -qiE '\[(skip ci|ci skip)\]|skip ci'; then
+  echo "Pre-push checks skipped because commit message contains [skip ci]."
+  exit 0
+fi
+
+echo "Running turborepo lint and typecheck tasks..."
+pnpm turbo run lint typecheck --parallel
+
+# Check if SDK files or dependencies have changed
+SDK_PATHS="packages/sdks/js-ts packages/types packages/contracts apps/workers/v0/src"
+CHANGED_FILES=$(git diff --name-only HEAD @{push} 2>/dev/null || git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+
+if echo "$CHANGED_FILES" | grep -qE "^($SDK_PATHS)"; then
+  echo "SDK-related files changed. Running SDK test suite..."
+  pnpm -C packages/sdks/js-ts test
+else
+  echo "No SDK-related files changed. Skipping SDK tests."
+fi
