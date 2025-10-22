@@ -5,6 +5,7 @@ import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
@@ -99,7 +100,7 @@ export default function ActivityLogsDataGrid() {
         </LogsDataGridCard>
       </DataGrid>
       <ResponsiveDialog onOpenChange={setDialogOpen} open={dialogOpen}>
-        <ResponsiveDialogContent className="max-md:px-8 md:max-w-2xl xl:max-w-4xl">
+        <ResponsiveDialogContent>
           <ResponsiveDialogHeader>
             <div className="flex flex-col-reverse items-center justify-between gap-x-2 gap-y-2 md:flex-row md:pr-4">
               <ResponsiveDialogTitle>
@@ -135,9 +136,11 @@ export default function ActivityLogsDataGrid() {
           </ResponsiveDialogHeader>
           {selectedLog && <LogsDetailContent log={selectedLog} />}
           <ResponsiveDialogFooter>
-            <Button onClick={() => setDialogOpen(false)} variant="outline">
-              Close
-            </Button>
+            <ResponsiveDialogClose>
+              <Button onClick={() => setDialogOpen(false)} variant="outline">
+                Close
+              </Button>
+            </ResponsiveDialogClose>
           </ResponsiveDialogFooter>
         </ResponsiveDialogContent>
       </ResponsiveDialog>

@@ -156,7 +156,7 @@
 
   html {
     @apply scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-border/80 scrollbar-hover:scrollbar-thumb-muted-foreground scrollbar-track-transparent;
-    scrollbar-gutter: stable;
+    /* scrollbar-gutter: stable; */
   }
 
   input::placeholder,

@@ -2,10 +2,12 @@
 
 import * as React from 'react';
 import { useMediaQuery } from '@deepcrawl/ui/hooks/use-media-query';
+import { cn } from '@deepcrawl/ui/lib/utils';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@deepcrawl/ui/components/ui/dialog';
@@ -48,6 +50,10 @@ interface ResponsiveDialogDescriptionProps {
 interface ResponsiveDialogFooterProps {
   children: React.ReactNode;
   className?: string;
+}
+
+interface ResponsiveDialogCloseProps {
+  children: React.ReactElement;
 }
 
 const ResponsiveDialogContext = React.createContext<{
@@ -96,11 +102,13 @@ function ResponsiveDialogContent({
 }: ResponsiveDialogContentProps) {
   const { isDesktop } = useResponsiveDialog();
 
+  const defaultCN = 'max-md:px-8 max-md:pb-8 md:max-w-2xl xl:max-w-4xl' as const;
+
   if (isDesktop) {
-    return <DialogContent className={className}>{children}</DialogContent>;
+    return <DialogContent className={cn(defaultCN, className)}>{children}</DialogContent>;
   }
 
-  return <DrawerContent className={className}>{children}</DrawerContent>;
+  return <DrawerContent className={cn(defaultCN, className)}>{children}</DrawerContent>;
 }
 
 function ResponsiveDialogHeader({
@@ -151,19 +159,30 @@ function ResponsiveDialogFooter({
   const { isDesktop } = useResponsiveDialog();
 
   if (isDesktop) {
-    return null;
+    return <DialogFooter className={className}>{children}</DialogFooter>;
   }
 
   return (
     <DrawerFooter className={className ?? 'pt-2'}>
-      <DrawerClose asChild>{children}</DrawerClose>
+      {children}
     </DrawerFooter>
   );
+}
+
+function ResponsiveDialogClose({ children }: ResponsiveDialogCloseProps) {
+  const { isDesktop } = useResponsiveDialog();
+
+  if (isDesktop) {
+    return children;
+  }
+
+  return <DrawerClose asChild>{children}</DrawerClose>;
 }
 
 export {
   ResponsiveDialog,
   ResponsiveDialogContent,
+  ResponsiveDialogClose,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,

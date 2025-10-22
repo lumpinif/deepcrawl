@@ -1,16 +1,18 @@
 'use client';
 
 import { Button } from '@deepcrawl/ui/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@deepcrawl/ui/components/ui/dialog';
+
 import { Input } from '@deepcrawl/ui/components/ui/input';
 import { Label } from '@deepcrawl/ui/components/ui/label';
+import {
+  ResponsiveDialog,
+  ResponsiveDialogClose,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from '@deepcrawl/ui/components/ui/responsive-dialog';
 import {
   Select,
   SelectContent,
@@ -84,7 +86,7 @@ export function CreateApiKeyDialog({
   };
 
   return (
-    <Dialog
+    <ResponsiveDialog
       onOpenChange={(isOpen) => {
         onOpenChange(isOpen);
         // State will be reset via useEffect with delay to prevent flickering
@@ -92,13 +94,13 @@ export function CreateApiKeyDialog({
       open={open}
     >
       {createdKey ? (
-        <DialogContent className="space-y-4 outline-none ring-0 sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+        <ResponsiveDialogContent className="space-y-4 outline-none ring-0 sm:max-w-xl">
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
               API Key Created Successfully
-            </DialogTitle>
-          </DialogHeader>
+            </ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
           <div className="flex w-full items-center gap-2">
             <span className="flex-1 shrink-0 break-all rounded-lg border bg-muted p-2 px-4 font-mono text-sm tracking-wide">
               {createdKey}
@@ -117,15 +119,15 @@ export function CreateApiKeyDialog({
               </p>
             </div>
           </div>
-        </DialogContent>
+        </ResponsiveDialogContent>
       ) : (
-        <DialogContent className="sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle>Create API Key</DialogTitle>
-            <DialogDescription>
+        <ResponsiveDialogContent className="sm:max-w-xl">
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>Create API Key</ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>
               Create a new API key to access Deepcrawl services.
-            </DialogDescription>
-          </DialogHeader>
+            </ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
@@ -163,10 +165,12 @@ export function CreateApiKeyDialog({
                 />
               </div>
             </div>
-            <DialogFooter>
-              <Button onClick={handleClose} type="button" variant="outline">
-                Cancel
-              </Button>
+            <ResponsiveDialogFooter>
+              <ResponsiveDialogClose>
+                <Button onClick={handleClose} type="button" variant="outline">
+                  Cancel
+                </Button>
+              </ResponsiveDialogClose>
               <SpinnerButton
                 className="w-full sm:w-32"
                 disabled={createApiKey.isPending}
@@ -175,10 +179,10 @@ export function CreateApiKeyDialog({
               >
                 Create API Key
               </SpinnerButton>
-            </DialogFooter>
+            </ResponsiveDialogFooter>
           </form>
-        </DialogContent>
+        </ResponsiveDialogContent>
       )}
-    </Dialog>
+    </ResponsiveDialog>
   );
 }
