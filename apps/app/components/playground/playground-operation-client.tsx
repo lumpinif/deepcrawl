@@ -126,7 +126,7 @@ export const PlaygroundOperationClientContent = ({
           API Playground for Deepcrawl
         </span>
       </PageTitle>
-      <div className="mx-auto flex w-full flex-col gap-4 sm:max-w-4/5">
+      <div className="mx-auto mb-10 flex w-full flex-col gap-4 sm:max-w-4/5">
         <PromptInput
           className={cn('relative w-full', className)}
           onSubmit={(_, event) => {
