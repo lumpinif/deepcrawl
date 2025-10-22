@@ -86,6 +86,9 @@ export function UrlInput({
         </Badge>
       )}
       <Input
+        autoCapitalize="none"
+        autoComplete="off"
+        autoCorrect="off"
         className={cn(
           'transition-all duration-200 ease-in-out',
           'border-none',
@@ -96,12 +99,15 @@ export function UrlInput({
           className,
         )}
         id="url-input"
-        name="message"
+        inputMode="url"
+        name="playground-url"
         onChange={(e) => {
           onChange?.(e);
         }}
         onKeyDown={handleKeyDown}
         placeholder={hasProtocol ? 'https://example.com' : placeholder}
+        spellCheck={false}
+        type="url"
         value={value}
         // Never pass autoFocus to DOM to avoid hydration mismatch
         {...props}

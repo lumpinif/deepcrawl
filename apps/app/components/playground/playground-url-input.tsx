@@ -93,7 +93,6 @@ export function PlaygroundUrlInput({
         onChange={handleUrlChange}
         onSubmit={handleSubmit}
         placeholder="Enter URL here..."
-        type="text"
         value={requestUrl}
       />
       <SpinnerButton
