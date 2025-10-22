@@ -25,7 +25,7 @@ export function PlaygroundOptionsMenusToolbar({
   setIsDetailedBarOpen,
 }: PlaygroundOptionsMenusToolbarProps) {
   const customizeLabelClasses = cn(
-    'mr-1 flex w-fit select-none items-center overflow-hidden text-nowrap font-medium text-muted-foreground text-xs transition-all duration-250 ease-out',
+    'mr-1 hidden w-fit select-none items-center overflow-hidden text-nowrap font-medium text-muted-foreground text-xs transition-all duration-250 ease-out md:flex',
     isDetailedBarOpen
       ? 'ml-3 max-w-[12rem] translate-x-0 opacity-100'
       : '-translate-x-1 pointer-events-none ml-0 max-w-0 opacity-0 blur-[3px]',
@@ -33,13 +33,13 @@ export function PlaygroundOptionsMenusToolbar({
 
   return (
     <PromptInputToolbar
-      className="peer/toolbar group/toolbar border-b-0 hover:cursor-pointer"
+      className="peer/toolbar group/toolbar border-b-0 hover:cursor-pointer max-sm:py-2"
       onClick={(e) => {
         e.preventDefault();
         setIsDetailedBarOpen(!isDetailedBarOpen);
       }}
     >
-      <PromptInputTools className="items-center gap-x-0 max-sm:flex-col max-sm:items-start max-sm:py-2">
+      <PromptInputTools className="w-fit items-center gap-x-0">
         <div className={customizeLabelClasses}>
           <AnimatePresence mode="wait">
             {isDetailedBarOpen && (
@@ -67,30 +67,28 @@ export function PlaygroundOptionsMenusToolbar({
           </AnimatePresence>
         </div>
 
-        <div className="">
-          {/* Content format options */}
-          <ContentFormatOptionsMenu />
+        {/* Content format options */}
+        <ContentFormatOptionsMenu />
 
-          {/* Link extraction options - only available for extractLinks */}
-          <LinkExtractionOptionsMenu />
+        {/* Link extraction options - only available for extractLinks */}
+        <LinkExtractionOptionsMenu />
 
-          {/* Markdown options - showing standalone for getMarkdown only */}
-          <MarkdownOptionsMenu />
+        {/* Markdown options - showing standalone for getMarkdown only */}
+        <MarkdownOptionsMenu />
 
-          {/* Cleaning processor options */}
-          <CleaningProcessorMenu />
+        {/* Cleaning processor options */}
+        <CleaningProcessorMenu />
 
-          {/* Cache options */}
-          <CacheOptionsMenu />
+        {/* Cache options */}
+        <CacheOptionsMenu />
 
-          {/* Metrics options - only available for readUrl and extractLinks */}
-          <MetricsOptionsMenu />
-        </div>
+        {/* Metrics options - only available for readUrl and extractLinks */}
+        <MetricsOptionsMenu />
       </PromptInputTools>
 
-      <div className="flex items-center gap-x-0 overflow-hidden">
+      <div className="flex flex-1 items-center justify-end gap-x-0 overflow-hidden">
         <OptionPreviewBadges
-          className="max-sm:hidden"
+          className="max-md:hidden"
           isAccordionOpen={isDetailedBarOpen}
         />
         {/* Detailed options toggle button */}
@@ -100,6 +98,9 @@ export function PlaygroundOptionsMenusToolbar({
           onClick={() => setIsDetailedBarOpen(!isDetailedBarOpen)}
           type="button"
         >
+          <span className="select-none text-muted-foreground text-xs">
+            {isDetailedBarOpen ? 'Hide Code' : 'Show Code'}
+          </span>
           <Plus
             className="size-4 shrink-0 transition-transform duration-200 group-hover/toolbar:rotate-90 group-hover/toolbar:text-primary"
             strokeWidth={1}
