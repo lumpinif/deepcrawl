@@ -1068,6 +1068,7 @@ export const ContentFormatOptionsMenu = memo(
                                   </DropdownMenuSubTrigger>
                                   <DropdownMenuPortal>
                                     <DropdownMenuSubContent
+                                      alignOffset={-65}
                                       className="min-w-80 p-4"
                                       sideOffset={25}
                                     >
