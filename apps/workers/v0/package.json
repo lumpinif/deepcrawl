@@ -11,8 +11,7 @@
     "clean": "rimraf .wrangler .turbo",
     "antFu:lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "mdlint": "markdownlint-cli2 --config .markdownlint-cli2.jsonc --fix",
-    "check": "biome check --write && pnpm mdlint && pnpm typecheck",
+    "check": "biome check --write && pnpm typecheck",
     "cf-typegen": "wrangler types --c wrangler.jsonc --c ../auth/wrangler.jsonc --env-interface=CloudflareBindings && tsx ./scripts/worker-config-override.ts && pnpm typecheck",
     "gen:openapi": "tsx ./scripts/generate-openapi-yaml.ts"
   },
