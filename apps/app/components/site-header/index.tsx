@@ -34,6 +34,7 @@ export interface SiteHeaderProps {
   logoScale?: number;
   logoTransformY?: number;
   enableSearchDialog?: boolean;
+  enableFeedbackLink?: boolean;
 }
 
 export function SiteHeader({
@@ -49,6 +50,7 @@ export function SiteHeader({
   enableLayoutViewToggle = true,
   logoScale = 1,
   logoTransformY = 0,
+  enableFeedbackLink = true,
 }: SiteHeaderProps) {
   const isMobile = useMediaQuery('(max-width: 640px)');
 
@@ -134,6 +136,32 @@ export function SiteHeader({
                 </TooltipContent>
               </Tooltip>
             ),
+            enableFeedbackLink && (
+              <Tooltip key="feedback">
+                <TooltipTrigger asChild>
+                  <Button
+                    asChild
+                    className="h-7 text-muted-foreground"
+                    key="feedback"
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <Link
+                      className="font-medium text-muted-foreground text-sm hover:text-foreground"
+                      href="https://github.com/lumpinif/deepcrawl/issues/new"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Feedback
+                      <span className="sr-only">Feedback</span>
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Feedback</p>
+                </TooltipContent>
+              </Tooltip>
+            ),
             enableGithubLink && (
               <Button
                 asChild
@@ -170,6 +198,7 @@ export function SiteHeader({
           {(enableGithubLink ||
             enableThemeToggle ||
             enableLayoutToggle ||
+            enableFeedbackLink ||
             enableDocsLink) && (
             <Separator
               className="mr-1 data-[orientation=vertical]:h-4"
