@@ -1260,10 +1260,10 @@ export const ContentFormatOptionsMenu = memo(
               </div>
             </div>
           </PromptInputActionMenuContent>
-          <TooltipContent align="start" side="bottom">
-            <p>Configure content extraction and format options</p>
-          </TooltipContent>
         </PromptInputActionMenu>
+        <TooltipContent align="start" side="bottom">
+          <p>Configure content extraction and format options</p>
+        </TooltipContent>
       </Tooltip>
     );
   },
