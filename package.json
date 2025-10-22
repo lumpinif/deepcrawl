@@ -62,7 +62,7 @@
       "pnpm exec biome check --write",
       "cd apps/app && pnpm exec eslint --fix"
     ],
-    "*.{json,jsonc,yml,yaml}": [
+    "*.{json,jsonc}": [
       "pnpm exec biome check --write"
     ],
     "*.{css,scss,pcss}": [
