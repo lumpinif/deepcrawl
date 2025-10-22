@@ -124,7 +124,13 @@ export function PageHeader({
 } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn('mb-8 border-b py-8 md:mb-10 md:py-10', className)}>
-      <div className={cn(baseContainerCN, containerClassName)}>
+      <div
+        className={cn(
+          baseContainerCN,
+          'flex justify-between max-sm:flex-col max-sm:gap-y-4 sm:items-center',
+          containerClassName,
+        )}
+      >
         <div className="[&:has(>:nth-child(2))]:flex [&:has(>:nth-child(2))]:flex-col [&:has(>:nth-child(2))]:gap-1">
           {label && label}
           <PageTitle

@@ -11,7 +11,7 @@ const REFRESH_COOLDOWN_MS = 5_000; // 5 seconds cooldown
 export function LogsPageHeader() {
   const queryClient = useQueryClient();
   const [isOnCooldown, setIsOnCooldown] = useState(false);
-  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const [_, setCooldownRemaining] = useState(0);
 
   // Check if any queries with our key are currently fetching
   const isFetching = queryClient.isFetching({
@@ -72,7 +72,6 @@ export function LogsPageHeader() {
 
   return (
     <PageHeader
-      containerClassName="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4"
       description="Check out your recent request activity logs"
       title="Activity Logs"
     >

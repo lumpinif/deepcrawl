@@ -90,7 +90,6 @@ export function ApiKeysPageClient() {
   return (
     <>
       <PageHeader
-        containerClassName="flex items-center justify-between max-sm:flex-col max-sm:gap-y-4"
         description="Manage your API keys for accessing Deepcrawl services."
         title="Your API Keys"
       >
