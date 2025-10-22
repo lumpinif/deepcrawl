@@ -166,11 +166,6 @@ export function CreateApiKeyDialog({
               </div>
             </div>
             <ResponsiveDialogFooter>
-              <ResponsiveDialogClose>
-                <Button onClick={handleClose} type="button" variant="outline">
-                  Cancel
-                </Button>
-              </ResponsiveDialogClose>
               <SpinnerButton
                 className="w-full sm:w-32"
                 disabled={createApiKey.isPending}
@@ -179,6 +174,11 @@ export function CreateApiKeyDialog({
               >
                 Create API Key
               </SpinnerButton>
+              <ResponsiveDialogClose>
+                <Button onClick={handleClose} type="button" variant="outline">
+                  Cancel
+                </Button>
+              </ResponsiveDialogClose>
             </ResponsiveDialogFooter>
           </form>
         </ResponsiveDialogContent>
