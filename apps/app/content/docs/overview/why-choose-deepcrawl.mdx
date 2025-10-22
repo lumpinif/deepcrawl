@@ -3,57 +3,61 @@ title: Why Choose Deepcrawl
 description: Understand the strengths that make Deepcrawl the right platform for LLM-ready web crawling.
 ---
 
-Deepcrawl focuses on one job: turn the living web into clean, structured knowledge or context that both Large Language Models and humans can trust. These are the reasons teams rely on it for production workloads.
+Deepcrawl turns web pages into clean, structured data for LLMs and humans. Fast, open-source, and built for production.
 
-## Optimized for LLM pipelines
-- Markdown first: the reader engine removes ads, scripts, and boilerplate while preserving semantic structure and headings.
-- Token-aware output: compact formatting keeps prompt costs low without sacrificing context richness.
-- Link trees intelligence: crawlers map internal/external/medias links and surface related pages so agents can plan their next request.
+## Better performance by default
+- **5-10x faster than alternatives** on standard HTML parsing—no headless browser overhead for simple content.
+- Edge-native V8 Workers return responses in milliseconds with optimized parsers and smart caching.
+- Dynamic cache controls reduce redundant crawls and handle bursty workflows gracefully.
 
-## Built on resilient infrastructure
-- Cloudflare Workers handle fetches close to users worldwide, reducing latency and throttling surprises.
-- Caching and retry strategies limit redundant crawls and recover gracefully from flaky sites.
-- The Turborepo monorepo keeps shared packages, types, and tooling aligned across apps and workers.
+## Optimized for AI workflows
+- **Markdown-first output** removes ads, scripts, and boilerplate while preserving semantic structure.
+- **Token-efficient formatting** cuts prompt costs without losing context.
+- **Link tree intelligence** maps true site topology so agents plan next steps without sitemap.xml—potentially outperforming llms.txt.
 
-## Developer-first experience
-- Fully typed JavaScript/TypeScript SDK with intuitive methods such as `getMarkdown`, `readUrl`, and `extractLinks` links tree specialized methods.
-- Consistent REST endpoints for any runtime—from curl to Python notebooks—backed by the same contracts.
-- Detailed logs, exports, and error taxonomy so you can instrument flows, replay responses, or debug an agent run.
-- Predictable error classes and retry helpers so production agents can distinguish rate limits, validation issues, and upstream failures without guesswork.
-- Ready-to-use Zod schemas for LLMs structured outputs that plug directly into AI agent frameworks expecting typed responses.
+## Worldwide edge infrastructure
+- Cloudflare Workers run requests close to users globally, minimizing latency.
+- Automatic retries recover from flaky sites without manual intervention.
+- CDN-backed responses maintain consistent performance worldwide.
+
+## Developer-first tooling
+- **Lightweight TypeScript SDK** shares contracts, types, and schemas with the worker—playground parity from install.
+- Typed error classes distinguish rate limits, validation issues, and upstream failures.
+- Consistent REST and oRPC endpoints work across any runtime: curl, Python, serverless functions.
+- Zod schemas plug directly into AI frameworks expecting structured outputs.
 
 ## Fits how your team works
 
 <Tabs items={['Build with APIs', 'Operate with Dashboard']}>
   <Tab>
 
-  - Use bearer tokens or API keys to call endpoints from backends, serverless functions, or automation tools.
-  - Stream both markdown and link tree results into AI frameworks such as `ai-sdk`, LangChain, or custom planners.
-  - Extend the open contracts to enforce your own rate limits, headers, or metadata policies.
+  - Call endpoints with bearer tokens or API keys from backends, serverless functions, or automation tools.
+  - Stream markdown and link trees into AI frameworks like `ai-sdk`, LangChain, or custom planners.
+  - Extend open contracts to enforce custom rate limits, headers, or metadata policies.
 
   </Tab>
   <Tab>
 
-  - The Next.js 15 dashboard offers an API playground with full options support, tasks activity history, and account management for non-developers.
-  - Built-in previews let stakeholders validate clean markdown before wiring it into production flows.
-  - Access controls and audit logs help you track usage across global collaborators.
+  - Next.js 15 dashboard with API playground, full options support, task history, and account management.
+  - Built-in previews validate clean markdown before production deployment.
+  - Access controls and audit logs track usage across teams.
 
   </Tab>
 </Tabs>
 
-## Open by design
+## Type safety across every surface
+- Shared OpenAPI, oRPC, and Zod schemas keep workers, dashboard, and SDK aligned.
+- Inputs validate once and stay consistent from compile to runtime.
+- Same contracts used to build Deepcrawl ship with the SDK.
+
+## 100% free and open source
 
 <Callout type="info">
-Deepcrawl is fully open source. Deploy the dashboard to Vercel (or your host of choice), the workers to Cloudflare, and keep full control of data residency and customization.
+MIT-licensed and completely free to use. Fork, extend, and deploy your own instance without server maintenance overhead.
 </Callout>
 
-- No proprietary lock-in: every package lives in this repository under a permissive license.
-- Works with free tiers of Vercel and Cloudflare for rapid experimentation.
-- Shared scripts and database tooling ensure self-hosted installs stay aligned with the managed service.
-
-## Ready for global teams
-- Localized infrastructure and CDN-backed responses keep performance consistent worldwide.
-- Environment-agnostic authentication supports both API keys and session-based access.
-- Documentation, guides, and contracts stay synchronized through the monorepo, so updates reach every audience at once.
+- No proprietary lock-in or metered credits—use the API playground or consume APIs freely.
+- Deploy dashboard to Vercel and workers to Cloudflare using free tiers.
+- Full control of data residency and customization.
 
 Ready to go deeper? Continue to the [Quick Start](/docs/overview/quick-start) or pick a topic from the navigation.
