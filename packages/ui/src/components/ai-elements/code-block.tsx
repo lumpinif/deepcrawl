@@ -111,6 +111,7 @@ export const CodeBlockCopyButton = ({
   onCopy,
   onError,
   timeout = 2000,
+  type = 'button',
   children,
   className,
   ...props
@@ -141,6 +142,7 @@ export const CodeBlockCopyButton = ({
       className={cn('shrink-0', className)}
       onClick={copyToClipboard}
       size="icon"
+      type={type}
       variant="ghost"
       {...props}
     >
