@@ -99,8 +99,7 @@ export function UrlInput({
           className,
         )}
         id="url-input"
-        inputMode="text"
-        name="playground-url"
+        name="message"
         onChange={(e) => {
           onChange?.(e);
         }}
