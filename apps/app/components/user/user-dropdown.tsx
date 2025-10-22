@@ -28,7 +28,12 @@ import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { IconBook } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronsDownUpIcon, ChevronsUpDownIcon, LogOut } from 'lucide-react';
+import {
+  ChevronsDownUpIcon,
+  ChevronsUpDownIcon,
+  HomeIcon,
+  LogOut,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
@@ -259,9 +264,16 @@ export function UserDropdown({
 
         <DropdownMenuSeparator />
 
+        <Link href="/">
+          <DropdownMenuItem className="flex w-full items-center justify-between">
+            Home Page
+            <HomeIcon />
+          </DropdownMenuItem>
+        </Link>
+
         <Link href="/docs">
           <DropdownMenuItem className="flex w-full items-center justify-between">
-            Docs
+            Documentation
             <IconBook />
           </DropdownMenuItem>
         </Link>
@@ -272,7 +284,7 @@ export function UserDropdown({
           target="_blank"
         >
           <DropdownMenuItem className="flex w-full items-center justify-between">
-            Github
+            Source Code
             <GitHubIcon />
           </DropdownMenuItem>
         </a>
