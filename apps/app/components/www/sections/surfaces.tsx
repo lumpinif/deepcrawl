@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '@deepcrawl/ui/lib/utils';
 import PyramidAnimation from '../ascii-pyramid';
 import { Globe } from '../globe';

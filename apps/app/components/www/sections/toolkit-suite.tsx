@@ -1,3 +1,5 @@
+'use client';
+
 import { H2 } from '../h2';
 import { OperationSelectorDemo } from '../operation-selector-demo';
 import { Tick } from '../tick';
