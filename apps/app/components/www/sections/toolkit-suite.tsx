@@ -1,7 +1,7 @@
 'use client';
 
 import { H2 } from '../h2';
-import { OperationSelectorDemo } from '../operation-selector-demo';
+import { LazyOperationSelectorDemo } from '../lazy-components';
 import { Tick } from '../tick';
 
 export const ToolkitSuite = () => (
@@ -15,7 +15,7 @@ export const ToolkitSuite = () => (
           more requested features and endpoints are regularly added!
         </p>
       </div>
-      <OperationSelectorDemo />
+      <LazyOperationSelectorDemo />
       <p className="mx-auto w-fit text-pretty rounded-full border bg-background-subtle px-7 py-3 text-center font-semibold text-base text-primary/70 tracking-tight shadow-sm">
         Headless Browser-rendering and asynchronous durable crawling are coming
         soon!

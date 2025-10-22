@@ -5,13 +5,15 @@ import type { LinksTree } from 'deepcrawl/types';
 import { useState } from 'react';
 import { extractLinksResponseSample } from '@/lib/response-samples';
 import { TreeViewCard } from '../../playground/response-area/content-tabs';
-import DisplayCards from '../display-cards';
-import { DottedWorldMap } from '../dotted-map';
 import { FreeTag } from '../free-tag';
 import { H2 } from '../h2';
+import {
+  LazyDisplayCards,
+  LazyDottedWorldMap,
+  LazyTiltedScroll,
+} from '../lazy-components';
 import { SDKCodeblock } from '../sdk-codeblock';
 import { Tick } from '../tick';
-import { TiltedScroll } from '../tilted-scroll';
 
 const VALUE_ITEMS = [
   {
@@ -19,7 +21,7 @@ const VALUE_ITEMS = [
     title: 'Better Performance by Default',
     description:
       "No headless browser tax or virtual DOM overhead required for simple HTML parsing! Edge-native Workers on V8 engine returns response in milliseconds with specially optimized Deepcrawl's parsers and tuned HTML cleaners, and smart dynamic caching controls.",
-    illustration: <DisplayCards />,
+    illustration: <LazyDisplayCards />,
   },
   {
     label: 'Open with full transparency',
@@ -51,7 +53,7 @@ const VALUE_ITEMS = [
     title: 'Worldwide CDN, Instant Retries',
     description:
       'Every request lands on the Cloudflare edge with automatic retries, configurable smart cache controls, for bursty workflows.',
-    illustration: <DottedWorldMap />,
+    illustration: <LazyDottedWorldMap />,
   },
   {
     label: 'SDK Ergonomics',
@@ -70,7 +72,7 @@ const VALUE_ITEMS = [
     title: 'Type Safety Across Every Surface',
     description:
       'Shared OpenAPI, oRPC, and Zod schemas keep workers, dashboard, and SDK aligned so inputs validate once and stay consistent from compile to runtime.',
-    illustration: <TiltedScroll />,
+    illustration: <LazyTiltedScroll />,
   },
 ] as const;
 

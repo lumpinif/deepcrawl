@@ -1,9 +1,8 @@
 'use client';
 
 import { cn } from '@deepcrawl/ui/lib/utils';
-import PyramidAnimation from '../ascii-pyramid';
-import { Globe } from '../globe';
 import { H2 } from '../h2';
+import { LazyGlobe, LazyPyramidAnimation } from '../lazy-components';
 import { SecureShield } from '../secure-shield';
 import { Tick } from '../tick';
 
@@ -13,7 +12,7 @@ const SURFACES = [
     description: 'REST + oRPC APIs powering the backend workflow.',
     illustration: (
       <div className="relative flex size-full items-center justify-center overflow-hidden opacity-85 [mask-image:linear-gradient(to_top,transparent,black_50%)]">
-        <Globe className="md:-translate-x-3 md:max-w-[250px]" />
+        <LazyGlobe className="md:-translate-x-3 md:max-w-[250px]" />
       </div>
     ),
     className: 'pr-0',
@@ -33,7 +32,7 @@ const SURFACES = [
       'Optimized Next.js dashboard, monitoring, playground, and key management interface.',
     illustration: (
       <div className="flex size-full items-center justify-center overflow-hidden opacity-85 [mask-image:linear-gradient(to_top,transparent,black_30%)]">
-        <PyramidAnimation className="scale-[0.5]" edges={false} />
+        <LazyPyramidAnimation className="scale-[0.5]" edges={false} />
       </div>
     ),
   },
