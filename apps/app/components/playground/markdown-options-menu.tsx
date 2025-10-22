@@ -33,6 +33,71 @@ import {
 } from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
+// Markdown option fields with their defaults and metadata
+const MARKDOWN_MENU_FIELDS = [
+  {
+    key: 'preferNativeParser',
+    defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
+    type: 'switch',
+    label: 'Prefer Native Parser',
+    tooltip: 'Use native parser when available for better performance',
+  },
+  {
+    key: 'keepDataImages',
+    defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
+    type: 'switch',
+    label: 'Keep Data Images',
+    tooltip: 'Preserve base64 encoded images in markdown output',
+  },
+  {
+    key: 'useInlineLinks',
+    defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
+    type: 'switch',
+    label: 'Use Inline Links',
+    tooltip: 'Use inline link format instead of reference links',
+  },
+  {
+    key: 'useLinkReferenceDefinitions',
+    defaultValue:
+      DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
+    type: 'switch',
+    label: 'Use Link References',
+    tooltip: 'Generate reference-style links with definitions at the end',
+  },
+  {
+    key: 'bulletMarker',
+    defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker,
+    type: 'select',
+    label: 'Bullet Marker',
+    tooltip: 'Character used for unordered list items',
+    options: [
+      { value: '*', label: '* (asterisk)' },
+      { value: '-', label: '- (dash)' },
+      { value: '+', label: '+ (plus)' },
+    ],
+  },
+  {
+    key: 'codeBlockStyle',
+    defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle,
+    type: 'select',
+    label: 'Code Block Style',
+    tooltip: 'Format style for code blocks in markdown',
+    options: [
+      { value: 'fenced', label: 'Fenced (```)' },
+      { value: 'indented', label: 'Indented (4 spaces)' },
+    ],
+  },
+  {
+    key: 'maxConsecutiveNewlines',
+    defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
+    type: 'number',
+    label: 'Max Consecutive Newlines',
+    tooltip: 'Maximum number of consecutive newlines allowed',
+    min: 1,
+    max: 10,
+  },
+] as const;
+
 // Component now uses context - no props needed!
 export function MarkdownOptionsMenu() {
   // Get state and actions from context
@@ -71,71 +136,6 @@ export function MarkdownOptionsMenu() {
     return null;
   }
 
-  // Markdown option fields with their defaults and metadata
-  const MARKDOWN_OPTION_FIELDS = [
-    {
-      key: 'preferNativeParser',
-      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
-      type: 'switch',
-      label: 'Prefer Native Parser',
-      tooltip: 'Use native parser when available for better performance',
-    },
-    {
-      key: 'keepDataImages',
-      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.keepDataImages,
-      type: 'switch',
-      label: 'Keep Data Images',
-      tooltip: 'Preserve base64 encoded images in markdown output',
-    },
-    {
-      key: 'useInlineLinks',
-      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useInlineLinks,
-      type: 'switch',
-      label: 'Use Inline Links',
-      tooltip: 'Use inline link format instead of reference links',
-    },
-    {
-      key: 'useLinkReferenceDefinitions',
-      defaultValue:
-        DEFAULT_MARKDOWN_CONVERTER_OPTIONS.useLinkReferenceDefinitions,
-      type: 'switch',
-      label: 'Use Link References',
-      tooltip: 'Generate reference-style links with definitions at the end',
-    },
-    {
-      key: 'bulletMarker',
-      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.bulletMarker,
-      type: 'select',
-      label: 'Bullet Marker',
-      tooltip: 'Character used for unordered list items',
-      options: [
-        { value: '*', label: '* (asterisk)' },
-        { value: '-', label: '- (dash)' },
-        { value: '+', label: '+ (plus)' },
-      ],
-    },
-    {
-      key: 'codeBlockStyle',
-      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.codeBlockStyle,
-      type: 'select',
-      label: 'Code Block Style',
-      tooltip: 'Format style for code blocks in markdown',
-      options: [
-        { value: 'fenced', label: 'Fenced (```)' },
-        { value: 'indented', label: 'Indented (4 spaces)' },
-      ],
-    },
-    {
-      key: 'maxConsecutiveNewlines',
-      defaultValue: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.maxConsecutiveNewlines,
-      type: 'number',
-      label: 'Max Consecutive Newlines',
-      tooltip: 'Maximum number of consecutive newlines allowed',
-      min: 1,
-      max: 10,
-    },
-  ] as const;
-
   const resetToDefaults = () => {
     onMarkdownOptionsChange({
       preferNativeParser: DEFAULT_MARKDOWN_CONVERTER_OPTIONS.preferNativeParser,
@@ -150,7 +150,7 @@ export function MarkdownOptionsMenu() {
     });
   };
 
-  const hasCustomSettings = MARKDOWN_OPTION_FIELDS.some(
+  const hasCustomSettings = MARKDOWN_MENU_FIELDS.some(
     ({ key, defaultValue }) => {
       const currentValue = markdownOptions?.[key];
       return currentValue !== undefined && currentValue !== defaultValue;
@@ -194,7 +194,7 @@ export function MarkdownOptionsMenu() {
             </div>
 
             <div className="space-y-4">
-              {MARKDOWN_OPTION_FIELDS.map((field) => {
+              {MARKDOWN_MENU_FIELDS.map((field) => {
                 const currentValue =
                   markdownOptions?.[field.key] ?? field.defaultValue;
                 const fieldId = `markdown-${field.key}`;
@@ -332,7 +332,6 @@ export function MarkdownOptionsMenu() {
                 return null;
               })}
             </div>
-
             <div className="border-t pt-3">
               <p className="text-muted-foreground text-xs">
                 * Markdown settings apply to content conversion

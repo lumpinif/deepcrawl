@@ -24,6 +24,44 @@ import { usePlaygroundOptionsSelector } from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 import { formatDaysFromSeconds } from '@/utils/playground/formatter';
 
+const CACHE_OPTION_FIELDS = [
+  {
+    key: 'enabled',
+    defaultValue: DEFAULT_CACHE_OPTIONS.enabled,
+    type: 'switch',
+    label: 'Enable Cache',
+    tooltip: 'Enable or disable caching for this request',
+  },
+  /* @deprecated */
+  // {
+  //   key: 'expiration',
+  //   defaultValue: undefined,
+  //   type: 'number',
+  //   label: 'Expiration (epoch timestamp)',
+  //   tooltip: 'Specific timestamp when cache expires',
+  //   placeholder: '1717708800',
+  // },
+  {
+    key: 'expirationTtl',
+    defaultValue: DEFAULT_CACHE_OPTIONS.expirationTtl,
+    type: 'number',
+    label: 'Expiration TTL (seconds, min 60)',
+    tooltip: 'Time-to-live in seconds from now',
+    min: 60,
+    placeholder: `Default: ${DEFAULT_CACHE_OPTIONS.expirationTtl}`,
+    badge: `Default: ${formatDaysFromSeconds(DEFAULT_CACHE_OPTIONS.expirationTtl)} days`,
+  },
+] as const satisfies readonly {
+  key: string;
+  defaultValue: boolean | number | undefined;
+  type: 'switch' | 'number';
+  label: string;
+  tooltip: string;
+  placeholder?: string;
+  min?: number;
+  badge?: string;
+}[];
+
 // Component now uses context - no props needed!
 export function CacheOptionsMenu() {
   // Get state and actions from context
@@ -48,45 +86,6 @@ export function CacheOptionsMenu() {
     startAnimation: () => void;
     stopAnimation: () => void;
   }>(null);
-
-  // Cache option fields with their defaults and metadata
-  const CACHE_OPTION_FIELDS = [
-    {
-      key: 'enabled',
-      defaultValue: DEFAULT_CACHE_OPTIONS.enabled,
-      type: 'switch',
-      label: 'Enable Cache',
-      tooltip: 'Enable or disable caching for this request',
-    },
-    /* @deprecated */
-    // {
-    //   key: 'expiration',
-    //   defaultValue: undefined,
-    //   type: 'number',
-    //   label: 'Expiration (epoch timestamp)',
-    //   tooltip: 'Specific timestamp when cache expires',
-    //   placeholder: '1717708800',
-    // },
-    {
-      key: 'expirationTtl',
-      defaultValue: DEFAULT_CACHE_OPTIONS.expirationTtl,
-      type: 'number',
-      label: 'Expiration TTL (seconds, min 60)',
-      tooltip: 'Time-to-live in seconds from now',
-      min: 60,
-      placeholder: `Default: ${DEFAULT_CACHE_OPTIONS.expirationTtl}`,
-      badge: `Default: ${formatDaysFromSeconds(DEFAULT_CACHE_OPTIONS.expirationTtl)} days`,
-    },
-  ] as const satisfies readonly {
-    key: string;
-    defaultValue: boolean | number | undefined;
-    type: 'switch' | 'number';
-    label: string;
-    tooltip: string;
-    placeholder?: string;
-    min?: number;
-    badge?: string;
-  }[];
 
   const resetToDefaults = () => {
     onCacheOptionsChange({

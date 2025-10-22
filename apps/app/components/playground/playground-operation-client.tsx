@@ -27,9 +27,8 @@ import { DetailedOptionsAccordion } from './detailed-options-accordion';
 import { OperationSelector } from './operation-selector';
 import { PlaygroundOptionsMenusToolbar } from './playground-options-menus-toolbar';
 import { PlaygroundUrlInput } from './playground-url-input';
-// TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart currentState.setOptions generic function
 
-// TODO: VALIDATE ALL TOOLTIPS AND DESCRIPTIONS FOR ALL OPTIONS
+// TODO: SOCIAL: FEATURE IDEA: add workflow automation allowing auto-configure based on detected url input, for example, if url includes 'github.com' we can use optimized configs for that, by using our smart currentState.setOptions generic function
 
 export interface PlaygroundOperationClientProps {
   className?: string;

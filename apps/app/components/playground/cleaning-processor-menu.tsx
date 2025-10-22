@@ -19,7 +19,7 @@ import { useCallback, useRef, useState } from 'react';
 import { usePlaygroundOptionsSelector } from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
-const PROCESSOR_OPTIONS = [
+const CLEANING_PROCESSOR_OPTIONS = [
   {
     value: 'cheerio-reader',
     label: 'Cheerio Reader',
@@ -91,7 +91,7 @@ export function CleaningProcessorMenu() {
           sideOffset={10}
         >
           <div className="min-w-80 space-y-0.5 p-1">
-            {PROCESSOR_OPTIONS.map((option) => (
+            {CLEANING_PROCESSOR_OPTIONS.map((option) => (
               <button
                 className="flex w-full items-center justify-between rounded-sm px-2 py-2 text-left text-sm hover:bg-muted focus:bg-muted focus:outline-none"
                 key={option.value}

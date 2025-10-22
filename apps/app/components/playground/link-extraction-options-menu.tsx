@@ -28,6 +28,31 @@ import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
 type LinkExtractionOptionsInput = ExtractLinksOptions['linkExtractionOptions'];
 
+const LINK_EXTRACTION_OPTION_FIELDS = [
+  {
+    key: 'includeExternal' as const,
+    defaultValue: DEFAULT_LINK_EXTRACTION_OPTIONS.includeExternal,
+    type: 'switch' as const,
+    label: 'Include External Links',
+    tooltip: 'Include links from other domains in the extraction results',
+  },
+  {
+    key: 'includeMedia' as const,
+    defaultValue: DEFAULT_LINK_EXTRACTION_OPTIONS.includeMedia,
+    type: 'switch' as const,
+    label: 'Include Media Files',
+    tooltip:
+      'Include media files (images, videos, documents) in extraction results',
+  },
+  {
+    key: 'removeQueryParams' as const,
+    defaultValue: DEFAULT_LINK_EXTRACTION_OPTIONS.removeQueryParams,
+    type: 'switch' as const,
+    label: 'Remove Query Parameters',
+    tooltip: 'Remove query parameters (?param=value) from extracted URLs',
+  },
+] as const;
+
 export function LinkExtractionOptionsMenu() {
   // Get state and actions from context
   const selectedOperation = usePlaygroundCoreSelector('selectedOperation');
@@ -65,32 +90,6 @@ export function LinkExtractionOptionsMenu() {
   if (selectedOperation !== 'extractLinks') {
     return null;
   }
-
-  // Link extraction option fields with their defaults and metadata
-  const LINK_EXTRACTION_OPTION_FIELDS = [
-    {
-      key: 'includeExternal' as const,
-      defaultValue: DEFAULT_LINK_EXTRACTION_OPTIONS.includeExternal,
-      type: 'switch' as const,
-      label: 'Include External Links',
-      tooltip: 'Include links from other domains in the extraction results',
-    },
-    {
-      key: 'includeMedia' as const,
-      defaultValue: DEFAULT_LINK_EXTRACTION_OPTIONS.includeMedia,
-      type: 'switch' as const,
-      label: 'Include Media Files',
-      tooltip:
-        'Include media files (images, videos, documents) in extraction results',
-    },
-    {
-      key: 'removeQueryParams' as const,
-      defaultValue: DEFAULT_LINK_EXTRACTION_OPTIONS.removeQueryParams,
-      type: 'switch' as const,
-      label: 'Remove Query Parameters',
-      tooltip: 'Remove query parameters (?param=value) from extracted URLs',
-    },
-  ] as const;
 
   const handleExcludePatternsChange = (
     e: React.ChangeEvent<HTMLInputElement>,

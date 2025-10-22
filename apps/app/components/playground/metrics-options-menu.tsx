@@ -25,6 +25,10 @@ import {
 } from '@/contexts/playground-context';
 import type { PlaygroundOptionsContextValue } from '@/hooks/playground/types';
 
+const METRICS_OPTION_TOOLTIP =
+  'Include timing data and operation duration in API responses';
+const METRICS_TOOLTIP = 'Configure performance metrics collection';
+
 // Component now uses context - no props needed!
 export function MetricsOptionsMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -131,7 +135,7 @@ export function MetricsOptionsMenu() {
                 </Label>
               </div>
               <p className="text-muted-foreground text-xs">
-                Include timing data and operation duration in API responses
+                {METRICS_OPTION_TOOLTIP}
               </p>
             </div>
 
@@ -143,7 +147,7 @@ export function MetricsOptionsMenu() {
           </div>
         </PromptInputActionMenuContent>
         <TooltipContent align="start" side="bottom">
-          <p>Configure performance metrics collection</p>
+          <p>{METRICS_TOOLTIP}</p>
         </TooltipContent>
       </PromptInputActionMenu>
     </Tooltip>
