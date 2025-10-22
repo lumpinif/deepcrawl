@@ -122,7 +122,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
   return (
     <div
       className={cn(
-        '-scroll-mt-0.5',
+        'lg:-scroll-mt-0.5 group-has-data-[collapsible=icon]/sidebar-wrapper:scroll-mt-12 group-data-[nav-mode=header]/header-nav-layout:scroll-mt-12',
         'flex flex-col',
         'lg:h-[calc(100svh-theme(spacing.16))] lg:group-data-[nav-mode=header]/header-nav-layout:h-[calc(100svh-theme(spacing.12))] lg:group-has-data-[collapsible=icon]/sidebar-wrapper:h-[calc(100svh-theme(spacing.12))]',
       )}
