@@ -100,7 +100,7 @@ export function OperationSelector({
       {DeepcrawlFeatures.map((feat) => (
         <Card
           className={cn(
-            'group relative cursor-pointer bg-background transition-all duration-200 ease-out hover:bg-input/25 hover:shadow-md 2xl:py-8 hover:dark:bg-accent/35',
+            'group relative cursor-pointer bg-background transition-all duration-200 ease-out hover:bg-input/25 hover:shadow-md xl:py-8 hover:dark:bg-accent/35',
             selectedOperation === feat.operation &&
               '!bg-input/40 dark:!bg-accent/50 border border-ring/50 shadow-md dark:border-ring/70',
           )}
