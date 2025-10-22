@@ -101,6 +101,7 @@ type ContentFormatOptions = Pick<
 
 // Configuration for different operations
 const OPERATION_CONFIGS = {
+  // getMarkdown: {} we don't need to configure anything for getMarkdown here, since we render a separate menu for it
   readUrl: {
     availableOptions: [
       'markdown',
