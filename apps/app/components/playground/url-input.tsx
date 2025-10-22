@@ -99,7 +99,7 @@ export function UrlInput({
           className,
         )}
         id="url-input"
-        inputMode="url"
+        inputMode="text"
         name="playground-url"
         onChange={(e) => {
           onChange?.(e);
@@ -107,7 +107,7 @@ export function UrlInput({
         onKeyDown={handleKeyDown}
         placeholder={hasProtocol ? 'https://example.com' : placeholder}
         spellCheck={false}
-        type="url"
+        type="text"
         value={value}
         // Never pass autoFocus to DOM to avoid hydration mismatch
         {...props}
