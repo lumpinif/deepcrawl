@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 
 const SectionSkeleton = ({ className = '' }: { className?: string }) => (
   <div
-    className={`w-full animate-pulse rounded-3xl border border-border/50 bg-background-subtle/60 ${className}`}
+    className={`min-h-[52rem] w-full animate-pulse rounded-none border border-border/50 bg-background-subtle/60 ${className}`}
   />
 );
 
@@ -14,7 +14,7 @@ const ValuePropSection = dynamic(
       default: mod.ValueProp,
     })),
   {
-    loading: () => <SectionSkeleton className="min-h-[32rem]" />,
+    loading: () => <SectionSkeleton />,
     ssr: false,
   },
 );
@@ -25,7 +25,7 @@ const ToolkitSuiteSection = dynamic(
       default: mod.ToolkitSuite,
     })),
   {
-    loading: () => <SectionSkeleton className="min-h-[28rem]" />,
+    loading: () => <SectionSkeleton />,
     ssr: false,
   },
 );
@@ -36,7 +36,7 @@ const SurfacesSection = dynamic(
       default: mod.Surfaces,
     })),
   {
-    loading: () => <SectionSkeleton className="min-h-[28rem]" />,
+    loading: () => <SectionSkeleton />,
     ssr: false,
   },
 );
