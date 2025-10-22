@@ -4,6 +4,7 @@ import {
   CodeBlock,
   CodeBlockCopyButton,
 } from '@deepcrawl/ui/components/ai-elements/code-block';
+import { Badge } from '@deepcrawl/ui/components/ui/badge';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import { cn } from '@deepcrawl/ui/lib/utils';
@@ -40,7 +41,7 @@ export const DetailedSDKImpl = memo(function DetailedSDKImpl({
   );
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn('space-y-4', className)}>
       <div className="flex items-center justify-between gap-2">
         <Label className="font-medium text-muted-foreground text-xs">
           SDK Usage
@@ -78,18 +79,25 @@ export const DetailedSDKImpl = memo(function DetailedSDKImpl({
       </CodeBlock>
 
       <div className="flex items-center justify-between">
+        <span className="text-muted-foreground text-xs">
+          {hasCustomOptions ? (
+            'Showing only options that differ from the defaults'
+          ) : (
+            <Badge
+              className="select-none text-muted-foreground text-xs hover:text-foreground"
+              variant="outline"
+            >
+              Default Configs Applied
+            </Badge>
+          )}
+        </span>
         <p className="text-muted-foreground text-xs">
-          {hasCustomOptions
-            ? 'Showing only options that differ from the defaults'
-            : 'Defaults applied — tweak the playground controls to override'}
-        </p>
-        <p className="text-muted-foreground text-xs">
-          Check the{' '}
+          Check{' '}
           <Link
             className="text-foreground underline underline-offset-4"
             href="/docs/reference/defaults"
           >
-            DEFAULTS
+            Default Configs
           </Link>{' '}
           for more details.
         </p>
