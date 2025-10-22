@@ -29,7 +29,12 @@ export const Installer = () => {
 
   return (
     <div className="flex w-fit flex-col gap-y-4">
-      <div className="group relative flex items-center gap-2 rounded-md border bg-background text-foreground">
+      <div
+        className="group relative flex cursor-default items-center gap-2 rounded-md border bg-background text-foreground"
+        onClick={copyToClipboard}
+        role="button"
+        tabIndex={0}
+      >
         <pre className="group-hover:!text-foreground w-full whitespace-pre-wrap py-2 text-center font-semibold text-sm transition-all dark:text-muted-foreground">
           {CODE}
         </pre>
