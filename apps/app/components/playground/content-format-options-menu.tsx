@@ -416,6 +416,7 @@ export const ContentFormatOptionsMenu = memo(
       'metadataOptions' in currentOpts
         ? currentOpts.metadataOptions
         : undefined;
+
     const treeOptions =
       'folderFirst' in currentOpts && selectedOperation === 'extractLinks'
         ? {
@@ -628,6 +629,310 @@ export const ContentFormatOptionsMenu = memo(
         return currentValue !== undefined && currentValue !== defaultValue;
       });
 
+    const renderMetadataSubContent = () => (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="font-medium text-sm">Metadata Fields</h4>
+          <Button
+            className="text-xs"
+            onClick={resetMetadataToDefaults}
+            size="sm"
+            variant="outline"
+          >
+            Reset
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {METADATA_FIELDS.map(({ key, label, tooltip }) => (
+            <Tooltip key={key}>
+              <TooltipTrigger asChild>
+                <div className="flex w-fit items-center space-x-2">
+                  <Checkbox
+                    checked={Boolean(
+                      metadataOptions?.[key] ?? DEFAULT_METADATA_OPTIONS[key],
+                    )}
+                    id={`metadata-${key}`}
+                    onCheckedChange={(checked) =>
+                      onMetadataOptionsChange?.({
+                        [key]: Boolean(checked),
+                      })
+                    }
+                  />
+                  <Label
+                    className="cursor-pointer text-sm"
+                    htmlFor={`metadata-${key}`}
+                  >
+                    {label}
+                  </Label>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
+      </div>
+    );
+
+    const renderTreeSubContent = () => (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="font-medium text-sm">Tree Options</h4>
+          <Button
+            className="text-xs"
+            onClick={resetTreeToDefaults}
+            size="sm"
+            variant="outline"
+          >
+            Reset
+          </Button>
+        </div>
+        <div className="space-y-3">
+          {TREE_OPTION_FIELDS.map(({ key, label, tooltip, type, options }) => (
+            <Tooltip key={key}>
+              <TooltipTrigger asChild>
+                <div className="flex w-full items-center space-x-2">
+                  {type === 'switch' ? (
+                    <>
+                      <Switch
+                        checked={Boolean(
+                          treeOptions?.[key] ?? DEFAULT_TREE_OPTIONS[key],
+                        )}
+                        id={`tree-${key}`}
+                        onCheckedChange={(checked) =>
+                          onTreeOptionsChange?.({
+                            [key]: Boolean(checked),
+                          })
+                        }
+                      />
+                      <Label
+                        className="flex-1 cursor-pointer text-sm"
+                        htmlFor={`tree-${key}`}
+                      >
+                        {label}
+                      </Label>
+                    </>
+                  ) : (
+                    <div className="w-full space-y-2">
+                      <Separator />
+                      <div className="flex w-full items-center justify-between gap-x-2">
+                        <Label
+                          className="min-w-0 flex-1 text-sm"
+                          htmlFor={`tree-${key}`}
+                        >
+                          {label}
+                        </Label>
+                        <Select
+                          onValueChange={(value) =>
+                            onTreeOptionsChange?.({
+                              [key]: value as TreeOptions[keyof TreeOptions],
+                            })
+                          }
+                          value={
+                            (treeOptions?.[key] as string) ??
+                            (DEFAULT_TREE_OPTIONS[key] as string)
+                          }
+                        >
+                          <SelectTrigger
+                            className="w-auto min-w-fit"
+                            id={`tree-${key}`}
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {options?.map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                title={option.tooltip}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
+      </div>
+    );
+
+    const renderMarkdownSubContent = () => (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="font-medium text-sm">Markdown Options</h4>
+          <Button
+            className="text-xs"
+            onClick={resetMarkdownToDefaults}
+            size="sm"
+            variant="outline"
+          >
+            Reset
+          </Button>
+        </div>
+        <div className="space-y-4">
+          {MARKDOWN_OPTION_FIELDS.map((field) => {
+            const fieldCurrentValue =
+              markdownOptions?.[field.key] ??
+              DEFAULT_MARKDOWN_CONVERTER_OPTIONS[field.key];
+            const fieldId = `markdown-${field.key}`;
+
+            if (field.type === 'switch') {
+              return (
+                <Tooltip key={field.key}>
+                  <TooltipTrigger asChild>
+                    <div className="flex w-fit items-center space-x-2">
+                      <Switch
+                        checked={Boolean(fieldCurrentValue)}
+                        id={fieldId}
+                        onCheckedChange={(checked) =>
+                          onMarkdownOptionsChange?.({
+                            [field.key]: Boolean(checked),
+                          })
+                        }
+                      />
+                      <Label
+                        className="cursor-pointer text-sm"
+                        htmlFor={fieldId}
+                      >
+                        {field.label}
+                      </Label>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>{field.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            if (field.type === 'select') {
+              return (
+                <Tooltip key={field.key}>
+                  <TooltipTrigger asChild>
+                    <div className="w-full space-y-2">
+                      <Separator />
+                      <div className="flex w-full items-center justify-between gap-x-2">
+                        <Label
+                          className="min-w-0 flex-1 text-sm"
+                          htmlFor={fieldId}
+                        >
+                          {field.label}
+                        </Label>
+                        <Select
+                          onValueChange={(value) =>
+                            onMarkdownOptionsChange?.({
+                              [field.key]: value,
+                            })
+                          }
+                          value={
+                            typeof fieldCurrentValue === 'string'
+                              ? fieldCurrentValue
+                              : String(
+                                  DEFAULT_MARKDOWN_CONVERTER_OPTIONS[field.key],
+                                )
+                          }
+                        >
+                          <SelectTrigger
+                            className="w-auto min-w-fit"
+                            id={fieldId}
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {field.options?.map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>{field.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            if (field.type === 'number') {
+              return (
+                <Tooltip key={field.key}>
+                  <TooltipTrigger asChild>
+                    <div className="w-full space-y-2">
+                      <Separator />
+                      <div className="space-y-2">
+                        <Label className="text-sm" htmlFor={fieldId}>
+                          {field.label}
+                        </Label>
+                        <Input
+                          className="font-mono text-xs"
+                          id={fieldId}
+                          max={field.max?.toString()}
+                          min={field.min?.toString()}
+                          onBlur={(e) => {
+                            const newValue = e.target.value
+                              ? Number(e.target.value)
+                              : undefined;
+
+                            if (newValue !== undefined) {
+                              let correctedValue = newValue;
+
+                              if (field.min && newValue < field.min) {
+                                correctedValue = field.min;
+                              } else if (field.max && newValue > field.max) {
+                                correctedValue = field.max;
+                              }
+
+                              if (correctedValue !== newValue) {
+                                onMarkdownOptionsChange?.({
+                                  [field.key]: correctedValue,
+                                });
+                              }
+                            }
+                          }}
+                          onChange={(e) => {
+                            const newValue = e.target.value
+                              ? Number(e.target.value)
+                              : undefined;
+                            onMarkdownOptionsChange?.({
+                              [field.key]: newValue,
+                            });
+                          }}
+                          placeholder={`Default: ${DEFAULT_MARKDOWN_CONVERTER_OPTIONS[field.key]}`}
+                          type="number"
+                          value={fieldCurrentValue?.toString() || ''}
+                        />
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p>{field.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            return null;
+          })}
+        </div>
+      </div>
+    );
+
     return (
       <Tooltip>
         <PromptInputActionMenu onOpenChange={setIsOpen} open={isOpen}>
@@ -738,63 +1043,7 @@ export const ContentFormatOptionsMenu = memo(
                                       className="min-w-80 p-4"
                                       sideOffset={25}
                                     >
-                                      <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                          <h4 className="font-medium text-sm">
-                                            Metadata Fields
-                                          </h4>
-                                          <Button
-                                            className="text-xs"
-                                            onClick={resetMetadataToDefaults}
-                                            size="sm"
-                                            variant="outline"
-                                          >
-                                            Reset
-                                          </Button>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-3">
-                                          {METADATA_FIELDS.map(
-                                            ({ key, label, tooltip }) => (
-                                              <Tooltip key={key}>
-                                                <TooltipTrigger asChild>
-                                                  <div className="flex w-fit items-center space-x-2">
-                                                    <Checkbox
-                                                      checked={Boolean(
-                                                        metadataOptions?.[
-                                                          key
-                                                        ] ??
-                                                          DEFAULT_METADATA_OPTIONS[
-                                                            key
-                                                          ],
-                                                      )}
-                                                      id={`metadata-${key}`}
-                                                      onCheckedChange={(
-                                                        checked,
-                                                      ) =>
-                                                        onMetadataOptionsChange?.(
-                                                          {
-                                                            [key]:
-                                                              Boolean(checked),
-                                                          },
-                                                        )
-                                                      }
-                                                    />
-                                                    <Label
-                                                      className="cursor-pointer text-sm"
-                                                      htmlFor={`metadata-${key}`}
-                                                    >
-                                                      {label}
-                                                    </Label>
-                                                  </div>
-                                                </TooltipTrigger>
-                                                <TooltipContent side="right">
-                                                  <p>{tooltip}</p>
-                                                </TooltipContent>
-                                              </Tooltip>
-                                            ),
-                                          )}
-                                        </div>
-                                      </div>
+                                      {renderMetadataSubContent()}
                                     </DropdownMenuSubContent>
                                   </DropdownMenuPortal>
                                 </DropdownMenuSub>
@@ -866,134 +1115,7 @@ export const ContentFormatOptionsMenu = memo(
                                       className="min-w-80 p-4"
                                       sideOffset={25}
                                     >
-                                      <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                          <h4 className="font-medium text-sm">
-                                            Tree Options
-                                          </h4>
-                                          <Button
-                                            className="text-xs"
-                                            onClick={resetTreeToDefaults}
-                                            size="sm"
-                                            variant="outline"
-                                          >
-                                            Reset
-                                          </Button>
-                                        </div>
-                                        <div className="space-y-3">
-                                          {TREE_OPTION_FIELDS.map(
-                                            ({
-                                              key,
-                                              label,
-                                              tooltip,
-                                              type,
-                                              options,
-                                            }) => (
-                                              <Tooltip key={key}>
-                                                <TooltipTrigger asChild>
-                                                  <div className="flex w-full items-center space-x-2">
-                                                    {type === 'switch' ? (
-                                                      <>
-                                                        <Switch
-                                                          checked={Boolean(
-                                                            treeOptions?.[
-                                                              key
-                                                            ] ??
-                                                              DEFAULT_TREE_OPTIONS[
-                                                                key
-                                                              ],
-                                                          )}
-                                                          id={`tree-${key}`}
-                                                          onCheckedChange={(
-                                                            checked,
-                                                          ) =>
-                                                            onTreeOptionsChange?.(
-                                                              {
-                                                                [key]:
-                                                                  Boolean(
-                                                                    checked,
-                                                                  ),
-                                                              },
-                                                            )
-                                                          }
-                                                        />
-                                                        <Label
-                                                          className="flex-1 cursor-pointer text-sm"
-                                                          htmlFor={`tree-${key}`}
-                                                        >
-                                                          {label}
-                                                        </Label>
-                                                      </>
-                                                    ) : (
-                                                      <div className="w-full space-y-2">
-                                                        <Separator />
-                                                        <div className="flex w-full items-center justify-between gap-x-2">
-                                                          <Label
-                                                            className="min-w-0 flex-1 text-sm"
-                                                            htmlFor={`tree-${key}`}
-                                                          >
-                                                            {label}
-                                                          </Label>
-                                                          <Select
-                                                            onValueChange={(
-                                                              value,
-                                                            ) =>
-                                                              onTreeOptionsChange?.(
-                                                                {
-                                                                  [key]: value,
-                                                                },
-                                                              )
-                                                            }
-                                                            value={
-                                                              (treeOptions?.[
-                                                                key
-                                                              ] as string) ??
-                                                              (DEFAULT_TREE_OPTIONS[
-                                                                key
-                                                              ] as string)
-                                                            }
-                                                          >
-                                                            <SelectTrigger
-                                                              className="w-auto min-w-fit"
-                                                              id={`tree-${key}`}
-                                                            >
-                                                              <SelectValue />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                              {options?.map(
-                                                                (option) => (
-                                                                  <SelectItem
-                                                                    key={
-                                                                      option.value
-                                                                    }
-                                                                    title={
-                                                                      option.tooltip
-                                                                    }
-                                                                    value={
-                                                                      option.value
-                                                                    }
-                                                                  >
-                                                                    {
-                                                                      option.label
-                                                                    }
-                                                                  </SelectItem>
-                                                                ),
-                                                              )}
-                                                            </SelectContent>
-                                                          </Select>
-                                                        </div>
-                                                      </div>
-                                                    )}
-                                                  </div>
-                                                </TooltipTrigger>
-                                                <TooltipContent side="right">
-                                                  <p>{tooltip}</p>
-                                                </TooltipContent>
-                                              </Tooltip>
-                                            ),
-                                          )}
-                                        </div>
-                                      </div>
+                                      {renderTreeSubContent()}
                                     </DropdownMenuSubContent>
                                   </DropdownMenuPortal>
                                 </DropdownMenuSub>
@@ -1072,239 +1194,7 @@ export const ContentFormatOptionsMenu = memo(
                                       className="min-w-80 p-4"
                                       sideOffset={25}
                                     >
-                                      <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                          <h4 className="font-medium text-sm">
-                                            Markdown Options
-                                          </h4>
-                                          <Button
-                                            className="text-xs"
-                                            onClick={resetMarkdownToDefaults}
-                                            size="sm"
-                                            variant="outline"
-                                          >
-                                            Reset
-                                          </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                          {MARKDOWN_OPTION_FIELDS.map(
-                                            (field) => {
-                                              const fieldCurrentValue =
-                                                markdownOptions?.[field.key] ??
-                                                DEFAULT_MARKDOWN_CONVERTER_OPTIONS[
-                                                  field.key
-                                                ];
-                                              const fieldId = `markdown-${field.key}`;
-
-                                              if (field.type === 'switch') {
-                                                return (
-                                                  <Tooltip key={field.key}>
-                                                    <TooltipTrigger asChild>
-                                                      <div className="flex w-fit items-center space-x-2">
-                                                        <Switch
-                                                          checked={Boolean(
-                                                            fieldCurrentValue,
-                                                          )}
-                                                          id={fieldId}
-                                                          onCheckedChange={(
-                                                            checked,
-                                                          ) =>
-                                                            onMarkdownOptionsChange?.(
-                                                              {
-                                                                [field.key]:
-                                                                  Boolean(
-                                                                    checked,
-                                                                  ),
-                                                              },
-                                                            )
-                                                          }
-                                                        />
-                                                        <Label
-                                                          className="cursor-pointer text-sm"
-                                                          htmlFor={fieldId}
-                                                        >
-                                                          {field.label}
-                                                        </Label>
-                                                      </div>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent side="right">
-                                                      <p>{field.tooltip}</p>
-                                                    </TooltipContent>
-                                                  </Tooltip>
-                                                );
-                                              }
-
-                                              if (field.type === 'select') {
-                                                return (
-                                                  <Tooltip key={field.key}>
-                                                    <TooltipTrigger asChild>
-                                                      <div className="w-full space-y-2">
-                                                        <Separator />
-                                                        <div className="flex w-full items-center justify-between gap-x-2">
-                                                          <Label
-                                                            className="min-w-0 flex-1 text-sm"
-                                                            htmlFor={fieldId}
-                                                          >
-                                                            {field.label}
-                                                          </Label>
-                                                          <Select
-                                                            onValueChange={(
-                                                              value,
-                                                            ) =>
-                                                              onMarkdownOptionsChange?.(
-                                                                {
-                                                                  [field.key]:
-                                                                    value,
-                                                                },
-                                                              )
-                                                            }
-                                                            value={
-                                                              typeof fieldCurrentValue ===
-                                                              'string'
-                                                                ? fieldCurrentValue
-                                                                : String(
-                                                                    DEFAULT_MARKDOWN_CONVERTER_OPTIONS[
-                                                                      field.key
-                                                                    ],
-                                                                  )
-                                                            }
-                                                          >
-                                                            <SelectTrigger
-                                                              className="w-auto min-w-fit"
-                                                              id={fieldId}
-                                                            >
-                                                              <SelectValue />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                              {field.options?.map(
-                                                                (option) => (
-                                                                  <SelectItem
-                                                                    key={
-                                                                      option.value
-                                                                    }
-                                                                    value={
-                                                                      option.value
-                                                                    }
-                                                                  >
-                                                                    {
-                                                                      option.label
-                                                                    }
-                                                                  </SelectItem>
-                                                                ),
-                                                              )}
-                                                            </SelectContent>
-                                                          </Select>
-                                                        </div>
-                                                      </div>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent side="right">
-                                                      <p>{field.tooltip}</p>
-                                                    </TooltipContent>
-                                                  </Tooltip>
-                                                );
-                                              }
-
-                                              if (field.type === 'number') {
-                                                return (
-                                                  <Tooltip key={field.key}>
-                                                    <TooltipTrigger asChild>
-                                                      <div className="w-full space-y-2">
-                                                        <Separator />
-                                                        <div className="space-y-2">
-                                                          <Label
-                                                            className="text-sm"
-                                                            htmlFor={fieldId}
-                                                          >
-                                                            {field.label}
-                                                          </Label>
-                                                          <Input
-                                                            className="font-mono text-xs"
-                                                            id={fieldId}
-                                                            max={field.max?.toString()}
-                                                            min={field.min?.toString()}
-                                                            onBlur={(e) => {
-                                                              const newValue = e
-                                                                .target.value
-                                                                ? Number(
-                                                                    e.target
-                                                                      .value,
-                                                                  )
-                                                                : undefined;
-
-                                                              // Enforce minimum and maximum values when user finishes typing
-                                                              if (
-                                                                newValue !==
-                                                                undefined
-                                                              ) {
-                                                                let correctedValue =
-                                                                  newValue;
-
-                                                                if (
-                                                                  field.min &&
-                                                                  newValue <
-                                                                    field.min
-                                                                ) {
-                                                                  correctedValue =
-                                                                    field.min;
-                                                                } else if (
-                                                                  field.max &&
-                                                                  newValue >
-                                                                    field.max
-                                                                ) {
-                                                                  correctedValue =
-                                                                    field.max;
-                                                                }
-
-                                                                if (
-                                                                  correctedValue !==
-                                                                  newValue
-                                                                ) {
-                                                                  onMarkdownOptionsChange?.(
-                                                                    {
-                                                                      [field.key]:
-                                                                        correctedValue,
-                                                                    },
-                                                                  );
-                                                                }
-                                                              }
-                                                            }}
-                                                            onChange={(e) => {
-                                                              const newValue = e
-                                                                .target.value
-                                                                ? Number(
-                                                                    e.target
-                                                                      .value,
-                                                                  )
-                                                                : undefined;
-                                                              onMarkdownOptionsChange?.(
-                                                                {
-                                                                  [field.key]:
-                                                                    newValue,
-                                                                },
-                                                              );
-                                                            }}
-                                                            placeholder={`Default: ${DEFAULT_MARKDOWN_CONVERTER_OPTIONS[field.key]}`}
-                                                            type="number"
-                                                            value={
-                                                              fieldCurrentValue?.toString() ||
-                                                              ''
-                                                            }
-                                                          />
-                                                        </div>
-                                                      </div>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent side="right">
-                                                      <p>{field.tooltip}</p>
-                                                    </TooltipContent>
-                                                  </Tooltip>
-                                                );
-                                              }
-
-                                              return null;
-                                            },
-                                          )}
-                                        </div>
-                                      </div>
+                                      {renderMarkdownSubContent()}
                                     </DropdownMenuSubContent>
                                   </DropdownMenuPortal>
                                 </DropdownMenuSub>
