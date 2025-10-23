@@ -6,7 +6,7 @@
 
 Deepcrawl is an open-source agents-oriented web page context extraction platform. It extracts cleaned markdown of page content, agent-favoured links tree and page metadata that LLMs can digest with minimal token cost to reduce context switching and hallucination.
 
-![shots](./public/shot.png)
+![shots](./public/screenshot.png)
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
