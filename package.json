@@ -2,6 +2,15 @@
   "name": "deepcrawl",
   "version": "0.0.1",
   "private": true,
+  "license": "MIT",
+  "author": {
+    "name": "Felix Lu",
+    "url": "https://x.com/felixlu1018"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
@@ -11,10 +20,15 @@
     "check": "pnpm install && turbo check && pnpm sherif:fix",
     "clean": "cd scripts && npx tsx clean.ts",
     "clean:install": "cd scripts && npx tsx clean.ts && pnpm install",
-    "prepare": "husky"
+    "prepare": "husky",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.5",
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.7",
     "@deepcrawl/typescript-config": "workspace:*",
     "@orpc/client": "^1.8.7",
     "@orpc/contract": "^1.8.7",

@@ -1,6 +1,9 @@
 {
   "name": "deepcrawl-worker-v0",
   "version": "0.0.1",
+  "description": "Deepcrawl API Worker",
+  "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "pnpm run clean && wrangler dev --x-remote-bindings",
     "dev:chain": "turbo run dev --filter=deepcrawl-worker-auth --filter=deepcrawl-worker-v0",

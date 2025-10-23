@@ -1,5 +1,9 @@
 {
   "name": "deepcrawl-worker-auth",
+  "version": "0.0.1",
+  "description": "Authentication worker for deepcrawl",
+  "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "pnpm run clean && wrangler dev",
     "dev:remote": "wrangler dev --remote",

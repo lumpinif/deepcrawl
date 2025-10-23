@@ -1,9 +1,11 @@
 {
   "name": "@deepcrawl/auth",
   "version": "0.0.1",
+  "private": true,
   "description": "Authentication package for @deepcrawl",
   "main": "index.ts",
   "author": "deepcrawl.ai - Felix",
+  "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "check": "biome check --write && pnpm typecheck",

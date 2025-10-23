@@ -2,6 +2,7 @@
   "name": "@deepcrawl/contracts",
   "version": "0.0.1",
   "description": "Shared API contracts for Deepcrawl services",
+  "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

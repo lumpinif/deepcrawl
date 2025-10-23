@@ -2,6 +2,7 @@
   "name": "@deepcrawl/db-d1",
   "version": "0.0.1",
   "description": "D1 Database package for @deepcrawl data preservation",
+  "private": true,
   "main": "index.ts",
   "author": "deepcrawl.ai - Felix",
   "scripts": {
