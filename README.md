@@ -1,8 +1,9 @@
 # Deepcrawl
 
+**100% free and open-source Firecrawl alternative with better performance and flexibility.**
+
 ![shots](./public/shot.png)
 
-> **100% free and open-source Firecrawl alternative with better performance and flexibility.**
 
 Deepcrawl is an open-source agents-oriented web page context extraction platform. It extracts cleaned markdown of page content, agent-favoured links tree and page metadata that LLMs can digest with minimal token cost to reduce context switching and hallucination.
 
