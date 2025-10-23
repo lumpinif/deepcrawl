@@ -1,7 +1,7 @@
 {
   "name": "deepcrawl",
   "version": "0.5.3",
-  "description": "JavaScript/TypeScript SDK for Deepcrawl API - A powerful web scraping and crawling service",
+  "description": "JavaScript/TypeScript SDK for Deepcrawl API",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -84,7 +84,10 @@
     "typescript",
     "javascript"
   ],
-  "author": "Felix Lu(Lyu) <@felixlu1018>",
+  "author": {
+    "name": "Felix Lu",
+    "url": "https://x.com/felixlu1018"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
