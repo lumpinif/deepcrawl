@@ -1,0 +1,29 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": [
+    "@changesets/cli/changelog",
+    {
+      "repo": "lumpinif/deepcrawl"
+    }
+  ],
+  "commit": false,
+  "fixed": [],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "dashboard",
+    "deepcrawl-worker-auth",
+    "deepcrawl-worker-v0",
+    "@deepcrawl/auth",
+    "@deepcrawl/eslint-config",
+    "@deepcrawl/ui",
+    "@deepcrawl/db-auth",
+    "@deepcrawl/db-d1"
+  ],
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  }
+}
