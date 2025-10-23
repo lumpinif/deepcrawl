@@ -9,7 +9,11 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "apps/workers/*",
+    "packages/*",
+    "packages/db/db-auth",
+    "packages/db/db-d1",
+    "packages/sdks/js-ts"
   ],
   "scripts": {
     "build": "turbo build",
