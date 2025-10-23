@@ -1,4 +1,4 @@
-name: Release JS-TS SDK
+name: Release Deepcrawl JS-TS SDK
 
 on:
   push:
@@ -68,8 +68,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          commit: "chore:release: version packages"
-          title: "chore:release: version packages"
+          commit: "chore:release: deepcrawl sdk-ts"
+          title: "chore:release: deepcrawl sdk-ts"
           version: node .github/changeset-version.js
           publish: npx changeset publish
           createGithubReleases: true
