@@ -78,14 +78,14 @@ jobs:
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
         run: pnpm turbo run typecheck --no-daemon
 
-      # - name: Run workspace tests
-      #   env:
-      #     TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      #     TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-      #   run: pnpm turbo run test --no-daemon
+      - name: Run workspace tests
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+        run: pnpm turbo run test --no-daemon
 
-      # - name: Run SDK tests
-      #   run: pnpm -C packages/sdks/js-ts test
+      - name: Run SDK tests
+        run: pnpm --filter deepcrawl test -- --run
 
       - name: Build SDK package
         run: pnpm sdk-ts:build

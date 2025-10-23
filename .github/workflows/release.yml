@@ -60,10 +60,9 @@ jobs:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
-      # TODO: Add tests back soon
-      # - name: Test sdk
-      #   run: pnpm --filter deepcrawl test -- --run
-      #   continue-on-error: false
+      - name: Test typescript sdk
+        run: pnpm --filter deepcrawl test -- --run
+        continue-on-error: false
 
       - name: Create release PR or publish
         id: changesets
