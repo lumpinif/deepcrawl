@@ -23,7 +23,8 @@
     "prepare": "husky",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "sdk-ts:build": "pnpm --filter=deepcrawl build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.5",
