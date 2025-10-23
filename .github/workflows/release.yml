@@ -1,4 +1,4 @@
-name: Release SDK
+name: Release JS-TS SDK
 
 on:
   push:
@@ -12,6 +12,10 @@ jobs:
   release:
     if: ${{ github.repository_owner == 'lumpinif' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
     concurrency:
       group: release-${{ github.ref }}
       cancel-in-progress: false
