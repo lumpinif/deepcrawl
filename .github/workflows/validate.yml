@@ -60,7 +60,7 @@ jobs:
         run: node .github/ensure-sdk-changeset.mjs origin/${{ github.event.pull_request.base.ref }}
 
       - name: Run Biome checks
-        run: pnpm exec biome check . --reporter=github
+        run: pnpm exec biome ci . --reporter=github
 
       - name: Run ESLint (dashboard)
         env:
