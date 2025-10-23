@@ -1,193 +1,114 @@
-// import { describe, it, expect, beforeEach, vi } from 'vitest';
-// import { http, HttpResponse } from 'msw';
-// import { DeepcrawlApp } from '../deepcrawl';
-// import { DeepcrawlAuthError, DeepcrawlError, DeepcrawlNetworkError } from '../types';
-// import { server, mockMarkdownResponse, mockReadResponse, mockLinksResponse } from './setup';
+import { describe, expect, it } from 'vitest';
+import { DeepcrawlAuthError } from '../_types';
+import { DeepcrawlApp } from '../deepcrawl';
 
-// describe('DeepcrawlApp', () => {
-//   let app: DeepcrawlApp;
+describe('DeepcrawlApp', () => {
+  describe('constructor', () => {
+    it('should throw error when API key and headers are missing', () => {
+      expect(() => new DeepcrawlApp({ apiKey: '' })).toThrow(
+        DeepcrawlAuthError,
+      );
+      expect(() => new DeepcrawlApp({ apiKey: '' })).toThrow(
+        '[DEEPCRAWL_AUTH] Please provide a valid API key',
+      );
+    });
 
-//   beforeEach(() => {
-//     app = new DeepcrawlApp({
-//       apiKey: 'test-api-key',
-//       baseUrl: 'https://api.test.com',
-//     });
-//   });
+    it('should create instance with valid API key', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-api-key' });
+      expect(app).toBeDefined();
+      expect(app.client).toBeDefined();
+    });
 
-//   describe('constructor', () => {
-//     it('should throw error when API key is missing', () => {
-//       expect(() => new DeepcrawlApp({ apiKey: '' })).toThrow(DeepcrawlAuthError);
-//       expect(() => new DeepcrawlApp({ apiKey: '' })).toThrow('[DEEPCRAWL_API_KEY] API key is required');
-//     });
+    it('should use default base URL when not provided', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app).toBeDefined();
+    });
 
-//     it('should use default base URL when not provided', () => {
-//       const appWithDefaults = new DeepcrawlApp({ apiKey: 'test-key' });
-//       expect(appWithDefaults).toBeDefined();
-//     });
+    it('should accept custom base URL', () => {
+      const app = new DeepcrawlApp({
+        apiKey: 'test-key',
+        baseUrl: 'https://custom.api.com',
+      });
+      expect(app).toBeDefined();
+    });
 
-//     it('should accept custom headers', () => {
-//       const appWithHeaders = new DeepcrawlApp({
-//         apiKey: 'test-key',
-//         headers: {
-//           'X-Custom-Header': 'value',
-//         },
-//       });
-//       expect(appWithHeaders).toBeDefined();
-//     });
+    it('should handle baseUrl with protocol', () => {
+      const app = new DeepcrawlApp({
+        apiKey: 'test-key',
+        baseUrl: 'https://api.example.com',
+      });
+      expect(app).toBeDefined();
+    });
 
-//     it('should accept custom fetch implementation', () => {
-//       const customFetch = vi.fn();
-//       const appWithCustomFetch = new DeepcrawlApp({
-//         apiKey: 'test-key',
-//         fetch: customFetch as unknown as typeof fetch,
-//       });
-//       expect(appWithCustomFetch).toBeDefined();
-//     });
-//   });
+    it('should accept session authentication via headers', () => {
+      const app = new DeepcrawlApp({
+        headers: {
+          cookie: 'session=abc123',
+        },
+      });
+      expect(app).toBeDefined();
+    });
+  });
 
-//   describe('getMarkdown', () => {
-//     it('should fetch markdown successfully', async () => {
-//       const result = await app.getMarkdown('https://example.com');
-//       expect(result).toBe(mockMarkdownResponse);
-//     });
+  describe('client structure', () => {
+    it('should have read router', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.client).toBeDefined();
+      expect(app.client.read).toBeDefined();
+      expect(typeof app.client.read.getMarkdown).toBe('function');
+      expect(typeof app.client.read.readUrl).toBe('function');
+    });
 
-//     it('should handle blob responses', async () => {
-//       server.use(
-//         http.post('*/rpc/read/getMarkdown', () => {
-//           return HttpResponse.blob(new Blob([mockMarkdownResponse], { type: 'text/plain' }));
-//         })
-//       );
+    it('should have links router', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.client.links).toBeDefined();
+      expect(typeof app.client.links.extractLinks).toBe('function');
+    });
 
-//       const result = await app.getMarkdown('https://example.com');
-//       expect(result).toBe(mockMarkdownResponse);
-//     });
+    it('should have logs router', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.client.logs).toBeDefined();
+      expect(typeof app.client.logs.listLogs).toBe('function');
+      expect(typeof app.client.logs.getOne).toBe('function');
+      expect(typeof app.client.logs.exportResponse).toBe('function');
+    });
+  });
 
-//     it('should handle network errors', async () => {
-//       server.use(
-//         http.post('*/rpc/read/getMarkdown', () => {
-//           return HttpResponse.error();
-//         })
-//       );
+  describe('method availability', () => {
+    it('should have getMarkdown method', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.getMarkdown).toBeDefined();
+      expect(typeof app.getMarkdown).toBe('function');
+    });
 
-//       await expect(app.getMarkdown('https://example.com')).rejects.toThrow(DeepcrawlNetworkError);
-//     });
+    it('should have readUrl method', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.readUrl).toBeDefined();
+      expect(typeof app.readUrl).toBe('function');
+    });
 
-//     it('should handle API errors', async () => {
-//       server.use(
-//         http.post('*/rpc/read/getMarkdown', () => {
-//           return HttpResponse.json(
-//             { error: { message: 'Invalid URL' } },
-//             { status: 400 }
-//           );
-//         })
-//       );
+    it('should have extractLinks method', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.extractLinks).toBeDefined();
+      expect(typeof app.extractLinks).toBe('function');
+    });
 
-//       await expect(app.getMarkdown('https://example.com')).rejects.toThrow(DeepcrawlError);
-//     });
-//   });
+    it('should have listLogs method', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.listLogs).toBeDefined();
+      expect(typeof app.listLogs).toBe('function');
+    });
 
-//   describe('readUrl', () => {
-//     it('should read URL successfully', async () => {
-//       const result = await app.readUrl('https://example.com');
-//       expect(result).toEqual(mockReadResponse);
-//     });
+    it('should have getOneLog method', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.getOneLog).toBeDefined();
+      expect(typeof app.getOneLog).toBe('function');
+    });
 
-//     it('should accept read options', async () => {
-//       const result = await app.readUrl('https://example.com', {
-//         cleanedHtml: true,
-//         markdown: true,
-//       });
-//       expect(result).toEqual(mockReadResponse);
-//     });
-
-//     it('should handle errors', async () => {
-//       server.use(
-//         http.post('*/rpc/read/readWebsite', () => {
-//           return HttpResponse.json(
-//             { error: { message: 'Failed to read' } },
-//             { status: 500 }
-//           );
-//         })
-//       );
-
-//       await expect(app.readUrl('https://example.com')).rejects.toThrow(DeepcrawlError);
-//     });
-//   });
-
-//   describe('getLinks', () => {
-//     it('should get links successfully', async () => {
-//       const result = await app.getLinks('https://example.com');
-//       expect(result).toEqual(mockLinksResponse);
-//     });
-
-//     it('should handle errors', async () => {
-//       server.use(
-//         http.post('*/rpc/links/getLinks', () => {
-//           return HttpResponse.json(
-//             { error: { message: 'Failed to get links' } },
-//             { status: 500 }
-//           );
-//         })
-//       );
-
-//       await expect(app.getLinks('https://example.com')).rejects.toThrow(DeepcrawlError);
-//     });
-//   });
-
-//   describe('extractLinks', () => {
-//     it('should extract links successfully', async () => {
-//       const result = await app.extractLinks('https://example.com');
-//       expect(result).toEqual(mockLinksResponse);
-//     });
-
-//     it('should accept link options', async () => {
-//       const result = await app.extractLinks('https://example.com', {
-//         limit: 10,
-//         maxDepth: 2,
-//       });
-//       expect(result).toEqual(mockLinksResponse);
-//     });
-
-//     it('should handle errors', async () => {
-//       server.use(
-//         http.post('*/rpc/links/extractLinks', () => {
-//           return HttpResponse.json(
-//             { error: { message: 'Failed to extract links' } },
-//             { status: 500 }
-//           );
-//         })
-//       );
-
-//       await expect(app.extractLinks('https://example.com')).rejects.toThrow(DeepcrawlError);
-//     });
-//   });
-
-//   describe('retry functionality', () => {
-//     it('should retry failed requests', async () => {
-//       let attemptCount = 0;
-//       server.use(
-//         http.post('*/rpc/read/getMarkdown', () => {
-//           attemptCount++;
-//           if (attemptCount < 3) {
-//             return HttpResponse.error();
-//           }
-//           return HttpResponse.text(mockMarkdownResponse);
-//         })
-//       );
-
-//       const result = await app.getMarkdown('https://example.com');
-//       expect(result).toBe(mockMarkdownResponse);
-//       expect(attemptCount).toBe(3);
-//     });
-
-//     it('should fail after max retries', async () => {
-//       server.use(
-//         http.post('*/rpc/read/getMarkdown', () => {
-//           return HttpResponse.error();
-//         })
-//       );
-
-//       await expect(app.getMarkdown('https://example.com')).rejects.toThrow(DeepcrawlNetworkError);
-//     });
-//   });
-// });
+    it('should have exportResponse method', () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+      expect(app.exportResponse).toBeDefined();
+      expect(typeof app.exportResponse).toBe('function');
+    });
+  });
+});
