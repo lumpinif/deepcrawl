@@ -23,7 +23,7 @@
     "@deepcrawl/db-d1"
   ],
   "privatePackages": {
-    "version": true,
+    "version": false,
     "tag": false
   }
 }
