@@ -9,8 +9,8 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { type ReactNode, Suspense } from 'react';
 import { HeaderNavigationLayout } from '@/components/layout/header-navigation-layout';
+import { DashboardLayoutSkeleton } from '@/components/playground/playground-skeleton';
 import type { NavigationMode } from '@/components/providers';
-
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { authGetSession } from '@/query/auth-query.server';
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<DashboardLayoutSkeleton />}>
       <DashboardLayoutContent>{children}</DashboardLayoutContent>
     </Suspense>
   );

@@ -7,7 +7,7 @@ const config = {
   reactCompiler: true,
   cacheComponents: true,
   /* config options here */
-  devIndicators: true,
+  // devIndicators: false,
   reactStrictMode: true,
   transpilePackages: ['shiki'],
   images: {

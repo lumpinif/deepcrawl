@@ -110,7 +110,7 @@ export const PlaygroundOperationClientContent = ({
       className={cn(
         'h-full',
         hasResponseData &&
-          'min-h-[calc(100svh-theme(spacing.16))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-theme(spacing.14)-theme(spacing.12))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-theme(spacing.12))]',
+          'min-h-[calc(100svh-(--spacing(16)))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-(--spacing(14))-(--spacing(12)))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-(--spacing(12)))]',
       )}
       id={PLAYGROUND_SECTION_ID}
     >

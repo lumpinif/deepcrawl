@@ -94,7 +94,7 @@ export function UrlInput({
           'border-none',
           // isError &&
           //   '!border-destructive animate-pulse !focus-visible:ring-destructive',
-          '!bg-transparent h-full rounded-none shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent',
+          'h-full rounded-none bg-transparent! shadow-none ring-0 focus-visible:ring-0 focus-visible:ring-transparent',
           hasProtocol ? 'pl-3' : 'pl-20',
           className,
         )}
@@ -106,6 +106,7 @@ export function UrlInput({
         onKeyDown={handleKeyDown}
         placeholder={hasProtocol ? 'https://example.com' : placeholder}
         spellCheck={false}
+        suppressHydrationWarning
         type="text"
         value={value}
         // Never pass autoFocus to DOM to avoid hydration mismatch

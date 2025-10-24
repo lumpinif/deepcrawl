@@ -11,7 +11,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   return (
     <div
       className={cn(
-        'relative h-[var(--spinner-size)] w-[var(--spinner-size)]',
+        'relative h-(--spinner-size) w-(--spinner-size)',
         className,
       )}
       style={
@@ -20,7 +20,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         } as React.CSSProperties
       }
     >
-      <div className="absolute top-1/2 left-1/2 h-[var(--spinner-size)] w-[var(--spinner-size)]">
+      <div className="absolute top-1/2 left-1/2 h-(--spinner-size) w-(--spinner-size)">
         {bars.map((_, i) => (
           <div
             className={

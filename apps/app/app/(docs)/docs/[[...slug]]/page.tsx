@@ -9,10 +9,6 @@ import { getMDXComponents } from '@/components/mdx-components';
 import { absoluteUrl } from '@/lib/navigation-config';
 import { source } from '@/lib/source';
 
-export const revalidate = false;
-export const dynamic = 'force-static';
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
   return source.generateParams();
 }
