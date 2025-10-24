@@ -4,8 +4,10 @@ const withMDX = createMDX();
 
 /** @type {import('next').NextConfig} */
 const config = {
+  reactCompiler: true,
+  cacheComponents: true,
   /* config options here */
-  devIndicators: false,
+  devIndicators: true,
   reactStrictMode: true,
   transpilePackages: ['shiki'],
   images: {
@@ -19,6 +21,9 @@ const config = {
         hostname: 'images.unsplash.com',
       },
     ],
+  },
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
   },
 };
 

@@ -1,5 +1,6 @@
 import { resolveListLogsOptions } from '@deepcrawl/contracts/logs/utils';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { headers } from 'next/headers';
 import { Suspense } from 'react';
 import ActivityLogsDataGrid from '@/components/logs/logs-data-grid';
 import { ActivityLogsSkeleton } from '@/components/logs/logs-data-grid-skeleton';
@@ -9,13 +10,12 @@ import { LogsProvider } from '@/contexts/logs-provider';
 import { getQueryClient } from '@/query/query.client';
 import { listLogsQueryOptions } from '@/query/query-options.server';
 
-/* Marked the logs page as dynamic so Next.js doesn't try to prerender it and can safely call headers() at request time - this won't break the React Query SSR prefetching */
-export const dynamic = 'force-dynamic';
+export default async function LogsPage() {
+  await headers();
 
-export default function LogsPage() {
   const queryClient = getQueryClient();
 
-  const resolvedOptions = resolveListLogsOptions();
+  const resolvedOptions = resolveListLogsOptions({}, new Date());
   void queryClient.prefetchQuery(listLogsQueryOptions(resolvedOptions));
 
   return (

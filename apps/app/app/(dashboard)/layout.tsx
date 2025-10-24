@@ -1,12 +1,16 @@
 import { ScrollArea } from '@deepcrawl/ui/components/ui/scroll-area';
-import { SidebarInset } from '@deepcrawl/ui/components/ui/sidebar';
+import {
+  SidebarInset,
+  SidebarProvider,
+} from '@deepcrawl/ui/components/ui/sidebar';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import type { ReactNode } from 'react';
+import { type ReactNode, Suspense } from 'react';
 import { HeaderNavigationLayout } from '@/components/layout/header-navigation-layout';
 import type { NavigationMode } from '@/components/providers';
+
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { authGetSession } from '@/query/auth-query.server';
@@ -38,11 +42,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function DashboardLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={null}>
+      <DashboardLayoutContent>{children}</DashboardLayoutContent>
+    </Suspense>
+  );
+}
+
+async function DashboardLayoutContent({ children }: { children: ReactNode }) {
   // KNOWN ISSUE: DO NOT FETCH listDeviceSessions FROM ANY LAYOUT SERVER COMPONENT WHICH IS BREAKING MULTI-SESSION DATA FETCHING FROM CLIENT COMPONENT AND SESSION REVOKING ISSUES
   const currentSession = await authGetSession().catch(() => {
     // Auth failed - redirect to login
@@ -59,6 +67,15 @@ export default async function DashboardLayout({
   const navigationMode =
     (cookieStore.get('navigation:mode')?.value as NavigationMode) || 'header';
 
+  // Get sidebar state from cookies
+  const sidebarState = cookieStore.get('sidebar:state')?.value;
+  const sidebarWidth = cookieStore.get('sidebar:width')?.value;
+
+  let defaultSidebarOpen = false;
+  if (sidebarState) {
+    defaultSidebarOpen = sidebarState === 'true';
+  }
+
   const defaultInsetClassname = cn(
     '!overflow-hidden !shadow-none !max-h-svh border-none',
     /* desktop */
@@ -67,7 +84,10 @@ export default async function DashboardLayout({
 
   if (navigationMode === 'sidebar') {
     return (
-      <>
+      <SidebarProvider
+        defaultOpen={defaultSidebarOpen}
+        defaultWidth={sidebarWidth}
+      >
         <AppSidebar />
         <SidebarInset className={defaultInsetClassname}>
           <SiteHeader
@@ -79,23 +99,28 @@ export default async function DashboardLayout({
             {children}
           </ScrollArea>
         </SidebarInset>
-      </>
+      </SidebarProvider>
     );
   }
 
   // Header navigation mode
   return (
-    <HeaderNavigationLayout
-      navigationMode={navigationMode}
-      SiteHeaderSlot={
-        <SiteHeader
-          enableThemeToggle={false}
-          navigationMode={navigationMode}
-          session={currentSession}
-        />
-      }
+    <SidebarProvider
+      defaultOpen={defaultSidebarOpen}
+      defaultWidth={sidebarWidth}
     >
-      {children}
-    </HeaderNavigationLayout>
+      <HeaderNavigationLayout
+        navigationMode={navigationMode}
+        SiteHeaderSlot={
+          <SiteHeader
+            enableThemeToggle={false}
+            navigationMode={navigationMode}
+            session={currentSession}
+          />
+        }
+      >
+        {children}
+      </HeaderNavigationLayout>
+    </SidebarProvider>
   );
 }

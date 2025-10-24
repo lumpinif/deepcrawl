@@ -75,17 +75,17 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,cjs,mjs,cts,mts}": [
-      "pnpm exec biome check --write"
+      "biome check --write --files-ignore-unknown=true"
     ],
     "apps/app/**/*.{ts,tsx,js,jsx}": [
-      "pnpm exec biome check --write",
-      "cd apps/app && pnpm exec eslint --fix"
+      "biome check --write --files-ignore-unknown=true",
+      "pnpm -C apps/app lint:fix"
     ],
     "*.{json,jsonc}": [
-      "pnpm exec biome check --write"
+      "biome check --write --files-ignore-unknown=true"
     ],
     "*.{css,scss,pcss}": [
-      "pnpm exec biome check --write"
+      "biome check --write --files-ignore-unknown=true"
     ]
   }
 }
