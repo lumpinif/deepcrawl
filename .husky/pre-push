@@ -1,27 +1,30 @@
 set -e
 
 # 1) Ensure local branch is up to date with remote
+# Pre-push hook receives remote name as $1
+PUSH_REMOTE="${1:-origin}"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-echo "🔍 Checking if local branch is up to date with remote..."
 
-# Fetch latest from remote
-git fetch origin "$CURRENT_BRANCH" 2>/dev/null || true
+echo "🔍 Checking if local branch is up to date with $PUSH_REMOTE/$CURRENT_BRANCH..."
+
+# Fetch latest from the remote being pushed to
+git fetch "$PUSH_REMOTE" "$CURRENT_BRANCH" 2>/dev/null || true
 
 # Compare local and remote commits
 LOCAL=$(git rev-parse HEAD)
-REMOTE=$(git rev-parse "origin/$CURRENT_BRANCH" 2>/dev/null || echo "$LOCAL")
+REMOTE=$(git rev-parse "$PUSH_REMOTE/$CURRENT_BRANCH" 2>/dev/null || echo "$LOCAL")
 
 if [ "$LOCAL" != "$REMOTE" ]; then
   # Check if remote is ahead
   git merge-base --is-ancestor "$LOCAL" "$REMOTE" 2>/dev/null
   if [ $? -eq 0 ]; then
     echo "❌ Error: Remote branch has new commits. Please pull first:"
-    echo "   git pull origin $CURRENT_BRANCH"
+    echo "   git pull $PUSH_REMOTE $CURRENT_BRANCH"
     exit 1
   fi
 fi
 
-echo "✅ Branch is up to date with remote"
+echo "✅ Branch is up to date with $PUSH_REMOTE"
 
 # 2) Read latest commit message
 COMMIT_MESSAGE=$(git log -1 --pretty=%B 2>/dev/null || echo "")
