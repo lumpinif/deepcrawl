@@ -15,13 +15,14 @@ LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse "$PUSH_REMOTE/$CURRENT_BRANCH" 2>/dev/null || echo "$LOCAL")
 
 if [ "$LOCAL" != "$REMOTE" ]; then
-  # Check if remote is ahead
-  git merge-base --is-ancestor "$LOCAL" "$REMOTE" 2>/dev/null
-  if [ $? -eq 0 ]; then
+  # Check if remote is ahead (capture exit code properly to avoid set -e issues)
+  if git merge-base --is-ancestor "$LOCAL" "$REMOTE" 2>/dev/null; then
     echo "❌ Error: Remote branch has new commits. Please pull first:"
     echo "   git pull $PUSH_REMOTE $CURRENT_BRANCH"
     exit 1
   fi
+  # If we reach here, local is ahead or branches have diverged - allow push
+  echo "⚠️  Local and remote have diverged, but allowing push (you're ahead)"
 fi
 
 echo "✅ Branch is up to date with $PUSH_REMOTE"
