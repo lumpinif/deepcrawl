@@ -7,7 +7,8 @@
       "!node_modules",
       "!.next",
       "!src/components/ui",
-      "!components/ui"
+      "!components/ui",
+      "!src/styles/globals.css"
     ]
   },
   "linter": {
@@ -56,6 +57,11 @@
         "noInferrableTypes": "error",
         "noUselessElse": "error"
       }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   }
 }
