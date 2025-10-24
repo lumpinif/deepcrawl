@@ -1,9 +1,32 @@
 set -e
 
-# 1) Read latest commit message
+# 1) Ensure local branch is up to date with remote
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "🔍 Checking if local branch is up to date with remote..."
+
+# Fetch latest from remote
+git fetch origin "$CURRENT_BRANCH" 2>/dev/null || true
+
+# Compare local and remote commits
+LOCAL=$(git rev-parse HEAD)
+REMOTE=$(git rev-parse "origin/$CURRENT_BRANCH" 2>/dev/null || echo "$LOCAL")
+
+if [ "$LOCAL" != "$REMOTE" ]; then
+  # Check if remote is ahead
+  git merge-base --is-ancestor "$LOCAL" "$REMOTE" 2>/dev/null
+  if [ $? -eq 0 ]; then
+    echo "❌ Error: Remote branch has new commits. Please pull first:"
+    echo "   git pull origin $CURRENT_BRANCH"
+    exit 1
+  fi
+fi
+
+echo "✅ Branch is up to date with remote"
+
+# 2) Read latest commit message
 COMMIT_MESSAGE=$(git log -1 --pretty=%B 2>/dev/null || echo "")
 
-# 2) Allow skipping
+# 3) Allow skipping
 if [ -n "$COMMIT_MESSAGE" ] && printf '%s' "$COMMIT_MESSAGE" | grep -qiE '\[(skip ci|ci skip)\]|skip ci'; then
   echo "🛑 Pre-push checks skipped because commit message contains [skip ci]."
   exit 0
