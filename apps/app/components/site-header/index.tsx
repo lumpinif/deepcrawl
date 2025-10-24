@@ -104,7 +104,7 @@ export function SiteHeader({
           {[
             enableSearchDialog && (
               <SearchTrigger
-                className="!bg-background-subtle mr-1 h-8 w-48 max-sm:hidden"
+                className="mr-1 h-8 w-48 bg-background-subtle! max-sm:hidden"
                 key="search"
                 placeholder="Search docs..."
               />

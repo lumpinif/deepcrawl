@@ -1,20 +1,16 @@
 import GithubIcon from '@deepcrawl/ui/components/icons/github-icon';
-import { Button } from '@deepcrawl/ui/components/ui/button';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
-import { UserDropdown } from '@/components/user/user-dropdown';
+import { type ReactNode, Suspense } from 'react';
+import UserActions from '@/components/user/user-actions';
+import { UserDropdownSkeleton } from '@/components/user/user-dropdown';
 import { baseOptions } from '@/lib/layout.config';
-import { authGetSession } from '@/query/auth-query.server';
 
 export default async function LandingLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const currentSession = await authGetSession();
-  const user = currentSession?.user;
-
   return (
     <HomeLayout
       {...baseOptions}
@@ -45,17 +41,10 @@ export default async function LandingLayout({
         {
           type: 'custom',
           secondary: true,
-          children: user ? (
-            <UserDropdown
-              // className="md:mt-1.5"
-              enableLayoutViewToggle={false}
-              redirectLogout={'/'}
-              session={currentSession}
-            />
-          ) : (
-            <Button asChild className="ml-1" size={'sm'} variant="outline">
-              <Link href="/login">Login</Link>
-            </Button>
+          children: (
+            <Suspense fallback={<UserDropdownSkeleton />}>
+              <UserActions />
+            </Suspense>
           ),
         },
       ]}

@@ -48,7 +48,7 @@ import { LayoutViewToggle } from '../layout-toggle';
 
 export function UserDropdownSkeleton() {
   return (
-    <div className="ml-2 flex items-center">
+    <div className="flex items-center">
       <Skeleton className="size-6 rounded-full" />
     </div>
   );
@@ -139,7 +139,7 @@ export function UserDropdown({
           >
             <PopoverTrigger
               asChild
-              className="group/popover data-[variant=destructive]:*:[svg]:!text-destructive relative flex w-full cursor-default select-none items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-[inset]:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 hover:[&:not([disabled])]:bg-accent [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0"
+              className="group/popover relative flex w-full cursor-default select-none items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 hover:[&:not([disabled])]:bg-accent [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 data-[variant=destructive]:*:[svg]:text-destructive!"
               disabled={!hasMultipleSessions}
             >
               <div className="flex w-full items-center justify-between">
@@ -252,7 +252,7 @@ export function UserDropdown({
           {navigationMode && enableLayoutViewToggle && (
             <DropdownMenuItem
               asChild
-              className="hover:!bg-transparent dark:hover:bg-transparent dark:hover:text-muted-foreground"
+              className="hover:bg-transparent! dark:hover:bg-transparent dark:hover:text-muted-foreground"
             >
               <div className="flex w-full flex-col items-start">
                 <span>Customize dashboard layout</span>

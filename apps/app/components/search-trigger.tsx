@@ -50,11 +50,13 @@ export function SearchTrigger({
   return (
     <InputGroup className={className} {...props}>
       <InputGroupInput
+        autoComplete="off"
         onClick={() => {
           setOpenSearch(true);
         }}
         placeholder={placeholder}
         readOnly
+        suppressHydrationWarning
         type="text"
       />
       <InputGroupAddon>

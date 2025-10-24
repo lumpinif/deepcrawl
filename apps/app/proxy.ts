@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { getAppRoute } from './lib/navigation-config';
 import { authViewSegments } from './routes/auth';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request, {
     cookiePrefix: APP_COOKIE_PREFIX,
   });

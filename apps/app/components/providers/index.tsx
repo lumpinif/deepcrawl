@@ -1,24 +1,12 @@
 import { TailwindIndicator } from '@deepcrawl/ui/components/theme/tailwind-indicator';
-import { SidebarProvider } from '@deepcrawl/ui/components/ui/sidebar';
 import { TooltipProvider } from '@deepcrawl/ui/components/ui/tooltip';
-import { RootProvider } from 'fumadocs-ui/provider';
-import { cookies } from 'next/headers';
+import { RootProvider } from 'fumadocs-ui/provider/next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import type { ReactNode } from 'react';
 import { QueryProviders } from './query.provider';
-
 export type NavigationMode = 'sidebar' | 'header';
 
 export async function Providers({ children }: { children: ReactNode }) {
-  const cookieStore = await cookies();
-  const sidebarState = cookieStore.get('sidebar:state')?.value;
-  const sidebarWidth = cookieStore.get('sidebar:width')?.value;
-
-  let defaultSidebarOpen = false;
-  if (sidebarState) {
-    defaultSidebarOpen = sidebarState === 'true';
-  }
-
   return (
     <RootProvider
       theme={{
@@ -30,14 +18,9 @@ export async function Providers({ children }: { children: ReactNode }) {
       }}
     >
       <TooltipProvider delayDuration={0}>
-        <SidebarProvider
-          defaultOpen={defaultSidebarOpen}
-          defaultWidth={sidebarWidth}
-        >
-          <NuqsAdapter>
-            <QueryProviders>{children}</QueryProviders>
-          </NuqsAdapter>
-        </SidebarProvider>
+        <NuqsAdapter>
+          <QueryProviders>{children}</QueryProviders>
+        </NuqsAdapter>
       </TooltipProvider>
       <TailwindIndicator />
     </RootProvider>

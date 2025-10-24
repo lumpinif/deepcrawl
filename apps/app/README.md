@@ -1,8 +1,8 @@
 # 📊 Deepcrawl Dashboard
 
-Management interface for the Deepcrawl service built with Next.js 15 and modern web technologies.
+Management interface for the Deepcrawl service built with Next.js 16 and modern web technologies.
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue.svg)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org)
 [![Tailwind](https://img.shields.io/badge/Tailwind-CSS-38bdf8.svg)](https://tailwindcss.com/)
@@ -37,7 +37,7 @@ pnpm check
 - 🌍 **Universal SDK Integration** - Built-in Deepcrawl TypeScript SDK
 
 ### **Technical Stack**
-- ⚡ **Next.js 15** - App Router with React 19
+- ⚡ **Next.js 16** - App Router with React 19
 - 📊 **TanStack Query** - Server state management
 - 🎨 **shadcn/ui + Tailwind** - Component library
 - 🛠️ **Turbopack** - Development builds
@@ -92,7 +92,7 @@ DEEPCRAWL_API_URL=https://api.deepcrawl.dev
 
 ## 🏗️ Architecture
 
-- **App Router** - Next.js 15 app directory structure
+- **App Router** - Next.js 16 app directory structure
 - **Server Actions** - Type-safe server-side operations
 - **React Suspense** - Efficient loading states and streaming
 - **Component Co-location** - Components alongside their usage
