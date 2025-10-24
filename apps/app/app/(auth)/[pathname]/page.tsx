@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { AuthCard } from '@/components/auth/auth-card';
 import { BackButton } from '@/components/auth/back-button';
 import { authViewSegments } from '@/routes/auth';
@@ -8,14 +9,25 @@ export function generateStaticParams() {
   return Object.values(authViewSegments).map((pathname) => ({ pathname }));
 }
 
-export default async function AuthPage({
+export default function AuthPage({
   params,
 }: {
   params: Promise<{ pathname: string }>;
 }) {
-  const { pathname } = await params;
+  return (
+    <Suspense fallback={null}>
+      <AuthPageContent paramsPromise={params} />
+    </Suspense>
+  );
+}
 
-  // Validate the pathname before rendering
+async function AuthPageContent({
+  paramsPromise,
+}: {
+  paramsPromise: Promise<{ pathname: string }>;
+}) {
+  const { pathname } = await paramsPromise;
+
   if (!isValidAuthRoute(authViewSegments, pathname)) {
     notFound();
   }

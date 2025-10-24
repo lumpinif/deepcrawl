@@ -10,13 +10,38 @@ import { LogsProvider } from '@/contexts/logs-provider';
 import { getQueryClient } from '@/query/query.client';
 import { listLogsQueryOptions } from '@/query/query-options.server';
 
-export default async function LogsPage() {
-  await headers();
+// Force dynamic rendering so we can safely prefetch logs without tripping Next 16 cache heuristics.
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'default-no-store';
 
+export default async function LogsPage() {
   const queryClient = getQueryClient();
 
-  const resolvedOptions = resolveListLogsOptions({}, new Date());
-  void queryClient.prefetchQuery(listLogsQueryOptions(resolvedOptions));
+  let requestContextAvailable = false;
+  try {
+    headers();
+    requestContextAvailable = true;
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[LogsPage] No request context detected during build. Skipping prefetch.',
+        error,
+      );
+    }
+  }
+
+  const resolvedOptions = resolveListLogsOptions();
+
+  if (requestContextAvailable) {
+    try {
+      await queryClient.prefetchQuery(listLogsQueryOptions(resolvedOptions));
+    } catch (error) {
+      console.error(
+        '[LogsPage] Prefetch failed, falling back to client fetch:',
+        error,
+      );
+    }
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
