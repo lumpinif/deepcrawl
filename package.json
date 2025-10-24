@@ -72,20 +72,5 @@
       "vue-demi",
       "workerd"
     ]
-  },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx,cjs,mjs,cts,mts}": [
-      "biome check --write --files-ignore-unknown=true"
-    ],
-    "apps/app/**/*.{ts,tsx,js,jsx}": [
-      "biome check --write --files-ignore-unknown=true",
-      "pnpm -C apps/app lint:fix"
-    ],
-    "*.{json,jsonc}": [
-      "biome check --write --files-ignore-unknown=true"
-    ],
-    "*.{css,scss,pcss}": [
-      "biome check --write --files-ignore-unknown=true"
-    ]
   }
 }
