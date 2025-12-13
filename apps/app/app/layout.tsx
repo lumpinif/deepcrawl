@@ -92,10 +92,8 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col antialiased`}
         suppressHydrationWarning
       >
-        <Providers>
-          {children}
-          <Analytics />
-        </Providers>
+        <Providers>{children}</Providers>
+        <Analytics />
         <SpeedInsights />
       </body>
     </html>
