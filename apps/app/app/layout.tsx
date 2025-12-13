@@ -2,6 +2,7 @@ import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
 import '@deepcrawl/ui/globals.css';
+import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Providers } from '@/components/providers';
 import { META_THEME_COLORS, siteConfig } from '@/lib/site-config';
@@ -91,7 +92,10 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col antialiased`}
         suppressHydrationWarning
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Analytics />
+        </Providers>
         <SpeedInsights />
       </body>
     </html>
