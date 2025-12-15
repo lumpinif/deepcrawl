@@ -32,6 +32,8 @@
       "source.organizeImports.biome": "explicit",
       "source.fixAll.biome": "explicit"
     },
-    "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css"
+    "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css",
+    "editor.defaultFormatter": "fronterior.biome-monorepo",
+    "editor.formatOnSave": true
   }
 }
