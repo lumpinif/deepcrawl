@@ -34,6 +34,5 @@
     "openapi"
   ],
   "author": "Felix Lu(Lyu) <@felixlu1018>",
-  "license": "MIT",
-  "packageManager": "pnpm@10.12.1"
+  "license": "MIT"
 }
