@@ -4,7 +4,9 @@
 
 **100% free and open-source Firecrawl alternative with better performance and flexibility.**
 
-[Ask DeepWiki about this repo](https://deepwiki.com/lumpinif/deepcrawl)
+Ask DeepWiki about this repo
+
+[![Ask DeepWiki about this repo](https://deepwiki.com/badge.svg)](https://deepwiki.com/lumpinif/deepcrawl)  
 
 ![shots](./public/og.jpg)
 
