@@ -1,6 +1,6 @@
 # Deepcrawl
 
-> WARNING: DO NOT USE DEEPCRAWL IN PRODUCTION RIGHT NOW AS IT IS SUBJECT TO CHANGE AND STILL UNDER RAPID DEVELOPMENT. USE WITH YOUR OWN RISK!
+> WARNING: DO NOT USE DEEPCRAWL IN PRODUCTION RIGHT NOW AS IT IS SUBJECT TO CHANGE AND STILL UNDER RAPID DEVELOPMENT. USE AT YOUR OWN RISK!
 
 **100% free and open-source Firecrawl alternative with better performance and flexibility.**
 
@@ -10,7 +10,10 @@ Ask DeepWiki about this repo
 
 ![shots](./public/og.jpg)
 
-Deepcrawl is an agents-oriented website data context extraction platform. It extracts cleaned markdown of page content, agent-favoured hierarchical links tree and metadata that LLMs can digest with minimal token cost to reduce context switching and hallucination.
+> NOTE: DeepCrawl doesn’t target anti-scraping or anti-bot purposes. It’s optimized for high‑frequency agent workloads that scrape public pages to extract cleaned Markdown and a hierarchical links tree.
+
+Deepcrawl is an agent-oriented website data context extraction platform. It extracts cleaned markdown of page content, agent-favoured hierarchical links tree, and metadata that LLMs can digest with minimal token cost to reduce context switching and hallucination.
+
 
 > Full Platform (Nextjs Dashboard, API Workers, Auth Workers, and Database) is open and transparent.
 
