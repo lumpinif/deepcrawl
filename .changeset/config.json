@@ -18,7 +18,6 @@
     "deepcrawl-worker-auth",
     "deepcrawl-worker-v0",
     "@deepcrawl/auth",
-    "@deepcrawl/typescript-config",
     "@deepcrawl/eslint-config",
     "db",
     "@deepcrawl/ui",
