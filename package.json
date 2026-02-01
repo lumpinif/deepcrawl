@@ -44,7 +44,7 @@
     "@orpc/zod": "^1.13.4",
     "better-auth": "^1.4.18",
     "dotenv-cli": "^10.0.0",
-    "hono": "^4.11.7",
+    "hono": "catalog:",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "rimraf": "^6.1.2",

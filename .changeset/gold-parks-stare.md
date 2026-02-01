@@ -1,5 +1,4 @@
 ---
 'deepcrawl': none
-'@deepcrawl/types': none
 ---
-chore: internal types update, no release
+chore: internal updates, no release

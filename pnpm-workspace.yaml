@@ -13,6 +13,9 @@ catalog:
   "@dnd-kit/utilities": ^3.2.2
   "@eslint/eslintrc": ^3.3.3
   "@hookform/resolvers": ^5.2.2
+  "@hono-rate-limiter/cloudflare": ^0.2.2
+  "@hono/zod-openapi": ^1.2.0
+  "@hono/zod-validator": ^0.7.6
   "@neondatabase/serverless": ^1.0.2
   "@orpc/client": ^1.13.4
   "@orpc/contract": ^1.13.4
@@ -43,6 +46,8 @@ catalog:
   eslint-config-next: ^16.1.6
   fumadocs-core: ^16.5.0
   fumadocs-ui: ^16.5.0
+  hono: ^4.11.7
+  hono-rate-limiter: ^0.5.3
   lucide-react: ^0.563.0
   motion: ^12.29.2
   next: ^16.1.6

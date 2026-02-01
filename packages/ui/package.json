@@ -95,8 +95,5 @@
       "./src/components/icons/*.tsx",
       "./src/components/icons/*.ts"
     ]
-  },
-  "overrides": {
-    "react-is": "^19.1.5"
   }
 }
