@@ -13,12 +13,16 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
+    "workers",
     "dashboard",
     "deepcrawl-worker-auth",
     "deepcrawl-worker-v0",
     "@deepcrawl/auth",
+    "@deepcrawl/typescript-config",
     "@deepcrawl/eslint-config",
+    "db",
     "@deepcrawl/ui",
+    "sdks",
     "@deepcrawl/db-auth",
     "@deepcrawl/db-d1"
   ],
