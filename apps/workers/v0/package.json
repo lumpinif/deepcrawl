@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm run clean && wrangler dev",
+    "dev": "pnpm run clean && wrangler dev --inspector-port 9231",
     "dev:chain": "turbo run dev --filter=deepcrawl-worker-auth --filter=deepcrawl-worker-v0",
     "dev:remote": "pnpm run clean && wrangler dev --remote --port=8080",
     "dev:prod": "wrangler dev --remote --env=production",
