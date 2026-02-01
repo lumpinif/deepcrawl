@@ -1,33 +1,48 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- Monorepo managed with `pnpm` and `turbo`; Next.js dashboard in `apps/app`, Cloudflare workers in `apps/workers/auth` and `apps/workers/v0`.
-- Shared packages under `packages/` include the SDK at `packages/sdks/js-ts` and database code in `packages/db/*`; place feature tests alongside source.
-- Utility scripts live in `scripts/`; workspace configs (`turbo.json`, `biome.jsonc`, `pnpm-workspace.yaml`) sit at the root.
+- Monorepo managed with `pnpm` and `turbo`.
+- Apps:
+  - Next.js dashboard in `apps/app`
+  - Cloudflare workers in `apps/workers/auth` and `apps/workers/v0`
+- Packages:
+  - SDK: `packages/sdks/js-ts`
+  - Database code: `packages/db/*`
+  - Shared UI and configs: `packages/ui`, `packages/eslint-config`, `packages/typescript-config`, `packages/types`
+- Utility scripts live in `scripts/`.
+- Feature tests live next to source or under `src/__tests__/`.
 
 ## Build, Test, and Development Commands
 - `pnpm install` — install dependencies (Node >= 20).
-- `pnpm dev` — run the whole workspace; focus with `pnpm -C apps/app dev` or `pnpm -C apps/app dev:workers`.
-- `pnpm build` / `pnpm typecheck` — production build and strict TypeScript validation.
-- `pnpm check` — aggregate format, lint, type, and dependency audits.
-- `pnpm -C packages/sdks/js-ts test` or `pnpm test:coverage` — run Vitest for the SDK.
+- `pnpm dev` — run the whole workspace.
+- `pnpm -C apps/app dev` — run dashboard only.
+- `pnpm -C apps/app dev:workers` — run dashboard + workers.
+- `pnpm build` — production build across workspace.
+- `pnpm typecheck` — strict TypeScript validation.
+- `pnpm check` — format, lint, type, and dependency audits.
+- `pnpm -C packages/sdks/js-ts test` — run SDK tests.
+- `pnpm test:coverage` — SDK coverage run.
 
 ## Coding Style & Naming Conventions
-- Format with Biome: 2-space indent, single quotes, semicolons, trailing commas, max width 80.
-- React components use PascalCase filenames; hooks follow `use-*.ts`; other files prefer kebab-case.
-- Respect shared TypeScript configs in `packages/typescript-config`; resolve lint warnings before commit.
+- Formatter: Biome (2-space indent, single quotes, semicolons, trailing commas, max width 80).
+- React components: PascalCase filenames.
+- Hooks: `use-*.ts`.
+- Other files: kebab-case preferred.
+- Respect shared TS configs in `packages/typescript-config` and resolve lint warnings before commit.
 
 ## Testing Guidelines
-- Vitest powers the SDK; cover client logic and critical type behavior.
-- Name tests `*.test.ts` beside source or under `src/__tests__/`.
-- Run suites locally before pushing; extend coverage when altering API surface or shared types.
+- Framework: Vitest (SDK).
+- Test names: `*.test.ts` next to source or in `src/__tests__/`.
+- Add coverage for client logic and shared types when changing APIs.
 
 ## Commit & Pull Request Guidelines
-- Use conventional commits such as `app:feat`, `pkg:ui:ref`, `workers:v0:chore`; keep subjects imperative and <= 72 chars.
-- Reference issues (for example `#123`) and capture follow-up tasks in the body when needed.
-- PRs need a concise summary, linked issue, UI screenshots for dashboard changes, and confirmation that `pnpm check` succeeded.
+- Conventional commits like `app:feat`, `pkg:ui:ref`, `workers:v0:chore`.
+- Keep subjects imperative and <= 72 chars; reference issues when relevant (e.g., `#123`).
+- PRs should include a concise summary, linked issue, UI screenshots for dashboard changes, and confirmation that `pnpm check` succeeded.
 
 ## Security & Configuration Tips
-- Never commit secrets; rely on `apps/app/.env.example`, worker `.dev.vars.*`, and Wrangler `wrangler.jsonc`.
-- Run database scripts from `packages/db/db-auth` (e.g., `pnpm db:sync`) instead of manual SQL.
-- Review Wrangler config before deploying with `pnpm -C apps/workers/v0 deploy` or `pnpm -C apps/workers/auth deploy`.
+- Never commit secrets. Use `apps/app/.env.example`, worker `.dev.vars.*`, and Wrangler `wrangler.jsonc`.
+- Run DB scripts from `packages/db/db-auth` (e.g., `pnpm db:sync`), not manual SQL.
+- Review Wrangler config before deploying with:
+  - `pnpm -C apps/workers/v0 deploy`
+  - `pnpm -C apps/workers/auth deploy`
