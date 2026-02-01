@@ -102,7 +102,7 @@
     "@tanstack/react-query-devtools": "^5.91.3",
     "@types/canvas-confetti": "^1.9.0",
     "@types/mdx": "^2.0.13",
-    "@types/node": "^22.19.7",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",

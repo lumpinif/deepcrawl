@@ -31,6 +31,7 @@ catalog:
   "@radix-ui/react-tooltip": ^1.2.8
   "@tabler/icons-react": ^3.36.1
   "@tanstack/react-table": ^8.21.3
+  "@types/node": ^22.12.0
   "@types/react": ^19.2.10
   "@types/react-dom": ^19.2.3
   class-variance-authority: ^0.7.1

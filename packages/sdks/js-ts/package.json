@@ -113,7 +113,7 @@
     "@deepcrawl/typescript-config": "workspace:*",
     "@orpc/client": "catalog:",
     "@orpc/contract": "catalog:",
-    "@types/node": "^24.10.9",
+    "@types/node": "catalog:",
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^18.0.1",
     "msw": "^2.12.7",
