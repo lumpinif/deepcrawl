@@ -32,10 +32,10 @@
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*",
     "@types/node": "^20",
-    "drizzle-kit": "^0.31.1"
+    "drizzle-kit": "catalog:"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.0",
-    "drizzle-orm": "^0.44.2"
+    "@neondatabase/serverless": "catalog:",
+    "drizzle-orm": "catalog:"
   }
 }
