@@ -19,7 +19,7 @@ export function ThemeToggle() {
     >
       <IconBrightness
         aria-hidden="true"
-        className="dark:-rotate-180 size-4 rotate-0 transition-all duration-200 ease-out"
+        className="size-4 rotate-0 transition-all duration-200 ease-out dark:-rotate-180"
       />
       {/* <Sun
         className="dark:-rotate-90 size-4 rotate-0 scale-100 transition-all dark:scale-0"

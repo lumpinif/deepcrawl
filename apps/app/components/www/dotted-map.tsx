@@ -12,7 +12,7 @@ export function DottedWorldMap() {
         <div className="relative z-[1] flex size-fit w-fit items-center gap-2 rounded-[--radius] border bg-background px-3 py-1 font-medium text-xs shadow-black/5 shadow-md dark:bg-muted">
           <span className="text-sm">🇫🇷</span> Last connection from Paris, France
         </div>
-        <div className="-bottom-2 absolute inset-2 mx-auto rounded-[--radius] border bg-background px-3 py-4 font-medium text-xs shadow-black/5 shadow-md dark:bg-zinc-900" />
+        <div className="absolute inset-2 -bottom-2 mx-auto rounded-[--radius] border bg-background px-3 py-4 font-medium text-xs shadow-black/5 shadow-md dark:bg-zinc-900" />
       </div>
 
       <div className="relative flex size-full items-center justify-center overflow-hidden">

@@ -1,13 +1,12 @@
 'use client';
 
-import type { ListApiKeys, Session } from '@deepcrawl/auth/types';
+import type { ListApiKeys, Passkey, Session } from '@deepcrawl/auth/types';
 import {
   useMutation,
   useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import type { Passkey } from 'better-auth/plugins/passkey';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { toast } from 'sonner';

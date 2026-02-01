@@ -37,14 +37,14 @@ export const Hero = () => (
           />
         </Suspense>
       </div>
-      <h1 className="-translate-y-12 relative mx-auto w-fit font-semibold text-5xl leading-tight tracking-tighter md:text-6xl lg:text-7xl 2xl:text-8xl">
+      <h1 className="relative mx-auto w-fit -translate-y-12 font-semibold text-5xl leading-tight tracking-tighter md:text-6xl lg:text-7xl 2xl:text-8xl">
         Deepcrawl
       </h1>
-      <p className="-translate-y-12 mx-auto max-w-2xl text-balance text-lg text-muted-foreground md:text-2xl">
+      <p className="mx-auto max-w-2xl -translate-y-12 text-balance text-lg text-muted-foreground md:text-2xl">
         Free and open-source agentic toolkit that makes any website data AI
         ready
       </p>
-      <div className="-translate-y-12 mx-auto flex w-fit flex-col items-center gap-8 pt-4">
+      <div className="mx-auto flex w-fit -translate-y-12 flex-col items-center gap-8 pt-4">
         <Installer />
       </div>
     </div>

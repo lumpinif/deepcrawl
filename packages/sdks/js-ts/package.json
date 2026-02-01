@@ -105,7 +105,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "zod": "^4.1.12"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@deepcrawl/contracts": "workspace:*",
@@ -113,11 +113,11 @@
     "@deepcrawl/typescript-config": "workspace:*",
     "@orpc/client": "catalog:",
     "@orpc/contract": "catalog:",
-    "@types/node": "^24.1.0",
+    "@types/node": "^24.10.9",
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^18.0.1",
-    "msw": "^2.10.3",
-    "tsdown": "^0.15.7",
+    "msw": "^2.12.7",
+    "tsdown": "^0.15.12",
     "typescript": "catalog:",
     "vitest": "^3.2.4"
   }

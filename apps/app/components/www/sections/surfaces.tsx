@@ -12,7 +12,7 @@ const SURFACES = [
     description: 'REST + oRPC APIs powering the backend workflow.',
     illustration: (
       <div className="relative flex size-full items-center justify-center overflow-hidden opacity-85 [mask-image:linear-gradient(to_top,transparent,black_50%)]">
-        <LazyGlobe className="md:-translate-x-3 md:max-w-[250px]" />
+        <LazyGlobe className="md:max-w-[250px] md:-translate-x-3" />
       </div>
     ),
     className: 'pr-0',

@@ -6,9 +6,9 @@ import type {
   ListDeviceSessions,
   ListSessions,
   ListUserAccounts,
+  Passkey,
   Session,
 } from '@deepcrawl/auth/types';
-import type { Passkey } from 'better-auth/plugins/passkey';
 import { headers } from 'next/headers';
 import type { ActiveOrganization } from '@/lib/auth.client-types';
 

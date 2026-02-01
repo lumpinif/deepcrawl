@@ -7,12 +7,23 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Providers } from '@/components/providers';
 import { META_THEME_COLORS, siteConfig } from '@/lib/site-config';
 
+const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL;
+let metadataBaseUrl = new URL(siteConfig.url);
+
+if (rawAppUrl) {
+  try {
+    metadataBaseUrl = new URL(rawAppUrl);
+  } catch {
+    metadataBaseUrl = new URL(siteConfig.url);
+  }
+}
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
     template: `%s - ${siteConfig.name}`,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL as string),
+  metadataBase: metadataBaseUrl,
   description: siteConfig.description,
   keywords: ['Deepcrawl', 'AI', 'Open Source', 'Toolkit', 'Agents'],
   authors: [
@@ -25,7 +36,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_APP_URL as string,
+    url: metadataBaseUrl.href,
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,

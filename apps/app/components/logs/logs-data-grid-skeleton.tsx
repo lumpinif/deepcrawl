@@ -71,7 +71,7 @@ export function ActivityLogsSkeleton() {
           <div className="flex w-full items-center gap-2.5 max-sm:flex-col max-sm:items-start max-sm:gap-4">
             <div className="max-sm:w-full max-sm:flex-1">
               <div className="relative max-sm:w-full max-sm:flex-1">
-                <Search className="-translate-y-1/2 absolute start-3 top-1/2 size-4 text-muted-foreground" />
+                <Search className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   className="w-full min-w-60 ps-9 pe-9 max-sm:w-full sm:max-w-80"
                   disabled

@@ -1,13 +1,12 @@
 import { env } from 'cloudflare:workers';
-
-import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from '@orpc/json-schema';
+import { SmartCoercionPlugin } from '@orpc/json-schema';
 import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
 import { onError } from '@orpc/server';
 import { CORSPlugin } from '@orpc/server/plugins';
+import type { ORPCContext } from '@/lib/context';
 import { CORS_OPTIONS } from '@/middlewares/cors.hono';
-
 import { router } from '@/routers';
 import { OpenAPISpecBaseOptions, SchemaConverters } from './configs';
 
@@ -27,9 +26,9 @@ const OpenAPISpecOptions = {
   ],
 } satisfies OpenAPIGeneratorGenerateOptions;
 
-export const openAPIHandler = new OpenAPIHandler(router, {
+export const openAPIHandler = new OpenAPIHandler<ORPCContext>(router, {
   interceptors: [
-    onError((error) => {
+    onError((error: unknown) => {
       console.error('❌ OpenAPIHandler error', error);
     }),
   ],

@@ -1,5 +1,7 @@
 import type { auth } from '@deepcrawl/auth/lib/auth';
 
+export type { Passkey } from '@better-auth/passkey';
+
 /** Auth instance for Next.js Server Components */
 export type Auth = typeof auth;
 /** Session type for Next.js Server Components */

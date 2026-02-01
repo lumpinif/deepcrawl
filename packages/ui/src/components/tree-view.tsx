@@ -9,7 +9,7 @@ import { ChevronRight } from 'lucide-react';
 import React from 'react';
 
 const treeVariants = cva(
-  'group before:-z-10 px-2 text-primary/75 transition-colors duration-150 ease-out before:absolute before:left-0 before:h-[2rem] before:w-full before:rounded-lg before:bg-accent/70 before:opacity-0 hover:text-primary hover:underline hover:underline-offset-1 hover:before:opacity-100',
+  'group px-2 text-primary/75 transition-colors duration-150 ease-out before:absolute before:left-0 before:-z-10 before:h-[2rem] before:w-full before:rounded-lg before:bg-accent/70 before:opacity-0 hover:text-primary hover:underline hover:underline-offset-1 hover:before:opacity-100',
 );
 
 const selectedTreeVariants = cva(

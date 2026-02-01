@@ -1,4 +1,4 @@
-import type { Passkey } from 'better-auth/plugins/passkey';
+import type { Passkey } from '@deepcrawl/auth/types';
 import { UAParser } from 'ua-parser-js';
 
 /**

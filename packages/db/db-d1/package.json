@@ -31,7 +31,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
     "@deepcrawl/typescript-config": "workspace:*",
-    "@types/node": "^20",
+    "@types/node": "^20.19.30",
     "drizzle-kit": "catalog:"
   },
   "dependencies": {

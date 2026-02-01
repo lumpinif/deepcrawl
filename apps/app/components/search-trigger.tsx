@@ -7,7 +7,7 @@ import {
 } from '@deepcrawl/ui/components/ui/input-group';
 import { Kbd, KbdGroup } from '@deepcrawl/ui/components/ui/kbd';
 import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
-import { useSearchContext } from 'fumadocs-ui/provider';
+import { useSearchContext } from 'fumadocs-ui/contexts/search';
 import { SearchIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
