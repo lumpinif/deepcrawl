@@ -25,17 +25,18 @@
     "authentication"
   ],
   "dependencies": {
-    "@react-email/components": "^0.5.3",
+    "@better-auth/passkey": "^1.4.18",
+    "@react-email/components": "^0.5.7",
     "better-auth-harmony": "^1.2.5",
-    "react": "^19.2.0",
-    "react-email": "^4.2.11",
-    "resend": "^6.1.0"
+    "react": "catalog:",
+    "react-email": "^4.3.2",
+    "resend": "^6.9.1"
   },
   "devDependencies": {
     "@deepcrawl/db-auth": "workspace:*",
     "@deepcrawl/typescript-config": "workspace:*",
-    "@react-email/preview-server": "^4.2.11",
-    "@types/node": "^20",
-    "@types/react": "^19.2.2"
+    "@react-email/preview-server": "^4.3.2",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:"
   }
 }

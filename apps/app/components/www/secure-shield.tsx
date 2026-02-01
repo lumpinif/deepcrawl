@@ -15,7 +15,7 @@ export function SecureShield() {
         maskPosition: 'center',
       }}
     >
-      <div className="-translate-x-1/2 -translate-y-1/2 absolute top-[55%] left-[55%] z-10 size-full md:top-[58%] md:left-[57%]">
+      <div className="absolute top-[55%] left-[55%] z-10 size-full -translate-x-1/2 -translate-y-1/2 md:top-[58%] md:left-[57%]">
         <svg
           className="size-[90%] fill-background object-contain transition-all duration-500 ease-out group-hover:fill-border md:size-[85%] group-hover:dark:fill-muted-foreground"
           fill="none"
@@ -31,7 +31,7 @@ export function SecureShield() {
           />
         </svg>
       </div>
-      <div className="-translate-x-1/2 -translate-y-1/2 absolute top-[58%] left-1/2 z-20 size-full md:top-[60%]">
+      <div className="absolute top-[58%] left-1/2 z-20 size-full -translate-x-1/2 -translate-y-1/2 md:top-[60%]">
         <svg
           className="size-full fill-background-subtle object-contain"
           height="282"
@@ -135,7 +135,7 @@ export function SecureShield() {
           </defs>
         </svg>
       </div>
-      <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-30">
+      <div className="absolute top-1/2 left-1/2 z-30 -translate-x-1/2 -translate-y-1/2">
         <svg
           className="fill-background transition-all duration-500 ease-out group-hover:fill-border dark:fill-muted md:group-hover:dark:fill-muted-foreground"
           height="55"

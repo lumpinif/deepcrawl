@@ -1,4 +1,5 @@
-import type { ClientOptions } from 'better-auth';
+import { passkeyClient } from '@better-auth/passkey/client';
+import type { BetterAuthClientOptions } from 'better-auth';
 import {
   adminClient,
   apiKeyClient,
@@ -7,7 +8,6 @@ import {
   magicLinkClient,
   multiSessionClient,
   organizationClient,
-  passkeyClient,
 } from 'better-auth/client/plugins';
 import { LAST_USED_LOGIN_METHOD_COOKIE_NAME } from './constants';
 
@@ -36,7 +36,7 @@ export function createAuthClientConfig({
     fetchOptions: {
       credentials: 'include',
     },
-  } satisfies ClientOptions;
+  } satisfies BetterAuthClientOptions;
 
   return config;
 }

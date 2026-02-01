@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@deepcrawl/auth/lib/auth';
+import { getAuth } from '@deepcrawl/auth/lib/auth';
 import { headers } from 'next/headers';
 import { authGetSession } from '@/query/auth-query.server';
 
@@ -9,6 +9,7 @@ import { authGetSession } from '@/query/auth-query.server';
  * No server-side caching - React Query handles client caching
  */
 export async function removeUserPasskey(passkeyId: string) {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {
@@ -31,6 +32,7 @@ export async function removeUserPasskey(passkeyId: string) {
  * No server-side caching - React Query handles client caching
  */
 export async function fetchLinkedAccounts() {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {
@@ -60,6 +62,7 @@ export async function createApiKey({
   prefix?: string;
   metadata?: Record<string, unknown>;
 }) {
+  const auth = getAuth();
   try {
     // Get current session to extract userId
     const session = await authGetSession();
@@ -105,6 +108,7 @@ export async function updateApiKey({
   expiresIn?: number;
   metadata?: Record<string, unknown>;
 }) {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {
@@ -133,6 +137,7 @@ export async function updateApiKey({
  * Uses server-side API
  */
 export async function deleteApiKey(keyId: string) {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {
@@ -258,6 +263,7 @@ export async function deleteApiKey(keyId: string) {
  * This is a server-only operation for security
  */
 export async function setPassword(newPassword: string) {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {

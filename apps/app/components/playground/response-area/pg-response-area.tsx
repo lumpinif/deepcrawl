@@ -122,7 +122,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
   return (
     <div
       className={cn(
-        'lg:-scroll-mt-0.5 group-has-data-[collapsible=icon]/sidebar-wrapper:scroll-mt-12 group-data-[nav-mode=header]/header-nav-layout:scroll-mt-12',
+        'group-has-data-[collapsible=icon]/sidebar-wrapper:scroll-mt-12 group-data-[nav-mode=header]/header-nav-layout:scroll-mt-12 lg:-scroll-mt-0.5',
         'flex flex-col',
         'lg:h-[calc(100svh-theme(spacing.16))] lg:group-data-[nav-mode=header]/header-nav-layout:h-[calc(100svh-theme(spacing.12))] lg:group-has-data-[collapsible=icon]/sidebar-wrapper:h-[calc(100svh-theme(spacing.12))]',
       )}
@@ -149,7 +149,7 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
                 target="_blank"
               >
                 <Badge
-                  className="-translate-x-0.5 inline-flex select-none items-center gap-1 overflow-hidden text-ellipsis text-nowrap text-muted-foreground text-sm hover:text-foreground hover:underline"
+                  className="inline-flex -translate-x-0.5 select-none items-center gap-1 overflow-hidden text-ellipsis text-nowrap text-muted-foreground text-sm hover:text-foreground hover:underline"
                   variant="outline"
                 >
                   <span className="truncate">{targetUrl}</span>{' '}

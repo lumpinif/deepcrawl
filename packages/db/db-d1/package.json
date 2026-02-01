@@ -29,12 +29,12 @@
     "cloudflare"
   ],
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250711.0",
+    "@cloudflare/workers-types": "catalog:",
     "@deepcrawl/typescript-config": "workspace:*",
-    "@types/node": "^20",
-    "drizzle-kit": "^0.31.1"
+    "@types/node": "catalog:",
+    "drizzle-kit": "catalog:"
   },
   "dependencies": {
-    "drizzle-orm": "^0.44.2"
+    "drizzle-orm": "catalog:"
   }
 }

@@ -10,16 +10,18 @@ const runBiome = (files) => {
   }
 
   const joined = filtered.map(quote).join(' ');
-  return `biome check --write --files-ignore-unknown=true ${joined}`;
+  return `biome check --write --files-ignore-unknown=true --no-errors-on-unmatched ${joined}`;
 };
 
 /** @type {import('lint-staged').Configuration} */
 module.exports = {
   '*.{ts,tsx,js,jsx,cjs,mjs,cts,mts}': runBiome,
   'apps/app/**/*.{ts,tsx,js,jsx}': [
-    'biome check --write --files-ignore-unknown=true',
+    'biome check --write --files-ignore-unknown=true --no-errors-on-unmatched',
     'pnpm -C apps/app lint:fix',
   ],
-  '*.{json,jsonc}': 'biome check --write --files-ignore-unknown=true',
-  '*.{css,scss,pcss}': 'biome check --write --files-ignore-unknown=true',
+  '*.{json,jsonc}':
+    'biome check --write --files-ignore-unknown=true --no-errors-on-unmatched',
+  '*.{css,scss,pcss}':
+    'biome check --write --files-ignore-unknown=true --no-errors-on-unmatched',
 };

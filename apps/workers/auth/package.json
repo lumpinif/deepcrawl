@@ -5,7 +5,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm run clean && wrangler dev",
+    "dev": "pnpm run clean && wrangler dev --inspector-port 9230",
     "dev:remote": "wrangler dev --remote",
     "dev:prod": "wrangler dev --remote --env=production",
     "deploy": "pnpm run cf-typegen && pnpm run db:sync:prod && wrangler secret bulk --env=production .dev.vars.production && wrangler deploy --env=production --minify",
@@ -23,13 +23,13 @@
   "dependencies": {
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/db-auth": "workspace:*",
-    "@neondatabase/serverless": "^1.0.0",
-    "drizzle-orm": "^0.44.2",
-    "stoker": "^1.4.2"
+    "@neondatabase/serverless": "catalog:",
+    "drizzle-orm": "catalog:",
+    "stoker": "catalog:"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250711.0",
-    "@types/node": "^24.9.1",
-    "drizzle-kit": "^0.31.1"
+    "@cloudflare/workers-types": "catalog:",
+    "@types/node": "catalog:",
+    "drizzle-kit": "catalog:"
   }
 }

@@ -105,20 +105,20 @@
     "node": ">=18"
   },
   "dependencies": {
-    "zod": "^4.1.12"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@deepcrawl/contracts": "workspace:*",
     "@deepcrawl/types": "workspace:*",
     "@deepcrawl/typescript-config": "workspace:*",
-    "@orpc/client": "^1.8.7",
-    "@orpc/contract": "^1.8.7",
-    "@types/node": "^24.1.0",
+    "@orpc/client": "catalog:",
+    "@orpc/contract": "catalog:",
+    "@types/node": "catalog:",
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^18.0.1",
-    "msw": "^2.10.3",
-    "tsdown": "^0.15.7",
-    "typescript": "^5.9.3",
+    "msw": "^2.12.7",
+    "tsdown": "^0.15.12",
+    "typescript": "catalog:",
     "vitest": "^3.2.4"
   }
 }

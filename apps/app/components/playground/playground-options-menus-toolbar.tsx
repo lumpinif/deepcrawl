@@ -28,7 +28,7 @@ export function PlaygroundOptionsMenusToolbar({
     'mr-1 hidden w-fit select-none items-center overflow-hidden text-nowrap font-medium text-muted-foreground text-xs transition-all duration-250 ease-out md:flex',
     isDetailedBarOpen
       ? 'ml-3 max-w-[12rem] translate-x-0 opacity-100'
-      : '-translate-x-1 pointer-events-none ml-0 max-w-0 opacity-0 blur-[3px]',
+      : 'pointer-events-none ml-0 max-w-0 -translate-x-1 opacity-0 blur-[3px]',
   );
 
   return (

@@ -26,14 +26,15 @@
       "apps/**": true,
       "packages/**": true
     },
-    "biome.enabled": false, // enabled in .vscode/settings.json, disable to prevent conflicts
+    "biome.enabled": true,
+    "biome.requireConfiguration": true,
     "editor.codeActionsOnSave": {
       "source.action.useSortedAttributes.biome": "explicit",
       "source.organizeImports.biome": "explicit",
       "source.fixAll.biome": "explicit"
     },
     "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css",
-    "editor.defaultFormatter": "fronterior.biome-monorepo",
+    "editor.defaultFormatter": "biomejs.biome",
     "editor.formatOnSave": true
   }
 }

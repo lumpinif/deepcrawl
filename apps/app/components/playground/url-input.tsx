@@ -81,7 +81,7 @@ export function UrlInput({
   return (
     <div className="relative h-18 w-full flex-1">
       {!hasProtocol && (
-        <Badge className="-translate-y-1/2 absolute top-1/2 left-3 cursor-default select-none border-border bg-background py-1 text-muted-foreground">
+        <Badge className="absolute top-1/2 left-3 -translate-y-1/2 cursor-default select-none border-border bg-background py-1 text-muted-foreground">
           https://
         </Badge>
       )}

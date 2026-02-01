@@ -1,20 +1,24 @@
-import type { auth } from '@deepcrawl/auth/lib/auth';
+import type { Auth as AuthInstance } from '@deepcrawl/auth/lib/auth';
+
+export type { Passkey } from '@better-auth/passkey';
 
 /** Auth instance for Next.js Server Components */
-export type Auth = typeof auth;
+export type Auth = AuthInstance;
 /** Session type for Next.js Server Components */
-export type Session = typeof auth.$Infer.Session;
+export type Session = AuthInstance['$Infer']['Session'];
 
 /**
  * The type for listSessions
  */
-export type ListSessions = Awaited<ReturnType<typeof auth.api.listSessions>>;
+export type ListSessions = Awaited<
+  ReturnType<AuthInstance['api']['listSessions']>
+>;
 
 /**
  * The type for listUserAccounts
  */
 export type ListUserAccounts = Awaited<
-  ReturnType<typeof auth.api.listUserAccounts>
+  ReturnType<AuthInstance['api']['listUserAccounts']>
 >;
 
 /**
@@ -22,7 +26,7 @@ export type ListUserAccounts = Awaited<
  * auth.api.listDeviceSessions() returns sessions without admin-specific fields, causing the type mismatch
  */
 export type ListDeviceSessions = Awaited<
-  ReturnType<typeof auth.api.listDeviceSessions>
+  ReturnType<AuthInstance['api']['listDeviceSessions']>
 >;
 
 /**
@@ -43,7 +47,9 @@ export type LDSSession = ListDeviceSessions[number]['session'];
 /**
  * The type for listApiKeys
  */
-export type ListApiKeys = Awaited<ReturnType<typeof auth.api.listApiKeys>>;
+export type ListApiKeys = Awaited<
+  ReturnType<AuthInstance['api']['listApiKeys']>
+>;
 
 /**
  * The type for ApiKey

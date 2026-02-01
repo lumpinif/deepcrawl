@@ -26,7 +26,7 @@ export function TiltedScroll({
         <div className="grid h-[300px] w-[350px] animate-skew-scroll grid-cols-1 gap-5">
           {items.map((item) => (
             <div
-              className="group hover:-translate-x-1 hover:-translate-y-1 flex cursor-pointer items-center gap-2 rounded-md border border-border/40 bg-gradient-to-b from-background/80 to-muted/80 p-4 shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl dark:border-border"
+              className="group flex cursor-pointer items-center gap-2 rounded-md border border-border/40 bg-gradient-to-b from-background/80 to-muted/80 p-4 shadow-md transition-all duration-300 ease-in-out hover:-translate-x-1 hover:-translate-y-1 hover:scale-105 hover:shadow-xl dark:border-border"
               key={item.id}
             >
               <CheckCircleIcon className="mr-2 h-6 w-6 stroke-foreground/40 transition-colors group-hover:stroke-foreground" />

@@ -30,10 +30,13 @@ dist/
 .env.test.local
 
 .dev.vars
+.dev.vars.dev
 .dev.vars.local
+.dev.vars.dev.local
 .dev.vars.development.local
 .dev.vars.test.local
 .dev.vars.production.local
+.dev.vars.prod
 .dev.vars.production
 .dev.vars.test
 .dev.vars.test.local
@@ -81,3 +84,5 @@ tsconfig.tsbuildinfo
 .serena
 .spec-workflow
 .specify
+# next-agents-md
+.next-docs/

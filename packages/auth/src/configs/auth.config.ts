@@ -1,3 +1,4 @@
+import { passkey } from '@better-auth/passkey';
 import { getDrizzleDB, schema } from '@deepcrawl/db-auth';
 import type { BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
@@ -12,7 +13,6 @@ import {
   openAPI,
   organization,
 } from 'better-auth/plugins';
-import { passkey } from 'better-auth/plugins/passkey';
 import { emailHarmony } from 'better-auth-harmony';
 import EmailVerification from '../templates/email-verification';
 import MagicLink from '../templates/magic-link';

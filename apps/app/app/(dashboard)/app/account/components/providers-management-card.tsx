@@ -1,5 +1,6 @@
 'use client';
 
+import type { Passkey } from '@deepcrawl/auth/types';
 import { Button } from '@deepcrawl/ui/components/ui/button';
 import {
   Card,
@@ -18,7 +19,6 @@ import {
 } from '@deepcrawl/ui/components/ui/dialog';
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import type { Passkey } from 'better-auth/plugins/passkey';
 import {
   KeyIcon,
   Link as LinkIcon,

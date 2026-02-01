@@ -1,12 +1,12 @@
 import { createAuthClientConfig } from '@deepcrawl/auth/configs';
-import type { auth } from '@deepcrawl/auth/lib/auth';
+import type { Auth } from '@deepcrawl/auth/types';
 import { assertValidAuthConfiguration } from '@deepcrawl/auth/utils/config-validator';
-import type { ClientOptions } from 'better-auth';
 import {
   inferAdditionalFields,
   twoFactorClient,
 } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
+import type { BetterAuthClientOptions } from 'better-auth/types';
 import { toast } from 'sonner';
 
 // Support both integrated Next.js auth and external worker for backward compatibility
@@ -52,7 +52,7 @@ const getAuthBaseURL = () => {
 const authClientConfig = createAuthClientConfig({
   basePath: '/api/auth',
   baseURL: getAuthBaseURL(),
-}) satisfies ClientOptions;
+}) satisfies BetterAuthClientOptions;
 
 export const authClient = createAuthClient({
   ...authClientConfig,
@@ -63,7 +63,7 @@ export const authClient = createAuthClient({
         window.location.href = '/auth/two-factor';
       },
     }),
-    inferAdditionalFields<typeof auth>(),
+    inferAdditionalFields<Auth>(),
     // oneTapClient({
     // 	clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
     // 	promptOptions: {
