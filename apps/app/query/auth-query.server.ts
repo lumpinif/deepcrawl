@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@deepcrawl/auth/lib/auth';
+import { getAuth } from '@deepcrawl/auth/lib/auth';
 import type {
   ListApiKeys,
   ListDeviceSessions,
@@ -17,6 +17,7 @@ import type { ActiveOrganization } from '@/lib/auth.client-types';
  * the current authenticated session
  */
 export async function authGetSession(): Promise<Session | null> {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   const session = await auth.api.getSession({
@@ -31,6 +32,7 @@ export async function authGetSession(): Promise<Session | null> {
  * @description listSessions returns all active sessions for the current user across all devices
  */
 export async function authListSessions(): Promise<ListSessions> {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {
@@ -52,6 +54,7 @@ export async function authListSessions(): Promise<ListSessions> {
  * @description listDeviceSessions (from the multi-session plugin) returns sessions for different user accounts stored in the same browser/device.
  */
 export async function authListDeviceSessions(): Promise<ListDeviceSessions> {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {
@@ -74,6 +77,7 @@ export async function authListDeviceSessions(): Promise<ListDeviceSessions> {
  * the full organization details
  */
 export async function authGetFullOrganization(): Promise<ActiveOrganization | null> {
+  const auth = getAuth();
   const requestHeaders = await headers();
   try {
     const result = await auth.api.getFullOrganization({
@@ -92,6 +96,7 @@ export async function authGetFullOrganization(): Promise<ActiveOrganization | nu
  * user's passkeys using Better Auth official API
  */
 export async function authListPasskeys(): Promise<Passkey[]> {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {
@@ -113,6 +118,7 @@ export async function authListPasskeys(): Promise<Passkey[]> {
  * user's linked OAuth accounts
  */
 export async function authListUserAccounts(): Promise<ListUserAccounts> {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {
@@ -136,6 +142,7 @@ export async function authListUserAccounts(): Promise<ListUserAccounts> {
  * user's API keys
  */
 export async function authListApiKeys(): Promise<ListApiKeys> {
+  const auth = getAuth();
   const requestHeaders = await headers();
 
   try {

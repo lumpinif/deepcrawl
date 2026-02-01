@@ -28,7 +28,7 @@
     "changeset": "changeset",
     "cv": "changeset version",
     "release": "changeset publish",
-    "sdk-ts:build": "pnpm --filter=deepcrawl build"
+    "sdk-ts:build": "pnpm -C packages/sdks/js-ts build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
