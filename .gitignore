@@ -84,3 +84,5 @@ tsconfig.tsbuildinfo
 .serena
 .spec-workflow
 .specify
+# next-agents-md
+.next-docs/
