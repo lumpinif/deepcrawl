@@ -15,8 +15,9 @@ export function createAuth(env: CloudflareBindings) {
         return value;
       },
       set: async (key: string, value: string, ttl?: number) => {
-        if (ttl) {
-          await env.DEEPCRAWL_AUTH_KV.put(key, value, { expirationTtl: ttl });
+        if (typeof ttl === 'number' && Number.isFinite(ttl)) {
+          const expirationTtl = Math.max(60, ttl);
+          await env.DEEPCRAWL_AUTH_KV.put(key, value, { expirationTtl });
         } else {
           await env.DEEPCRAWL_AUTH_KV.put(key, value);
         }
