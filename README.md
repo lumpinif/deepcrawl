@@ -28,8 +28,12 @@ Please read the [contributing guide](./CONTRIBUTING.md).
 ## License
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flumpinif%2Fdeepcrawl.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flumpinif%2Fdeepcrawl?ref=badge_shield)
 
 Open Source. Open Code - built with ❤️ by [@felixLu](https://x.com/felixlu1018).
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flumpinif%2Fdeepcrawl.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Flumpinif%2Fdeepcrawl?ref=badge_large)
 
 ## Star History
 
