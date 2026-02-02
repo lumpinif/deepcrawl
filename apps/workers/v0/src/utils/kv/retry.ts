@@ -72,6 +72,9 @@ export async function kvPutWithRetry<T>(
   options?: KVNamespacePutOptions,
 ): Promise<void> {
   const expirationTtl = options?.expirationTtl;
+  if (expirationTtl !== undefined && !Number.isFinite(expirationTtl)) {
+    throw new TypeError('Invalid expirationTtl: must be a finite number');
+  }
   const normalizedOptions =
     typeof expirationTtl === 'number' && Number.isFinite(expirationTtl)
       ? { ...options, expirationTtl: Math.max(60, expirationTtl) }
