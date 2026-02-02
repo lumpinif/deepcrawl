@@ -71,8 +71,14 @@ export async function kvPutWithRetry<T>(
   value: string | ReadableStream | ArrayBuffer,
   options?: KVNamespacePutOptions,
 ): Promise<void> {
+  const expirationTtl = options?.expirationTtl;
+  const normalizedOptions =
+    typeof expirationTtl === 'number' && Number.isFinite(expirationTtl)
+      ? { ...options, expirationTtl: Math.max(60, expirationTtl) }
+      : options;
+
   return retryWithBackoff(async () => {
-    return await kv.put(key, value, options);
+    return await kv.put(key, value, normalizedOptions);
   });
 }
 
