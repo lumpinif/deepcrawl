@@ -3,8 +3,8 @@
   "tasks": [
     {
       "label": "Start Frontend & Backend",
-      "detail": "Start dashboard (Next.js) and workers (Cloudflare Workers) in parallel terminal windows",
-      "dependsOn": ["Start Dashboard", "Start Workers"],
+      "detail": "Start Playground (Next.js) and workers (Cloudflare Workers) in parallel terminal windows",
+      "dependsOn": ["Start Playground", "Start Workers"],
       "dependsOrder": "parallel",
       "presentation": {
         "panel": "new",
@@ -34,8 +34,8 @@
       }
     },
     {
-      "label": "Start Dashboard",
-      "detail": "Start dashboard dev server (Next.js)",
+      "label": "Start Playground",
+      "detail": "Start Playground dev server (Next.js)",
       "type": "shell",
       "command": "pnpm dev",
       "options": {
