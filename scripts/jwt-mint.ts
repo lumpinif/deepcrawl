@@ -16,6 +16,12 @@ type Inputs = {
   writeDevVarsProduction?: boolean;
 };
 
+const OUTPUT_DIVIDER = '----------------------------------------';
+const WARNING_DIVIDER = '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
+
+const resolveYes = (value: string) =>
+  value.trim() ? value.trim().toLowerCase().startsWith('y') : true;
+
 const parseArgs = (args: string[]): Inputs => {
   const inputs: Inputs = {};
 
@@ -89,11 +95,63 @@ const promptInputs = async (seed: Inputs): Promise<Inputs> => {
 
       if (confirmed) {
         secret = randomBytes(32).toString('hex');
-        process.stdout.write(`\nGenerated JWT secret:\n${secret}\n`);
+        process.stdout.write(
+          `\n${OUTPUT_DIVIDER}\nGenerated JWT secret:\n${secret}\n${OUTPUT_DIVIDER}\n`,
+        );
         process.stdout.write(
           `\nSave this value securely (e.g. JWT_SECRET).\n\n`,
         );
       }
+    }
+  }
+
+  if (secret) {
+    const repoRoot = process.cwd();
+    const devVarsPath = join(repoRoot, 'apps', 'workers', 'v0', '.dev.vars');
+    const prodVarsPath = join(
+      repoRoot,
+      'apps',
+      'workers',
+      'v0',
+      '.dev.vars.production',
+    );
+
+    const updates: Record<string, string> = {
+      JWT_SECRET: secret,
+    };
+
+    if (seed.issuer) {
+      updates.JWT_ISSUER = seed.issuer;
+    }
+
+    if (seed.audience) {
+      updates.JWT_AUDIENCE = seed.audience;
+    }
+
+    let writeDev = seed.writeDevVars;
+    if (writeDev === undefined) {
+      const answer = await rl.question(
+        `\n[ENV] Write JWT_SECRET to ${devVarsPath}? (Y/n): `,
+      );
+      writeDev = resolveYes(answer);
+    }
+
+    if (writeDev) {
+      upsertEnvFile(devVarsPath, updates);
+      process.stdout.write(`Updated ${devVarsPath}\n`);
+    }
+
+    let writeProd = seed.writeDevVarsProduction;
+    if (writeProd === undefined) {
+      const answer = await rl.question(
+        `\n[ENV] Write JWT_SECRET to ${prodVarsPath}? (Y/n): `,
+      );
+      writeProd = resolveYes(answer);
+    }
+
+    if (writeProd) {
+      upsertEnvFile(prodVarsPath, updates);
+      process.stdout.write(`Updated ${prodVarsPath}\n`);
     }
   }
 
@@ -192,70 +250,6 @@ const upsertEnvFile = (filePath: string, updates: Record<string, string>) => {
   writeFileSync(filePath, output.endsWith('\n') ? output : `${output}\n`);
 };
 
-const maybeWriteEnvFiles = async (
-  inputs: Inputs,
-  values: { secret: string; issuer?: string; audience?: string },
-) => {
-  const repoRoot = process.cwd();
-  const devVarsPath = join(repoRoot, 'apps', 'workers', 'v0', '.dev.vars');
-  const prodVarsPath = join(
-    repoRoot,
-    'apps',
-    'workers',
-    'v0',
-    '.dev.vars.production',
-  );
-
-  const updates: Record<string, string> = {
-    JWT_SECRET: values.secret,
-  };
-
-  if (values.issuer) {
-    updates.JWT_ISSUER = values.issuer;
-  }
-
-  if (values.audience) {
-    updates.JWT_AUDIENCE = values.audience;
-  }
-
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  const shouldWriteDev =
-    inputs.writeDevVars ??
-    (await rl.question(`Write JWT_SECRET to ${devVarsPath}? (Y/n): `));
-
-  const writeDev =
-    typeof shouldWriteDev === 'string'
-      ? !shouldWriteDev.trim() ||
-        shouldWriteDev.trim().toLowerCase().startsWith('y')
-      : shouldWriteDev;
-
-  if (writeDev) {
-    upsertEnvFile(devVarsPath, updates);
-    process.stdout.write(`Updated ${devVarsPath}\n\n`);
-  }
-
-  const shouldWriteProd =
-    inputs.writeDevVarsProduction ??
-    (await rl.question(`Write JWT_SECRET to ${prodVarsPath}? (Y/n): `));
-
-  const writeProd =
-    typeof shouldWriteProd === 'string'
-      ? !shouldWriteProd.trim() ||
-        shouldWriteProd.trim().toLowerCase().startsWith('y')
-      : shouldWriteProd;
-
-  if (writeProd) {
-    upsertEnvFile(prodVarsPath, updates);
-    process.stdout.write(`Updated ${prodVarsPath}\n`);
-  }
-
-  rl.close();
-};
-
 const run = async () => {
   const seed = parseArgs(process.argv.slice(2));
   const inputs = await promptInputs(seed);
@@ -283,16 +277,17 @@ const run = async () => {
 
   const token = await sign(payload, inputs.secret, 'HS256');
 
-  process.stdout.write(`\nJWT_SECRET:\n${token}\n`);
+  process.stdout.write(
+    `\n${OUTPUT_DIVIDER}\nJWT token:\n${token}\n${OUTPUT_DIVIDER}\n`,
+  );
   process.stdout.write(
     `\nUse this header in your requests:\nAuthorization: Bearer ${token}\n\n`,
   );
+  process.stdout.write(
+    `${WARNING_DIVIDER}\nIMPORTANT: Save the JWT secret and token securely. If either is lost or leaked, rotate the JWT secret and re-mint the token.\n${WARNING_DIVIDER}\n\n`,
+  );
 
-  await maybeWriteEnvFiles(inputs, {
-    secret: inputs.secret,
-    issuer: inputs.issuer,
-    audience: inputs.audience,
-  });
+  // Env file updates are handled right after the JWT secret is set.
 };
 
 run().catch((error) => {
