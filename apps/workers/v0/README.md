@@ -12,6 +12,9 @@ Web scraping and reading APIs powered by Cloudflare Workers with enterprise-grad
 # Start development server (port 8080)
 pnpm dev
 
+# Apply local D1 migrations (required for local Wrangler dev)
+pnpm d1-db:migrate:local
+
 # Generate Cloudflare Worker types
 pnpm cf-typegen
 
@@ -20,6 +23,29 @@ pnpm gen:openapi
 
 # Run all checks (lint, format, typecheck)
 pnpm check
+```
+
+### Local vs Remote Dev
+
+- We default to local Wrangler dev because Better Auth AuthWorker relies on RPC,
+  and dev-remote can be unreliable for the local auth worker.
+- By default, `DB_V0` uses the remote D1 database (see `wrangler.jsonc` with
+  `"remote": true` under `d1_databases`).
+- If you use `AUTH_MODE=jwt` or `AUTH_MODE=none`, you can run:
+
+```bash
+pnpm dev:remote
+```
+
+This runs the worker remotely and also connects to the remote D1 database.
+
+To use a local D1 database instead:
+
+1. Change `wrangler.jsonc` and set `"remote": false` (or remove it) for `DB_V0`.
+2. Apply local migrations:
+
+```bash
+pnpm d1-db:migrate:local
 ```
 
 ## 🚀 Deployment
@@ -85,6 +111,16 @@ AUTH_MODE=better-auth
 - `better-auth` (default): API key + cookie auth via Better Auth.
 - `jwt`: Verify JWT tokens from `Authorization: Bearer <token>`.
 - `none`: No authentication, all operations are open. Use with caution.
+
+### Activity Logs
+
+Logs are enabled by default across environments.
+
+```bash
+ENABLE_ACTIVITY_LOGS=true
+```
+
+Set this to `false` to skip writing activity logs.
 
 ### JWT Configuration
 

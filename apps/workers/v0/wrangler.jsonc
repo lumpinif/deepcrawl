@@ -34,6 +34,7 @@
     "WORKER_NODE_ENV": "development",
     "API_URL": "http://localhost:8080",
     "AUTH_MODE": "better-auth",
+    "ENABLE_ACTIVITY_LOGS": true,
     // JWT_* are only needed when AUTH_MODE=jwt, JWT_ISSUER and JWT_AUDIENCE are optional.
     // Don't put JWT_SECRET here. Use Wrangler secrets for JWT_SECRET in production. Or add it to .dev.vars for local development.
     "JWT_ISSUER": "",
@@ -74,6 +75,7 @@
         "WORKER_NODE_ENV": "production",
         "API_URL": "https://api.deepcrawl.dev",
         "AUTH_MODE": "better-auth",
+        "ENABLE_ACTIVITY_LOGS": true,
         // JWT_* are only needed when AUTH_MODE=jwt, JWT_ISSUER and JWT_AUDIENCE are optional.
         // Don't put JWT_SECRET here. Use Wrangler secrets for JWT_SECRET in production. Or add it to .dev.vars.production for production secrets.
         "JWT_ISSUER": "",

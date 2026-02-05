@@ -16,6 +16,7 @@
     "typecheck": "tsc --noEmit",
     "check": "biome check --write && pnpm typecheck",
     "cf-typegen": "wrangler types --c wrangler.jsonc --c ../auth/wrangler.jsonc --env-interface=CloudflareBindings && tsx ./scripts/worker-config-override.ts && pnpm typecheck",
+    "d1-db:migrate:local": "pnpm wrangler d1 migrations apply DB_V0 --local",
     "gen:openapi": "tsx ./scripts/generate-openapi-yaml.ts"
   },
   "dependencies": {
