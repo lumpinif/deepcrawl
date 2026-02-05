@@ -5,6 +5,7 @@ const DEFAULT_AUTH_MODE: AuthMode = 'better-auth';
 export function getAuthMode(): AuthMode {
   const raw = process.env.AUTH_MODE ?? process.env.NEXT_PUBLIC_AUTH_MODE;
   const normalized = raw?.trim().toLowerCase();
+
   if (
     normalized === 'better-auth' ||
     normalized === 'jwt' ||
@@ -12,9 +13,7 @@ export function getAuthMode(): AuthMode {
   ) {
     return normalized;
   }
-  if (process.env.AUTH_JWT_TOKEN) {
-    return 'jwt';
-  }
+
   return DEFAULT_AUTH_MODE;
 }
 
