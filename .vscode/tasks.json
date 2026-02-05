@@ -1,0 +1,130 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Frontend & Backend",
+      "detail": "Start dashboard (Next.js) and workers (Cloudflare Workers) in parallel terminal windows",
+      "dependsOn": ["Start Dashboard", "Start Workers"],
+      "dependsOrder": "parallel",
+      "presentation": {
+        "panel": "new",
+        "group": "dev",
+        "reveal": "always",
+        "clear": true
+      },
+      "group": {
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Start All Dev Services",
+      "detail": "Start all dev services in one terminal window with turbo dev",
+      "type": "shell",
+      "command": "pnpm dev",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "dev",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Start Dashboard",
+      "detail": "Start dashboard dev server (Next.js)",
+      "type": "shell",
+      "command": "pnpm dev",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/app"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "dev",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Start Auth Worker",
+      "detail": "Start auth worker dev server (Wrangler)",
+      "type": "shell",
+      "command": "pnpm dev",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/workers/auth"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "dev",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Start V0 Worker",
+      "detail": "Start v0 worker dev server (Wrangler)",
+      "type": "shell",
+      "command": "pnpm dev",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/workers/v0"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "dev",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Start Workers",
+      "detail": "Start auth + v0 workers in parallel",
+      "dependsOn": ["Start Auth Worker", "Start V0 Worker"],
+      "dependsOrder": "parallel",
+      "presentation": {
+        "panel": "new",
+        "group": "dev",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Generate Worker Auth Types",
+      "detail": "Generate Cloudflare types for auth worker",
+      "type": "shell",
+      "command": "pnpm cf-typegen",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/workers/auth"
+      },
+      "presentation": {
+        "panel": "new",
+        "group": "tools",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Generate Worker V0 Types",
+      "detail": "Generate Cloudflare types for v0 worker",
+      "type": "shell",
+      "command": "pnpm cf-typegen",
+      "options": {
+        "cwd": "${workspaceFolder}/apps/workers/v0"
+      },
+      "presentation": {
+        "panel": "new",
+        "group": "tools",
+        "reveal": "always",
+        "clear": true
+      }
+    }
+  ]
+}
