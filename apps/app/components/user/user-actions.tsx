@@ -8,7 +8,7 @@ export default async function UserActions() {
   if (!isBetterAuthMode()) {
     return (
       <Button asChild className="ml-1" size="sm" variant="outline">
-        <Link href="/app">Go to Dashboard</Link>
+        <Link href="/app">Go to Playground</Link>
       </Button>
     );
   }

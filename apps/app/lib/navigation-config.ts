@@ -41,7 +41,7 @@ export interface NavigationItem {
 
 export const NAVGATION_ITEMS: NavigationItem[] = [
   {
-    label: 'Dashboard',
+    label: 'Playground',
     title: 'Home',
     url: getAppRoute(BASE_APP_PATH),
     icon: IconDashboard,
@@ -76,14 +76,18 @@ export const NAVGATION_ITEMS: NavigationItem[] = [
 ];
 
 export const getNavigationItems = ({
-  hideAccount,
+  hideAuthEntries,
 }: {
-  hideAccount?: boolean;
+  hideAuthEntries?: boolean;
 } = {}) => {
-  if (!hideAccount) {
+  if (!hideAuthEntries) {
     return NAVGATION_ITEMS;
   }
 
   const accountRoute = getAppRoute('/account');
-  return NAVGATION_ITEMS.filter((item) => item.url !== accountRoute);
+  const apiKeysRoute = getAppRoute('/api-keys');
+
+  return NAVGATION_ITEMS.filter(
+    (item) => item.url !== accountRoute && item.url !== apiKeysRoute,
+  );
 };

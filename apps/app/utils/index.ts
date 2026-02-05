@@ -116,7 +116,8 @@ export function getAuthViewDescriptionTitle(authView: AuthView): string {
 export function getAuthViewDetailedDescription(authView: AuthView): string {
   const detailedDescriptionMap: Record<AuthView, string> = {
     login: 'Please sign in to your account to continue.',
-    signUp: 'Create a new account to get started with Deepcrawl Dashboard.',
+    signUp:
+      'Create a new account to get started with Deepcrawl Playground & Dashboard.',
     logout: 'You are being logged out of your account.',
     callback: 'Processing your authentication request...',
     emailOTP: 'Enter the verification code sent to your email address.',
