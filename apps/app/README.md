@@ -80,6 +80,9 @@ import { useTheme } from "next-themes";
 ### **Environment Variables**
 ```bash
 # Authentication
+AUTH_MODE=better-auth | jwt | none
+# only effective if you set AUTH_MODE to jwt
+AUTH_JWT_TOKEN=your_jwt_token 
 NEXT_PUBLIC_USE_AUTH_WORKER=true
 BETTER_AUTH_SECRET=your_secret_key
 

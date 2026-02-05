@@ -39,11 +39,13 @@ export interface PlaygroundOperationClientProps {
 
 interface PlaygroundOperationClientContentProps {
   className?: string;
+  enableApiKeys?: boolean;
 }
 
 // Internal component that uses context
 export const PlaygroundOperationClientContent = ({
   className,
+  enableApiKeys = true,
 }: PlaygroundOperationClientContentProps) => {
   const [isError, setIsError] = useState(false);
   const [isDetailedBarOpen, setIsDetailedBarOpen] = useQueryState(
@@ -161,7 +163,7 @@ export const PlaygroundOperationClientContent = ({
             childrenProps={{ className: 'p-4' }}
             open={isDetailedBarOpen}
           >
-            <DetailedSDKImpl />
+            <DetailedSDKImpl enableApiKeys={enableApiKeys} />
           </DetailedOptionsAccordion>
         </PromptInput>
       </div>

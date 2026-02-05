@@ -4,16 +4,19 @@ import { DeepcrawlApp } from 'deepcrawl';
 import { DeepcrawlError } from 'deepcrawl/types';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
+import { buildDeepcrawlHeaders, isBetterAuthMode } from '@/lib/auth-mode';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
 export async function GET(request: NextRequest) {
-  const sessionToken = getSessionCookie(request, {
-    cookiePrefix: APP_COOKIE_PREFIX,
-  });
+  if (isBetterAuthMode()) {
+    const sessionToken = getSessionCookie(request, {
+      cookiePrefix: APP_COOKIE_PREFIX,
+    });
 
-  if (!sessionToken) {
-    return NextResponse.json({ error: 'Unauthorized!' }, { status: 401 });
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Unauthorized!' }, { status: 401 });
+    }
   }
 
   const requestHeaders = await headers();
@@ -21,7 +24,7 @@ export async function GET(request: NextRequest) {
   try {
     const dc = new DeepcrawlApp({
       baseUrl: DEEPCRAWL_BASE_URL,
-      headers: requestHeaders,
+      headers: buildDeepcrawlHeaders(requestHeaders),
     });
 
     const searchParams = request.nextUrl.searchParams;

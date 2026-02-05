@@ -238,6 +238,26 @@ const upsertEnvFile = (filePath: string, updates: Record<string, string>) => {
     }
   }
 
+  const authJwtKey = 'AUTH_JWT_TOKEN';
+  const hasAuthJwtField = updates[authJwtKey] !== undefined;
+  const hasAuthJwtHeader = lines.some(
+    (line) => line.trim().toLowerCase() === '# auth jwt',
+  );
+
+  if (hasAuthJwtField && !hasAuthJwtHeader) {
+    const firstAuthJwtIndex = updatedLines.findIndex((line) =>
+      /^AUTH_JWT_TOKEN=/.test(line.trim()),
+    );
+
+    const headerBlock = ['', '# Auth JWT'];
+
+    if (firstAuthJwtIndex >= 0) {
+      updatedLines.splice(firstAuthJwtIndex, 0, ...headerBlock);
+    } else {
+      updatedLines.push(...headerBlock);
+    }
+  }
+
   for (const [key, value] of Object.entries(updates)) {
     if (value === undefined || seen.has(key)) {
       continue;
@@ -287,7 +307,34 @@ const run = async () => {
     `${WARNING_DIVIDER}\nIMPORTANT: Save the JWT secret and token securely. If either is lost or leaked, rotate the JWT secret and re-mint the token.\n${WARNING_DIVIDER}\n\n`,
   );
 
-  // Env file updates are handled right after the JWT secret is set.
+  const repoRoot = process.cwd();
+  const appEnvPath = join(repoRoot, 'apps', 'app', '.env');
+  const appEnvDevPath = join(repoRoot, 'apps', 'app', '.env.development.local');
+
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  const writeAppEnvAnswer = await rl.question(
+    `\n[ENV] Write AUTH_JWT_TOKEN to ${appEnvPath}? (Y/n): `,
+  );
+  if (resolveYes(writeAppEnvAnswer)) {
+    upsertEnvFile(appEnvPath, { AUTH_JWT_TOKEN: token });
+    process.stdout.write(`Updated ${appEnvPath}\n`);
+  }
+
+  const writeAppEnvDevAnswer = await rl.question(
+    `\n[ENV] Write AUTH_JWT_TOKEN to ${appEnvDevPath}? (Y/n): `,
+  );
+  if (resolveYes(writeAppEnvDevAnswer)) {
+    upsertEnvFile(appEnvDevPath, { AUTH_JWT_TOKEN: token });
+    process.stdout.write(`Updated ${appEnvDevPath}\n`);
+  }
+
+  rl.close();
+
+  // Env file updates for worker secrets are handled right after the JWT secret is set.
 };
 
 run().catch((error) => {

@@ -16,7 +16,7 @@ export default async function LandingLayout({
       {...baseOptions}
       links={[
         {
-          text: 'Dashboard',
+          text: 'Playground',
           url: '/app',
         },
         {

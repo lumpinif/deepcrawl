@@ -74,3 +74,16 @@ export const NAVGATION_ITEMS: NavigationItem[] = [
     icon: IconBook,
   },
 ];
+
+export const getNavigationItems = ({
+  hideAccount,
+}: {
+  hideAccount?: boolean;
+} = {}) => {
+  if (!hideAccount) {
+    return NAVGATION_ITEMS;
+  }
+
+  const accountRoute = getAppRoute('/account');
+  return NAVGATION_ITEMS.filter((item) => item.url !== accountRoute);
+};

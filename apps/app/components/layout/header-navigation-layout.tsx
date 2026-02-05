@@ -12,6 +12,7 @@ interface HeaderNavigationLayoutProps {
   children: ReactNode;
   navigationMode: NavigationMode;
   SiteHeaderSlot: ReactNode;
+  hideAuthEntries?: boolean;
 }
 
 const useRange = (
@@ -36,6 +37,7 @@ export function HeaderNavigationLayout({
   children,
   navigationMode,
   SiteHeaderSlot,
+  hideAuthEntries,
 }: HeaderNavigationLayoutProps) {
   const y = useScrollPosition(60);
   const navX = useRange(y, 0, 35, 0, 85);
@@ -68,7 +70,7 @@ export function HeaderNavigationLayout({
         /> */}
 
       {/* Sticky nav tabs */}
-      <AppNavTabs transFormX={navX} />
+      <AppNavTabs hideAuthEntries={hideAuthEntries} transFormX={navX} />
 
       {/* @ DEPRECATED: <ScrollArea
         className={cn('relative flex min-h-0 flex-1 flex-col')}

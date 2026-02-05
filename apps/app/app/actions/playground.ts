@@ -18,6 +18,7 @@ import {
 } from 'deepcrawl/types';
 import { headers } from 'next/headers';
 import type { PlaygroundResponse } from '@/hooks/playground/types';
+import { buildDeepcrawlHeaders } from '@/lib/auth-mode';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
@@ -29,7 +30,7 @@ async function createPlaygroundClient() {
 
   return new DeepcrawlApp({
     baseUrl: DEEPCRAWL_BASE_URL,
-    headers: requestHeaders,
+    headers: buildDeepcrawlHeaders(requestHeaders),
   });
 }
 
