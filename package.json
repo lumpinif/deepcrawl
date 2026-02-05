@@ -24,6 +24,7 @@
     "check": "pnpm install && turbo check && pnpm sherif:fix",
     "clean": "cd scripts && npx tsx clean.ts",
     "clean:install": "cd scripts && npx tsx clean.ts && pnpm install",
+    "jwt:mint": "pnpm exec tsx scripts/jwt-mint.ts",
     "prepare": "husky",
     "changeset": "changeset",
     "cv": "changeset version",
