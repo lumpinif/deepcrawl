@@ -6,7 +6,7 @@
   "$schema": "../../../node_modules/wrangler/config-schema.json",
   "name": "deepcrawl-worker-v0",
   "main": "src/index.ts",
-  "compatibility_date": "2025-05-22",
+  "compatibility_date": "2026-02-05",
   "compatibility_flags": ["nodejs_compat"],
   "routes": [
     {
@@ -31,8 +31,13 @@
   //   "binding": "AI"
   // },
   "vars": {
+    "WORKER_NODE_ENV": "development",
     "API_URL": "http://localhost:8080",
-    "WORKER_NODE_ENV": "development"
+    "AUTH_MODE": "better-auth",
+    // JWT_* are only needed when AUTH_MODE=jwt, JWT_ISSUER and JWT_AUDIENCE are optional.
+    // Don't put JWT_SECRET here. Use Wrangler secrets for JWT_SECRET in production. Or add it to .dev.vars for local development.
+    "JWT_ISSUER": "",
+    "JWT_AUDIENCE": ""
   },
   "services": [
     {
@@ -66,8 +71,13 @@
   "env": {
     "production": {
       "vars": {
+        "WORKER_NODE_ENV": "production",
         "API_URL": "https://api.deepcrawl.dev",
-        "WORKER_NODE_ENV": "production"
+        "AUTH_MODE": "better-auth",
+        // JWT_* are only needed when AUTH_MODE=jwt, JWT_ISSUER and JWT_AUDIENCE are optional.
+        // Don't put JWT_SECRET here. Use Wrangler secrets for JWT_SECRET in production. Or add it to .dev.vars.production for production secrets.
+        "JWT_ISSUER": "",
+        "JWT_AUDIENCE": ""
       },
       "d1_databases": [
         {

@@ -1,11 +1,16 @@
 import type { Session } from '@deepcrawl/auth/types';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings } from '@/lib/context';
+import { resolveAuthMode } from '@/utils/auth-mode';
 import { logDebug } from '@/utils/loggers';
 
 export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     const start = performance.now();
+    if (resolveAuthMode(c.env.AUTH_MODE) !== 'better-auth') {
+      return next();
+    }
+
     if (
       c.get('session') ||
       c.get('session')?.session ||
@@ -52,17 +57,15 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
         logDebug('⚠️ RPC call failed, falling back to HTTP fetch:', rpcError);
 
         // Fallback to HTTP fetch approach
-        const request = new Request(
-          `${c.env.BETTER_AUTH_URL}/getSessionWithAPIKey`,
-          {
-            method: 'POST',
-            headers: {
-              'x-api-key': apiKey,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ apiKey }),
+        const baseUrl = c.env.BETTER_AUTH_URL.replace(/\/+$/, '');
+        const request = new Request(`${baseUrl}/getSessionWithAPIKey`, {
+          method: 'POST',
+          headers: {
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json',
           },
-        );
+          body: JSON.stringify({ apiKey }),
+        });
 
         const fetcher = c.var.serviceFetcher;
         const response = await fetcher(request);

@@ -17,6 +17,7 @@ import {
   eq,
   getTableColumns,
   gte,
+  isNull,
   lte,
   responseRecord,
 } from '@deepcrawl/db-d1';
@@ -257,13 +258,12 @@ export async function listLogs(
   }
 
   // Get user ID from session
-  const userId = c.var.session?.user?.id;
-  if (!userId) {
-    throw new Error('User ID not found in session');
-  }
+  const userId = c.var.session?.user?.id ?? null;
 
   // Build where conditions
-  const conditions = [eq(activityLog.userId, userId)];
+  const conditions = [
+    userId ? eq(activityLog.userId, userId) : isNull(activityLog.userId),
+  ];
 
   if (path) {
     conditions.push(eq(activityLog.path, path));
@@ -344,10 +344,7 @@ export async function getOneLogWithReconstruction(
   const { id } = options;
 
   // Get user ID from session
-  const userId = c.var.session?.user?.id;
-  if (!userId) {
-    throw new Error('User ID not found in session');
-  }
+  const userId = c.var.session?.user?.id ?? null;
 
   // Get single activity log with response record
   const result = await c.var.dbd1
@@ -360,7 +357,12 @@ export async function getOneLogWithReconstruction(
       responseRecord,
       eq(activityLog.responseHash, responseRecord.responseHash),
     )
-    .where(and(eq(activityLog.id, id), eq(activityLog.userId, userId)))
+    .where(
+      and(
+        eq(activityLog.id, id),
+        userId ? eq(activityLog.userId, userId) : isNull(activityLog.userId),
+      ),
+    )
     .limit(1);
 
   if (result.length === 0) {
@@ -386,13 +388,7 @@ export async function exportResponseByIdAndFormat(
   const { id, format } = options;
 
   // Get user ID from session
-  const userId = c.var.session?.user?.id;
-  if (!userId) {
-    throw new ORPCError('UNAUTHORIZED', {
-      status: 401,
-      message: 'User ID not found in session',
-    });
-  }
+  const userId = c.var.session?.user?.id ?? null;
 
   // Get single activity log with response record
   const result = await c.var.dbd1
@@ -405,7 +401,12 @@ export async function exportResponseByIdAndFormat(
       responseRecord,
       eq(activityLog.responseHash, responseRecord.responseHash),
     )
-    .where(and(eq(activityLog.id, id), eq(activityLog.userId, userId)))
+    .where(
+      and(
+        eq(activityLog.id, id),
+        userId ? eq(activityLog.userId, userId) : isNull(activityLog.userId),
+      ),
+    )
     .limit(1);
 
   if (result.length === 0) {

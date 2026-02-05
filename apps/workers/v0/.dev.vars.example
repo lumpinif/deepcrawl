@@ -4,6 +4,12 @@
 BETTER_AUTH_URL=http://localhost:8787
 BETTER_AUTH_SECRET=
 
+AUTH_MODE=better-auth
+ 
+JWT_SECRET=
+JWT_ISSUER=
+JWT_AUDIENCE=
+
 DATABASE_URL=
 
 # Github

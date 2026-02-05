@@ -2,6 +2,7 @@ import { contract } from '@deepcrawl/contracts';
 import { implement, ORPCError } from '@orpc/server';
 import type { ORPCContext } from '@/lib/context';
 import { retry } from './middlewares/retry.orpc';
+import { resolveAuthMode } from './utils/auth-mode';
 import { logDebug } from './utils/loggers';
 
 /**
@@ -13,6 +14,19 @@ export const publicProcedures = implement(contract).$context<ORPCContext>();
 
 export const authed = publicProcedures
   .use(({ context, next }) => {
+    const authMode = resolveAuthMode(context.env.AUTH_MODE);
+    if (authMode === 'none') {
+      return next({
+        context: {
+          ...context,
+          var: {
+            ...context.var,
+            session: context.var.session ?? null,
+          },
+        },
+      });
+    }
+
     if (!(context.var.session?.user && context.var.session.session)) {
       throw new ORPCError('UNAUTHORIZED:', {
         status: 401,
@@ -21,7 +35,10 @@ export const authed = publicProcedures
       });
     }
 
-    logDebug('✅ AUTHENTICATED:', context.var.session.user.email);
+    logDebug(
+      '✅ AUTHENTICATED:',
+      context.var.session.user.email || context.var.session.user.id,
+    );
 
     return next({
       context: {

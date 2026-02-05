@@ -1,6 +1,7 @@
 import type { Session } from '@deepcrawl/auth/types';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings, AppContext, AppVariables } from '@/lib/context';
+import { resolveAuthMode } from '@/utils/auth-mode';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { getAuthClient } from './client.auth';
 
@@ -54,6 +55,10 @@ const fetchWithFallback = async (
 export const cookieAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     const start = performance.now();
+    if (resolveAuthMode(c.env.AUTH_MODE) !== 'better-auth') {
+      return next();
+    }
+
     if (
       c.get('session') ||
       c.get('session')?.session ||
