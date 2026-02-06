@@ -91,6 +91,10 @@ pnpm preview
 
 ## 🛠️ Configuration
 
+Internal reference:
+
+- See `AUTH_MODES_AND_WORKERS.md` for the full auth matrix (AUTH_MODE x auth backend).
+
 The worker is configured via `wrangler.jsonc` with:
 
 - **Smart Placement** - Optimal performance routing

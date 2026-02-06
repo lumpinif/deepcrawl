@@ -2,6 +2,7 @@ import type { Session } from '@deepcrawl/auth/types';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings, AppContext, AppVariables } from '@/lib/context';
 import { resolveAuthMode } from '@/utils/auth-mode';
+import { resolveBetterAuthApiBaseUrl } from '@/utils/better-auth-url';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { getAuthClient } from './client.auth';
 
@@ -97,7 +98,8 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
       }
 
       // 2. Fallback to direct API calls
-      const authUrl = `${c.env.BETTER_AUTH_URL}/api/auth/get-session`;
+      const authApiBaseUrl = resolveBetterAuthApiBaseUrl(c.env.BETTER_AUTH_URL);
+      const authUrl = `${authApiBaseUrl}/get-session`;
       const request = new Request(authUrl, {
         headers: new Headers(c.req.raw.headers),
       });

@@ -12,9 +12,6 @@ app.get('/', (c) => {
   return c.text('Welcome to Deepcrawl Auth Worker');
 });
 
-/* test route */
-// app.route('/', validateAPIKeyRouter);
-
 export default class extends WorkerEntrypoint<AppContext['Bindings']> {
   // Cache the auth instance to avoid recreating it on every RPC call
   private _authInstance: Auth | null = null;

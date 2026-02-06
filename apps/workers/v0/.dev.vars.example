@@ -2,8 +2,7 @@
 # In production, these should be set as Cloudflare Worker Secrets.
 
 # Auth
-# Auth base URL. Prefer origin-level (no `/api/auth`) to avoid confusion.
-# The worker will also accept a URL that already includes `/api/auth`.
+# Auth base URL. Points to auth worker or to Next.js /api/auth depending on mode.
 BETTER_AUTH_URL=http://localhost:8787
 
 # Better Auth secret.

@@ -4,13 +4,15 @@ import {
   createAuthClient,
 } from 'better-auth/client';
 import type { AppContext } from '@/lib/context';
+import { resolveBetterAuthOriginUrl } from '@/utils/better-auth-url';
 
 export function getAuthClient(
   c: AppContext,
   options: BetterAuthClientOptions = {},
 ) {
   const baseAuthClientConfig = createAuthClientConfig({
-    baseURL: c.env.BETTER_AUTH_URL,
+    // createAuthClientConfig() uses basePath `/api/auth`, so keep baseURL origin-like.
+    baseURL: resolveBetterAuthOriginUrl(c.env.BETTER_AUTH_URL),
   });
 
   const headers = new Headers(c.req.raw.headers);

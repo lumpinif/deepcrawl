@@ -27,7 +27,6 @@
     "jwt:mint": "pnpm exec tsx scripts/jwt-mint.ts",
     "env:generate": "pnpm exec tsx scripts/env/generate-env-examples.ts",
     "env:sync:local": "pnpm exec tsx scripts/env/sync-local-env.ts",
-    "env:bootstrap": "pnpm exec tsx scripts/env/bootstrap-env-source.ts",
     "prepare": "husky",
     "changeset": "changeset",
     "cv": "changeset version",
