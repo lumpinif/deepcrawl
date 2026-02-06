@@ -188,6 +188,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.29.8
         version: 2.29.8(@types/node@24.10.9)
+      '@deepcrawl/runtime':
+        specifier: workspace:*
+        version: link:packages/runtime
       '@deepcrawl/typescript-config':
         specifier: workspace:*
         version: link:packages/typescript-config
@@ -260,6 +263,9 @@ importers:
       '@deepcrawl/db-auth':
         specifier: workspace:*
         version: link:../../packages/db/db-auth
+      '@deepcrawl/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
       '@deepcrawl/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -558,6 +564,9 @@ importers:
       '@deepcrawl/db-d1':
         specifier: workspace:*
         version: link:../../../packages/db/db-d1
+      '@deepcrawl/runtime':
+        specifier: workspace:*
+        version: link:../../../packages/runtime
       '@deepcrawl/types':
         specifier: workspace:*
         version: link:../../../packages/types
@@ -769,6 +778,12 @@ importers:
       typescript-eslint:
         specifier: ^8.54.0
         version: 8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/runtime:
+    devDependencies:
+      '@deepcrawl/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
 
   packages/sdks: {}
 

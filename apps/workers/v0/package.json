@@ -25,6 +25,7 @@
     "@deepcrawl/contracts": "workspace:*",
     "@deepcrawl/db-auth": "workspace:*",
     "@deepcrawl/db-d1": "workspace:*",
+    "@deepcrawl/runtime": "workspace:*",
     "@deepcrawl/types": "workspace:*",
     "@hono-rate-limiter/cloudflare": "catalog:",
     "@hono/zod-openapi": "catalog:",

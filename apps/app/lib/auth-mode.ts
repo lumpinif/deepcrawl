@@ -1,20 +1,11 @@
-export type AuthMode = 'better-auth' | 'jwt' | 'none';
+import { type AuthMode, resolveAuthMode } from '@deepcrawl/runtime/auth-mode';
 
-const DEFAULT_AUTH_MODE: AuthMode = 'better-auth';
+export type { AuthMode } from '@deepcrawl/runtime/auth-mode';
 
 export function getAuthMode(): AuthMode {
-  const raw = process.env.AUTH_MODE ?? process.env.NEXT_PUBLIC_AUTH_MODE;
-  const normalized = raw?.trim().toLowerCase();
-
-  if (
-    normalized === 'better-auth' ||
-    normalized === 'jwt' ||
-    normalized === 'none'
-  ) {
-    return normalized;
-  }
-
-  return DEFAULT_AUTH_MODE;
+  return resolveAuthMode(
+    process.env.AUTH_MODE ?? process.env.NEXT_PUBLIC_AUTH_MODE,
+  );
 }
 
 export function isBetterAuthMode(): boolean {

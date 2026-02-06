@@ -77,6 +77,10 @@ import { useTheme } from "next-themes";
 
 ## 🔧 Configuration
 
+Internal reference:
+
+- See `AUTH_MODES_AND_WORKERS.md` for the full auth matrix (AUTH_MODE x auth backend).
+
 ### **Environment Variables**
 ```bash
 # Authentication

@@ -1,0 +1,38 @@
+{
+  "name": "@deepcrawl/runtime",
+  "version": "0.0.1",
+  "description": "Runtime configuration helpers and env manifest for the Deepcrawl monorepo",
+  "private": true,
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./auth-mode": {
+      "types": "./src/auth-mode.ts",
+      "import": "./src/auth-mode.ts",
+      "default": "./src/auth-mode.ts"
+    },
+    "./env": {
+      "types": "./src/env.ts",
+      "import": "./src/env.ts",
+      "default": "./src/env.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "biome check . --write && pnpm typecheck"
+  },
+  "devDependencies": {
+    "@deepcrawl/typescript-config": "workspace:*"
+  },
+  "keywords": [
+    "deepcrawl",
+    "config",
+    "env"
+  ],
+  "author": "Felix Lu(Lyu) <@felixlu1018>",
+  "license": "MIT"
+}

@@ -24,6 +24,7 @@
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/contracts": "workspace:*",
     "@deepcrawl/db-auth": "workspace:*",
+    "@deepcrawl/runtime": "workspace:*",
     "@deepcrawl/types": "workspace:*",
     "@dnd-kit/core": "catalog:",
     "@dnd-kit/modifiers": "catalog:",

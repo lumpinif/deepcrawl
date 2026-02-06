@@ -32,6 +32,7 @@ dist/
 .env.production
 .env.test
 .env.test.local
+env/.env.local
 
 .dev.vars
 .dev.vars.dev

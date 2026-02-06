@@ -1,18 +1,36 @@
 # Used by Wrangler in local development
 # In production, these should be set as Cloudflare Worker Secrets.
 
+# App
+# Public app URL (used for navigation and auth callbacks).
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Auth
+# Auth base URL. Points to auth worker or to Next.js /api/auth depending on mode.
 BETTER_AUTH_URL=http://localhost:8787
+
+# Better Auth secret.
 BETTER_AUTH_SECRET=
 
+# Postgres connection string (Neon, etc).
 DATABASE_URL=
 
-# Github
+# OAuth
+# GitHub OAuth client id.
 GITHUB_CLIENT_ID=
+
+# GitHub OAuth client secret.
 GITHUB_CLIENT_SECRET=
 
-# Google
+# Google OAuth client id (public).
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=
+
+# Google OAuth client secret.
 GOOGLE_CLIENT_SECRET=
 
-# Resend
+# Email
+# Resend API key (optional).
 RESEND_API_KEY=
+
+# From email, e.g. "Deepcrawl <noreply@deepcrawl.dev>".
+FROM_EMAIL=
