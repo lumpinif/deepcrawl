@@ -309,7 +309,6 @@ const run = async () => {
 
   const repoRoot = process.cwd();
   const appEnvPath = join(repoRoot, 'apps', 'app', '.env');
-  const appEnvDevPath = join(repoRoot, 'apps', 'app', '.env.development.local');
 
   const rl = createInterface({
     input: process.stdin,
@@ -322,14 +321,6 @@ const run = async () => {
   if (resolveYes(writeAppEnvAnswer)) {
     upsertEnvFile(appEnvPath, { AUTH_JWT_TOKEN: token });
     process.stdout.write(`Updated ${appEnvPath}\n`);
-  }
-
-  const writeAppEnvDevAnswer = await rl.question(
-    `\n[ENV] Write AUTH_JWT_TOKEN to ${appEnvDevPath}? (Y/n): `,
-  );
-  if (resolveYes(writeAppEnvDevAnswer)) {
-    upsertEnvFile(appEnvDevPath, { AUTH_JWT_TOKEN: token });
-    process.stdout.write(`Updated ${appEnvDevPath}\n`);
   }
 
   rl.close();

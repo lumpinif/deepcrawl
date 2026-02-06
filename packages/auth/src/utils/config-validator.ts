@@ -1,6 +1,10 @@
 /**
- * Configuration validation utilities for Deepcrawl Auth
- * Ensures consistency between auth worker settings and URLs
+ * Configuration validation utilities for Deepcrawl Auth.
+ *
+ * Important:
+ * - This must work for Deepcrawl official domains AND for self-hosted/template
+ *   deployments (custom domains, free domains, etc).
+ * - Validation should be helpful, but not hardcode deepcrawl.dev patterns.
  */
 
 interface ValidationConfig {
@@ -16,32 +20,36 @@ interface ValidationResult {
   warning?: string;
 }
 
-/**
- * Expected URL patterns for different modes and environments
- * NOTE: ENSURE THIS MATCHES WITH .ENV
- */
-const URL_PATTERNS = {
-  authWorker: {
-    production: ['https://auth.deepcrawl.dev'],
-    development: ['http://localhost:8787', 'http://127.0.0.1:8787'],
-  },
-  nextjs: {
-    production: ['https://deepcrawl.dev', 'https://deepcrawl.dev/api/auth'],
-    development: [
-      'http://localhost:3000',
-      'http://localhost:3000/api/auth',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:3000/api/auth',
-      'http://198.18.0.1:3000',
-      'http://198.18.0.1:3000/api/auth',
-      'http://192.168.50.198:3000',
-      'http://192.168.50.198:3000/api/auth',
-    ],
-  },
-} as const;
+function stripTrailingSlashes(value: string): string {
+  return value.replace(/\/+$/, '');
+}
+
+function ensureAbsoluteUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return trimmed;
+  }
+
+  // Allow passing "auth.example.com" without protocol.
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+}
+
+function hasApiAuthPath(value: string): boolean {
+  // Match `/api/auth` as a path segment (not `/api/authentication`).
+  return /\/api\/auth(?=$|\/|\?|#)/.test(value);
+}
 
 /**
- * Validates consistency between NEXT_PUBLIC_USE_AUTH_WORKER and BETTER_AUTH_URL
+ * Validates consistency between NEXT_PUBLIC_USE_AUTH_WORKER and the provided
+ * Better Auth base URL.
+ *
+ * This is intentionally permissive:
+ * - We validate shape (must be an absolute URL).
+ * - We warn for common footguns (e.g. including `/api/auth` in auth-worker mode).
  */
 export function validateAuthConfiguration(
   config: ValidationConfig,
@@ -60,46 +68,33 @@ export function validateAuthConfiguration(
     };
   }
 
-  const environment = isDevelopment ? 'development' : 'production';
-  const mode = useAuthWorker ? 'authWorker' : 'nextjs';
-  const expectedPatterns = URL_PATTERNS[mode][environment];
+  const normalized = stripTrailingSlashes(ensureAbsoluteUrl(betterAuthUrl));
 
-  // Normalize URL for comparison (remove trailing slashes, /api/auth suffix)
-  const normalizedUrl = betterAuthUrl
-    .replace(/\/api\/auth\/?$/, '')
-    .replace(/\/$/, '');
-
-  // Check if the URL matches expected patterns for the chosen mode
-  const isValidUrl = expectedPatterns.some((pattern) => {
-    const normalizedPattern = pattern
-      .replace(/\/api\/auth\/?$/, '')
-      .replace(/\/$/, '');
-    return normalizedUrl === normalizedPattern;
-  });
-
-  if (!isValidUrl) {
-    const modeDescription = useAuthWorker
-      ? 'external auth worker'
-      : 'Next.js API routes';
-    const expectedUrls = expectedPatterns.join(' or ');
-
+  try {
+    new URL(normalized);
+  } catch {
     return {
       isValid: false,
-      error: `[${context}] Configuration mismatch: NEXT_PUBLIC_USE_AUTH_WORKER is set to ${useAuthWorker ? 'true (default)' : 'false'} (${modeDescription}), but BETTER_AUTH_URL="${betterAuthUrl}" doesn't match expected pattern for ${environment}. Expected: ${expectedUrls}`,
+      error: `[${context}] BETTER_AUTH_URL must be an absolute URL. Received: "${betterAuthUrl}"`,
     };
   }
 
-  // Additional warnings for common misconfigurations
   let warning: string | undefined;
 
-  if (useAuthWorker && betterAuthUrl.includes('/api/auth')) {
-    warning = `[${context}] Warning: BETTER_AUTH_URL includes '/api/auth' path but auth worker mode is enabled. The auth worker handles routing internally.`;
+  if (useAuthWorker && hasApiAuthPath(normalized)) {
+    warning = `[${context}] BETTER_AUTH_URL includes "/api/auth", but auth worker mode is enabled. Prefer the auth origin only (e.g. "https://auth.example.com").`;
+  }
+
+  if (!useAuthWorker && hasApiAuthPath(normalized)) {
+    warning = `[${context}] BETTER_AUTH_URL includes "/api/auth". Prefer the origin only (e.g. "https://app.example.com") and keep basePath separate.`;
   }
 
   if (
-    !(useAuthWorker || betterAuthUrl.includes('/api/auth') || isDevelopment)
+    isDevelopment &&
+    normalized.startsWith('https://') &&
+    /localhost/.test(normalized)
   ) {
-    warning = `[${context}] Warning: BETTER_AUTH_URL for Next.js mode should typically include '/api/auth' path in production.`;
+    warning = `[${context}] BETTER_AUTH_URL is https://localhost... If you're not running HTTPS locally, use http://localhost...`;
   }
 
   return {
@@ -109,8 +104,8 @@ export function validateAuthConfiguration(
 }
 
 /**
- * Throws an error if auth configuration is invalid
- * Use this for critical validation that should stop execution
+ * Throws an error if auth configuration is invalid.
+ * Use this for critical validation that should stop execution.
  */
 export function assertValidAuthConfiguration(config: ValidationConfig): void {
   const result = validateAuthConfiguration(config);

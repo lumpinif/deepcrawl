@@ -95,7 +95,7 @@ Legend:
 
 **How operators configure it (local dev)**
 
-- Dashboard (`apps/app/.env.development.local`):
+- Dashboard (`apps/app/.env`):
 
 ```env
 AUTH_MODE=better-auth
@@ -133,7 +133,7 @@ BETTER_AUTH_URL=http://localhost:8787
 
 **How operators configure it (local dev)**
 
-- Dashboard (`apps/app/.env.development.local`):
+- Dashboard (`apps/app/.env`):
 
 ```env
 AUTH_MODE=better-auth
@@ -181,7 +181,7 @@ JWT_ISSUER=...     # optional
 JWT_AUDIENCE=...   # optional
 ```
 
-- Dashboard (`apps/app/.env.development.local`):
+- Dashboard (`apps/app/.env`):
 
 ```env
 AUTH_MODE=jwt
@@ -222,4 +222,3 @@ AUTH_MODE=none
   - `apps/workers/v0/src/middlewares/api-key-auth.hono.ts`
   - `apps/workers/v0/src/middlewares/cookie-auth.hono.ts`
 - v0 service-binding fetcher (optional): `apps/workers/v0/src/middlewares/service-fetchers.hono.ts`
-

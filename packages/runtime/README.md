@@ -102,7 +102,7 @@ pnpm env:sync:local
 
 It writes/updates:
 
-- `apps/app/.env.development.local`
+- `apps/app/.env`
 - `apps/workers/auth/.dev.vars`
 - `apps/workers/v0/.dev.vars`
 

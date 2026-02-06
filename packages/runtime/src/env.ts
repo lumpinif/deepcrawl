@@ -62,6 +62,14 @@ export const ENV_VARS: readonly EnvVar[] = [
     example: 'http://localhost:8787',
   },
   {
+    key: 'NEXT_PUBLIC_BETTER_AUTH_URL',
+    group: 'Auth',
+    targets: ['dashboard'],
+    description:
+      'Public auth base URL for the browser bundle. If omitted, `pnpm env:sync:local` will auto-fill it from `BETTER_AUTH_URL`.',
+    example: 'http://localhost:8787',
+  },
+  {
     key: 'BETTER_AUTH_SECRET',
     group: 'Auth',
     targets: ['dashboard', 'worker-auth', 'worker-v0'],
