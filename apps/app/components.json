@@ -12,9 +12,9 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "lib": "@deepcrawl/ui/lib",
-    "hooks": "@deepcrawl/ui/hooks",
     "utils": "@deepcrawl/ui/lib/utils",
-    "ui": "@deepcrawl/ui/components/ui"
+    "ui": "@deepcrawl/ui/components/ui",
+    "lib": "@deepcrawl/ui/lib",
+    "hooks": "@deepcrawl/ui/hooks"
   }
 }

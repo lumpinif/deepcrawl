@@ -34,10 +34,10 @@
       "source.fixAll.biome": "explicit"
     },
     "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css",
-    "editor.defaultFormatter": "biomejs.biome",
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "fronterior.biome-monorepo",
     "[typescriptreact]": {
-      "editor.defaultFormatter": "biomejs.biome"
+      "editor.defaultFormatter": "fronterior.biome-monorepo",
     }
   }
 }

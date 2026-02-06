@@ -48,9 +48,9 @@ export function LogsDetailContent({ log }: LogsDetailContentProps) {
         <div className="font-medium text-muted-foreground text-sm">
           Request Options
         </div>
-        <div className="bg-gradient-to-b from-transparent to-transparent after:absolute after:inset-x-0 after:bottom-0 after:h-12 after:translate-y-1 after:rounded-b-md after:bg-gradient-to-t after:from-background after:to-transparent after:content-[''] max-md:after:h-10">
+        <div className="bg-linear-to-b from-transparent to-transparent after:absolute after:inset-x-0 after:bottom-0 after:h-12 after:translate-y-1 after:rounded-b-md after:bg-linear-to-t after:from-background after:to-transparent after:content-[''] max-md:after:h-10">
           <CodeBlock
-            className="md:scrollbar-none scrollbar-thin !bg-card h-52 w-full overflow-y-auto overflow-x-hidden border-none pb-2 text-muted-foreground text-xs sm:h-80"
+            className="md:scrollbar-none scrollbar-thin h-52 w-full overflow-y-auto overflow-x-hidden border-none bg-card! pb-2 text-muted-foreground text-xs sm:h-80"
             code={JSON.stringify(log.requestOptions, null, 2)}
             language="json"
           >
