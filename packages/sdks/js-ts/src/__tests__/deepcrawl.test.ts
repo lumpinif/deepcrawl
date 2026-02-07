@@ -1,5 +1,9 @@
+import { ORPCError } from '@orpc/client';
 import { describe, expect, it } from 'vitest';
-import { DeepcrawlAuthError } from '../_types';
+import {
+  DeepcrawlAuthError,
+  DeepcrawlInvalidExportFormatError,
+} from '../_types';
 import { DeepcrawlApp } from '../deepcrawl';
 
 describe('DeepcrawlApp', () => {
@@ -117,23 +121,30 @@ describe('DeepcrawlApp', () => {
       code: string;
       status: number;
       message: string;
+      data?: unknown;
     };
 
     type FakeSafeClient = {
-      read: {
+      read?: {
         getMarkdown: () => Promise<[FakeOrpcError, null]>;
+      };
+      logs?: {
+        exportResponse: () => Promise<[FakeOrpcError, null]>;
       };
     };
 
-    type DeepcrawlAppWithSafeClient = DeepcrawlApp & {
-      safeClient: FakeSafeClient;
-    };
+    function setSafeClient(app: DeepcrawlApp, safeClient: FakeSafeClient) {
+      const appWithSafeClient = app as unknown as {
+        safeClient: FakeSafeClient;
+      };
+      appWithSafeClient.safeClient = safeClient;
+    }
 
     it('should map UNAUTHORIZED ORPC errors to DeepcrawlAuthError', async () => {
       const app = new DeepcrawlApp({ apiKey: 'test-key' });
 
       // Override the internal safe client to simulate oRPC errors without network calls.
-      (app as unknown as DeepcrawlAppWithSafeClient).safeClient = {
+      setSafeClient(app, {
         read: {
           getMarkdown: async () => [
             {
@@ -144,7 +155,7 @@ describe('DeepcrawlApp', () => {
             null,
           ],
         },
-      };
+      });
 
       try {
         await app.getMarkdown('https://example.com');
@@ -159,32 +170,45 @@ describe('DeepcrawlApp', () => {
       }
     });
 
-    it('should map legacy UNAUTHORIZED: ORPC errors to DeepcrawlAuthError', async () => {
+    it('should map INVALID_EXPORT_FORMAT ORPC errors to DeepcrawlInvalidExportFormatError', async () => {
       const app = new DeepcrawlApp({ apiKey: 'test-key' });
 
-      // Backward-compat with a previously incorrect server error code.
-      (app as unknown as DeepcrawlAppWithSafeClient).safeClient = {
-        read: {
-          getMarkdown: async () => [
-            {
-              code: 'UNAUTHORIZED:',
-              status: 401,
-              message: 'Authentication failed',
-            },
-            null,
-          ],
+      const orpcError = new ORPCError('INVALID_EXPORT_FORMAT', {
+        defined: true,
+        status: 400,
+        message: 'Invalid export format',
+        data: {
+          id: 'log-123',
+          format: 'markdown',
+          path: 'read-readUrl',
+          message: 'Cannot export markdown from error response',
         },
-      };
+      });
+
+      setSafeClient(app, {
+        logs: {
+          exportResponse: async () => [orpcError, null],
+        },
+      });
 
       try {
-        await app.getMarkdown('https://example.com');
-        throw new Error('Expected getMarkdown() to throw');
+        await app.exportResponse({ id: 'log-123', format: 'markdown' });
+        throw new Error('Expected exportResponse() to throw');
       } catch (error) {
-        expect(error).toBeInstanceOf(DeepcrawlAuthError);
-        expect((error as DeepcrawlAuthError).code).toBe('UNAUTHORIZED');
-        expect((error as DeepcrawlAuthError).status).toBe(401);
-        expect((error as DeepcrawlAuthError).message).toBe(
-          'Authentication failed',
+        expect(error).toBeInstanceOf(DeepcrawlInvalidExportFormatError);
+        expect((error as DeepcrawlInvalidExportFormatError).code).toBe(
+          'INVALID_EXPORT_FORMAT',
+        );
+        expect((error as DeepcrawlInvalidExportFormatError).status).toBe(400);
+        expect((error as DeepcrawlInvalidExportFormatError).message).toBe(
+          'Cannot export markdown from error response',
+        );
+        expect((error as DeepcrawlInvalidExportFormatError).id).toBe('log-123');
+        expect((error as DeepcrawlInvalidExportFormatError).format).toBe(
+          'markdown',
+        );
+        expect((error as DeepcrawlInvalidExportFormatError).path).toBe(
+          'read-readUrl',
         );
       }
     });
