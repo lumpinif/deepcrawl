@@ -40,6 +40,9 @@
     "[typescriptreact]": {
       "editor.defaultFormatter": "fronterior.biome-monorepo"
     },
+    "[javascript]": {
+      "editor.defaultFormatter": "fronterior.biome-monorepo"
+    },
     "[jsonc]": {
       "editor.defaultFormatter": "fronterior.biome-monorepo"
     },

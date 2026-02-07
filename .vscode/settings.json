@@ -5,5 +5,8 @@
     "source.action.useSortedAttributes.biome": "explicit",
     "source.organizeImports.biome": "explicit",
     "source.fixAll.biome": "explicit"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "fronterior.biome-monorepo"
   }
 }
