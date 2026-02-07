@@ -11,7 +11,9 @@ type CORSOptions = {
 };
 
 export const CORS_OPTIONS = {
-  credentials: true,
+  // Public API should be callable from anywhere (including browsers) using API keys.
+  // Keep credentials disabled to avoid leaking cookie-based sessions across origins.
+  credentials: false,
   maxAge: 86400,
   allowMethods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'],
   allowHeaders: [

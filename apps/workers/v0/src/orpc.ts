@@ -28,7 +28,7 @@ export const authed = publicProcedures
     }
 
     if (!(context.var.session?.user && context.var.session.session)) {
-      throw new ORPCError('UNAUTHORIZED:', {
+      throw new ORPCError('UNAUTHORIZED', {
         status: 401,
         cause: 'No session found',
         message: 'Authentication failed',

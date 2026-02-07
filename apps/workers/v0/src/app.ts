@@ -19,9 +19,10 @@ const app = createHonoApp();
 // Health check
 app.get('/', async (c) => {
   const info = getConnInfo(c);
+  const apiOrigin = new URL(c.req.url).origin;
 
   return c.json({
-    message: 'Welcome to Deepcrawl Official API',
+    message: 'Welcome to the API',
     runtime: getRuntimeKey(),
     nodeEnv: c.env.WORKER_NODE_ENV,
     routes: {
@@ -30,7 +31,7 @@ app.get('/', async (c) => {
       read: '/read?=url',
       links: '/links?=url',
       logs: '/logs?id=requestId',
-      site: 'https://deepcrawl.dev',
+      site: apiOrigin,
     },
     connInfo: c.env.WORKER_NODE_ENV === 'development' ? 'development' : info,
     services: {
@@ -38,7 +39,7 @@ app.get('/', async (c) => {
     },
     authentication: c.var.session?.user
       ? { ...c.var.session }
-      : 'You are currently not logged in! Login from https://deepcrawl.dev/app',
+      : 'You are currently not logged in.',
   });
 });
 
