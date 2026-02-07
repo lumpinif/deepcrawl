@@ -93,6 +93,25 @@ Legend:
 - v0 can use `AUTH_WORKER.getSessionWithAPIKey()` (RPC + KV cache) when the
   service binding exists.
 
+Operational note:
+
+- Better Auth sessions are cookie-based. Cookie auth only works when the
+  Dashboard and API can share a session cookie (same apex domain).
+- If you deploy the Dashboard on `*.vercel.app` and the Auth Worker on
+  `*.workers.dev`, the browser cannot share cookies across those root domains,
+  so cookie-based API calls will not work.
+- Recommended: use a custom domain and put both services under the same apex
+  domain (for example `app.example.com`, `api.example.com`, `auth.example.com`).
+- For free-domain deployments (different apex domains), the Dashboard can use a
+  system-managed API key as a cross-domain escape hatch:
+  - The Dashboard will auto-create an API key named `PLAYGROUND_API_KEY` and
+    store the plaintext key in `localStorage` on that device.
+  - The Dashboard uses it as a fallback for API calls when cookie auth fails
+    (cookie session -> JWT -> `PLAYGROUND_API_KEY`).
+  - Rotate the key if it is ever leaked.
+- Optional: set `NEXT_PUBLIC_USE_AUTH_WORKER=false` to use the Next.js
+  integrated Better Auth routes (same origin as the Dashboard).
+
 **How operators configure it (local dev)**
 
 - Dashboard (`apps/app/.env`):
@@ -118,7 +137,9 @@ BETTER_AUTH_URL=http://localhost:8787
 
 - Dashboard user:
   - Open the Dashboard and sign in.
-  - Create an API key in the UI.
+  - If needed (cross-domain), the Dashboard auto-creates `PLAYGROUND_API_KEY`
+    on first load and stores it on the device.
+  - Create additional API keys in the UI for server-side integrations.
 - API caller:
   - Call v0 with `x-api-key: <apiKey>` (or `Authorization: Bearer <apiKey>`).
 
