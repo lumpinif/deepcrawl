@@ -1,5 +1,9 @@
 import { passkey } from '@better-auth/passkey';
 import { getDrizzleDB, schema } from '@deepcrawl/db-auth';
+import {
+  ensureAbsoluteUrl,
+  stripTrailingSlashes,
+} from '@deepcrawl/runtime/urls';
 import type { BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
@@ -64,13 +68,7 @@ const getBaseURL = (envUrl: string | undefined): string => {
     throw new Error('❌ [getBaseURL] URL is not defined');
   }
 
-  // Add protocol if missing
-  const urlWithProtocol = envUrl.startsWith('http')
-    ? envUrl
-    : `https://${envUrl}`;
-
-  // Remove trailing slash
-  return urlWithProtocol.replace(/\/+$/, '');
+  return stripTrailingSlashes(ensureAbsoluteUrl(envUrl));
 };
 
 function normalizeCookieDomain(raw: string): string {

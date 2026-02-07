@@ -7,6 +7,11 @@
  * - Validation should be helpful, but not hardcode deepcrawl.dev patterns.
  */
 
+import {
+  ensureAbsoluteUrl,
+  stripTrailingSlashes,
+} from '@deepcrawl/runtime/urls';
+
 interface ValidationConfig {
   useAuthWorker: boolean;
   betterAuthUrl: string;
@@ -18,24 +23,6 @@ interface ValidationResult {
   isValid: boolean;
   error?: string;
   warning?: string;
-}
-
-function stripTrailingSlashes(value: string): string {
-  return value.replace(/\/+$/, '');
-}
-
-function ensureAbsoluteUrl(raw: string): string {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    return trimmed;
-  }
-
-  // Allow passing "auth.example.com" without protocol.
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-    return trimmed;
-  }
-
-  return `https://${trimmed}`;
 }
 
 function hasApiAuthPath(value: string): boolean {

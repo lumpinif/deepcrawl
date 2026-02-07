@@ -19,6 +19,11 @@
       "types": "./src/env.ts",
       "import": "./src/env.ts",
       "default": "./src/env.ts"
+    },
+    "./urls": {
+      "types": "./src/urls.ts",
+      "import": "./src/urls.ts",
+      "default": "./src/urls.ts"
     }
   },
   "scripts": {

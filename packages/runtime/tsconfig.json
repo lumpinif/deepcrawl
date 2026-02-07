@@ -4,7 +4,7 @@
     "strict": true,
     "baseUrl": ".",
     "target": "ESNext",
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM"],
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
     "module": "esnext",

@@ -6,6 +6,7 @@ import {
   type ListLogsResponse,
   resolveListLogsOptions,
 } from '@deepcrawl/contracts';
+import { ensureAbsoluteUrl } from '@deepcrawl/runtime/urls';
 import { serializeListLogsOptions } from '@/utils/logs';
 
 const LOGS_ENDPOINT = '/api/deepcrawl/logs';
@@ -22,9 +23,7 @@ function resolveAppOrigin(): string {
     process.env.VERCEL_URL;
 
   if (envOrigin && envOrigin.length > 0) {
-    const hasProtocol =
-      envOrigin.startsWith('http://') || envOrigin.startsWith('https://');
-    return hasProtocol ? envOrigin : `https://${envOrigin}`;
+    return ensureAbsoluteUrl(envOrigin);
   }
 
   return 'http://localhost:3000';

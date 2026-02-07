@@ -25,6 +25,7 @@
     "authentication"
   ],
   "dependencies": {
+    "@deepcrawl/runtime": "workspace:*",
     "@better-auth/passkey": "^1.4.18",
     "@react-email/components": "^0.5.7",
     "better-auth-harmony": "^1.2.5",

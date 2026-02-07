@@ -45,6 +45,20 @@ This is shared by:
 - Dashboard server logic (Node/Next.js)
 - Workers logic (Cloudflare runtime)
 
+### 3) URL Defaults
+
+File: `packages/runtime/src/urls.ts`
+
+Exports:
+
+- `OFFICIAL_APP_URL`
+- `OFFICIAL_AUTH_URL`
+- `OFFICIAL_API_URL`
+- `ensureAbsoluteUrl(raw)`
+
+This keeps Deepcrawl's official URL fallbacks in one place, so runtime code can
+stay env-driven while still having a safe default for the official deployment.
+
 ## Common Usage
 
 ### Use `resolveAuthMode()` in Node or Workers
@@ -103,8 +117,8 @@ pnpm env:sync:local
 It writes/updates:
 
 - `apps/app/.env`
-- `apps/workers/auth/.dev.vars`
-- `apps/workers/v0/.dev.vars`
+- `apps/workers/auth/.dev.vars` (secrets only)
+- `apps/workers/v0/.dev.vars` (secrets only)
 
 This removes the need to copy/paste the same env keys into multiple places.
 

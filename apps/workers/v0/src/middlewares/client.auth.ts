@@ -1,10 +1,10 @@
 import { createAuthClientConfig } from '@deepcrawl/auth/configs/auth.client.config';
+import { resolveBetterAuthOriginUrl } from '@deepcrawl/auth/utils/better-auth-url';
 import {
   type BetterAuthClientOptions,
   createAuthClient,
 } from 'better-auth/client';
 import type { AppContext } from '@/lib/context';
-import { resolveBetterAuthOriginUrl } from '@/utils/better-auth-url';
 
 export function getAuthClient(
   c: AppContext,

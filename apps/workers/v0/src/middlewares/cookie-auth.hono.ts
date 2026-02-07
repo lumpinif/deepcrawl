@@ -1,8 +1,8 @@
 import type { Session } from '@deepcrawl/auth/types';
+import { resolveBetterAuthApiBaseUrl } from '@deepcrawl/auth/utils/better-auth-url';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings, AppContext, AppVariables } from '@/lib/context';
 import { resolveAuthMode } from '@/utils/auth-mode';
-import { resolveBetterAuthApiBaseUrl } from '@/utils/better-auth-url';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { getAuthClient } from './client.auth';
 

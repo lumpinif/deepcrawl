@@ -1,3 +1,5 @@
+import { toOrigin as toOriginUrl, toWwwOrigin } from '@deepcrawl/runtime/urls';
+
 export type ResolveTrustedOriginsInput = {
   appURL: string;
   authURL: string;
@@ -18,47 +20,6 @@ const LOCAL_DEV_ORIGINS = [
   'http://127.0.0.1:8080',
 ] as const;
 
-function ensureAbsoluteUrl(raw: string): string {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    return trimmed;
-  }
-
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-    return trimmed;
-  }
-
-  return `https://${trimmed}`;
-}
-
-function toOrigin(rawUrl: string): string | null {
-  try {
-    return new URL(ensureAbsoluteUrl(rawUrl)).origin;
-  } catch {
-    return null;
-  }
-}
-
-function toWwwOrigin(origin: string): string | null {
-  try {
-    const url = new URL(origin);
-    const host = url.hostname;
-
-    if (
-      host === 'localhost' ||
-      !host.includes('.') ||
-      host.startsWith('www.')
-    ) {
-      return null;
-    }
-
-    url.hostname = `www.${host}`;
-    return url.origin;
-  } catch {
-    return null;
-  }
-}
-
 export function resolveTrustedOrigins(
   input: ResolveTrustedOriginsInput,
 ): string[] {
@@ -67,7 +28,7 @@ export function resolveTrustedOrigins(
   const origins = new Set<string>();
 
   const addOrigin = (raw: string, opts?: { withWww?: boolean }) => {
-    const origin = toOrigin(raw);
+    const origin = toOriginUrl(raw);
     if (!origin) {
       return;
     }

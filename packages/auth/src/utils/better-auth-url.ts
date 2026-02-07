@@ -1,16 +1,24 @@
+import { stripTrailingSlashes } from '@deepcrawl/runtime/urls';
+
 const API_AUTH_PATH = '/api/auth';
 
-function stripTrailingSlashes(value: string): string {
-  return value.replace(/\/+$/, '');
-}
+/**
+ * Better Auth URL helpers.
+ *
+ * Note:
+ * - Prefer these helpers over hand-rolling string concatenation like
+ *   `baseUrl + '/api/auth'` or manually stripping `/api/auth/...`.
+ * - Keep this in `@deepcrawl/auth` (not `@deepcrawl/runtime`) because the logic
+ *   is specific to Better Auth's `basePath`.
+ */
 
 /**
  * Returns the Better Auth API base URL that ends with `/api/auth` exactly once.
  *
  * Examples:
- * - `https://deepcrawl.dev` => `https://deepcrawl.dev/api/auth`
- * - `https://deepcrawl.dev/api/auth` => `https://deepcrawl.dev/api/auth`
- * - `https://deepcrawl.dev/api/auth/get-session` => `https://deepcrawl.dev/api/auth`
+ * - `https://example.com` => `https://example.com/api/auth`
+ * - `https://example.com/api/auth` => `https://example.com/api/auth`
+ * - `https://example.com/api/auth/get-session` => `https://example.com/api/auth`
  */
 export function resolveBetterAuthApiBaseUrl(rawUrl: string): string {
   const trimmed = stripTrailingSlashes(rawUrl.trim());
@@ -28,8 +36,8 @@ export function resolveBetterAuthApiBaseUrl(rawUrl: string): string {
  * Returns the origin-like base URL without the `/api/auth` suffix (if present).
  *
  * Examples:
- * - `https://deepcrawl.dev/api/auth` => `https://deepcrawl.dev`
- * - `https://deepcrawl.dev` => `https://deepcrawl.dev`
+ * - `https://example.com/api/auth` => `https://example.com`
+ * - `https://example.com` => `https://example.com`
  */
 export function resolveBetterAuthOriginUrl(rawUrl: string): string {
   const apiBase = resolveBetterAuthApiBaseUrl(rawUrl);

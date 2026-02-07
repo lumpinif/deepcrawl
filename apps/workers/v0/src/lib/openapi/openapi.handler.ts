@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import { ensureAbsoluteUrl, OFFICIAL_API_URL } from '@deepcrawl/runtime/urls';
 import { SmartCoercionPlugin } from '@orpc/json-schema';
 import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
@@ -14,10 +15,11 @@ const OpenAPISpecOptions = {
     {
       ...OpenAPISpecBaseOptions.servers[0],
       url: (() => {
+        const raw = env.API_URL || OFFICIAL_API_URL;
         try {
-          return new URL(env.API_URL).toString();
+          return new URL(ensureAbsoluteUrl(raw)).toString();
         } catch {
-          return new URL(`https://${env.API_URL}`).toString();
+          return OFFICIAL_API_URL;
         }
       })(),
     },
