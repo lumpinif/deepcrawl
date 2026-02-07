@@ -15,8 +15,7 @@ export type EnvVarGroup =
   | 'Logs'
   | 'Cloudflare'
   | 'Upstash'
-  | 'Turbo'
-  | 'SDK';
+  | 'Turbo';
 
 export type EnvVar = {
   key: string;
@@ -33,13 +32,13 @@ export type EnvVar = {
 // IMPORTANT:
 // - Only include variables that are meant to be managed as environment variables.
 // - Do NOT add Worker-local boolean toggles that are intentionally configured in
-//   `wrangler.jsonc` (and not in `.dev.vars`).
+//   Wrangler vars (and not in `.dev.vars`).
 //
 // Example (do not re-add):
 // - `ENABLE_ACTIVITY_LOGS` must stay in `apps/workers/v0/wrangler.jsonc`.
-//   If it is added here, `pnpm env:sync:local` will write it into
-//   `apps/workers/v0/.dev.vars` (dotenv values are strings), and Wrangler typegen
-//   will widen the binding type to `string` in `apps/workers/v0/worker-configuration.d.ts`.
+//   Manage it via `packages/runtime/src/vars.ts` and `env/.vars`, then run
+//   `pnpm env:sync:vars` (or `pnpm env:bootstrap`) so Wrangler typegen keeps the
+//   binding typed as `boolean` instead of widening it to `string`.
 export const ENV_VARS: readonly EnvVar[] = [
   {
     key: 'NEXT_PUBLIC_APP_URL',
@@ -47,6 +46,14 @@ export const ENV_VARS: readonly EnvVar[] = [
     targets: ['dashboard', 'worker-auth', 'worker-v0'],
     description: 'Public app URL (used for navigation and auth callbacks).',
     example: 'http://localhost:3000',
+  },
+  {
+    key: 'NEXT_PUBLIC_BRAND_NAME',
+    group: 'App',
+    targets: ['dashboard', 'worker-auth', 'worker-v0'],
+    description:
+      'Public brand name used for UI, emails, and API surface display (template-friendly).',
+    example: 'Deepcrawl',
   },
   {
     key: 'NEXT_PUBLIC_DEEPCRAWL_API_URL',
@@ -77,7 +84,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     group: 'Auth',
     targets: ['dashboard', 'worker-auth'],
     description:
-      'Cookie domain for cross-subdomain sessions (optional). Set to a parent domain like "deepcrawl.dev" to share cookies across subdomains.',
+      'Cookie domain for cross-subdomain sessions (optional). Set to a parent domain like "deepcrawl.dev" to share cookies across subdomains. You only need to set this if you are using a custom domain with same apex domain, and you want the cross-subdomain sessions to work. e.g. "deepcrawl.dev" and "api.deepcrawl.dev".',
     example: 'deepcrawl.dev',
   },
   {
@@ -93,7 +100,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     group: 'Auth',
     targets: ['dashboard'],
     description:
-      'Public auth base URL for the browser bundle. If omitted, `pnpm env:sync:local` will auto-fill it from `BETTER_AUTH_URL`.',
+      'Public auth base URL for the browser bundle. If omitted, `pnpm env:bootstrap` will auto-fill it from `BETTER_AUTH_URL`.',
     example: 'http://localhost:8787',
   },
   {
@@ -194,7 +201,8 @@ export const ENV_VARS: readonly EnvVar[] = [
     key: 'FROM_EMAIL',
     group: 'Email',
     targets: ['dashboard', 'worker-auth'],
-    description: 'From email, e.g. "Deepcrawl <noreply@deepcrawl.dev>".',
+    description:
+      'From email address. Display name is derived from NEXT_PUBLIC_BRAND_NAME.',
     example: '',
   },
 
@@ -247,22 +255,6 @@ export const ENV_VARS: readonly EnvVar[] = [
     description: 'Turbo remote cache token (CI only).',
     example: '',
     secret: true,
-  },
-
-  {
-    key: 'DEEPCRAWL_API_KEY',
-    group: 'SDK',
-    targets: ['dashboard'],
-    description: 'SDK API key used by examples (server-only).',
-    example: 'dc-your-generated-key',
-    secret: true,
-  },
-  {
-    key: 'DEEPCRAWL_API_URL',
-    group: 'SDK',
-    targets: ['dashboard'],
-    description: 'SDK API base URL override (optional).',
-    example: '',
   },
 ] as const;
 

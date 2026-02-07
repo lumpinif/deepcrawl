@@ -140,10 +140,10 @@
       }
     },
     {
-      "label": "Env: Sync Local",
-      "detail": "Sync local .env / .dev.vars from generated examples and defaults",
+      "label": "Env: Bootstrap",
+      "detail": "Sync local .env / .dev.vars and Wrangler vars (wrangler.jsonc)",
       "type": "shell",
-      "command": "pnpm env:sync:local",
+      "command": "pnpm env:bootstrap",
       "options": {
         "cwd": "${workspaceFolder}"
       },

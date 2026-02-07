@@ -48,7 +48,15 @@ export function readDotenvFile(filePath: string): DotenvMap {
   return parseDotenv(content);
 }
 
-export function formatDotenvValue(value: string): string {
+export function formatDotenvValue(value: string | number | boolean): string {
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+
+  if (typeof value === 'number') {
+    return String(value);
+  }
+
   if (!value) {
     return '';
   }

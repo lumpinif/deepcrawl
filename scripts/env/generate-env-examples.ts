@@ -6,7 +6,9 @@ import {
   type EnvVarGroup,
   getEnvVarsForTarget,
 } from '@deepcrawl/runtime/env';
+import { WRANGLER_VARS } from '@deepcrawl/runtime/vars';
 import { formatDotenvValue, writeFileIfChanged } from './_dotenv';
+import { PRODUCTION_VARS_PREFIX } from './_vars';
 
 type OutputFile = {
   target: EnvTarget;
@@ -25,7 +27,6 @@ const GROUP_ORDER: EnvVarGroup[] = [
   'Upstash',
   'Cloudflare',
   'Turbo',
-  'SDK',
 ];
 
 const renderExampleFile = (target: EnvTarget, headerLines: string[]) => {
@@ -73,6 +74,35 @@ const renderLocalSourceExample = (headerLines: string[]) => {
       }
 
       lines.push(`${v.key}=${v.example ? formatDotenvValue(v.example) : ''}`);
+      lines.push('');
+    }
+  }
+
+  return `${lines.join('\n').trimEnd()}\n`;
+};
+
+const renderVarsSourceExample = (headerLines: string[]) => {
+  const lines: string[] = [...headerLines, ''];
+
+  for (const group of GROUP_ORDER) {
+    const groupVars = WRANGLER_VARS.filter((v) => v.group === group);
+    if (groupVars.length === 0) {
+      continue;
+    }
+
+    lines.push(`# ${group}`);
+
+    for (const v of groupVars) {
+      if (v.description) {
+        lines.push(`# ${v.description}`);
+      }
+
+      lines.push(
+        `${v.key}=${v.localDefault !== undefined ? formatDotenvValue(v.localDefault) : ''}`,
+      );
+      lines.push(
+        `${PRODUCTION_VARS_PREFIX}${v.key}=${v.productionDefault !== undefined ? formatDotenvValue(v.productionDefault) : ''}`,
+      );
       lines.push('');
     }
   }
@@ -132,7 +162,7 @@ const localSourceHeader = [
   '#',
   '# 1) Copy this file to env/.env',
   '# 2) Fill in values',
-  '# 3) Run: pnpm env:sync:local',
+  '# 3) Run: pnpm env:bootstrap',
   '#',
   '# Note: This file is NOT read by Next.js or Wrangler directly.',
 ];
@@ -149,6 +179,30 @@ if (localDidWrite) {
   console.log(`[env] wrote ${localSourceExamplePath}`);
 } else {
   console.log(`[env] up-to-date ${localSourceExamplePath}`);
+}
+
+const varsSourceExamplePath = join(repoRoot, 'env', '.vars.example');
+const varsSourceHeader = [
+  '# Wrangler vars (non-secrets).',
+  '#',
+  '# 1) Copy this file to env/.vars',
+  '# 2) Fill in values',
+  '# 3) Run: pnpm env:bootstrap',
+  '#',
+  `# Local values write to wrangler.jsonc "vars".`,
+  `# ${PRODUCTION_VARS_PREFIX}* values write to wrangler.jsonc "env.production.vars".`,
+];
+
+const varsSourceContent = renderVarsSourceExample(varsSourceHeader);
+const varsDidWrite = writeFileIfChanged(
+  varsSourceExamplePath,
+  varsSourceContent,
+);
+if (varsDidWrite) {
+  changed += 1;
+  console.log(`[env] wrote ${varsSourceExamplePath}`);
+} else {
+  console.log(`[env] up-to-date ${varsSourceExamplePath}`);
 }
 
 if (changed === 0) {

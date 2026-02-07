@@ -20,6 +20,11 @@
       "import": "./src/env.ts",
       "default": "./src/env.ts"
     },
+    "./vars": {
+      "types": "./src/vars.ts",
+      "import": "./src/vars.ts",
+      "default": "./src/vars.ts"
+    },
     "./urls": {
       "types": "./src/urls.ts",
       "import": "./src/urls.ts",

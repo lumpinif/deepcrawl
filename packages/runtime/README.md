@@ -97,21 +97,24 @@ It writes/updates:
 - `apps/workers/auth/.dev.vars.example`
 - `apps/workers/v0/.dev.vars.example`
 - `env/.env.example` (single source template for local dev)
+- `env/.vars.example` (Wrangler vars template for local dev)
 
-### Sync a single local env source into per-app/per-worker files
+### Bootstrap local env + Wrangler vars
 
 Start from the generated template:
 
 - `env/.env.example`
+- `env/.vars.example`
 
 Copy it to a single local source file (gitignored):
 
 - `env/.env`
+- `env/.vars`
 
 Then run:
 
 ```sh
-pnpm env:sync:local
+pnpm env:bootstrap
 ```
 
 It writes/updates:
@@ -119,8 +122,15 @@ It writes/updates:
 - `apps/app/.env`
 - `apps/workers/auth/.dev.vars` (secrets only)
 - `apps/workers/v0/.dev.vars` (secrets only)
+- `apps/workers/auth/wrangler.jsonc` (`vars` + `env.production.vars`)
+- `apps/workers/v0/wrangler.jsonc` (`vars` + `env.production.vars`)
 
 This removes the need to copy/paste the same env keys into multiple places.
+
+If you want to run the two steps separately:
+
+- `pnpm env:sync:local` (dotenv outputs)
+- `pnpm env:sync:vars` (Wrangler vars outputs)
 
 ## Notes & Constraints
 
