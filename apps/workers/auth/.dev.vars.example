@@ -1,20 +1,8 @@
-# Used by Wrangler in local development
+# Used by Wrangler in local development (secrets only)
 # In production, these should be set as Cloudflare Worker Secrets.
-
-# App
-# Public app URL (used for navigation and auth callbacks).
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+# Non-secrets are configured via Wrangler vars (see wrangler.jsonc).
 
 # Auth
-# Auth base URL. Points to auth worker or to Next.js /api/auth depending on mode.
-BETTER_AUTH_URL=http://localhost:8787
-
-# Cookie domain for cross-subdomain sessions (optional). Set to a parent domain like "deepcrawl.dev" to share cookies across subdomains.
-AUTH_COOKIE_DOMAIN=deepcrawl.dev
-
-# WebAuthn passkey rpID override (optional). Defaults to AUTH_COOKIE_DOMAIN or NEXT_PUBLIC_APP_URL hostname.
-PASSKEY_RP_ID=deepcrawl.dev
-
 # Better Auth secret.
 BETTER_AUTH_SECRET=
 
@@ -22,14 +10,8 @@ BETTER_AUTH_SECRET=
 DATABASE_URL=
 
 # OAuth
-# GitHub OAuth client id.
-GITHUB_CLIENT_ID=
-
 # GitHub OAuth client secret.
 GITHUB_CLIENT_SECRET=
-
-# Google OAuth client id (public).
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 
 # Google OAuth client secret.
 GOOGLE_CLIENT_SECRET=
@@ -37,6 +19,3 @@ GOOGLE_CLIENT_SECRET=
 # Email
 # Resend API key (optional).
 RESEND_API_KEY=
-
-# From email, e.g. "Deepcrawl <noreply@deepcrawl.dev>".
-FROM_EMAIL=

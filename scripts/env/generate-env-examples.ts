@@ -29,7 +29,9 @@ const GROUP_ORDER: EnvVarGroup[] = [
 ];
 
 const renderExampleFile = (target: EnvTarget, headerLines: string[]) => {
-  const vars = getEnvVarsForTarget(target);
+  const vars = getEnvVarsForTarget(target).filter((v) =>
+    target === 'worker-auth' || target === 'worker-v0' ? v.secret : true,
+  );
 
   const lines: string[] = [...headerLines, ''];
 
@@ -95,16 +97,18 @@ const outputs: OutputFile[] = [
     target: 'worker-auth',
     filePath: join(repoRoot, 'apps', 'workers', 'auth', '.dev.vars.example'),
     headerLines: [
-      '# Used by Wrangler in local development',
+      '# Used by Wrangler in local development (secrets only)',
       '# In production, these should be set as Cloudflare Worker Secrets.',
+      '# Non-secrets are configured via Wrangler vars (see wrangler.jsonc).',
     ],
   },
   {
     target: 'worker-v0',
     filePath: join(repoRoot, 'apps', 'workers', 'v0', '.dev.vars.example'),
     headerLines: [
-      '# Used by Wrangler in local development',
+      '# Used by Wrangler in local development (secrets only)',
       '# In production, these should be set as Cloudflare Worker Secrets.',
+      '# Non-secrets are configured via Wrangler vars (see wrangler.jsonc).',
     ],
   },
 ];
