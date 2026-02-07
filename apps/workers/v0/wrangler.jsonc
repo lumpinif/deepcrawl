@@ -40,7 +40,9 @@
     // JWT_* are only needed when AUTH_MODE=jwt, JWT_ISSUER and JWT_AUDIENCE are optional.
     // Don't put JWT_SECRET here. Use Wrangler secrets for JWT_SECRET in production. Or add it to .dev.vars for local development.
     "JWT_ISSUER": "",
-    "JWT_AUDIENCE": ""
+    "JWT_AUDIENCE": "",
+    "GITHUB_CLIENT_ID": "Ov23litNP2YxhipDUMUJ",
+    "NEXT_PUBLIC_GOOGLE_CLIENT_ID": "292200252097-jtgcuinknei9vol7bb7qc7eu8pn44ogk.apps.googleusercontent.com"
   },
   "services": [
     {
@@ -83,7 +85,9 @@
         // JWT_* are only needed when AUTH_MODE=jwt, JWT_ISSUER and JWT_AUDIENCE are optional.
         // Don't put JWT_SECRET here. Use Wrangler secrets for JWT_SECRET in production. Or add it to .dev.vars.production for production secrets.
         "JWT_ISSUER": "",
-        "JWT_AUDIENCE": ""
+        "JWT_AUDIENCE": "",
+        "GITHUB_CLIENT_ID": "Ov23litNP2YxhipDUMUJ",
+        "NEXT_PUBLIC_GOOGLE_CLIENT_ID": "292200252097-jtgcuinknei9vol7bb7qc7eu8pn44ogk.apps.googleusercontent.com"
       },
       "d1_databases": [
         {

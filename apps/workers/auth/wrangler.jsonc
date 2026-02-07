@@ -17,8 +17,8 @@
     "BETTER_AUTH_URL": "http://localhost:8787",
     "GITHUB_CLIENT_ID": "Ov23litNP2YxhipDUMUJ",
     "NEXT_PUBLIC_GOOGLE_CLIENT_ID": "292200252097-jtgcuinknei9vol7bb7qc7eu8pn44ogk.apps.googleusercontent.com",
-    "AUTH_WORKER_NODE_ENV": "development",
-    "FROM_EMAIL": "Deepcrawl <noreply@deepcrawl.dev>"
+    "FROM_EMAIL": "Deepcrawl <noreply@deepcrawl.dev>",
+    "AUTH_WORKER_NODE_ENV": "development"
   },
   "observability": {
     "enabled": true
@@ -48,12 +48,12 @@
   "env": {
     "production": {
       "vars": {
-        "NEXT_PUBLIC_APP_URL": "https://deepcrawl.dev",
-        "BETTER_AUTH_URL": "https://auth.deepcrawl.dev",
-        "GITHUB_CLIENT_ID": "Ov23litNP2YxhipDUMUJ",
         "NEXT_PUBLIC_GOOGLE_CLIENT_ID": "292200252097-jtgcuinknei9vol7bb7qc7eu8pn44ogk.apps.googleusercontent.com",
         "AUTH_WORKER_NODE_ENV": "production",
-        "FROM_EMAIL": "Deepcrawl <noreply@deepcrawl.dev>"
+        "FROM_EMAIL": "Deepcrawl <noreply@deepcrawl.dev>",
+        "NEXT_PUBLIC_APP_URL": "https://deepcrawl.dev",
+        "BETTER_AUTH_URL": "https://auth.deepcrawl.dev",
+        "GITHUB_CLIENT_ID": "Ov23litNP2YxhipDUMUJ"
       },
       "kv_namespaces": [
         {
