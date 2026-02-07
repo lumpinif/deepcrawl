@@ -1,37 +1,101 @@
-export const PROD_APP_URL = 'https://deepcrawl.dev';
-export const PROD_AUTH_WORKER_URL = 'https://auth.deepcrawl.dev';
+export type ResolveTrustedOriginsInput = {
+  appURL: string;
+  authURL: string;
+  apiURL?: string;
+  isDevelopment?: boolean;
+};
 
-export const ALLOWED_ORIGINS = [
-  // Production origins
-  PROD_APP_URL,
-  PROD_AUTH_WORKER_URL,
-  'https://deepcrawl.dev',
-  'https://www.deepcrawl.dev',
-  'https://api.deepcrawl.dev',
-  'https://*.deepcrawl.dev',
-  // Add explicit wildcard support for all deepcrawl.dev subdomains
-  '*.deepcrawl.dev',
+const LOCAL_DEV_ORIGINS = [
+  // Dashboard
+  'http://localhost:3000',
+  'https://localhost:3000',
+  'http://127.0.0.1:3000',
+  // Auth worker
+  'http://localhost:8787',
+  'http://127.0.0.1:8787',
+  // V0 worker
+  'http://localhost:8080',
+  'http://127.0.0.1:8080',
+] as const;
 
-  // Local development origins
-  'http://localhost:3000', // Dashboard
-  'https://localhost:3000', // Dashboard HTTPS
-  'http://127.0.0.1:3000', // Dashboard alternative
-  'http://localhost:8787', // Auth worker
-  'http://127.0.0.1:8787', // Auth worker alternative
-  'http://localhost:8080', // V0 worker
-  'http://127.0.0.1:8080', // V0 worker alternative
-];
+function ensureAbsoluteUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return trimmed;
+  }
 
-export const DEVELOPMENT_ORIGINS = [
-  // Local development origins
-  'http://localhost:3000', // Dashboard
-  'https://localhost:3000', // Dashboard HTTPS
-  'http://127.0.0.1:3000', // Dashboard alternative
-  'http://localhost:8787', // Auth worker
-  'http://127.0.0.1:8787', // Auth worker alternative
-  'http://localhost:8080', // V0 worker
-  'http://127.0.0.1:8080', // V0 worker alternative
-];
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+}
+
+function toOrigin(rawUrl: string): string | null {
+  try {
+    return new URL(ensureAbsoluteUrl(rawUrl)).origin;
+  } catch {
+    return null;
+  }
+}
+
+function toWwwOrigin(origin: string): string | null {
+  try {
+    const url = new URL(origin);
+    const host = url.hostname;
+
+    if (
+      host === 'localhost' ||
+      !host.includes('.') ||
+      host.startsWith('www.')
+    ) {
+      return null;
+    }
+
+    url.hostname = `www.${host}`;
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
+
+export function resolveTrustedOrigins(
+  input: ResolveTrustedOriginsInput,
+): string[] {
+  const { appURL, authURL, apiURL, isDevelopment = false } = input;
+
+  const origins = new Set<string>();
+
+  const addOrigin = (raw: string, opts?: { withWww?: boolean }) => {
+    const origin = toOrigin(raw);
+    if (!origin) {
+      return;
+    }
+
+    origins.add(origin);
+
+    if (opts?.withWww) {
+      const www = toWwwOrigin(origin);
+      if (www) {
+        origins.add(www);
+      }
+    }
+  };
+
+  addOrigin(appURL, { withWww: true });
+  addOrigin(authURL);
+  if (apiURL) {
+    addOrigin(apiURL);
+  }
+
+  if (isDevelopment) {
+    for (const origin of LOCAL_DEV_ORIGINS) {
+      origins.add(origin);
+    }
+  }
+
+  return Array.from(origins);
+}
 
 export const APP_COOKIE_PREFIX = 'deepcrawl';
 

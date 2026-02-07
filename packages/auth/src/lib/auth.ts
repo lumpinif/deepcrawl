@@ -16,6 +16,8 @@ const createAuthInstance = () => {
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env
       .NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
+    AUTH_COOKIE_DOMAIN: process.env.AUTH_COOKIE_DOMAIN,
+    PASSKEY_RP_ID: process.env.PASSKEY_RP_ID,
     // Email configuration - add these for Next.js email functionality
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     FROM_EMAIL: process.env.FROM_EMAIL,

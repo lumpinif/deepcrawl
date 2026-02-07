@@ -62,6 +62,22 @@ export const ENV_VARS: readonly EnvVar[] = [
     example: 'http://localhost:8787',
   },
   {
+    key: 'AUTH_COOKIE_DOMAIN',
+    group: 'Auth',
+    targets: ['dashboard', 'worker-auth'],
+    description:
+      'Cookie domain for cross-subdomain sessions (optional). Set to a parent domain like "deepcrawl.dev" to share cookies across subdomains.',
+    example: 'deepcrawl.dev',
+  },
+  {
+    key: 'PASSKEY_RP_ID',
+    group: 'Auth',
+    targets: ['dashboard', 'worker-auth'],
+    description:
+      'WebAuthn passkey rpID override (optional). Defaults to AUTH_COOKIE_DOMAIN or NEXT_PUBLIC_APP_URL hostname.',
+    example: 'deepcrawl.dev',
+  },
+  {
     key: 'NEXT_PUBLIC_BETTER_AUTH_URL',
     group: 'Auth',
     targets: ['dashboard'],
