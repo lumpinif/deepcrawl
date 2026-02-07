@@ -120,8 +120,12 @@ AUTH_MODE=better-auth
 
 Logs are enabled by default across environments.
 
-```bash
-ENABLE_ACTIVITY_LOGS=true
+This is configured in `wrangler.jsonc`:
+
+```jsonc
+"vars": {
+  "ENABLE_ACTIVITY_LOGS": true
+}
 ```
 
 Set this to `false` to skip writing activity logs.

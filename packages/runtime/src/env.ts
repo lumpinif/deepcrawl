@@ -23,17 +23,28 @@ export type EnvVar = {
   group: EnvVarGroup;
   targets: readonly EnvTarget[];
   description?: string;
-  example?: string;
+  example?: string | boolean;
   secret?: boolean;
 };
 
 // Single source of truth for env keys used across the monorepo.
 // Used by local tooling and future deployment automation (create-deepcrawl).
+//
+// IMPORTANT:
+// - Only include variables that are meant to be managed as environment variables.
+// - Do NOT add Worker-local boolean toggles that are intentionally configured in
+//   `wrangler.jsonc` (and not in `.dev.vars`).
+//
+// Example (do not re-add):
+// - `ENABLE_ACTIVITY_LOGS` must stay in `apps/workers/v0/wrangler.jsonc`.
+//   If it is added here, `pnpm env:sync:local` will write it into
+//   `apps/workers/v0/.dev.vars` (dotenv values are strings), and Wrangler typegen
+//   will widen the binding type to `string` in `apps/workers/v0/worker-configuration.d.ts`.
 export const ENV_VARS: readonly EnvVar[] = [
   {
     key: 'NEXT_PUBLIC_APP_URL',
     group: 'App',
-    targets: ['dashboard', 'worker-auth'],
+    targets: ['dashboard', 'worker-auth', 'worker-v0'],
     description: 'Public app URL (used for navigation and auth callbacks).',
     example: 'http://localhost:3000',
   },
@@ -51,7 +62,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     targets: ['dashboard'],
     description:
       "Set to 'false' to use integrated Next.js auth routes instead of the auth worker.",
-    example: 'true',
+    example: true,
   },
   {
     key: 'BETTER_AUTH_URL',
@@ -185,14 +196,6 @@ export const ENV_VARS: readonly EnvVar[] = [
     targets: ['dashboard', 'worker-auth'],
     description: 'From email, e.g. "Deepcrawl <noreply@deepcrawl.dev>".',
     example: '',
-  },
-
-  {
-    key: 'ENABLE_ACTIVITY_LOGS',
-    group: 'Logs',
-    targets: ['worker-v0'],
-    description: 'Enable activity log persistence.',
-    example: 'true',
   },
 
   {

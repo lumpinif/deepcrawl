@@ -1,6 +1,10 @@
 # Used by Wrangler in local development
 # In production, these should be set as Cloudflare Worker Secrets.
 
+# App
+# Public app URL (used for navigation and auth callbacks).
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
 # Auth
 # Auth base URL. Points to auth worker or to Next.js /api/auth depending on mode.
 BETTER_AUTH_URL=http://localhost:8787
@@ -23,10 +27,6 @@ JWT_ISSUER=
 
 # JWT audience (optional).
 JWT_AUDIENCE=
-
-# Logs
-# Enable activity log persistence.
-ENABLE_ACTIVITY_LOGS=true
 
 # OAuth
 # GitHub OAuth client id.
