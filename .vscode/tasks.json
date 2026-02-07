@@ -11,9 +11,6 @@
         "group": "dev",
         "reveal": "always",
         "clear": true
-      },
-      "group": {
-        "isDefault": true
       }
     },
     {
@@ -124,6 +121,106 @@
         "group": "tools",
         "reveal": "always",
         "clear": true
+      }
+    },
+    {
+      "label": "Env: Generate",
+      "detail": "Generate .env.example files across the repo",
+      "type": "shell",
+      "command": "pnpm env:generate",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "tools",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Env: Sync Local",
+      "detail": "Sync local .env / .dev.vars from generated examples and defaults",
+      "type": "shell",
+      "command": "pnpm env:sync:local",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "tools",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Changeset: Add",
+      "detail": "Create a new changeset (select packages + bump type: patch/minor/major)",
+      "type": "shell",
+      "command": "pnpm changeset",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "release",
+        "reveal": "always",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
+      "label": "Changeset: Status",
+      "detail": "Show pending changesets and planned releases",
+      "type": "shell",
+      "command": "pnpm changeset status --verbose",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "release",
+        "reveal": "always",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
+      "label": "SDK: Build (js-ts)",
+      "detail": "Build the JS/TS SDK package (same as CI build step)",
+      "type": "shell",
+      "command": "pnpm sdk-ts:build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "release",
+        "reveal": "always",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
+      "label": "SDK: Test (js-ts)",
+      "detail": "Run JS/TS SDK tests once (same as CI test step)",
+      "type": "shell",
+      "command": "pnpm --filter deepcrawl test -- --run",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "release",
+        "reveal": "always",
+        "clear": true,
+        "focus": true
       }
     }
   ]
