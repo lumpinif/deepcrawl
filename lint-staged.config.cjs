@@ -20,6 +20,8 @@ module.exports = {
     'biome check --write --files-ignore-unknown=true --no-errors-on-unmatched',
     'pnpm -C apps/app lint:fix',
   ],
+  '*.code-workspace':
+    'biome check --write --files-ignore-unknown=true --no-errors-on-unmatched',
   '*.{json,jsonc}':
     'biome check --write --files-ignore-unknown=true --no-errors-on-unmatched',
   '*.{css,scss,pcss}':

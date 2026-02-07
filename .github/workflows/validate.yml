@@ -57,12 +57,8 @@ jobs:
         if: github.event_name == 'pull_request'
         run: node .github/ensure-sdk-changeset.mjs origin/${{ github.event.pull_request.base.ref }}
 
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
-        with:
-          version: latest
       - name: Run Biome
-        run: biome ci .
+        run: pnpm exec biome ci .
 
       - name: Run ESLint (dashboard)
         env:

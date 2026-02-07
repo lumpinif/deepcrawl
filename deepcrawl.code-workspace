@@ -30,18 +30,19 @@
       "apps/**": true,
       "packages/**": true
     },
-    // "biome.enabled": true,
-    // "biome.requireConfiguration": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "fronterior.biome-monorepo",
     "editor.codeActionsOnSave": {
       "source.action.useSortedAttributes.biome": "explicit",
       "source.organizeImports.biome": "explicit",
       "source.fixAll.biome": "explicit"
     },
-    "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css",
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": "fronterior.biome-monorepo",
     "[typescriptreact]": {
-      "editor.defaultFormatter": "fronterior.biome-monorepo",
-    }
+      "editor.defaultFormatter": "fronterior.biome-monorepo"
+    },
+    "[jsonc]": {
+      "editor.defaultFormatter": "fronterior.biome-monorepo"
+    },
+    "tailwindCSS.experimental.configFile": "./packages/ui/src/styles/globals.css"
   }
 }
