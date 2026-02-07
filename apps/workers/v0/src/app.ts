@@ -22,6 +22,7 @@ app.get('/', async (c) => {
   const apiOrigin = new URL(c.req.url).origin;
 
   return c.json({
+    // todo(template): add project name for template
     message: 'Welcome to the API',
     runtime: getRuntimeKey(),
     nodeEnv: c.env.WORKER_NODE_ENV,

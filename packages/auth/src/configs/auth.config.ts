@@ -301,6 +301,7 @@ export function createAuthConfig(env: Env) {
           try {
             await sendEmail(resend, {
               to: email,
+              // TODO(template): normalize this for template
               subject: 'Sign in to your Deepcrawl account',
               template: MagicLink({
                 username: email.split('@')[0], // Use email prefix as fallback username
@@ -315,6 +316,7 @@ export function createAuthConfig(env: Env) {
         expiresIn: EMAIL_CONFIG.EXpiresIn.magicLink,
       }),
       passkey({
+        // TODO(template): normalize this for template
         rpName: 'Deepcrawl Passkey',
         // Always use explicit rpID for simplicity instead of relying on baseAuthURL
         rpID: passkeyRpID,
@@ -360,6 +362,7 @@ export function createAuthConfig(env: Env) {
         try {
           await sendEmail(resend, {
             to: user.email,
+            // TODO(template): normalize this for template
             subject: 'Reset your password - Deepcrawl',
             template: PasswordReset({
               username: user.name || user.email,
@@ -387,6 +390,7 @@ export function createAuthConfig(env: Env) {
         try {
           await sendEmail(resend, {
             to: user.email,
+            // TODO(template): normalize this for template
             subject: 'Verify your email address - Deepcrawl',
             template: EmailVerification({
               username: user.name || user.email,

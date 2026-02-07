@@ -1,3 +1,4 @@
+import { resolveTrustedOrigins } from '@deepcrawl/auth/configs/constants';
 import { cors } from 'hono/cors';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings } from '@/lib/context';
@@ -11,8 +12,8 @@ type CORSOptions = {
 };
 
 export const CORS_OPTIONS = {
-  // Public API should be callable from anywhere (including browsers) using API keys.
-  // Keep credentials disabled to avoid leaking cookie-based sessions across origins.
+  // Default to non-credentialed CORS. The Hono middleware enables credentials
+  // only for trusted origins to support cookie sessions safely.
   credentials: false,
   maxAge: 86400,
   allowMethods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'],
@@ -44,9 +45,29 @@ export const CORS_OPTIONS = {
  * CORS middleware for public API access
  */
 export const deepCrawlCors = createMiddleware<AppBindings>(async (c, next) => {
+  const isDevelopment = c.env.WORKER_NODE_ENV === 'development';
+  const appUrl = c.env.NEXT_PUBLIC_APP_URL;
+  const requestOrigin = c.req.header('Origin');
+
+  // Public API should be callable from anywhere (including browsers) using API keys.
+  // If a trusted origin is calling us, allow credentialed requests (cookies).
+  // Otherwise, keep credentials disabled to avoid leaking sessions across origins.
+  const trustedOrigins = appUrl
+    ? new Set(
+        resolveTrustedOrigins({
+          appURL: appUrl,
+          authURL: c.env.BETTER_AUTH_URL,
+          apiURL: c.env.API_URL,
+          isDevelopment,
+        }),
+      )
+    : new Set<string>();
+
+  const allowCredentials = !!requestOrigin && trustedOrigins.has(requestOrigin);
+
   return cors({
-    origin: (requestOrigin) => requestOrigin,
-    credentials: CORS_OPTIONS.credentials,
+    origin: (origin) => origin,
+    credentials: allowCredentials,
     maxAge: CORS_OPTIONS.maxAge,
     allowMethods: CORS_OPTIONS.allowMethods,
     allowHeaders: CORS_OPTIONS.allowHeaders,
