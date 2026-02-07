@@ -111,4 +111,82 @@ describe('DeepcrawlApp', () => {
       expect(typeof app.exportResponse).toBe('function');
     });
   });
+
+  describe('error handling', () => {
+    type FakeOrpcError = {
+      code: string;
+      status: number;
+      message: string;
+    };
+
+    type FakeSafeClient = {
+      read: {
+        getMarkdown: () => Promise<[FakeOrpcError, null]>;
+      };
+    };
+
+    type DeepcrawlAppWithSafeClient = DeepcrawlApp & {
+      safeClient: FakeSafeClient;
+    };
+
+    it('should map UNAUTHORIZED ORPC errors to DeepcrawlAuthError', async () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+
+      // Override the internal safe client to simulate oRPC errors without network calls.
+      (app as unknown as DeepcrawlAppWithSafeClient).safeClient = {
+        read: {
+          getMarkdown: async () => [
+            {
+              code: 'UNAUTHORIZED',
+              status: 401,
+              message: 'Authentication failed',
+            },
+            null,
+          ],
+        },
+      };
+
+      try {
+        await app.getMarkdown('https://example.com');
+        throw new Error('Expected getMarkdown() to throw');
+      } catch (error) {
+        expect(error).toBeInstanceOf(DeepcrawlAuthError);
+        expect((error as DeepcrawlAuthError).code).toBe('UNAUTHORIZED');
+        expect((error as DeepcrawlAuthError).status).toBe(401);
+        expect((error as DeepcrawlAuthError).message).toBe(
+          'Authentication failed',
+        );
+      }
+    });
+
+    it('should map legacy UNAUTHORIZED: ORPC errors to DeepcrawlAuthError', async () => {
+      const app = new DeepcrawlApp({ apiKey: 'test-key' });
+
+      // Backward-compat with a previously incorrect server error code.
+      (app as unknown as DeepcrawlAppWithSafeClient).safeClient = {
+        read: {
+          getMarkdown: async () => [
+            {
+              code: 'UNAUTHORIZED:',
+              status: 401,
+              message: 'Authentication failed',
+            },
+            null,
+          ],
+        },
+      };
+
+      try {
+        await app.getMarkdown('https://example.com');
+        throw new Error('Expected getMarkdown() to throw');
+      } catch (error) {
+        expect(error).toBeInstanceOf(DeepcrawlAuthError);
+        expect((error as DeepcrawlAuthError).code).toBe('UNAUTHORIZED');
+        expect((error as DeepcrawlAuthError).status).toBe(401);
+        expect((error as DeepcrawlAuthError).message).toBe(
+          'Authentication failed',
+        );
+      }
+    });
+  });
 });

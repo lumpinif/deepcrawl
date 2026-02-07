@@ -173,6 +173,7 @@ function handleDeepcrawlError(
     // Handle infrastructure errors (rate limiting, auth, etc.)
     switch (error.code) {
       case 'UNAUTHORIZED':
+      case 'UNAUTHORIZED:':
         throw new DeepcrawlAuthError(error.message || 'Unauthorized');
       case 'BAD_REQUEST':
         throw new DeepcrawlValidationError(error.message || 'Bad request');
