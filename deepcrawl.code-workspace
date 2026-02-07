@@ -5,6 +5,10 @@
       "path": "."
     },
     {
+      "name": "🔑 env",
+      "path": "./env"
+    },
+    {
       "name": "⚒️ workers",
       "path": "./apps/workers"
     },
@@ -26,8 +30,8 @@
       "apps/**": true,
       "packages/**": true
     },
-    "biome.enabled": true,
-    "biome.requireConfiguration": true,
+    // "biome.enabled": true,
+    // "biome.requireConfiguration": true,
     "editor.codeActionsOnSave": {
       "source.action.useSortedAttributes.biome": "explicit",
       "source.organizeImports.biome": "explicit",
