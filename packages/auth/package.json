@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "check": "biome check --write && pnpm typecheck",
+    "check": "pnpm typecheck && biome ci .",
+    "fix": "biome check . --write",
     "auth:generate": "dotenv -e ../../apps/app/.env -- pnpm dlx @better-auth/cli@latest generate --output ../db/db-auth/src/db/schema.ts -y && biome check ../db/db-auth/src/db/schema.ts --write && turbo typecheck --filter=@deepcrawl/db-auth",
     "email:dev": "email dev --dir src/templates",
     "email:export": "email export --dir src/templates"

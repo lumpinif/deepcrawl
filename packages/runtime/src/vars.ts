@@ -86,6 +86,9 @@ export const WRANGLER_VARS: readonly WranglerVar[] = [
     group: 'JWT',
     targets: ['worker-v0'],
     description: 'JWT issuer (optional).',
+    // Keep the key present in wrangler.jsonc for discoverability.
+    localDefault: '',
+    productionDefault: '',
   },
   {
     key: 'JWT_AUDIENCE',
@@ -93,6 +96,9 @@ export const WRANGLER_VARS: readonly WranglerVar[] = [
     group: 'JWT',
     targets: ['worker-v0'],
     description: 'JWT audience (optional).',
+    // Keep the key present in wrangler.jsonc for discoverability.
+    localDefault: '',
+    productionDefault: '',
   },
   {
     key: 'GITHUB_CLIENT_ID',

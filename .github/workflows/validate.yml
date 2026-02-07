@@ -57,23 +57,8 @@ jobs:
         if: github.event_name == 'pull_request'
         run: node .github/ensure-sdk-changeset.mjs origin/${{ github.event.pull_request.base.ref }}
 
-      - name: Run Biome
-        run: pnpm exec biome ci .
-
-      - name: Run ESLint (dashboard)
+      - name: Run CI checks
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-        run: pnpm turbo run lint --filter=dashboard --no-daemon
-
-      - name: Typecheck workspace
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-        run: pnpm turbo run typecheck --no-daemon
-
-      - name: Run SDK tests
-        run: pnpm --filter deepcrawl test -- --run
-
-      - name: Build SDK package
-        run: pnpm sdk-ts:build
+        run: pnpm check:ci

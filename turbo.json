@@ -65,6 +65,11 @@
       "outputs": [],
       "cache": true
     },
+    "fix": {
+      "dependsOn": ["^fix"],
+      "outputs": [],
+      "cache": true
+    },
     "typecheck": {
       "dependsOn": ["^typecheck"],
       "outputs": [],

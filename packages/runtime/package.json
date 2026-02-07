@@ -33,7 +33,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "check": "biome check . --write && pnpm typecheck"
+    "check": "pnpm typecheck && biome ci .",
+    "fix": "biome check . --write"
   },
   "devDependencies": {
     "@deepcrawl/typescript-config": "workspace:*"

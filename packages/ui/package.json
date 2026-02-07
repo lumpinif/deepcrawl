@@ -5,9 +5,12 @@
   "private": true,
   "scripts": {
     "eslint": "eslint . --max-warnings 0",
+    "lint": "pnpm eslint",
+    "lint:fix": "eslint --fix . --max-warnings 0",
     "ui": "pnpm dlx shadcn@canary",
     "typecheck": "tsc --noEmit",
-    "check": "pnpm eslint --fix && pnpm biome check --write && pnpm typecheck"
+    "check": "pnpm lint && pnpm typecheck && biome ci .",
+    "fix": "pnpm lint:fix && biome check . --write"
   },
   "dependencies": {
     "@dnd-kit/core": "catalog:",
