@@ -14,10 +14,11 @@ import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { getAuthMode, isBetterAuthMode } from '@/lib/auth-mode';
+import { siteConfig } from '@/lib/site-config';
 import { authGetSession } from '@/query/auth-query.server';
 
 const title = 'Dashboard & Playground';
-const description = 'Dashboard & Playground for Deepcrawl';
+const description = `Dashboard & Playground for ${siteConfig.name}`;
 
 export const metadata: Metadata = {
   title,

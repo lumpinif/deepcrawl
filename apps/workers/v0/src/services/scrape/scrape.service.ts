@@ -1,3 +1,5 @@
+import { env } from 'cloudflare:workers';
+import { resolveBrandConfigFromEnv } from '@deepcrawl/runtime';
 import {
   COMMON_HEADERS,
   DEFAULT_FETCH_OPTIONS,
@@ -112,13 +114,20 @@ export class ScrapeService {
     );
 
     try {
+      const brandToken = resolveBrandConfigFromEnv(env).token;
+      const headers = new Headers({
+        ...COMMON_HEADERS.browserLike,
+        ...rest.headers,
+      });
+      const baseUserAgent =
+        headers.get('User-Agent') ?? COMMON_HEADERS.browserLike['User-Agent'];
+      const brandedUserAgent = `${baseUserAgent} ${brandToken}Bot/1.0`;
+      headers.set('User-Agent', brandedUserAgent);
+
       const response = await fetch(url, {
         ...rest,
         signal: abortController.signal,
-        headers: {
-          ...COMMON_HEADERS.browserLike,
-          ...rest.headers,
-        },
+        headers,
         // always bypass the cache in Cloudflare
         // cache: 'no-store', // keep in mind that using cache: 'no-cache' will also send a Cache-Control: no-cache header to the origin server, which may affect the response
         cf: { cacheTtl: 0 }, // more explicit way to bypass the cache in Cloudflare
@@ -386,21 +395,8 @@ export class ScrapeService {
         '';
 
       if (!pageTitle) {
-        // Only use the first text node of the first <title> tag as a last resort
-        const titleElem = $('title').first().get(0);
-        if (
-          titleElem &&
-          titleElem.type === 'tag' &&
-          Array.isArray(titleElem.children) &&
-          titleElem.children.length > 0
-        ) {
-          const textNode = titleElem.children.find(
-            (child) => child.type === 'text',
-          );
-          if (textNode && typeof textNode.data === 'string') {
-            pageTitle = textNode.data.trim();
-          }
-        }
+        // Only use the text content of the first <title> tag as a last resort
+        pageTitle = $('title').first().text().trim();
       }
       if (pageTitle) {
         metadata.title = pageTitle;

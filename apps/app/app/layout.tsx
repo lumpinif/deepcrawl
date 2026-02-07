@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   metadataBase: metadataBaseUrl,
   description: siteConfig.description,
-  keywords: ['Deepcrawl', 'AI', 'Open Source', 'Toolkit', 'Agents'],
+  keywords: [siteConfig.name, 'AI', 'Open Source', 'Toolkit', 'Agents'],
   authors: [
     {
       name: 'Felix Lu',

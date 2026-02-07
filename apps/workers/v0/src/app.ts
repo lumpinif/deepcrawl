@@ -1,3 +1,4 @@
+import { resolveBrandConfigFromEnv } from '@deepcrawl/runtime';
 import { getRuntimeKey } from 'hono/adapter';
 import { getConnInfo } from 'hono/cloudflare-workers';
 import { createContext } from '@/lib/context';
@@ -16,16 +17,18 @@ export const EPHEMERAL_CACHE = new Map();
 
 const app = createHonoApp();
 
-// Health check
+// Index & Health check (debug/info)
 app.get('/', async (c) => {
+  const brand = resolveBrandConfigFromEnv(c.env);
   const info = getConnInfo(c);
   const apiOrigin = new URL(c.req.url).origin;
 
   return c.json({
-    // todo(template): add project name for template
-    message: 'Welcome to the API',
+    message: `Welcome to ${brand.name} API`,
+    brand,
     runtime: getRuntimeKey(),
     nodeEnv: c.env.WORKER_NODE_ENV,
+    timestamp: new Date().toISOString(),
     routes: {
       docs: '/docs',
       openapi: '/openapi',

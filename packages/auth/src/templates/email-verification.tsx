@@ -29,11 +29,13 @@ import {
 export interface EmailVerificationProps {
   username?: string;
   verificationUrl: string;
+  brandName?: string;
 }
 
 export default function EmailVerification({
   username = 'there',
   verificationUrl,
+  brandName = 'Deepcrawl',
 }: EmailVerificationProps) {
   return (
     <Html>
@@ -41,7 +43,7 @@ export default function EmailVerification({
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Heading style={heading}>Deepcrawl</Heading>
+            <Heading style={heading}>{brandName}</Heading>
           </Section>
 
           <Section style={content}>
@@ -50,8 +52,8 @@ export default function EmailVerification({
             <Text style={text}>Hi {username},</Text>
 
             <Text style={text}>
-              Welcome to Deepcrawl! Please verify your email address by clicking
-              the button below.
+              Welcome to {brandName}! Please verify your email address by
+              clicking the button below.
             </Text>
 
             <Section style={buttonContainer}>
@@ -61,7 +63,7 @@ export default function EmailVerification({
             </Section>
 
             <Text style={text}>
-              If you didn't create an account with Deepcrawl, you can safely
+              If you didn't create an account with {brandName}, you can safely
               ignore this email.
             </Text>
 
@@ -83,4 +85,5 @@ export default function EmailVerification({
 EmailVerification.PreviewProps = {
   username: 'John Doe',
   verificationUrl: 'https://auth.deepcrawl.dev/verify?token=abc123def456',
+  brandName: 'Deepcrawl',
 } as EmailVerificationProps;

@@ -11,13 +11,13 @@ Web scraping and reading APIs powered by Cloudflare Workers with enterprise-grad
 Before running Wrangler locally, sync env files from the repo root:
 
 ```bash
-pnpm env:sync:local
+pnpm env:bootstrap
 ```
 
 This generates:
 
 - `.dev.vars` (secrets only)
-- `wrangler.jsonc` is the single source for non-secrets via Wrangler `vars`.
+- `wrangler.jsonc` vars (non-secrets), synced from `env/.vars`.
 
 ```bash
 # Start development server (port 8080)

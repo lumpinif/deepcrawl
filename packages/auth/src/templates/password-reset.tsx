@@ -29,11 +29,13 @@ import {
 export interface PasswordResetProps {
   username?: string;
   resetUrl: string;
+  brandName?: string;
 }
 
 export default function PasswordReset({
   username = 'there',
   resetUrl,
+  brandName = 'Deepcrawl',
 }: PasswordResetProps) {
   return (
     <Html>
@@ -41,7 +43,7 @@ export default function PasswordReset({
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Heading style={heading}>Deepcrawl</Heading>
+            <Heading style={heading}>{brandName}</Heading>
           </Section>
 
           <Section style={content}>
@@ -50,7 +52,7 @@ export default function PasswordReset({
             <Text style={text}>Hi {username},</Text>
 
             <Text style={text}>
-              We received a request to reset your password for your Deepcrawl
+              We received a request to reset your password for your {brandName}
               account. Click the button below to create a new password.
             </Text>
 
@@ -83,4 +85,5 @@ export default function PasswordReset({
 PasswordReset.PreviewProps = {
   username: 'Jane Smith',
   resetUrl: 'https://auth.deepcrawl.dev/reset-password?token=xyz789abc123',
+  brandName: 'Deepcrawl',
 } as PasswordResetProps;

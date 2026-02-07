@@ -29,11 +29,13 @@ import {
 export interface MagicLinkProps {
   username?: string;
   magicLinkUrl: string;
+  brandName?: string;
 }
 
 export default function MagicLink({
   username = 'there',
   magicLinkUrl,
+  brandName = 'Deepcrawl',
 }: MagicLinkProps) {
   return (
     <Html>
@@ -41,7 +43,7 @@ export default function MagicLink({
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Heading style={heading}>Deepcrawl</Heading>
+            <Heading style={heading}>{brandName}</Heading>
           </Section>
 
           <Section style={content}>
@@ -50,13 +52,13 @@ export default function MagicLink({
             <Text style={text}>Hi {username},</Text>
 
             <Text style={text}>
-              You requested a magic link to sign in to your Deepcrawl account.
+              You requested a magic link to sign in to your {brandName} account.
               Click the button below to continue.
             </Text>
 
             <Section style={buttonContainer}>
               <Button href={magicLinkUrl} style={button}>
-                Sign In to Deepcrawl
+                Sign in to {brandName}
               </Button>
             </Section>
 
@@ -84,4 +86,5 @@ MagicLink.PreviewProps = {
   username: 'John Doe',
   magicLinkUrl:
     'https://auth.deepcrawl.dev/api/auth/magic-link/verify?token=abc123def456&callbackURL=https%3A%2F%2Fdeepcrawl.dev%2Fapp',
+  brandName: 'Deepcrawl',
 } as MagicLinkProps;

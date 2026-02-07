@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import { resolveBrandConfigFromEnv } from '@deepcrawl/runtime';
 import { ensureAbsoluteUrl, OFFICIAL_API_URL } from '@deepcrawl/runtime/urls';
 import { SmartCoercionPlugin } from '@orpc/json-schema';
 import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
@@ -9,11 +10,18 @@ import type { ORPCContext } from '@/lib/context';
 import { router } from '@/routers';
 import { OpenAPISpecBaseOptions, SchemaConverters } from './configs';
 
+const brandName = resolveBrandConfigFromEnv(env).name;
+
 const OpenAPISpecOptions = {
   ...OpenAPISpecBaseOptions,
+  info: {
+    ...OpenAPISpecBaseOptions.info,
+    title: brandName,
+  },
   servers: [
     {
       ...OpenAPISpecBaseOptions.servers[0],
+      description: `${brandName} API server`,
       url: (() => {
         const raw = env.API_URL || OFFICIAL_API_URL;
         try {

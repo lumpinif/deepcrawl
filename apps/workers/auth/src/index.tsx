@@ -3,13 +3,15 @@ import type { AppContext, Auth } from '@auth/lib/context';
 import createHonoApp from '@auth/lib/hono/create-hono-app';
 import { logDebug } from '@auth/utils/loggers';
 import { API_KEY_CACHE_CONFIG } from '@deepcrawl/auth/configs/constants';
+import { resolveBrandConfigFromEnv } from '@deepcrawl/runtime';
 import { createAuth } from './lib/better-auth';
 import { kvPutWithRetry } from './utils/kv';
 
 const app = createHonoApp();
 
 app.get('/', (c) => {
-  return c.text('Welcome to Deepcrawl Auth Worker');
+  const brandName = resolveBrandConfigFromEnv(c.env).name;
+  return c.text(`Welcome to ${brandName} Auth Worker`);
 });
 
 export default class extends WorkerEntrypoint<AppContext['Bindings']> {

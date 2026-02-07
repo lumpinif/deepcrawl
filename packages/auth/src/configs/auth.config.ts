@@ -1,6 +1,10 @@
 import { passkey } from '@better-auth/passkey';
 import { getDrizzleDB, schema } from '@deepcrawl/db-auth';
 import {
+  DEFAULT_BRAND_NAME,
+  resolveBrandConfigFromEnv,
+} from '@deepcrawl/runtime';
+import {
   ensureAbsoluteUrl,
   stripTrailingSlashes,
 } from '@deepcrawl/runtime/urls';
@@ -45,6 +49,7 @@ interface Env {
   BETTER_AUTH_URL: string;
   BETTER_AUTH_SECRET: string;
   DATABASE_URL: string;
+  NEXT_PUBLIC_BRAND_NAME?: string;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: string;
@@ -123,6 +128,30 @@ function inferCookieDomain(params: {
     : null;
 }
 
+function sanitizeEmailDisplayName(raw: string): string {
+  // Prevent angle-bracket parsing issues and header injection.
+  const cleaned = raw.replace(/[\r\n<>"]/g, '').trim();
+  return cleaned || DEFAULT_BRAND_NAME;
+}
+
+function extractEmailAddress(raw: string | undefined): string | null {
+  const input = raw?.trim() ?? '';
+  if (!input) {
+    return null;
+  }
+
+  // Supports: "Name <email@domain>" | "<email@domain>" | "email@domain"
+  const match = input.match(/<([^>]+)>/);
+  const candidate = (match?.[1] ?? input).trim();
+
+  // Basic sanity check: avoid spaces and require "@"
+  if (!candidate || candidate.includes(' ') || !candidate.includes('@')) {
+    return null;
+  }
+
+  return candidate.replace(/[\r\n<>"]/g, '');
+}
+
 /** Important: make sure always import this explicitly in workers to resolve process.env issues
  *  Factory function that accepts environment variables from cloudflare env
  */
@@ -131,6 +160,9 @@ export function createAuthConfig(env: Env) {
   const appURL = getBaseURL(env.NEXT_PUBLIC_APP_URL);
   const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
   // const isWorkerd = env.IS_WORKERD === true;
+
+  const brand = resolveBrandConfigFromEnv(env);
+  const brandName = brand.name;
 
   // Validate auth configuration consistency
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
@@ -145,14 +177,16 @@ export function createAuthConfig(env: Env) {
   const db = getDrizzleDB({ DATABASE_URL: env.DATABASE_URL });
 
   // Email configuration
-  const fallbackFromEmail = (() => {
+  const fallbackFromEmailAddress = (() => {
     try {
-      return `Deepcrawl <noreply@${new URL(appURL).hostname}>`;
+      return `noreply@${new URL(appURL).hostname}`;
     } catch {
-      return 'Deepcrawl <noreply@example.com>';
+      return 'noreply@example.com';
     }
   })();
-  const fromEmail = env.FROM_EMAIL || fallbackFromEmail;
+  const fromEmailAddress =
+    extractEmailAddress(env.FROM_EMAIL) || fallbackFromEmailAddress;
+  const fromEmail = `${sanitizeEmailDisplayName(brandName)} <${fromEmailAddress}>`;
   const emailEnabled = validateEmailConfig(env.RESEND_API_KEY, fromEmail);
   const resend = env.RESEND_API_KEY
     ? createResendClient(env.RESEND_API_KEY)
@@ -180,7 +214,7 @@ export function createAuthConfig(env: Env) {
     : env.PASSKEY_RP_ID?.trim() || cookieDomain || new URL(appURL).hostname;
 
   const config = {
-    appName: 'Deepcrawl',
+    appName: brandName,
     /**
      * Base path for Better Auth.
      * Must match the path in the app.on for auth handlers
@@ -300,10 +334,11 @@ export function createAuthConfig(env: Env) {
             await sendEmail(resend, {
               to: email,
               // TODO(template): normalize this for template
-              subject: 'Sign in to your Deepcrawl account',
+              subject: `Sign in to your ${brandName} account`,
               template: MagicLink({
                 username: email.split('@')[0], // Use email prefix as fallback username
                 magicLinkUrl: customUrl, // Use custom URL for better UX
+                brandName,
               }),
               from: fromEmail,
             });
@@ -315,7 +350,7 @@ export function createAuthConfig(env: Env) {
       }),
       passkey({
         // TODO(template): normalize this for template
-        rpName: 'Deepcrawl Passkey',
+        rpName: `${brandName} Passkey`,
         // Always use explicit rpID for simplicity instead of relying on baseAuthURL
         rpID: passkeyRpID,
       }),
@@ -331,13 +366,14 @@ export function createAuthConfig(env: Env) {
           try {
             await sendEmail(resend, {
               to: data.email,
-              subject: `You've been invited to join ${data.organization.name} - Deepcrawl`,
+              subject: `You've been invited to join ${data.organization.name} - ${brandName}`,
               template: OrganizationInvitation({
                 invitedEmail: data.email,
                 inviterName: data.inviter.user.name || 'Someone',
                 inviterEmail: data.inviter.user.email,
                 organizationName: data.organization.name,
                 invitationUrl: inviteLink,
+                brandName,
               }),
               from: fromEmail,
             });
@@ -361,10 +397,11 @@ export function createAuthConfig(env: Env) {
           await sendEmail(resend, {
             to: user.email,
             // TODO(template): normalize this for template
-            subject: 'Reset your password - Deepcrawl',
+            subject: `Reset your password - ${brandName}`,
             template: PasswordReset({
               username: user.name || user.email,
               resetUrl: url,
+              brandName,
             }),
             from: fromEmail,
           });
@@ -389,10 +426,11 @@ export function createAuthConfig(env: Env) {
           await sendEmail(resend, {
             to: user.email,
             // TODO(template): normalize this for template
-            subject: 'Verify your email address - Deepcrawl',
+            subject: `Verify your email address - ${brandName}`,
             template: EmailVerification({
               username: user.name || user.email,
               verificationUrl: customUrl, // Use custom URL for better UX
+              brandName,
             }),
             from: fromEmail,
           });
