@@ -7,6 +7,12 @@ import {
   resolveListLogsOptions,
 } from '@deepcrawl/contracts';
 import { ensureAbsoluteUrl } from '@deepcrawl/runtime/urls';
+import {
+  clearStoredPlaygroundApiKey,
+  getStoredPlaygroundApiKey,
+} from '@/lib/playground-api-key';
+import { ensurePlaygroundApiKey } from '@/lib/playground-api-key.client';
+import { shouldUsePlaygroundApiKey } from '@/lib/playground-api-key-policy';
 import { serializeListLogsOptions } from '@/utils/logs';
 
 const LOGS_ENDPOINT = '/api/deepcrawl/logs';
@@ -50,6 +56,61 @@ function buildLogsEndpoint(query: string): string {
   }
 }
 
+function withAuthorizationHeader(
+  init: RequestInit,
+  apiKey: string,
+): RequestInit {
+  const headers = new Headers(init.headers);
+  headers.set('authorization', `Bearer ${apiKey}`);
+  return { ...init, headers };
+}
+
+async function fetchWithAuthFallback(
+  url: string,
+  init: RequestInit,
+): Promise<Response> {
+  const initial = await fetch(url, init);
+  if (initial.ok) {
+    return initial;
+  }
+
+  const shouldRetry = initial.status === 401 || initial.status === 403;
+  if (!shouldRetry) {
+    return initial;
+  }
+
+  if (!shouldUsePlaygroundApiKey()) {
+    return initial;
+  }
+
+  const storedKey = getStoredPlaygroundApiKey()?.key;
+  if (storedKey) {
+    const withStored = await fetch(
+      url,
+      withAuthorizationHeader(init, storedKey),
+    );
+    if (withStored.ok) {
+      return withStored;
+    }
+
+    const storedUnauthorized =
+      withStored.status === 401 || withStored.status === 403;
+    if (!storedUnauthorized) {
+      return withStored;
+    }
+
+    // Stored key is likely invalid/rotated. Rotate once and retry.
+    clearStoredPlaygroundApiKey();
+  }
+
+  try {
+    const rotatedKey = await ensurePlaygroundApiKey();
+    return await fetch(url, withAuthorizationHeader(init, rotatedKey));
+  } catch {
+    return initial;
+  }
+}
+
 export async function listDeepcrawlLogs(
   params: ListLogsOptions | ListLogsOptionsOverrides = {},
 ): Promise<ListLogsResponse> {
@@ -59,7 +120,7 @@ export async function listDeepcrawlLogs(
   const query = searchParams.toString();
   const endpoint = buildLogsEndpoint(query);
 
-  const response = await fetch(endpoint, {
+  const response = await fetchWithAuthFallback(endpoint, {
     credentials: 'include',
     cache: 'no-store', // Disable Next.js fetch cache to ensure cookies are always sent
   });
@@ -99,7 +160,7 @@ export async function exportLogResponse(
   const url = new URL(LOGS_EXPORT_ENDPOINT, origin);
   url.search = searchParams.toString();
 
-  const response = await fetch(url.toString(), {
+  const response = await fetchWithAuthFallback(url.toString(), {
     credentials: 'include',
     cache: 'no-store',
   });

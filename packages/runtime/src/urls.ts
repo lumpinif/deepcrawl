@@ -37,6 +37,51 @@ export function toOrigin(rawUrl: string): string | null {
   }
 }
 
+function isProbablyIpAddress(hostname: string): boolean {
+  if (hostname.includes(':')) {
+    // IPv6
+    return true;
+  }
+
+  if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) {
+    return false;
+  }
+
+  return hostname.split('.').every((part) => {
+    const value = Number(part);
+    return Number.isInteger(value) && value >= 0 && value <= 255;
+  });
+}
+
+export function getApexDomainFromHostname(hostname: string): string | null {
+  const normalized = hostname.trim().toLowerCase().replace(/\.$/, '');
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized === 'localhost' || isProbablyIpAddress(normalized)) {
+    return normalized;
+  }
+
+  const parts = normalized.split('.').filter(Boolean);
+  if (parts.length < 2) {
+    return normalized;
+  }
+
+  // Naive eTLD+1 approximation (last 2 labels).
+  // This keeps the logic small and works for most typical apex domains.
+  return parts.slice(-2).join('.');
+}
+
+export function getApexDomainFromUrl(rawUrl: string): string | null {
+  try {
+    const url = new URL(ensureAbsoluteUrl(rawUrl));
+    return getApexDomainFromHostname(url.hostname);
+  } catch {
+    return null;
+  }
+}
+
 export function toWwwOrigin(origin: string): string | null {
   try {
     const url = new URL(origin);
