@@ -8,9 +8,15 @@ export const logDebug = (...args: unknown[]) => {
 };
 
 export const logWarn = (...args: unknown[]) => {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
   console.warn(...args);
 };
 
 export const logError = (...args: unknown[]) => {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
   console.error(...args);
 };

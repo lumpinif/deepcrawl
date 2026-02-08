@@ -93,7 +93,7 @@ export const jwtAuthMiddleware = createMiddleware<AppBindings>(
     const secret = c.env.JWT_SECRET;
     if (!secret) {
       logError('❌ JWT_SECRET is missing while AUTH_MODE=jwt');
-      return next();
+      return c.json({ error: 'Unauthorized' }, 401);
     }
 
     const token = getBearerToken(c.req.header('authorization'));

@@ -13,7 +13,7 @@ interface HeaderNavigationLayoutProps {
   children: ReactNode;
   navigationMode: NavigationMode;
   SiteHeaderSlot: ReactNode;
-  hideAuthEntries?: boolean;
+  shouldHideAuthEntries?: boolean;
 }
 
 const useRange = (
@@ -38,7 +38,7 @@ export function HeaderNavigationLayout({
   children,
   navigationMode,
   SiteHeaderSlot,
-  hideAuthEntries,
+  shouldHideAuthEntries,
 }: HeaderNavigationLayoutProps) {
   const bannerOffset = useDeployAttributionBannerOffsetPx({
     assumeRendered: true,
@@ -81,7 +81,7 @@ export function HeaderNavigationLayout({
         /> */}
 
       {/* Sticky nav tabs */}
-      <AppNavTabs hideAuthEntries={hideAuthEntries} transFormX={navX} />
+      <AppNavTabs hideAuthEntries={shouldHideAuthEntries} transFormX={navX} />
 
       {/* @ DEPRECATED: <ScrollArea
         className={cn('relative flex min-h-0 flex-1 flex-col')}

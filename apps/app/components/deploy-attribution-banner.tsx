@@ -277,7 +277,7 @@ export function DeployAttributionBanner({ className }: { className?: string }) {
       <div className="flex h-10 w-full items-center justify-center gap-3 px-4">
         <div className="flex min-w-0 items-center gap-2 text-muted-foreground text-xs sm:text-sm">
           <span className="truncate">
-            This app is maybe deployed with{' '}
+            This app may be deployed with{' '}
             <code className="rounded-sm bg-muted px-2 py-1 font-mono font-semibold text-foreground text-xs">
               npm create deepcrawl@latest
             </code>

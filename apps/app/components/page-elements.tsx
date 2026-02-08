@@ -58,7 +58,7 @@ export function PageTitle({
       return (
         <h1
           className={cn(
-            'text-wrap break-words font-semibold',
+            'wrap-break-word text-wrap font-semibold',
             titleSizeCN,
             titleClassName,
           )}

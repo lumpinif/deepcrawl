@@ -61,10 +61,6 @@ export function DeepcrawlLogo({ className, ...props }: DeepcrawlLogoProps) {
     ...linkProps
   } = props;
 
-  if (!href) {
-    return <span className={mergedClassName}>{children}</span>;
-  }
-
   return (
     <Link className={mergedClassName} href={href} {...linkProps}>
       {children}

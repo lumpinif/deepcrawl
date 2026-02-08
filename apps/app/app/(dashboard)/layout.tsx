@@ -117,7 +117,6 @@ async function DashboardLayoutContent({ children }: { children: ReactNode }) {
       defaultWidth={sidebarWidth}
     >
       <HeaderNavigationLayout
-        hideAuthEntries={!isBetterAuth}
         navigationMode={navigationMode}
         SiteHeaderSlot={
           <SiteHeader
@@ -127,6 +126,7 @@ async function DashboardLayoutContent({ children }: { children: ReactNode }) {
             session={currentSession}
           />
         }
+        shouldHideAuthEntries={!isBetterAuth}
       >
         {children}
       </HeaderNavigationLayout>

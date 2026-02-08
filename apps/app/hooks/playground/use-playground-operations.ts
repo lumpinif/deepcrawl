@@ -159,7 +159,11 @@ export function usePlaygroundOperations({
           }
           default:
             toast.error(`Unknown operation: ${operation}`);
-            return { error: `Unknown operation: ${operation}` };
+            return {
+              error: `Unknown operation: ${operation}`,
+              errorType: 'unknown',
+              status: 400,
+            };
         }
       };
 
