@@ -72,15 +72,6 @@ export const API_KEY_CACHE_CONFIG = {
   KEY_PREFIX: 'api_key_session:',
 } as const;
 
-/**
- * This is better-auth built-in rate limiting only used for API Keys validation, and we implement cache for API Keys sessions
- * Currently same as the user-scope free rate limit in backend services worker, but it is better to have max requests higher than the highest service rate limit
- */
-export const BA_API_KEY_RATE_LIMIT = {
-  maxRequests: 20,
-  timeWindow: 1000 * 60, // 60 seconds
-} as const;
-
 // BUG: OAUTH PROXY CURRENTLY DOES NOT WORK IN LOCALHOST WITH AUTH WORKER
 export const USE_OAUTH_PROXY = true;
 

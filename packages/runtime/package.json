@@ -20,6 +20,11 @@
       "import": "./src/api-rate-limit.ts",
       "default": "./src/api-rate-limit.ts"
     },
+    "./auth-rate-limit": {
+      "types": "./src/auth-rate-limit.ts",
+      "import": "./src/auth-rate-limit.ts",
+      "default": "./src/auth-rate-limit.ts"
+    },
     "./env": {
       "types": "./src/env.ts",
       "import": "./src/env.ts",

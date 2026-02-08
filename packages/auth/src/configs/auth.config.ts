@@ -5,6 +5,10 @@ import {
   resolveBrandConfigFromEnv,
 } from '@deepcrawl/runtime';
 import {
+  AUTH_API_KEY_VALIDATION_RATE_LIMIT,
+  AUTHENTICATION_RATE_LIMIT_CONFIG,
+} from '@deepcrawl/runtime/auth-rate-limit';
+import {
   ensureAbsoluteUrl,
   stripTrailingSlashes,
 } from '@deepcrawl/runtime/urls';
@@ -34,7 +38,6 @@ import {
 } from '../utils/email';
 import {
   APP_COOKIE_PREFIX,
-  BA_API_KEY_RATE_LIMIT,
   COOKIE_CACHE_CONFIG,
   EMAIL_CONFIG,
   LAST_USED_LOGIN_METHOD_COOKIE_NAME,
@@ -279,11 +282,7 @@ export function createAuthConfig(env: Env) {
         startingCharactersConfig: {
           charactersLength: 10, // default 6
         },
-        rateLimit: {
-          enabled: true,
-          maxRequests: BA_API_KEY_RATE_LIMIT.maxRequests,
-          timeWindow: BA_API_KEY_RATE_LIMIT.timeWindow,
-        },
+        rateLimit: AUTH_API_KEY_VALIDATION_RATE_LIMIT,
         enableSessionForAPIKeys: true,
         apiKeyHeaders: ['x-api-key'],
         enableMetadata: true,
@@ -482,54 +481,7 @@ export function createAuthConfig(env: Env) {
           }
         : {}),
     },
-    rateLimit: {
-      customRules: {
-        '/sign-in/email': {
-          window: 10,
-          max: 3,
-        },
-        '/sign-up/email': {
-          window: 10,
-          max: 3,
-        },
-        '/forgot-password': {
-          window: 10,
-          max: 3,
-        },
-        '/reset-password': {
-          window: 10,
-          max: 3,
-        },
-        '/verify-email': {
-          window: 10,
-          max: 3,
-        },
-        '/two-factor/*': {
-          window: 10,
-          max: 3,
-        },
-        '/magic-link/*': {
-          window: 10,
-          max: 3,
-        },
-        '/organization/accept-invitation': {
-          window: 10,
-          max: 3,
-        },
-        '/change-password': {
-          window: 10,
-          max: 3,
-        },
-        '/change-email': {
-          window: 10,
-          max: 3,
-        },
-        '/passkey/*': {
-          window: 10,
-          max: 3,
-        },
-      },
-    },
+    rateLimit: AUTHENTICATION_RATE_LIMIT_CONFIG,
   } satisfies BetterAuthOptions;
 
   return config;
