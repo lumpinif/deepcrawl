@@ -20,7 +20,7 @@
     "gen:openapi": "tsx ./scripts/generate-openapi-yaml.ts"
   },
   "dependencies": {
-    "@cloudflare/puppeteer": "^1.0.5",
+    "@cloudflare/puppeteer": "^1.0.6",
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/contracts": "workspace:*",
     "@deepcrawl/db-auth": "workspace:*",
@@ -31,10 +31,10 @@
     "@hono/zod-openapi": "catalog:",
     "@hono/zod-validator": "catalog:",
     "@paoramen/cheer-reader": "npm:@jsr/paoramen__cheer-reader@^0.1.2",
-    "@scalar/hono-api-reference": "^0.9.39",
+    "@scalar/hono-api-reference": "^0.9.40",
     "@scalar/openapi-to-markdown": "^0.2.45",
     "@upstash/ratelimit": "^2.0.8",
-    "@upstash/redis": "^1.36.1",
+    "@upstash/redis": "^1.36.2",
     "cheerio": "^1.2.0",
     "hono-rate-limiter": "catalog:",
     "htmlparser2": "^10.1.0",

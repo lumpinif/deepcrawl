@@ -6,7 +6,7 @@ packages:
   - "packages/db/db-auth"
   - "packages/sdks/js-ts"
 catalog:
-  "@cloudflare/workers-types": ^4.20260131.0
+  "@cloudflare/workers-types": ^4.20260207.0
   "@dnd-kit/core": ^6.3.1
   "@dnd-kit/modifiers": ^9.0.0
   "@dnd-kit/sortable": ^10.0.0
@@ -14,7 +14,7 @@ catalog:
   "@eslint/eslintrc": ^3.3.3
   "@hookform/resolvers": ^5.2.2
   "@hono-rate-limiter/cloudflare": ^0.2.2
-  "@hono/zod-openapi": ^1.2.0
+  "@hono/zod-openapi": ^1.2.1
   "@hono/zod-validator": ^0.7.6
   "@neondatabase/serverless": ^1.0.2
   "@orpc/client": ^1.13.4
@@ -34,8 +34,8 @@ catalog:
   "@radix-ui/react-tooltip": ^1.2.8
   "@tabler/icons-react": ^3.36.1
   "@tanstack/react-table": ^8.21.3
-  "@types/node": ^22.12.0
-  "@types/react": ^19.2.10
+  "@types/node": ^22.19.10
+  "@types/react": ^19.2.13
   "@types/react-dom": ^19.2.3
   class-variance-authority: ^0.7.1
   cmdk: ^1.1.1
@@ -44,16 +44,16 @@ catalog:
   drizzle-orm: ^0.45.1
   eslint: ^9.39.2
   eslint-config-next: ^16.1.6
-  fumadocs-core: ^16.5.0
-  fumadocs-ui: ^16.5.0
-  hono: ^4.11.7
+  fumadocs-core: ^16.5.1
+  fumadocs-ui: ^16.5.1
+  hono: ^4.11.8
   hono-rate-limiter: ^0.5.3
   lucide-react: ^0.563.0
-  motion: ^12.29.2
+  motion: ^12.33.0
   next: ^16.1.6
   next-themes: ^0.4.6
   react: ^19.2.4
-  react-day-picker: ^9.13.0
+  react-day-picker: ^9.13.1
   react-dom: ^19.2.4
   react-hook-form: ^7.71.1
   recharts: 3.7.0
