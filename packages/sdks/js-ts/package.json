@@ -1,6 +1,6 @@
 {
   "name": "deepcrawl",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "JavaScript/TypeScript SDK for Deepcrawl API",
   "type": "module",
   "main": "./dist/index.js",
