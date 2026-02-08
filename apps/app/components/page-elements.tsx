@@ -77,7 +77,7 @@ export function PageTitle({
         React.HTMLAttributes<HTMLElement | HTMLAnchorElement>
       >(el, {
         className: cn(
-          'text-wrap break-words font-semibold',
+          'wrap-break-word text-wrap font-semibold',
           titleSizeCN,
           titleClassName,
           el.props.className,

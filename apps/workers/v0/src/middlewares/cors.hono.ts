@@ -52,16 +52,22 @@ export const deepCrawlCors = createMiddleware<AppBindings>(async (c, next) => {
   // Public API should be callable from anywhere (including browsers) using API keys.
   // If a trusted origin is calling us, allow credentialed requests (cookies).
   // Otherwise, keep credentials disabled to avoid leaking sessions across origins.
-  const trustedOrigins = appUrl
-    ? new Set(
-        resolveTrustedOrigins({
-          appURL: appUrl,
-          authURL: c.env.BETTER_AUTH_URL,
-          apiURL: c.env.API_URL,
-          isDevelopment,
-        }),
-      )
-    : new Set<string>();
+  const betterAuthUrl = c.env.BETTER_AUTH_URL;
+  const apiUrl = c.env.API_URL;
+
+  // Note: in AUTH_MODE=jwt/none (API-only deployments), BETTER_AUTH_URL may be
+  // intentionally unset. In that case, we do not enable credentialed CORS.
+  const trustedOrigins =
+    appUrl && betterAuthUrl && apiUrl
+      ? new Set(
+          resolveTrustedOrigins({
+            appURL: appUrl,
+            authURL: betterAuthUrl,
+            apiURL: apiUrl,
+            isDevelopment,
+          }),
+        )
+      : new Set<string>();
 
   const allowCredentials = !!requestOrigin && trustedOrigins.has(requestOrigin);
 

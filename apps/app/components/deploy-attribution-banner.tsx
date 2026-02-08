@@ -18,11 +18,11 @@ const GITHUB_REPO_URL = 'https://github.com/lumpinif/deepcrawl';
 
 const OFFICIAL_APEX_DOMAIN = getApexDomainFromUrl(OFFICIAL_APP_URL);
 
-export type DeployAttributionBannerState = {
+export interface DeployAttributionBannerState {
   canRender: boolean;
   isDismissed: boolean;
   isRendered: boolean;
-};
+}
 
 const BANNER_STATE_EVENT = 'deepcrawl:deploy-attribution-banner:state';
 
@@ -98,10 +98,6 @@ export function dismissBanner(): void {
 }
 
 function computeCanRenderBanner(): boolean {
-  // if (process.env.NODE_ENV !== 'production') {
-  //   return false;
-  // }
-
   if (typeof window === 'undefined') {
     return false;
   }

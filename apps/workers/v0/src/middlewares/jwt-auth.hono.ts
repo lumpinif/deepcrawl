@@ -85,6 +85,12 @@ export const jwtAuthMiddleware = createMiddleware<AppBindings>(
       return next();
     }
 
+    // Allow preflight requests to pass through the chain (CORS middleware runs
+    // before auth, but this keeps behavior robust if upstream changes).
+    if (c.req.method === 'OPTIONS') {
+      return next();
+    }
+
     if (c.get('session')) {
       logDebug('✅ Skipping [jwtAuthMiddleware] Session found');
       return next();
@@ -98,8 +104,8 @@ export const jwtAuthMiddleware = createMiddleware<AppBindings>(
 
     const token = getBearerToken(c.req.header('authorization'));
     if (!token) {
-      logDebug('🔑 No JWT provided, skipping to next middleware');
-      return next();
+      logWarn('🚨 Missing Authorization Bearer token');
+      return c.json({ error: 'Unauthorized' }, 401);
     }
 
     try {
@@ -116,7 +122,7 @@ export const jwtAuthMiddleware = createMiddleware<AppBindings>(
 
       if (!session) {
         logWarn('🚨 Invalid JWT payload: missing sub claim');
-        return next();
+        return c.json({ error: 'Unauthorized' }, 401);
       }
 
       c.set('session', session);
@@ -127,6 +133,7 @@ export const jwtAuthMiddleware = createMiddleware<AppBindings>(
       });
     } catch (error) {
       logWarn('🚨 JWT verification failed:', error);
+      return c.json({ error: 'Unauthorized' }, 401);
     }
 
     return next();
