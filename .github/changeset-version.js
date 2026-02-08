@@ -4,9 +4,11 @@
 import { execSync } from 'node:child_process';
 
 // This script is used by the `release.yml` workflow to update the version of the packages being released.
-// The standard step is only to run `changeset version` but this does not update the package-lock.json file.
-// So we also run `npm install`, which does this update.
-// This is a workaround until this is handled automatically by `changeset version`.
-// See https://github.com/changesets/changesets/issues/421.
-execSync('npx changeset version', { stdio: 'inherit' });
-execSync('npm install', { stdio: 'inherit' });
+//
+// IMPORTANT:
+// - This repo uses pnpm (and pnpm Catalogs: `catalog:`), so running `npm install`
+//   will fail and is not needed.
+// - After versioning, we update `pnpm-lock.yaml` so the release PR includes the
+//   lockfile changes.
+execSync('pnpm changeset version', { stdio: 'inherit' });
+execSync('pnpm -w install --lockfile-only', { stdio: 'inherit' });
