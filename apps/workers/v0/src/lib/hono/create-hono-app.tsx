@@ -11,6 +11,7 @@ import { connInfoMiddleware } from '@/middlewares/connInfo.hono';
 import { cookieAuthMiddleware } from '@/middlewares/cookie-auth.hono';
 import deepCrawlCors from '@/middlewares/cors.hono';
 import { dbD1Middleware } from '@/middlewares/d1.cloudflare';
+import { jwtAuthMiddleware } from '@/middlewares/jwt-auth.hono';
 import { serviceFetcherMiddleware } from '@/middlewares/service-fetchers.hono';
 import { servicesAppMiddleware } from '@/middlewares/services.app';
 
@@ -30,6 +31,7 @@ export default function createHonoApp() {
 
     .use('*', connInfoMiddleware)
     .use('*', serviceFetcherMiddleware)
+    .use('*', jwtAuthMiddleware)
     .use('*', apiKeyAuthMiddleware) // api-key auth check before cookie auth
     .use('*', cookieAuthMiddleware)
 

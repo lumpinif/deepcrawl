@@ -26,6 +26,10 @@ import { useEffect, useState } from 'react';
 import CopyButton from '@/components/copy-button';
 import { SpinnerButton } from '@/components/spinner-button';
 import { useCreateApiKey } from '@/hooks/auth.hooks';
+import {
+  isPlaygroundApiKeyName,
+  setStoredPlaygroundApiKey,
+} from '@/lib/playground-api-key';
 
 interface CreateApiKeyDialogProps {
   open: boolean;
@@ -58,6 +62,7 @@ export function CreateApiKeyDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const trimmedName = name.trim();
     let expiresIn: number | undefined;
     if (expirationDays !== 'never') {
       const days = Number.parseInt(expirationDays, 10);
@@ -74,6 +79,11 @@ export function CreateApiKeyDialog({
         onSuccess: (data) => {
           if (data?.key) {
             setCreatedKey(data.key);
+
+            // Persist the system-managed playground key on this device.
+            if (isPlaygroundApiKeyName(trimmedName)) {
+              setStoredPlaygroundApiKey(data.key, data.id);
+            }
           }
         },
       },

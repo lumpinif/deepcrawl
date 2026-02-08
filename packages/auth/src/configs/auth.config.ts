@@ -1,5 +1,17 @@
 import { passkey } from '@better-auth/passkey';
 import { getDrizzleDB, schema } from '@deepcrawl/db-auth';
+import {
+  DEFAULT_BRAND_NAME,
+  resolveBrandConfigFromEnv,
+} from '@deepcrawl/runtime';
+import {
+  AUTH_API_KEY_VALIDATION_RATE_LIMIT,
+  AUTHENTICATION_RATE_LIMIT_CONFIG,
+} from '@deepcrawl/runtime/auth-rate-limit';
+import {
+  ensureAbsoluteUrl,
+  stripTrailingSlashes,
+} from '@deepcrawl/runtime/urls';
 import type { BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import {
@@ -24,17 +36,14 @@ import {
   sendEmail,
   validateEmailConfig,
 } from '../utils/email';
+import { logWarn } from '../utils/logger';
 import {
-  ALLOWED_ORIGINS,
   APP_COOKIE_PREFIX,
-  BA_API_KEY_RATE_LIMIT,
   COOKIE_CACHE_CONFIG,
-  DEVELOPMENT_ORIGINS,
   EMAIL_CONFIG,
   LAST_USED_LOGIN_METHOD_COOKIE_NAME,
   MAX_SESSIONS,
-  PROD_APP_URL,
-  PROD_AUTH_WORKER_URL,
+  resolveTrustedOrigins,
   USE_OAUTH_PROXY,
 } from './constants';
 
@@ -44,10 +53,13 @@ interface Env {
   BETTER_AUTH_URL: string;
   BETTER_AUTH_SECRET: string;
   DATABASE_URL: string;
+  NEXT_PUBLIC_BRAND_NAME?: string;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
   NEXT_PUBLIC_GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  AUTH_COOKIE_DOMAIN?: string;
+  PASSKEY_RP_ID?: string;
   // Email configuration
   RESEND_API_KEY?: string;
   FROM_EMAIL?: string;
@@ -58,19 +70,91 @@ interface Env {
   IS_WORKERD?: boolean;
 }
 
+const BETTER_AUTH_BASE_PATH = '/api/auth';
+
 const getBaseURL = (envUrl: string | undefined): string => {
   if (!envUrl) {
     throw new Error('❌ [getBaseURL] URL is not defined');
   }
 
-  // Add protocol if missing
-  const urlWithProtocol = envUrl.startsWith('http')
-    ? envUrl
-    : `https://${envUrl}`;
-
-  // Remove trailing slash
-  return urlWithProtocol.replace(/\/+$/, '');
+  return stripTrailingSlashes(ensureAbsoluteUrl(envUrl));
 };
+
+function normalizeCookieDomain(raw: string): string {
+  return raw.trim().replace(/^\./, '').toLowerCase();
+}
+
+function isCookieDomainSuffixOfHost(
+  cookieDomain: string,
+  host: string,
+): boolean {
+  return host === cookieDomain || host.endsWith(`.${cookieDomain}`);
+}
+
+function inferCookieDomain(params: {
+  useAuthWorker: boolean;
+  appURL: string;
+  authURL: string;
+  explicitCookieDomain?: string;
+}): string | null {
+  const { useAuthWorker, appURL, authURL, explicitCookieDomain } = params;
+
+  const appHost = new URL(appURL).hostname;
+  const authHost = new URL(authURL).hostname;
+  const appHostNoWww = appHost.startsWith('www.') ? appHost.slice(4) : appHost;
+
+  const setterHost = useAuthWorker ? authHost : appHost;
+
+  if (explicitCookieDomain?.trim()) {
+    const normalized = normalizeCookieDomain(explicitCookieDomain);
+    if (isCookieDomainSuffixOfHost(normalized, setterHost)) {
+      return normalized;
+    }
+
+    logWarn(
+      `⚠️ [auth] AUTH_COOKIE_DOMAIN="${normalized}" is not a suffix of the cookie setter host "${setterHost}". Cross-subdomain cookies disabled.`,
+    );
+    return null;
+  }
+
+  if (useAuthWorker) {
+    // Safe default: only infer when the app host is a suffix of the auth host
+    // Example: auth.deepcrawl.dev + deepcrawl.dev => deepcrawl.dev
+    return isCookieDomainSuffixOfHost(appHostNoWww, authHost)
+      ? appHostNoWww
+      : null;
+  }
+
+  // Integrated Next.js auth: cookies are set on the app host.
+  // At minimum, strip `www.` to support `www.example.com` -> `example.com`.
+  return isCookieDomainSuffixOfHost(appHostNoWww, appHost)
+    ? appHostNoWww
+    : null;
+}
+
+function sanitizeEmailDisplayName(raw: string): string {
+  // Prevent angle-bracket parsing issues and header injection.
+  const cleaned = raw.replace(/[\r\n<>"]/g, '').trim();
+  return cleaned || DEFAULT_BRAND_NAME;
+}
+
+function extractEmailAddress(raw: string | undefined): string | null {
+  const input = raw?.trim() ?? '';
+  if (!input) {
+    return null;
+  }
+
+  // Supports: "Name <email@domain>" | "<email@domain>" | "email@domain"
+  const match = input.match(/<([^>]+)>/);
+  const candidate = (match?.[1] ?? input).trim();
+
+  // Basic sanity check: avoid spaces and require "@"
+  if (!candidate || candidate.includes(' ') || !candidate.includes('@')) {
+    return null;
+  }
+
+  return candidate.replace(/[\r\n<>"]/g, '');
+}
 
 /** Important: make sure always import this explicitly in workers to resolve process.env issues
  *  Factory function that accepts environment variables from cloudflare env
@@ -80,6 +164,9 @@ export function createAuthConfig(env: Env) {
   const appURL = getBaseURL(env.NEXT_PUBLIC_APP_URL);
   const isDevelopment = env.AUTH_WORKER_NODE_ENV === 'development';
   // const isWorkerd = env.IS_WORKERD === true;
+
+  const brand = resolveBrandConfigFromEnv(env);
+  const brandName = brand.name;
 
   // Validate auth configuration consistency
   const useAuthWorker = env.NEXT_PUBLIC_USE_AUTH_WORKER !== false; // defaults to true
@@ -94,26 +181,50 @@ export function createAuthConfig(env: Env) {
   const db = getDrizzleDB({ DATABASE_URL: env.DATABASE_URL });
 
   // Email configuration
-  const fromEmail = env.FROM_EMAIL || 'Deepcrawl <noreply@deepcrawl.dev>';
+  const fallbackFromEmailAddress = (() => {
+    try {
+      return `noreply@${new URL(appURL).hostname}`;
+    } catch {
+      return 'noreply@example.com';
+    }
+  })();
+  const fromEmailAddress =
+    extractEmailAddress(env.FROM_EMAIL) || fallbackFromEmailAddress;
+  const fromEmail = `${sanitizeEmailDisplayName(brandName)} <${fromEmailAddress}>`;
   const emailEnabled = validateEmailConfig(env.RESEND_API_KEY, fromEmail);
   const resend = env.RESEND_API_KEY
     ? createResendClient(env.RESEND_API_KEY)
     : null;
 
-  // Build trusted origins based on environment
-  const trustedOrigins = [...ALLOWED_ORIGINS, baseAuthURL, appURL];
-  if (isDevelopment) {
-    trustedOrigins.push(...DEVELOPMENT_ORIGINS);
-  }
+  const authOrigin = new URL(baseAuthURL).origin;
+  const appOrigin = new URL(appURL).origin;
+
+  // Build trusted origins based on environment (no hardcoded deepcrawl domains)
+  const trustedOrigins = resolveTrustedOrigins({
+    appURL: appOrigin,
+    authURL: authOrigin,
+    isDevelopment,
+  });
+
+  const cookieDomain = inferCookieDomain({
+    useAuthWorker,
+    appURL,
+    authURL: baseAuthURL,
+    explicitCookieDomain: env.AUTH_COOKIE_DOMAIN,
+  });
+
+  const passkeyRpID = isDevelopment
+    ? 'localhost'
+    : env.PASSKEY_RP_ID?.trim() || cookieDomain || new URL(appURL).hostname;
 
   const config = {
-    appName: 'Deepcrawl',
+    appName: brandName,
     /**
      * Base path for Better Auth.
      * Must match the path in the app.on for auth handlers
      * @default "/api/auth"
      */
-    basePath: '/api/auth',
+    basePath: BETTER_AUTH_BASE_PATH,
     baseURL: baseAuthURL,
     secret: env.BETTER_AUTH_SECRET,
     trustedOrigins,
@@ -128,9 +239,7 @@ export function createAuthConfig(env: Env) {
         ? [
             oAuthProxy({
               currentURL: baseAuthURL,
-              productionURL: useAuthWorker
-                ? PROD_AUTH_WORKER_URL
-                : PROD_APP_URL,
+              productionURL: useAuthWorker ? authOrigin : appOrigin,
             }),
           ]
         : []),
@@ -174,11 +283,7 @@ export function createAuthConfig(env: Env) {
         startingCharactersConfig: {
           charactersLength: 10, // default 6
         },
-        rateLimit: {
-          enabled: true,
-          maxRequests: BA_API_KEY_RATE_LIMIT.maxRequests,
-          timeWindow: BA_API_KEY_RATE_LIMIT.timeWindow,
-        },
+        rateLimit: AUTH_API_KEY_VALIDATION_RATE_LIMIT,
         enableSessionForAPIKeys: true,
         apiKeyHeaders: ['x-api-key'],
         enableMetadata: true,
@@ -228,10 +333,12 @@ export function createAuthConfig(env: Env) {
           try {
             await sendEmail(resend, {
               to: email,
-              subject: 'Sign in to your Deepcrawl account',
+              // TODO(template): normalize this for template
+              subject: `Sign in to your ${brandName} account`,
               template: MagicLink({
                 username: email.split('@')[0], // Use email prefix as fallback username
                 magicLinkUrl: customUrl, // Use custom URL for better UX
+                brandName,
               }),
               from: fromEmail,
             });
@@ -242,9 +349,10 @@ export function createAuthConfig(env: Env) {
         expiresIn: EMAIL_CONFIG.EXpiresIn.magicLink,
       }),
       passkey({
-        rpName: 'Deepcrawl Passkey',
-        // always use explicit rpID for simplicity instead of relying on baseAuthURL
-        rpID: isDevelopment ? 'localhost' : 'deepcrawl.dev',
+        // TODO(template): normalize this for template
+        rpName: `${brandName} Passkey`,
+        // Always use explicit rpID for simplicity instead of relying on baseAuthURL
+        rpID: passkeyRpID,
       }),
       organization({
         invitationExpiresIn: EMAIL_CONFIG.EXpiresIn.invitation,
@@ -258,13 +366,14 @@ export function createAuthConfig(env: Env) {
           try {
             await sendEmail(resend, {
               to: data.email,
-              subject: `You've been invited to join ${data.organization.name} - Deepcrawl`,
+              subject: `You've been invited to join ${data.organization.name} - ${brandName}`,
               template: OrganizationInvitation({
                 invitedEmail: data.email,
                 inviterName: data.inviter.user.name || 'Someone',
                 inviterEmail: data.inviter.user.email,
                 organizationName: data.organization.name,
                 invitationUrl: inviteLink,
+                brandName,
               }),
               from: fromEmail,
             });
@@ -287,10 +396,12 @@ export function createAuthConfig(env: Env) {
         try {
           await sendEmail(resend, {
             to: user.email,
-            subject: 'Reset your password - Deepcrawl',
+            // TODO(template): normalize this for template
+            subject: `Reset your password - ${brandName}`,
             template: PasswordReset({
               username: user.name || user.email,
               resetUrl: url,
+              brandName,
             }),
             from: fromEmail,
           });
@@ -314,10 +425,12 @@ export function createAuthConfig(env: Env) {
         try {
           await sendEmail(resend, {
             to: user.email,
-            subject: 'Verify your email address - Deepcrawl',
+            // TODO(template): normalize this for template
+            subject: `Verify your email address - ${brandName}`,
             template: EmailVerification({
               username: user.name || user.email,
               verificationUrl: customUrl, // Use custom URL for better UX
+              brandName,
             }),
             from: fromEmail,
           });
@@ -335,19 +448,14 @@ export function createAuthConfig(env: Env) {
         clientSecret: env.GITHUB_CLIENT_SECRET,
         redirectURI: USE_OAUTH_PROXY
           ? useAuthWorker
-            ? `${PROD_AUTH_WORKER_URL}/api/auth/callback/github`
-            : `${PROD_APP_URL}/api/auth/callback/github`
+            ? `${authOrigin}${BETTER_AUTH_BASE_PATH}/callback/github`
+            : `${appOrigin}${BETTER_AUTH_BASE_PATH}/callback/github`
           : undefined,
       },
       google: {
         clientId: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
-        // GOOGLE AUTH SUPPORTS MORE THAN ONE REDIRECT URI, SO WE DON'T NEED TO USE THE PROXY
-        // redirectURI: USE_OAUTH_PROXY
-        //   ? useAuthWorker
-        //     ? `${PROD_AUTH_WORKER_URL}/api/auth/callback/google`
-        //     : `${PROD_APP_URL}/api/auth/callback/google`
-        //   : undefined,
+        // Google supports multiple redirect URIs, so we don't need the proxy.
       },
     },
     account: {
@@ -362,62 +470,19 @@ export function createAuthConfig(env: Env) {
       ipAddress: {
         ipAddressHeaders: ['cf-connecting-ip', 'x-forwarded-for', 'x-real-ip'],
       },
-      // Unified cross-domain cookie configuration
-      // Works for both auth worker and integrated auth, all environments
-      crossSubDomainCookies: {
-        enabled: !isDevelopment, // Only in production
-        domain: 'deepcrawl.dev',
-        additionalCookies: [LAST_USED_LOGIN_METHOD_COOKIE_NAME],
-      },
+      ...(cookieDomain && !isDevelopment
+        ? {
+            // Cross-subdomain cookies are only possible when the app + auth are
+            // on compatible hosts (e.g. auth.example.com + example.com).
+            crossSubDomainCookies: {
+              enabled: true,
+              domain: cookieDomain,
+              additionalCookies: [LAST_USED_LOGIN_METHOD_COOKIE_NAME],
+            },
+          }
+        : {}),
     },
-    rateLimit: {
-      customRules: {
-        '/sign-in/email': {
-          window: 10,
-          max: 3,
-        },
-        '/sign-up/email': {
-          window: 10,
-          max: 3,
-        },
-        '/forgot-password': {
-          window: 10,
-          max: 3,
-        },
-        '/reset-password': {
-          window: 10,
-          max: 3,
-        },
-        '/verify-email': {
-          window: 10,
-          max: 3,
-        },
-        '/two-factor/*': {
-          window: 10,
-          max: 3,
-        },
-        '/magic-link/*': {
-          window: 10,
-          max: 3,
-        },
-        '/organization/accept-invitation': {
-          window: 10,
-          max: 3,
-        },
-        '/change-password': {
-          window: 10,
-          max: 3,
-        },
-        '/change-email': {
-          window: 10,
-          max: 3,
-        },
-        '/passkey/*': {
-          window: 10,
-          max: 3,
-        },
-      },
-    },
+    rateLimit: AUTHENTICATION_RATE_LIMIT_CONFIG,
   } satisfies BetterAuthOptions;
 
   return config;

@@ -53,9 +53,25 @@ export function schedulePostProcessing(
   c: ORPCContext,
   params: PostProcessingParams,
 ): void {
-  const isDev = c.env.WORKER_NODE_ENV === 'development';
-  if (isDev) {
-    // disable post-processing in development
+  const resolveBool = (
+    value: string | boolean | undefined,
+    fallback: boolean,
+  ) => {
+    if (value === undefined) {
+      return fallback;
+    }
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return fallback;
+    }
+    return ['1', 'true', 'yes', 'y', 'on'].includes(normalized);
+  };
+
+  const enableActivityLogs = resolveBool(c.env.ENABLE_ACTIVITY_LOGS, true);
+  if (!enableActivityLogs) {
     return;
   }
 

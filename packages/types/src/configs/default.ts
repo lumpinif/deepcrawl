@@ -133,7 +133,7 @@ export const DEFAULT_LINKS_OPTIONS = {
 
 /* ------------------------- Logs ------------------------- */
 
-export const LIST_LOGS_DEFAULT_LIMIT = 5;
+export const LIST_LOGS_DEFAULT_LIMIT = 10;
 export const LIST_LOGS_MAX_LIMIT = 100;
 export const LIST_LOGS_DEFAULT_OFFSET = 0;
 export const LIST_LOGS_DEFAULT_WINDOW_IN_DAYS = 2;
@@ -259,7 +259,8 @@ export const COMMON_HEADERS = {
 
   /** Minimal bot headers */
   botFriendly: {
-    'User-Agent': 'Deepcrawl-Bot/1.0 (+https://deepcrawl.dev)',
+    // Brand should be applied at runtime (e.g. in Workers) via a derived token.
+    'User-Agent': 'Mozilla/5.0 (compatible; Bot/1.0)',
     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.5',
   },

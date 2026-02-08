@@ -1,6 +1,6 @@
 ---
 title: Self Hosting
-description: Everyone can self-host Deepcrawl for free.
+description: Self-host the full stack for free.
 ---
 
 ## Prerequisites
@@ -34,7 +34,32 @@ These files include placeholders for the API key, base URL, and Wrangler-specifi
 
 Edit each file and set the required values:
 
-- `apps/app/.env.local`: `DEEPCRAWL_API_KEY`, optional `DEEPCRAWL_BASE_URL`
+> Important: Better Auth sessions are cookie-based. If you deploy the Dashboard
+> on `*.vercel.app` and the Auth Worker on `*.workers.dev`, the browser cannot
+> share cookies across those root domains.
+>
+> Recommended:
+>
+> - Use a custom domain and put Dashboard, API, and Auth under the same apex
+>   domain (for example `app.example.com`, `api.example.com`,
+>   `auth.example.com`).
+>
+> Also supported (free domains):
+>
+> - Keep the free domains and let the dashboard use a system-managed API key
+>   for API calls. When `AUTH_MODE=better-auth` and
+>   `NEXT_PUBLIC_USE_AUTH_WORKER=true` and your API URL is on a different apex
+>   domain than the dashboard, the dashboard will automatically create an API
+>   key named `"PLAYGROUND_API_KEY"`, store it on the device (localStorage),
+>   and use it as a fallback when cookie sessions can't reach your API. You can
+>   rotate it from **API Keys** if it's ever leaked.
+>
+> Optional:
+>
+> - Set `NEXT_PUBLIC_USE_AUTH_WORKER=false` to use the Next.js integrated Better
+>   Auth routes (same origin as the Dashboard).
+
+- `apps/app/.env.local`: `DEEPCRAWL_API_KEY`, optional `DEEPCRAWL_API_URL`, optional `NEXT_PUBLIC_BRAND_NAME` (UI, emails, OpenAPI)
 - `apps/workers/auth/.dev.vars`: Worker API key, JWT secrets, session salts
 - `apps/workers/v0/.dev.vars`: Worker API key, webhook signing secret, storage bindings
 

@@ -43,7 +43,7 @@ interface StoreResponseRecordParams {
 export class ResponseRecordService {
   constructor(
     private db: AppVariables['dbd1'],
-    private userId: string,
+    private userId: string | null,
   ) {}
 
   async createRequestOptionsHash({
@@ -154,7 +154,7 @@ export class ResponseRecordService {
           responseHash,
           optionsHash,
           responseSize,
-          updatedBy: this.userId,
+          updatedBy: this.userId ?? null,
         };
 
         await this.db.insert(responseRecord).values(newResponse);
@@ -188,6 +188,6 @@ export function createResponseRecordService(
   c: ORPCContext,
 ): ResponseRecordService {
   const db = c.var.dbd1;
-  const userId = c.var.session?.user.id as string; // we know it must be a string because of the authed procedure
+  const userId = c.var.session?.user?.id ?? null;
   return new ResponseRecordService(db, userId);
 }

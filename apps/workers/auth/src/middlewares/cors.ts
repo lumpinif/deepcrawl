@@ -1,8 +1,5 @@
 import type { AppContext } from '@auth/lib/context';
-import {
-  ALLOWED_ORIGINS,
-  DEVELOPMENT_ORIGINS,
-} from '@deepcrawl/auth/configs/constants';
+import { resolveTrustedOrigins } from '@deepcrawl/auth/configs/constants';
 import { cors } from 'hono/cors';
 import { createMiddleware } from 'hono/factory';
 
@@ -12,11 +9,13 @@ import { createMiddleware } from 'hono/factory';
 export const deepCrawlCors = createMiddleware<AppContext>(async (c, next) => {
   const isDevelopment = c.env.AUTH_WORKER_NODE_ENV === 'development';
 
-  // Only allow trusted Deepcrawl origins
-  const allowedOrigins = [
-    ...ALLOWED_ORIGINS,
-    ...(isDevelopment ? DEVELOPMENT_ORIGINS : []),
-  ];
+  const allowedOrigins = new Set(
+    resolveTrustedOrigins({
+      appURL: c.env.NEXT_PUBLIC_APP_URL,
+      authURL: c.env.BETTER_AUTH_URL,
+      isDevelopment,
+    }),
+  );
 
   return cors({
     origin: (origin) => {
@@ -25,16 +24,7 @@ export const deepCrawlCors = createMiddleware<AppContext>(async (c, next) => {
         return origin;
       }
 
-      // Check if origin is in allowed list
-      const isAllowed = allowedOrigins.some((allowed) => {
-        if (allowed.includes('*')) {
-          const pattern = allowed.replace(/\./g, '\\.').replace(/\*/g, '[^.]+');
-          return new RegExp(`^${pattern}$`).test(origin);
-        }
-        return allowed === origin;
-      });
-
-      return isAllowed ? origin : null;
+      return allowedOrigins.has(origin) ? origin : null;
     },
     credentials: true, // Always allow credentials for trusted origins
     maxAge: 600,

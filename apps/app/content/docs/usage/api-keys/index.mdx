@@ -20,12 +20,21 @@ API keys authenticate any non-session client (SDKs, REST calls, automation scrip
     Choose an expiration (never, 30/60/90 days, 6 months, 1 year) and name the key so teammates recognize its purpose.
   </Step>
   <Step>
-    After creation, copy the full token. This is the only time the dashboard shows the entire key.
+    After creation, copy the full token. For user-managed keys, this is the
+    only time the dashboard can display the entire key (we never store the
+    plaintext key server-side).
   </Step>
 </Steps>
 
 <Callout type="warn">
 Lost keys cannot be recovered—create a new one and update consumers.
+</Callout>
+
+<Callout type="info">
+Self-hosting with separate dashboard/API apex domains? The dashboard may create
+a system-managed key named <code>PLAYGROUND_API_KEY</code> and store its
+plaintext value on the device (localStorage) so it can call your API when cookie
+sessions aren't available. You can rotate it from the API Keys page.
 </Callout>
 
 ### CLI and local development
@@ -96,4 +105,3 @@ curl \
   -H "Authorization: Bearer $DEEPCRAWL_API_KEY" \
   "https://api.deepcrawl.dev/read?url=https://example.com"
 ```
-

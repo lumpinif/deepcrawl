@@ -2,7 +2,7 @@ import type { Auth, Session } from '@deepcrawl/auth/types';
 import type { createDBD1 } from '@deepcrawl/db-d1';
 import type { ResponseHeadersPluginContext } from '@orpc/server/plugins';
 import type { Ratelimit } from '@upstash/ratelimit';
-import type { Context as HonoContext } from 'hono';
+import type { ExecutionContext, Context as HonoContext } from 'hono';
 import type { RequestIdVariables } from 'hono/request-id';
 import type { getAuthClient } from '@/middlewares/client.auth';
 import type { ScrapeService } from '@/services/scrape/scrape.service';

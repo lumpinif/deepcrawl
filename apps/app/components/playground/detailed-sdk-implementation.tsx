@@ -21,8 +21,10 @@ import { buildSdkSnippet } from '@/utils/playground/sdk-snippet';
 
 export const DetailedSDKImpl = memo(function DetailedSDKImpl({
   className,
+  enableApiKeys = true,
 }: {
   className?: string;
+  enableApiKeys?: boolean;
 }) {
   const router = useRouter();
   const requestUrl = usePlaygroundCoreSelector('requestUrl');
@@ -56,15 +58,17 @@ export const DetailedSDKImpl = memo(function DetailedSDKImpl({
           >
             Reset Options
           </Button>
-          <Button
-            className="w-fit select-none text-muted-foreground text-xs"
-            onClick={() => router.push('/app/api-keys')}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            Get API Key
-          </Button>
+          {enableApiKeys && (
+            <Button
+              className="w-fit select-none text-muted-foreground text-xs"
+              onClick={() => router.push('/app/api-keys')}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              Get API Key
+            </Button>
+          )}
         </div>
       </div>
 

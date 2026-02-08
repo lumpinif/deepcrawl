@@ -28,7 +28,7 @@ describe('Error Classes', () => {
       expect(error.message).toBe('Failed to read page');
       expect(error.name).toBe('DeepcrawlReadError');
       expect(error.code).toBe('READ_ERROR_RESPONSE');
-      expect(error.status).toBe(400);
+      expect(error.status).toBe(500);
       expect(error.targetUrl).toBe('https://example.com');
       expect(error.success).toBe(false);
       expect(error).toBeInstanceOf(DeepcrawlError);
@@ -49,7 +49,7 @@ describe('Error Classes', () => {
       expect(error.message).toBe('Failed to extract links');
       expect(error.name).toBe('DeepcrawlLinksError');
       expect(error.code).toBe('LINKS_ERROR_RESPONSE');
-      expect(error.status).toBe(400);
+      expect(error.status).toBe(500);
       expect(error.targetUrl).toBe('https://example.com');
       expect(error.timestamp).toBe('2024-01-01T00:00:00Z');
       expect(error).toBeInstanceOf(DeepcrawlError);

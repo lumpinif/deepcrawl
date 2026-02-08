@@ -1,9 +1,13 @@
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
   playgroundExtractLinks,
   playgroundGetMarkdown,
   playgroundReadUrl,
 } from '@/app/actions/playground';
+import { PLAYGROUND_API_KEY_NAME } from '@/lib/playground-api-key';
+import { ensurePlaygroundApiKey } from '@/lib/playground-api-key.client';
+import { shouldUsePlaygroundApiKey } from '@/lib/playground-api-key-policy';
 import {
   handlePlaygroundClientErrorResponse,
   handleUnexpectedPlaygroundError,
@@ -38,6 +42,8 @@ export function usePlaygroundOperations({
   setIsExecuting,
   setResponses,
 }: UsePlaygroundOperationsProps) {
+  const router = useRouter();
+
   // Initialize execution timer hook
   const {
     startTimer,
@@ -70,57 +76,113 @@ export function usePlaygroundOperations({
     const startTime = startTimer(operation);
 
     try {
-      let serverResponse: PlaygroundResponse;
+      const showMissingPlaygroundApiKeyToast = () => {
+        toast.error(
+          `You need an API key named "${PLAYGROUND_API_KEY_NAME}" to use dashboard.`,
+          {
+            id: 'missing-playground-api-key',
+            action: {
+              label: 'Open API Keys',
+              onClick: () => {
+                router.push('/app/api-keys');
+              },
+            },
+          },
+        );
+      };
 
-      switch (operation) {
-        case 'getMarkdown': {
-          const { options: currentOptions } =
-            getAnyOperationState('getMarkdown');
-          const parse =
-            GetMarkdownOptionsSchemaWithoutUrl.parse(currentOptions);
-          if (!parse) {
-            toast.error(`Invalid options for ${operation}`);
-            return;
+      const runOperation = async (
+        apiKey?: string,
+      ): Promise<PlaygroundResponse> => {
+        switch (operation) {
+          case 'getMarkdown': {
+            const { options: currentOptions } =
+              getAnyOperationState('getMarkdown');
+            const result =
+              GetMarkdownOptionsSchemaWithoutUrl.safeParse(currentOptions);
+            if (!result.success) {
+              return {
+                error: `Invalid options for ${operation}`,
+                errorType: 'validation',
+                status: 400,
+              };
+            }
+
+            return await playgroundGetMarkdown(
+              {
+                url: requestUrl,
+                ...result.data,
+              },
+              apiKey,
+            );
           }
+          case 'readUrl': {
+            const { options: currentOptions } = getAnyOperationState('readUrl');
+            const result =
+              ReadUrlOptionsSchemaWithoutUrl.safeParse(currentOptions);
+            if (!result.success) {
+              return {
+                error: `Invalid options for ${operation}`,
+                errorType: 'validation',
+                status: 400,
+              };
+            }
 
-          serverResponse = await playgroundGetMarkdown({
-            url: requestUrl,
-            ...currentOptions,
-          });
-          break;
-        }
-        case 'readUrl': {
-          const { options: currentOptions } = getAnyOperationState('readUrl');
-          const parse = ReadUrlOptionsSchemaWithoutUrl.parse(currentOptions);
-          if (!parse) {
-            toast.error(`Invalid options for ${operation}`);
-            return;
+            return await playgroundReadUrl(
+              {
+                url: requestUrl,
+                ...result.data,
+              },
+              apiKey,
+            );
           }
+          case 'extractLinks': {
+            const { options: currentOptions } =
+              getAnyOperationState('extractLinks');
+            const result =
+              LinksOptionsSchemaWithoutUrl.safeParse(currentOptions);
+            if (!result.success) {
+              return {
+                error: `Invalid options for ${operation}`,
+                errorType: 'validation',
+                status: 400,
+              };
+            }
 
-          serverResponse = await playgroundReadUrl({
-            url: requestUrl,
-            ...currentOptions,
-          });
-          break;
-        }
-        case 'extractLinks': {
-          const { options: currentOptions } =
-            getAnyOperationState('extractLinks');
-          const parse = LinksOptionsSchemaWithoutUrl.parse(currentOptions);
-          if (!parse) {
-            toast.error(`Invalid options for ${operation}`);
-            return;
+            return await playgroundExtractLinks(
+              {
+                url: requestUrl,
+                ...result.data,
+              },
+              apiKey,
+            );
           }
-
-          serverResponse = await playgroundExtractLinks({
-            url: requestUrl,
-            ...currentOptions,
-          });
-          break;
+          default:
+            toast.error(`Unknown operation: ${operation}`);
+            return {
+              error: `Unknown operation: ${operation}`,
+              errorType: 'unknown',
+              status: 400,
+            };
         }
-        default:
-          toast.error(`Unknown operation: ${operation}`);
-          return;
+      };
+
+      // First attempt: cookie session / server JWT.
+      let serverResponse: PlaygroundResponse = await runOperation();
+
+      // If auth fails, self-heal by ensuring PLAYGROUND_API_KEY exists on-device,
+      // then retry once using api-key auth.
+      if (serverResponse.errorType === 'auth' && shouldUsePlaygroundApiKey()) {
+        try {
+          const apiKey = await ensurePlaygroundApiKey();
+          serverResponse = await runOperation(apiKey);
+        } catch (error) {
+          // If we can't create/read the key, guide the user to the API Keys page.
+          // Avoid noisy toasts when the user is not logged in.
+          if (!(error instanceof Error && error.message === 'Unauthorized')) {
+            showMissingPlaygroundApiKeyToast();
+          }
+        }
       }
 
       const executionTime = getElapsedTime(operation, startTime);

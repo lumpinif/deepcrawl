@@ -1,7 +1,8 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { AuthCard } from '@/components/auth/auth-card';
 import { BackButton } from '@/components/auth/back-button';
+import { isBetterAuthMode } from '@/lib/auth-mode';
 import { authViewSegments } from '@/routes/auth';
 import { isValidAuthRoute } from '@/utils';
 
@@ -27,6 +28,10 @@ async function AuthPageContent({
   paramsPromise: Promise<{ pathname: string }>;
 }) {
   const { pathname } = await paramsPromise;
+
+  if (!isBetterAuthMode()) {
+    redirect('/app');
+  }
 
   if (!isValidAuthRoute(authViewSegments, pathname)) {
     notFound();

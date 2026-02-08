@@ -23,7 +23,7 @@ interface LogActivityParams {
 export class ActivityLogger {
   constructor(
     private db: AppVariables['dbd1'],
-    private userId: string,
+    private userId: string | null,
   ) {}
 
   /**
@@ -80,6 +80,6 @@ export class ActivityLogger {
  * Use this in processors to get a configured logger
  */
 export function createActivityLogger(c: ORPCContext): ActivityLogger {
-  const userId = c.var.session?.user.id as string; // we know it must be a string because of the authed procedure
+  const userId = c.var.session?.user?.id ?? null;
   return new ActivityLogger(c.var.dbd1, userId);
 }

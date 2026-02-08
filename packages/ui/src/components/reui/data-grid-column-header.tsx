@@ -47,6 +47,8 @@ function DataGridColumnHeader<TData, TValue>({
   filter,
   visibility = false,
 }: DataGridColumnHeaderProps<TData, TValue>) {
+  'use no memo';
+
   const { isLoading, table, props, recordCount } = useDataGrid();
 
   const moveColumn = (direction: 'left' | 'right') => {

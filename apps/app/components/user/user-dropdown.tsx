@@ -24,6 +24,11 @@ import {
   PopoverTrigger,
 } from '@deepcrawl/ui/components/ui/popover';
 import { Skeleton } from '@deepcrawl/ui/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@deepcrawl/ui/components/ui/tooltip';
 import { useIsMac } from '@deepcrawl/ui/hooks/use-is-mac';
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { IconBook } from '@tabler/icons-react';
@@ -33,12 +38,14 @@ import {
   ChevronsUpDownIcon,
   HomeIcon,
   LogOut,
+  Menu,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import type { NavigationMode } from '@/components/providers';
 import { useSetActiveSession } from '@/hooks/auth.hooks';
+import type { AuthMode } from '@/lib/auth-mode';
 import { getAppRoute } from '@/lib/navigation-config';
 import {
   deviceSessionsQueryOptionsClient,
@@ -55,6 +62,9 @@ export function UserDropdownSkeleton() {
 }
 
 function UserAvatar({ user }: { user: Session['user'] | LDSUser | undefined }) {
+  const fallbackLabel =
+    user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase();
+
   return (
     <Avatar className="flex size-6 cursor-pointer items-center justify-center overflow-hidden rounded-full ring-0 ring-transparent">
       <AvatarImage
@@ -63,10 +73,7 @@ function UserAvatar({ user }: { user: Session['user'] | LDSUser | undefined }) {
         src={user?.image || ''}
       />
       <AvatarFallback className="rounded-full">
-        {user?.name?.charAt(0).toUpperCase() ||
-          user?.email?.charAt(0).toUpperCase() || (
-            <Skeleton className="size-6 rounded-full" />
-          )}
+        {fallbackLabel || <Skeleton className="size-6 rounded-full" />}
       </AvatarFallback>
     </Avatar>
   );
@@ -77,23 +84,29 @@ export function UserDropdown({
   redirectLogout,
   navigationMode,
   enableLayoutViewToggle = true,
+  authMode,
   className,
 }: {
-  session: Session;
+  session: Session | null;
   redirectLogout?: string;
   navigationMode?: NavigationMode;
   enableLayoutViewToggle?: boolean;
+  authMode?: AuthMode;
   className?: string;
 }) {
   const router = useRouter();
   const isMac = useIsMac();
 
-  const { data: currentSession } = useQuery(
-    sessionQueryOptionsClient({ init: session }),
-  );
-  const { data: deviceSessionsQuery } = useQuery(
-    deviceSessionsQueryOptionsClient(),
-  ); // use useQuery instead of useSuspenseQuery since it doesn't benefit from HydrationBoundary from layout server component right now
+  const canShowIdentity = Boolean(session);
+
+  const { data: currentSession } = useQuery({
+    ...sessionQueryOptionsClient({ init: session ?? undefined }),
+    enabled: canShowIdentity,
+  });
+  const { data: deviceSessionsQuery } = useQuery({
+    ...deviceSessionsQueryOptionsClient(),
+    enabled: canShowIdentity,
+  }); // use useQuery instead of useSuspenseQuery since it doesn't benefit from HydrationBoundary from layout server component right now
 
   const { mutate: setActiveSession } = useSetActiveSession();
   const [selectOpen, setSelectOpen] = useState(false);
@@ -102,12 +115,15 @@ export function UserDropdown({
   const deviceSessions = deviceSessionsQuery;
 
   // Determine current user: prioritize React Query session
-  const user = currentSession?.user;
+  const user = canShowIdentity ? currentSession?.user : undefined;
+
+  const authModeLabel = authMode ? authMode.toUpperCase() : 'UNKNOWN';
 
   // Filter to show only other accounts (not current user) - following Better Auth demo pattern
-  const otherSessions = deviceSessions
-    ? deviceSessions.filter((s) => s.user.id !== user?.id)
-    : [];
+  const otherSessions =
+    canShowIdentity && deviceSessions
+      ? deviceSessions.filter((s) => s.user.id !== user?.id)
+      : [];
 
   // Calculate hasMultipleSessions based on other sessions
   const hasMultipleSessions = otherSessions.length > 0;
@@ -124,100 +140,122 @@ export function UserDropdown({
           className,
         )}
       >
-        <UserAvatar user={user} />
+        {canShowIdentity ? (
+          <UserAvatar user={user} />
+        ) : (
+          <Menu className="size-4 text-muted-foreground transition-colors duration-200 ease-out data-[state=open]:text-foreground" />
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
         className="w-(--radix-dropdown-menu-trigger-width) min-w-xs rounded-xl bg-background-subtle px-1.5 dark:text-muted-foreground"
         side="bottom"
-        sideOffset={12}
+        sideOffset={16}
       >
-        <DropdownMenuGroup>
-          <Popover
-            onOpenChange={setSelectOpen}
-            open={hasMultipleSessions ? selectOpen : false}
-          >
-            <PopoverTrigger
-              asChild
-              className="group/popover relative flex w-full cursor-default select-none items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 hover:[&:not([disabled])]:bg-accent [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 data-[variant=destructive]:*:[svg]:text-destructive!"
-              disabled={!hasMultipleSessions}
+        {canShowIdentity && (
+          <DropdownMenuGroup>
+            <Popover
+              onOpenChange={setSelectOpen}
+              open={hasMultipleSessions ? selectOpen : false}
             >
-              <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <UserAvatar user={user} />
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {user?.name || <Skeleton className="h-3 w-1/2" />}
-                    </span>
-                    <span className="truncate font-medium text-xs">
-                      {user?.email || <Skeleton className="h-3 w-full" />}
-                    </span>
+              <PopoverTrigger
+                asChild
+                className="group/popover relative flex w-full cursor-default select-none items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 hover:[&:not([disabled])]:bg-accent [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 data-[variant=destructive]:*:[svg]:text-destructive!"
+                disabled={!hasMultipleSessions}
+              >
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <UserAvatar user={user} />
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">
+                        {user?.name || <Skeleton className="h-3 w-1/2" />}
+                      </span>
+                      <span className="truncate font-medium text-xs">
+                        {user?.email || <Skeleton className="h-3 w-full" />}
+                      </span>
+                    </div>
                   </div>
+                  {hasMultipleSessions ? (
+                    selectOpen ? (
+                      <ChevronsDownUpIcon className="size-4 opacity-50 group-hover/popover:opacity-100" />
+                    ) : (
+                      <ChevronsUpDownIcon className="size-4 opacity-50 group-hover/popover:opacity-100" />
+                    )
+                  ) : undefined}
                 </div>
-                {hasMultipleSessions ? (
-                  selectOpen ? (
-                    <ChevronsDownUpIcon className="size-4 opacity-50 group-hover/popover:opacity-100" />
-                  ) : (
-                    <ChevronsUpDownIcon className="size-4 opacity-50 group-hover/popover:opacity-100" />
-                  )
-                ) : undefined}
-              </div>
-            </PopoverTrigger>
-            <PopoverContent
-              align="start"
-              className="flex w-(--radix-dropdown-menu-trigger-width) min-w-xs flex-col gap-2 rounded-lg bg-background-subtle p-2"
-              side="left"
-              sideOffset={12}
-            >
-              <DropdownMenuLabel className="px-2 text-muted-foreground text-xs">
-                Switch Account
-              </DropdownMenuLabel>
-              {otherSessions.map((sessionData, i) => (
-                <button
-                  className="flex items-center gap-2 rounded-sm px-1 py-1.5 text-left text-sm outline-none hover:bg-accent"
-                  key={sessionData.session.id || i}
-                  onClick={() => {
-                    setActiveSession(sessionData.session.token);
-                  }}
-                  type="button"
-                >
-                  <UserAvatar user={sessionData.user} />
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">
-                      {sessionData.user.name}
-                    </span>
-                    <span className="truncate text-xs">
-                      {sessionData.user.email}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </PopoverContent>
-          </Popover>
-        </DropdownMenuGroup>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="flex w-(--radix-dropdown-menu-trigger-width) min-w-xs flex-col gap-2 rounded-lg bg-background-subtle p-2"
+                side="left"
+                sideOffset={12}
+              >
+                <DropdownMenuLabel className="px-2 text-muted-foreground text-xs">
+                  Switch Account
+                </DropdownMenuLabel>
+                {otherSessions.map((sessionData, i) => (
+                  <button
+                    className="flex items-center gap-2 rounded-sm px-1 py-1.5 text-left text-sm outline-none hover:bg-accent"
+                    key={sessionData.session.id || i}
+                    onClick={() => {
+                      setActiveSession(sessionData.session.token);
+                    }}
+                    type="button"
+                  >
+                    <UserAvatar user={sessionData.user} />
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">
+                        {sessionData.user.name}
+                      </span>
+                      <span className="truncate text-xs">
+                        {sessionData.user.email}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+          </DropdownMenuGroup>
+        )}
 
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link
-              className="flex w-full items-center justify-between"
+              className={cn(
+                'flex w-full items-center justify-between',
+                !canShowIdentity && 'text-amber-600!',
+              )}
               href={getAppRoute('/app')}
             >
-              Dashboard
+              {canShowIdentity ? (
+                'Playground & Dashboard'
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex w-full items-center justify-between">
+                      Playground - Internal Auth Mode
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>{`Auth mode: ${authModeLabel}`}</TooltipContent>
+                </Tooltip>
+              )}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
-        <DropdownMenuGroup>
-          <DropdownMenuItem
-            asChild
-            onFocus={handleHoverToPrefetchAccount}
-            onMouseEnter={handleHoverToPrefetchAccount}
-            onMouseOver={handleHoverToPrefetchAccount}
-            onPointerEnter={handleHoverToPrefetchAccount}
-          >
-            <Link href={getAppRoute('/account')}>Account Settings</Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        {canShowIdentity && (
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              asChild
+              onFocus={handleHoverToPrefetchAccount}
+              onMouseEnter={handleHoverToPrefetchAccount}
+              onMouseOver={handleHoverToPrefetchAccount}
+              onPointerEnter={handleHoverToPrefetchAccount}
+            >
+              <Link href={getAppRoute('/account')}>Account Settings</Link>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        )}
 
         <DropdownMenuSeparator />
 
@@ -255,7 +293,7 @@ export function UserDropdown({
               className="hover:bg-transparent! dark:hover:bg-transparent dark:hover:text-muted-foreground"
             >
               <div className="flex w-full flex-col items-start">
-                <span>Customize dashboard layout</span>
+                <span>Customize playground & dashboard layout</span>
                 <LayoutViewToggle currentMode={navigationMode} />
               </div>
             </DropdownMenuItem>
@@ -289,15 +327,18 @@ export function UserDropdown({
           </DropdownMenuItem>
         </a>
 
-        <DropdownMenuSeparator />
-
-        <Link
-          className={buttonVariants({ className: 'my-2 w-full' })}
-          href={`/logout${redirectLogout ? `?redirect=${redirectLogout}` : ''}`}
-        >
-          Log out
-          <LogOut />
-        </Link>
+        {canShowIdentity && (
+          <>
+            <DropdownMenuSeparator />
+            <Link
+              className={buttonVariants({ className: 'my-2 w-full' })}
+              href={`/logout${redirectLogout ? `?redirect=${redirectLogout}` : ''}`}
+            >
+              Log out
+              <LogOut />
+            </Link>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

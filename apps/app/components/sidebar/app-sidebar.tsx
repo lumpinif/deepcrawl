@@ -14,33 +14,37 @@ import {
 } from '@deepcrawl/ui/components/ui/sidebar';
 import * as React from 'react';
 import { NavMain } from '@/components/sidebar/nav-main';
-import { NAVGATION_ITEMS } from '@/lib/navigation-config';
+import { getNavigationItems } from '@/lib/navigation-config';
 import { DeepcrawlLogo } from '../deepcrawl-logo';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   session?: Session;
   deviceSessions?: Session[];
+  hideAuthEntries?: boolean;
 }
 
 export function AppSidebar({
   session,
   deviceSessions,
+  hideAuthEntries,
   ...props
 }: AppSidebarProps) {
+  const items = getNavigationItems({ hideAuthEntries });
+
   return (
     <Sidebar collapsible="icon" {...props} className="overflow-x-hidden">
       <SidebarHeader className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-in-out group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
         <SidebarMenu className="my-auto">
           <SidebarMenuButton
             asChild
-            className="data-[slot=sidebar-menu-button]:!p-1.5 cursor-default hover:bg-transparent active:bg-transparent"
+            className="cursor-default hover:bg-transparent active:bg-transparent data-[slot=sidebar-menu-button]:p-1.5!"
           >
-            <DeepcrawlLogo className="!text-base" href="/" />
+            <DeepcrawlLogo className="text-base!" href="/" />
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="md:pt-2">
-        <NavMain items={NAVGATION_ITEMS} />
+        <NavMain items={items} />
       </SidebarContent>
       {/* <SidebarFooter>
         <NavUser user={user} />

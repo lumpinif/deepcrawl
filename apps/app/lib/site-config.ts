@@ -1,16 +1,17 @@
-import { NAVGATION_ITEMS } from './navigation-config';
+import { OFFICIAL_APP_URL } from '@deepcrawl/runtime/urls';
+import { brandName } from './brand';
+import { NAVIGATION_ITEMS } from './navigation-config';
 
 export const siteConfig = {
-  name: 'Deepcrawl',
-  url: 'https://deepcrawl.dev',
+  name: brandName,
+  url: process.env.NEXT_PUBLIC_APP_URL ?? OFFICIAL_APP_URL,
   // ogImage: "https://deepcrawl.dev/og.jpg",
-  description:
-    'Deepcrawl is a 100% free, no-pricing, and fully open-source toolkit for agents to make any website data AI ready.',
+  description: `${brandName} is a 100% free, no-pricing, and fully open-source toolkit for agents to make any website data AI ready.`,
   links: {
     twitter: 'https://twitter.com/felixlu1018',
     github: 'https://github.com/lumpinif/deepcrawl',
   },
-  navItems: NAVGATION_ITEMS,
+  navItems: NAVIGATION_ITEMS,
 };
 
 export const META_THEME_COLORS = {

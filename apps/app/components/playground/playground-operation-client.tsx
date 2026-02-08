@@ -39,11 +39,13 @@ export interface PlaygroundOperationClientProps {
 
 interface PlaygroundOperationClientContentProps {
   className?: string;
+  enableApiKeys?: boolean;
 }
 
 // Internal component that uses context
 export const PlaygroundOperationClientContent = ({
   className,
+  enableApiKeys = true,
 }: PlaygroundOperationClientContentProps) => {
   const [isError, setIsError] = useState(false);
   const [isDetailedBarOpen, setIsDetailedBarOpen] = useQueryState(
@@ -109,8 +111,8 @@ export const PlaygroundOperationClientContent = ({
     <PageContainer
       className={cn(
         'h-full',
-        hasResponseData &&
-          'min-h-[calc(100svh-(--spacing(16)))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-(--spacing(14))-(--spacing(12)))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-(--spacing(12)))]',
+        // hasResponseData &&
+        //   'min-h-[calc(100svh-(--spacing(16)))] group-data-[nav-mode=header]/header-nav-layout:min-h-[calc(100svh-(--spacing(14))-(--spacing(12)))] sm:group-has-data-[collapsible=icon]/sidebar-wrapper:min-h-[calc(100svh-(--spacing(12)))]',
       )}
       id={PLAYGROUND_SECTION_ID}
     >
@@ -161,7 +163,7 @@ export const PlaygroundOperationClientContent = ({
             childrenProps={{ className: 'p-4' }}
             open={isDetailedBarOpen}
           >
-            <DetailedSDKImpl />
+            <DetailedSDKImpl enableApiKeys={enableApiKeys} />
           </DetailedOptionsAccordion>
         </PromptInput>
       </div>
