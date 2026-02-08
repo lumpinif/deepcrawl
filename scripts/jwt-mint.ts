@@ -28,6 +28,14 @@ const parseArgs = (args: string[]): Inputs => {
 
   for (let i = 0; i < args.length; i += 1) {
     const key = args[i];
+    if (!key) {
+      continue;
+    }
+
+    // pnpm (and other runners) may pass through a literal "--" delimiter.
+    if (key === '--') {
+      continue;
+    }
 
     switch (key) {
       case '--secret': {
@@ -104,6 +112,9 @@ const parseArgs = (args: string[]): Inputs => {
         inputs.writeDevVarsProduction = true;
         break;
       default:
+        if (key.startsWith('--')) {
+          throw new Error(`Unknown flag: ${key}`);
+        }
         break;
     }
   }
