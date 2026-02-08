@@ -111,6 +111,25 @@ const parseArgs = (args: string[]): Inputs => {
   return inputs;
 };
 
+const readEnvFileKeys = (filePath: string): Set<string> => {
+  if (!existsSync(filePath)) {
+    return new Set();
+  }
+
+  const content = readFileSync(filePath, 'utf-8');
+  const keys = new Set<string>();
+
+  for (const rawLine of content.split(/\r?\n/)) {
+    const match = rawLine.match(/^\s*(?:export\s+)?([A-Z0-9_]+)\s*=/);
+    const key = match?.[1];
+    if (key) {
+      keys.add(key);
+    }
+  }
+
+  return keys;
+};
+
 const promptInputs = async (seed: Inputs): Promise<Inputs> => {
   const rl = createInterface({
     input: process.stdin,
@@ -170,7 +189,18 @@ const promptInputs = async (seed: Inputs): Promise<Inputs> => {
     const sourceEnvPath = join(repoRoot, 'env', '.env');
     const sourceVarsPath = join(repoRoot, 'env', '.vars');
 
+    const existingEnvKeys = readEnvFileKeys(sourceEnvPath);
+    const existingVarsKeys = readEnvFileKeys(sourceVarsPath);
+
     const envUpdates: Record<string, string> = { JWT_SECRET: secret };
+
+    // If the user deleted AUTH_JWT_TOKEN from env/.env, re-add a placeholder so
+    // the file remains discoverable even when the user chooses not to persist
+    // the minted token.
+    if (!existingEnvKeys.has('AUTH_JWT_TOKEN')) {
+      envUpdates.AUTH_JWT_TOKEN = '';
+    }
+
     const varsUpdates: Record<string, string> = {};
 
     // JWT_ISSUER/JWT_AUDIENCE are non-secret Wrangler vars (typed) and should
@@ -184,6 +214,21 @@ const promptInputs = async (seed: Inputs): Promise<Inputs> => {
       const value = audience.trim();
       varsUpdates.JWT_AUDIENCE = value;
       varsUpdates.PRODUCTION__JWT_AUDIENCE = value;
+    }
+
+    // Ensure keys exist even if the user leaves issuer/audience blank.
+    // This avoids "missing key" surprises when env/.vars is edited manually.
+    const varsKeysToEnsure = [
+      'JWT_ISSUER',
+      'PRODUCTION__JWT_ISSUER',
+      'JWT_AUDIENCE',
+      'PRODUCTION__JWT_AUDIENCE',
+    ] as const;
+
+    for (const key of varsKeysToEnsure) {
+      if (!existingVarsKeys.has(key) && varsUpdates[key] === undefined) {
+        varsUpdates[key] = '';
+      }
     }
 
     const wantsWrite =
@@ -265,7 +310,7 @@ const upsertEnvFile = (filePath: string, updates: Record<string, string>) => {
   });
 
   const jwtKeys = ['JWT_SECRET', 'JWT_ISSUER', 'JWT_AUDIENCE'] as const;
-  const hasJwtFields = jwtKeys.some((key) => Boolean(updates[key]));
+  const hasJwtFields = jwtKeys.some((key) => updates[key] !== undefined);
 
   const hasJwtHeader = lines.some((line) => {
     const trimmed = line.trim().toLowerCase();
