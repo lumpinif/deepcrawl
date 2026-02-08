@@ -46,15 +46,17 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Compare against base branch
-        if: github.event_name == 'pull_request'
-        run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
+        # We need enough history for changesets to compute the merge-base with the
+        # base branch. A shallow fetch can make merge-base impossible to find.
+        run: git fetch origin ${{ github.event.pull_request.base.ref }} --no-tags
 
       - name: Summarize pending changesets
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
         run: pnpm changeset status --since=origin/${{ github.event.pull_request.base.ref }}
 
       - name: Ensure SDK changes include changesets
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
         run: node .github/ensure-sdk-changeset.mjs origin/${{ github.event.pull_request.base.ref }}
 
       - name: Run CI checks
