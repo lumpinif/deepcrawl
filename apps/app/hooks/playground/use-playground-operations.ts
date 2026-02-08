@@ -98,33 +98,40 @@ export function usePlaygroundOperations({
           case 'getMarkdown': {
             const { options: currentOptions } =
               getAnyOperationState('getMarkdown');
-            const parse =
-              GetMarkdownOptionsSchemaWithoutUrl.parse(currentOptions);
-            if (!parse) {
-              toast.error(`Invalid options for ${operation}`);
-              return { error: `Invalid options for ${operation}` };
+            const result =
+              GetMarkdownOptionsSchemaWithoutUrl.safeParse(currentOptions);
+            if (!result.success) {
+              return {
+                error: `Invalid options for ${operation}`,
+                errorType: 'validation',
+                status: 400,
+              };
             }
 
             return await playgroundGetMarkdown(
               {
                 url: requestUrl,
-                ...currentOptions,
+                ...result.data,
               },
               apiKey,
             );
           }
           case 'readUrl': {
             const { options: currentOptions } = getAnyOperationState('readUrl');
-            const parse = ReadUrlOptionsSchemaWithoutUrl.parse(currentOptions);
-            if (!parse) {
-              toast.error(`Invalid options for ${operation}`);
-              return { error: `Invalid options for ${operation}` };
+            const result =
+              ReadUrlOptionsSchemaWithoutUrl.safeParse(currentOptions);
+            if (!result.success) {
+              return {
+                error: `Invalid options for ${operation}`,
+                errorType: 'validation',
+                status: 400,
+              };
             }
 
             return await playgroundReadUrl(
               {
                 url: requestUrl,
-                ...currentOptions,
+                ...result.data,
               },
               apiKey,
             );
@@ -132,16 +139,20 @@ export function usePlaygroundOperations({
           case 'extractLinks': {
             const { options: currentOptions } =
               getAnyOperationState('extractLinks');
-            const parse = LinksOptionsSchemaWithoutUrl.parse(currentOptions);
-            if (!parse) {
-              toast.error(`Invalid options for ${operation}`);
-              return { error: `Invalid options for ${operation}` };
+            const result =
+              LinksOptionsSchemaWithoutUrl.safeParse(currentOptions);
+            if (!result.success) {
+              return {
+                error: `Invalid options for ${operation}`,
+                errorType: 'validation',
+                status: 400,
+              };
             }
 
             return await playgroundExtractLinks(
               {
                 url: requestUrl,
-                ...currentOptions,
+                ...result.data,
               },
               apiKey,
             );
