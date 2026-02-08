@@ -15,6 +15,11 @@
       "import": "./src/auth-mode.ts",
       "default": "./src/auth-mode.ts"
     },
+    "./api-rate-limit": {
+      "types": "./src/api-rate-limit.ts",
+      "import": "./src/api-rate-limit.ts",
+      "default": "./src/api-rate-limit.ts"
+    },
     "./env": {
       "types": "./src/env.ts",
       "import": "./src/env.ts",

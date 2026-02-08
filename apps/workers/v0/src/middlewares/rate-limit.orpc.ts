@@ -1,3 +1,9 @@
+import {
+  API_RATE_LIMIT_RULES,
+  type ApiRateLimitOperation,
+  resolveApiRateLimitEnabled,
+  resolveUpstashRedisCredentials,
+} from '@deepcrawl/runtime';
 import { type Duration, Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis/cloudflare';
 import { EPHEMERAL_CACHE } from '@/app';
@@ -5,118 +11,8 @@ import type { AppBindings } from '@/lib/context';
 import { publicProcedures } from '@/orpc';
 import { logDebug, logWarn } from '@/utils/loggers';
 
-const RATE_LIMIT_RULES: Record<
-  string,
-  {
-    free: { limit: number; window: Duration };
-    pro: { limit: number; window: Duration };
-  }
-> = {
-  getMarkdown: {
-    free: {
-      limit: 20,
-      window: '60 s',
-    },
-    pro: {
-      limit: 100,
-      window: '60 s',
-    },
-  },
-  readURL: {
-    free: {
-      limit: 20,
-      window: '60 s',
-    },
-    pro: {
-      limit: 100,
-      window: '60 s',
-    },
-  },
-  getLinks: {
-    free: {
-      limit: 20,
-      window: '60 s',
-    },
-    pro: {
-      limit: 100,
-      window: '60 s',
-    },
-  },
-  extractLinks: {
-    free: {
-      limit: 20,
-      window: '60 s',
-    },
-    pro: {
-      limit: 100,
-      window: '60 s',
-    },
-  },
-  listLogs: {
-    free: {
-      limit: 30,
-      window: '60 s',
-    },
-    pro: {
-      limit: 100,
-      window: '60 s',
-    },
-  },
-  getOne: {
-    free: {
-      limit: 50,
-      window: '60 s',
-    },
-    pro: {
-      limit: 200,
-      window: '60 s',
-    },
-  },
-} as const;
-
 // Create rate limiters at module level to reuse across requests
 const rateLimiters = new Map<string, Ratelimit>();
-
-type RateLimitEnv = Partial<{
-  ENABLE_API_RATE_LIMIT: boolean | string;
-  UPSTASH_REDIS_REST_URL: string;
-  UPSTASH_REDIS_REST_TOKEN: string;
-}>;
-
-function resolveBool(value: unknown, fallback: boolean): boolean {
-  if (value === undefined || value === null) {
-    return fallback;
-  }
-  if (typeof value === 'boolean') {
-    return value;
-  }
-  if (typeof value !== 'string') {
-    return fallback;
-  }
-
-  const normalized = value.trim().toLowerCase();
-  if (!normalized) {
-    return fallback;
-  }
-  return ['1', 'true', 'yes', 'y', 'on'].includes(normalized);
-}
-
-function resolveUpstashCredentials(
-  env: AppBindings['Bindings'],
-): { url: string; token: string } | null {
-  const url = (env as unknown as RateLimitEnv).UPSTASH_REDIS_REST_URL;
-  const token = (env as unknown as RateLimitEnv).UPSTASH_REDIS_REST_TOKEN;
-
-  if (!(typeof url === 'string' && url.trim())) {
-    return null;
-  }
-
-  if (!(typeof token === 'string' && token.trim())) {
-    return null;
-  }
-
-  return { url, token };
-}
 
 let didWarnMissingUpstash = false;
 function warnMissingUpstashOnce() {
@@ -131,20 +27,17 @@ function warnMissingUpstashOnce() {
 }
 
 function getRateLimiter(
-  operation: keyof typeof RATE_LIMIT_RULES,
+  operation: ApiRateLimitOperation,
   env: AppBindings['Bindings'],
 ): Ratelimit | null {
   const key = `${operation}-free`; // Using free tier for now
 
-  const rateLimitEnabled = resolveBool(
-    (env as unknown as RateLimitEnv).ENABLE_API_RATE_LIMIT,
-    true,
-  );
+  const rateLimitEnabled = resolveApiRateLimitEnabled(env, true);
   if (!rateLimitEnabled) {
     return null;
   }
 
-  const credentials = resolveUpstashCredentials(env);
+  const credentials = resolveUpstashRedisCredentials(env);
   if (!credentials) {
     warnMissingUpstashOnce();
     return null;
@@ -156,8 +49,8 @@ function getRateLimiter(
       // Avoid Redis.fromEnv() warnings by validating credentials first.
       redis: Redis.fromEnv(env),
       limiter: Ratelimit.slidingWindow(
-        RATE_LIMIT_RULES[operation].free.limit,
-        RATE_LIMIT_RULES[operation].free.window,
+        API_RATE_LIMIT_RULES[operation].free.limit,
+        API_RATE_LIMIT_RULES[operation].free.window as Duration,
       ),
       ephemeralCache: EPHEMERAL_CACHE,
       analytics: true,
@@ -172,7 +65,7 @@ function getRateLimiter(
 export function rateLimitMiddleware({
   operation,
 }: {
-  operation: keyof typeof RATE_LIMIT_RULES;
+  operation: ApiRateLimitOperation;
 }) {
   return publicProcedures.middleware(async ({ context: c, next, errors }) => {
     const user = c.var.session?.user;
