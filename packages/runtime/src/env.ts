@@ -17,14 +17,14 @@ export type EnvVarGroup =
   | 'Upstash'
   | 'Turbo';
 
-export type EnvVar = {
+export interface EnvVar {
   key: string;
   group: EnvVarGroup;
   targets: readonly EnvTarget[];
   description?: string;
   example?: string | boolean;
   secret?: boolean;
-};
+}
 
 // Single source of truth for env keys used across the monorepo.
 // Used by local tooling and future deployment automation (create-deepcrawl).
@@ -142,20 +142,6 @@ export const ENV_VARS: readonly EnvVar[] = [
     description: 'JWT secret used by the API worker when AUTH_MODE=jwt.',
     example: '',
     secret: true,
-  },
-  {
-    key: 'JWT_ISSUER',
-    group: 'JWT',
-    targets: ['worker-v0'],
-    description: 'JWT issuer (optional).',
-    example: '',
-  },
-  {
-    key: 'JWT_AUDIENCE',
-    group: 'JWT',
-    targets: ['worker-v0'],
-    description: 'JWT audience (optional).',
-    example: '',
   },
 
   {

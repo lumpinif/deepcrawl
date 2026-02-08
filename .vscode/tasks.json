@@ -156,6 +156,23 @@
       }
     },
     {
+      "label": "JWT: Mint",
+      "detail": "Mint a JWT token (interactive) and optionally write to env/.env and env/.vars",
+      "type": "shell",
+      "command": "pnpm jwt:mint",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "tools",
+        "reveal": "always",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
       "label": "Changeset: Add",
       "detail": "Create a new changeset (select packages + bump type: patch/minor/major)",
       "type": "shell",

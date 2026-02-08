@@ -193,11 +193,16 @@ Operational note:
 
 **How operators configure it**
 
-- v0 Worker (`apps/workers/v0/.dev.vars`):
+- v0 Worker secrets (`apps/workers/v0/.dev.vars`):
+
+```env
+JWT_SECRET=...
+```
+
+- v0 Worker vars (`apps/workers/v0/wrangler.jsonc` `"vars"`):
 
 ```env
 AUTH_MODE=jwt
-JWT_SECRET=...
 JWT_ISSUER=...     # optional
 JWT_AUDIENCE=...   # optional
 ```

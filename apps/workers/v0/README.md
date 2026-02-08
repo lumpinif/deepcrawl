@@ -172,8 +172,15 @@ Notes:
 
 Required when `AUTH_MODE=jwt`:
 
+Secret (synced into `.dev.vars` by `pnpm env:bootstrap`):
+
 ```bash
 JWT_SECRET=your_jwt_secret
+```
+
+Optional Wrangler vars (synced into `wrangler.jsonc` vars by `pnpm env:bootstrap`):
+
+```bash
 JWT_ISSUER=deepcrawl            # optional
 JWT_AUDIENCE=deepcrawl-api      # optional
 ```
@@ -248,12 +255,17 @@ You can also pass flags to skip prompts:
 pnpm jwt:mint -- --sub user_123 --email alice@example.com --expires-in 24
 ```
 
-Write the secret into env files (optional):
+Write JWT settings into repo-level env sources (optional):
 
 ```bash
 pnpm jwt:mint -- --write-dev-vars
 pnpm jwt:mint -- --write-dev-vars-production
 ```
+
+Notes:
+- The repo uses `env/.env` and `env/.vars` as the local single sources of truth.
+- After writing values, run `pnpm env:bootstrap` to sync them into per-app/per-worker files.
+- If you provide `issuer`/`audience`, the script updates both `JWT_ISSUER`/`JWT_AUDIENCE` and `PRODUCTION__JWT_ISSUER`/`PRODUCTION__JWT_AUDIENCE` in `env/.vars`.
 
 Required inputs:
 - `JWT_SECRET` (env var or prompt)

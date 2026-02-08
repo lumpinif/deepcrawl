@@ -17,7 +17,8 @@ interface Inputs {
 }
 
 const OUTPUT_DIVIDER = '----------------------------------------';
-const WARNING_DIVIDER = '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
+const WARNING_DIVIDER =
+  '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
 
 const resolveYes = (value: string) =>
   value.trim() ? value.trim().toLowerCase().startsWith('y') : true;
@@ -27,37 +28,75 @@ const parseArgs = (args: string[]): Inputs => {
 
   for (let i = 0; i < args.length; i += 1) {
     const key = args[i];
-    const value = args[i + 1];
 
     switch (key) {
-      case '--secret':
+      case '--secret': {
+        const value = args[i + 1];
+        if (!value || value.startsWith('--')) {
+          throw new Error('Missing value for --secret');
+        }
         inputs.secret = value;
         i += 1;
         break;
-      case '--sub':
+      }
+      case '--sub': {
+        const value = args[i + 1];
+        if (!value || value.startsWith('--')) {
+          throw new Error('Missing value for --sub');
+        }
         inputs.sub = value;
         i += 1;
         break;
-      case '--email':
+      }
+      case '--email': {
+        const value = args[i + 1];
+        if (!value || value.startsWith('--')) {
+          throw new Error('Missing value for --email');
+        }
         inputs.email = value;
         i += 1;
         break;
-      case '--name':
+      }
+      case '--name': {
+        const value = args[i + 1];
+        if (!value || value.startsWith('--')) {
+          throw new Error('Missing value for --name');
+        }
         inputs.name = value;
         i += 1;
         break;
-      case '--issuer':
+      }
+      case '--issuer': {
+        const value = args[i + 1];
+        if (!value || value.startsWith('--')) {
+          throw new Error('Missing value for --issuer');
+        }
         inputs.issuer = value;
         i += 1;
         break;
-      case '--audience':
+      }
+      case '--audience': {
+        const value = args[i + 1];
+        if (!value || value.startsWith('--')) {
+          throw new Error('Missing value for --audience');
+        }
         inputs.audience = value;
         i += 1;
         break;
-      case '--expires-in':
-        inputs.expiresInHours = value ? Number(value) : undefined;
+      }
+      case '--expires-in': {
+        const value = args[i + 1];
+        if (!value || value.startsWith('--')) {
+          throw new Error('Missing value for --expires-in');
+        }
+        const parsed = Number(value);
+        if (Number.isNaN(parsed)) {
+          throw new Error(`Invalid value for --expires-in: ${value}`);
+        }
+        inputs.expiresInHours = parsed;
         i += 1;
         break;
+      }
       case '--write-dev-vars':
         inputs.writeDevVars = true;
         break;
@@ -128,47 +167,54 @@ const promptInputs = async (seed: Inputs): Promise<Inputs> => {
 
   if (secret) {
     const repoRoot = process.cwd();
-    const devVarsPath = join(repoRoot, 'apps', 'workers', 'v0', '.dev.vars');
-    const prodVarsPath = join(
-      repoRoot,
-      'apps',
-      'workers',
-      'v0',
-      '.dev.vars.production',
-    );
+    const sourceEnvPath = join(repoRoot, 'env', '.env');
+    const sourceVarsPath = join(repoRoot, 'env', '.vars');
 
-    const updates: Record<string, string> = { JWT_SECRET: secret };
+    const envUpdates: Record<string, string> = { JWT_SECRET: secret };
+    const varsUpdates: Record<string, string> = {};
+
+    // JWT_ISSUER/JWT_AUDIENCE are non-secret Wrangler vars (typed) and should
+    // live in env/.vars, not in worker `.dev.vars`.
     if (issuer?.trim()) {
-      updates.JWT_ISSUER = issuer.trim();
+      const value = issuer.trim();
+      varsUpdates.JWT_ISSUER = value;
+      varsUpdates.PRODUCTION__JWT_ISSUER = value;
     }
     if (audience?.trim()) {
-      updates.JWT_AUDIENCE = audience.trim();
+      const value = audience.trim();
+      varsUpdates.JWT_AUDIENCE = value;
+      varsUpdates.PRODUCTION__JWT_AUDIENCE = value;
     }
 
-    let writeDev = seed.writeDevVars;
-    if (writeDev === undefined) {
+    const wantsWrite =
+      seed.writeDevVars === true || seed.writeDevVarsProduction === true;
+
+    let writeSources = wantsWrite;
+    if (!wantsWrite) {
       const answer = await rl.question(
-        `\n[ENV] Write JWT vars to ${devVarsPath}? (Y/n): `,
+        `\n[ENV] Write JWT settings to ${sourceEnvPath} and ${sourceVarsPath}? (Y/n): `,
       );
-      writeDev = resolveYes(answer);
+      writeSources = resolveYes(answer);
     }
 
-    if (writeDev) {
-      upsertEnvFile(devVarsPath, updates);
-      process.stdout.write(`Updated ${devVarsPath}\n`);
-    }
+    if (writeSources) {
+      upsertEnvFile(sourceEnvPath, envUpdates);
+      process.stdout.write(`Updated ${sourceEnvPath}\n`);
 
-    let writeProd = seed.writeDevVarsProduction;
-    if (writeProd === undefined) {
-      const answer = await rl.question(
-        `\n[ENV] Write JWT vars to ${prodVarsPath}? (Y/n): `,
+      if (Object.keys(varsUpdates).length > 0) {
+        upsertEnvFile(sourceVarsPath, varsUpdates);
+        process.stdout.write(`Updated ${sourceVarsPath}\n`);
+      }
+
+      process.stdout.write(
+        `\n${WARNING_DIVIDER}\n[ENV] IMPORTANT: Run \`pnpm env:bootstrap\` to sync. If you do not run it, these values will NOT be written into each app/worker env file.\n${WARNING_DIVIDER}\n`,
       );
-      writeProd = resolveYes(answer);
-    }
 
-    if (writeProd) {
-      upsertEnvFile(prodVarsPath, updates);
-      process.stdout.write(`Updated ${prodVarsPath}\n`);
+      if (seed.writeDevVarsProduction) {
+        process.stdout.write(
+          '[ENV] If you need production secrets, use Wrangler secrets (or your existing `.dev.vars.production` flow).\n',
+        );
+      }
     }
   }
 
@@ -196,7 +242,7 @@ const upsertEnvFile = (filePath: string, updates: Record<string, string>) => {
   const lines = existing.split(/\r?\n/);
   const seen = new Set<string>();
   const updatedLines = lines.map((line) => {
-    const match = line.match(/^([A-Z0-9_]+)=/);
+    const match = line.match(/^\s*(?:export\s+)?([A-Z0-9_]+)\s*=/);
     if (!match) {
       return line;
     }
@@ -207,6 +253,10 @@ const upsertEnvFile = (filePath: string, updates: Record<string, string>) => {
     }
 
     if (updates[key] !== undefined) {
+      if (seen.has(key)) {
+        // Keep env files clean if the same key appears multiple times.
+        return '';
+      }
       seen.add(key);
       return `${key}=${updates[key]}`;
     }
@@ -224,7 +274,7 @@ const upsertEnvFile = (filePath: string, updates: Record<string, string>) => {
 
   if (hasJwtFields && !hasJwtHeader) {
     const firstJwtIndex = updatedLines.findIndex((line) =>
-      /^JWT_(SECRET|ISSUER|AUDIENCE)=/.test(line.trim()),
+      /^JWT_(SECRET|ISSUER|AUDIENCE)\s*=/.test(line.trim()),
     );
 
     if (firstJwtIndex >= 0) {
@@ -300,11 +350,11 @@ const run = async () => {
     `\nUse this header in your requests:\nAuthorization: Bearer ${token}\n\n`,
   );
   process.stdout.write(
-    `${WARNING_DIVIDER}\nIMPORTANT: Save the JWT secret and token securely. If either is lost or leaked, rotate the JWT secret and re-mint the token.\n${WARNING_DIVIDER}\n\n`,
+    `\n${WARNING_DIVIDER}\nIMPORTANT: Save the JWT secret and token securely. If either is lost or leaked, rotate the JWT secret and re-mint the token.\n${WARNING_DIVIDER}\n`,
   );
 
   const repoRoot = process.cwd();
-  const appEnvPath = join(repoRoot, 'apps', 'app', '.env');
+  const sourceEnvPath = join(repoRoot, 'env', '.env');
 
   const rl = createInterface({
     input: process.stdin,
@@ -312,16 +362,20 @@ const run = async () => {
   });
 
   const writeAppEnvAnswer = await rl.question(
-    `\n[ENV] Write AUTH_JWT_TOKEN to ${appEnvPath}? (Y/n): `,
+    `\n[ENV] Write AUTH_JWT_TOKEN to ${sourceEnvPath}? (Y/n): `,
   );
   if (resolveYes(writeAppEnvAnswer)) {
-    upsertEnvFile(appEnvPath, { AUTH_JWT_TOKEN: token });
-    process.stdout.write(`Updated ${appEnvPath}\n`);
+    upsertEnvFile(sourceEnvPath, { AUTH_JWT_TOKEN: token });
+    process.stdout.write(`Updated ${sourceEnvPath}\n`);
+    process.stdout.write(
+      `\n${WARNING_DIVIDER}\n[ENV] IMPORTANT: Run \`pnpm env:bootstrap\` to sync. If you do not run it, these values will NOT be written into each app/worker env file.\n${WARNING_DIVIDER}\n`,
+    );
   }
 
   rl.close();
 
-  // Env file updates for worker vars are handled in `promptInputs()`.
+  // env/.env and env/.vars are the sources of truth. Run `pnpm env:bootstrap`
+  // to sync per-app/per-worker files.
 };
 
 run().catch((error) => {
