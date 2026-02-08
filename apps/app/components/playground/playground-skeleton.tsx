@@ -4,7 +4,7 @@ import { PageContainer, PageTitle } from '../page-elements';
 
 export function PlaygroundSkeleton() {
   return (
-    <PageContainer className="h-full">
+    <PageContainer>
       <PageTitle
         className="mx-auto mt-28 mb-10 w-full text-center md:mt-[13svh]"
         description="Make any website data AI-ready for agents"

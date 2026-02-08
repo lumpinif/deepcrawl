@@ -86,12 +86,10 @@ export function SiteHeader({
         {/* Logo */}
         {navigationMode === 'header' && enableTitle && (
           <div
-            className={cn(
-              'top-4 left-7 z-50 block bg-background-subtle max-sm:pl-3 sm:fixed',
-              'transform-gpu transition-all duration-50 ease-linear',
-              logoTransformY >= 85 &&
-                'top-2.5 text-muted-foreground hover:text-foreground',
-            )}
+            className={cn('left-7 z-50 block max-sm:pl-3 sm:fixed')}
+            style={{
+              top: `calc(${logoTransformY}px)`,
+            }}
           >
             <DeepcrawlLogo
               href="/"

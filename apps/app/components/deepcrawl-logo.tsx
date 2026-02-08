@@ -19,29 +19,55 @@ export function DeepcrawlLogoText({
   );
 }
 
-export interface DeepcrawlLogoProps
-  extends Omit<React.ComponentProps<typeof Link>, 'href'> {
+export interface DeepcrawlLogoLinkProps
+  extends Omit<
+    React.ComponentProps<typeof Link>,
+    'children' | 'className' | 'href'
+  > {
+  asChild?: false;
   href?: string;
-  asChild?: boolean;
   className?: string;
+  children?: React.ReactNode;
 }
 
-export function DeepcrawlLogo({
-  className,
-  href = '/',
-  asChild = false,
-  children = brandName,
-  ...props
-}: DeepcrawlLogoProps) {
-  const Comp = asChild ? Slot : href ? Link : 'span';
+export interface DeepcrawlLogoAsChildProps
+  extends Omit<React.ComponentProps<typeof Slot>, 'children' | 'className'> {
+  asChild: true;
+  className?: string;
+  children: React.ReactElement;
+}
+
+export type DeepcrawlLogoProps =
+  | DeepcrawlLogoLinkProps
+  | DeepcrawlLogoAsChildProps;
+
+export function DeepcrawlLogo({ className, ...props }: DeepcrawlLogoProps) {
+  const mergedClassName = cn(DeepcrawlLogoClassNames, className);
+
+  if (props.asChild) {
+    const { asChild: _asChild, children, ...slotProps } = props;
+
+    return (
+      <Slot className={mergedClassName} {...slotProps}>
+        {children}
+      </Slot>
+    );
+  }
+
+  const {
+    asChild: _asChild,
+    href = '/',
+    children = brandName,
+    ...linkProps
+  } = props;
+
+  if (!href) {
+    return <span className={mergedClassName}>{children}</span>;
+  }
 
   return (
-    <Comp
-      className={cn(DeepcrawlLogoClassNames, className)}
-      href={href}
-      {...props}
-    >
+    <Link className={mergedClassName} href={href} {...linkProps}>
       {children}
-    </Comp>
+    </Link>
   );
 }

@@ -20,7 +20,7 @@ export function PageContainer({
     <main
       {...rest}
       className={cn(
-        'flex flex-col gap-4 pb-6 sm:gap-6 xl:pb-8 2xl:pb-10',
+        'flex h-full min-h-svh flex-col gap-4 pb-6 sm:gap-6 xl:pb-8 2xl:pb-10',
         baseContainerCN,
         className,
       )}

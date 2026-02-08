@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import '@deepcrawl/ui/globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { DeployAttributionBanner } from '@/components/deploy-attribution-banner';
 import { Providers } from '@/components/providers';
 import { META_THEME_COLORS, siteConfig } from '@/lib/site-config';
 
@@ -103,6 +104,7 @@ export default function RootLayout({
         className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col antialiased`}
         suppressHydrationWarning
       >
+        <DeployAttributionBanner />
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />

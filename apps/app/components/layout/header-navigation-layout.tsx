@@ -6,6 +6,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { cloneElement, useMemo } from 'react';
 import AppNavTabs from '@/components/app-nav-tabs';
 import type { NavigationMode } from '@/components/providers';
+import { useDeployAttributionBannerOffsetPx } from '../deploy-attribution-banner';
 import type { SiteHeaderProps } from '../site-header';
 
 interface HeaderNavigationLayoutProps {
@@ -39,10 +40,20 @@ export function HeaderNavigationLayout({
   SiteHeaderSlot,
   hideAuthEntries,
 }: HeaderNavigationLayoutProps) {
+  const bannerOffset = useDeployAttributionBannerOffsetPx({
+    assumeRendered: true,
+  });
+
   const y = useScrollPosition(60);
-  const navX = useRange(y, 0, 35, 0, 85);
-  const logoTransformY = useRange(y, 0, 35, 0, 85);
-  const logoScale = useRange(y, 0, 35, 1, 0.85);
+  const navX = useRange(y, 0, 50 + bannerOffset, 0, 85);
+  const logoTransformY = useRange(
+    y,
+    0,
+    50 + bannerOffset,
+    20 + bannerOffset,
+    9,
+  );
+  const logoScale = useRange(y, 0, 50 + bannerOffset, 1, 0.85);
 
   const clonedHeader = cloneElement(
     SiteHeaderSlot as ReactElement<SiteHeaderProps>,
