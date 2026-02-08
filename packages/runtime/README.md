@@ -96,7 +96,7 @@ It writes/updates:
 - `apps/app/.env.example`
 - `apps/workers/auth/.dev.vars.example`
 - `apps/workers/v0/.dev.vars.example`
-- `env/.env.example` (single source template for local dev)
+- `env/.env.example` (single-source template for local dev)
 - `env/.vars.example` (Wrangler vars template for local dev)
 
 ### Bootstrap local env + Wrangler vars

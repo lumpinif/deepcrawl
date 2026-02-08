@@ -268,7 +268,7 @@ Optional inputs:
 
 The command prints a JWT you can attach as:
 
-```
+```http
 Authorization: Bearer <token>
 ```
 

@@ -194,6 +194,10 @@
       "detail": "Build the JS/TS SDK package (same as CI build step)",
       "type": "shell",
       "command": "pnpm sdk-ts:build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -211,6 +215,10 @@
       "detail": "Run JS/TS SDK tests once (same as CI test step)",
       "type": "shell",
       "command": "pnpm --filter deepcrawl test -- --run",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
       "options": {
         "cwd": "${workspaceFolder}"
       },

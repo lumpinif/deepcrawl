@@ -111,7 +111,6 @@ function computeCanRenderBanner(): boolean {
   }
 
   const currentApex = getApexDomainFromHostname(window.location.hostname);
-  console.log('🚀 ~ computeShouldShowBanner ~ currentApex:', currentApex);
   if (!currentApex) {
     return false;
   }

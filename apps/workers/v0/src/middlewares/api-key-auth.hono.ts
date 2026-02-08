@@ -3,7 +3,42 @@ import { resolveBetterAuthApiBaseUrl } from '@deepcrawl/auth/utils/better-auth-u
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings } from '@/lib/context';
 import { resolveAuthMode } from '@/utils/auth-mode';
-import { logDebug } from '@/utils/loggers';
+import { logDebug, logWarn } from '@/utils/loggers';
+
+interface AuthWorkerLike {
+  getSessionWithAPIKey(apiKey: string): Promise<Session | undefined>;
+}
+
+function isAuthWorkerLike(value: unknown): value is AuthWorkerLike {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as Record<string, unknown>).getSessionWithAPIKey ===
+      'function'
+  );
+}
+
+function normalizeApiKey(value: unknown): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function extractApiKeyFromAuthorizationHeader(
+  authorization: string | undefined,
+): string | null {
+  if (!authorization) {
+    return null;
+  }
+
+  // Per RFC 7235, auth scheme comparison is case-insensitive.
+  const match = authorization.match(/^Bearer\s+(.+)$/i);
+  const token = match?.[1]?.trim();
+  return token && token.length > 0 ? token : null;
+}
 
 export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
@@ -12,11 +47,7 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       return next();
     }
 
-    if (
-      c.get('session') ||
-      c.get('session')?.session ||
-      c.get('session')?.user
-    ) {
+    if (c.get('session')) {
       logDebug('✅ Skipping [apiKeyAuthMiddleware] Session found');
       return next();
     }
@@ -25,7 +56,9 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
     const xApiKey = c.req.header('x-api-key');
     const authHeader = c.req.header('authorization');
 
-    const apiKey = xApiKey ?? authHeader?.split(' ')[1];
+    const apiKey =
+      normalizeApiKey(xApiKey) ??
+      extractApiKeyFromAuthorizationHeader(authHeader);
 
     logDebug('🔑 API key provided:', apiKey);
 
@@ -40,24 +73,20 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       let sessionData: Session | undefined;
 
       // First, try using the service binding RPC call
-      const authWorker = (
-        c.env as unknown as {
-          AUTH_WORKER?: {
-            getSessionWithAPIKey?: (key: string) => Promise<unknown>;
-          };
-        }
+      // AUTH_WORKER is an optional binding in template deployments.
+      // Better Auth can run in the dashboard (Next.js) instead of a dedicated auth worker,
+      // so we treat the service binding as a best-effort optimization.
+      const authWorkerCandidate = (
+        c.env as unknown as { AUTH_WORKER?: unknown }
       ).AUTH_WORKER;
-
-      if (typeof authWorker?.getSessionWithAPIKey === 'function') {
+      if (isAuthWorkerLike(authWorkerCandidate)) {
         try {
           logDebug(
             '🔄 Attempting RPC call to AUTH_WORKER.getSessionWithAPIKey',
           );
           const rpcStartTime = performance.now();
 
-          sessionData = (await authWorker.getSessionWithAPIKey(
-            apiKey,
-          )) as Session;
+          sessionData = await authWorkerCandidate.getSessionWithAPIKey(apiKey);
 
           const rpcEndTime = performance.now();
           logDebug(
@@ -79,9 +108,15 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       // when the api-key plugin is enabled with `enableSessionForAPIKeys`.
       if (!sessionData) {
         try {
-          const authApiBaseUrl = resolveBetterAuthApiBaseUrl(
-            c.env.BETTER_AUTH_URL,
-          );
+          const betterAuthUrl = c.env.BETTER_AUTH_URL;
+          if (typeof betterAuthUrl !== 'string' || !betterAuthUrl.trim()) {
+            logWarn(
+              '⚠️ [apiKeyAuthMiddleware] BETTER_AUTH_URL is missing; skipping Better Auth get-session fetch fallback.',
+            );
+            return next();
+          }
+
+          const authApiBaseUrl = resolveBetterAuthApiBaseUrl(betterAuthUrl);
           const request = new Request(`${authApiBaseUrl}/get-session`, {
             method: 'GET',
             headers: {

@@ -24,7 +24,7 @@ export function buildDeepcrawlHeaders(requestHeaders: HeadersInit): Headers {
 
   const JWT_TOKEN = process.env.AUTH_JWT_TOKEN;
   if (!JWT_TOKEN) {
-    return nextHeaders;
+    throw new Error('AUTH_JWT_TOKEN must be set when AUTH_MODE is "jwt".');
   }
 
   nextHeaders.set('authorization', `Bearer ${JWT_TOKEN}`);

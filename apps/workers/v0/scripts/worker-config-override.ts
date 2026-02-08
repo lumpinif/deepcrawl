@@ -52,11 +52,15 @@ const keysToEnsure = Array.from(exampleKeys).filter(
   (key) => !(varsKeys.has(key) || skipKeys.has(key)),
 );
 
-const ensureFields = (source: string, interfaceName: string) => {
-  const pattern = new RegExp(
-    `interface ${interfaceName} \\{([\\s\\S]*?)\\n\\t\\}`,
-    'm',
-  );
+const ensureFields = (
+  source: string,
+  interfaceName: 'Env' | 'ProductionEnv',
+) => {
+  const patterns: Record<'Env' | 'ProductionEnv', RegExp> = {
+    Env: /interface Env \{([\s\S]*?)\n\t\}/m,
+    ProductionEnv: /interface ProductionEnv \{([\s\S]*?)\n\t\}/m,
+  };
+  const pattern = patterns[interfaceName];
   const match = source.match(pattern);
   if (!match) {
     return source;

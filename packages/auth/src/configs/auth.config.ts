@@ -36,6 +36,7 @@ import {
   sendEmail,
   validateEmailConfig,
 } from '../utils/email';
+import { logWarn } from '../utils/logger';
 import {
   APP_COOKIE_PREFIX,
   COOKIE_CACHE_CONFIG,
@@ -80,7 +81,7 @@ const getBaseURL = (envUrl: string | undefined): string => {
 };
 
 function normalizeCookieDomain(raw: string): string {
-  return raw.trim().replace(/^\./, '');
+  return raw.trim().replace(/^\./, '').toLowerCase();
 }
 
 function isCookieDomainSuffixOfHost(
@@ -110,7 +111,7 @@ function inferCookieDomain(params: {
       return normalized;
     }
 
-    console.warn(
+    logWarn(
       `⚠️ [auth] AUTH_COOKIE_DOMAIN="${normalized}" is not a suffix of the cookie setter host "${setterHost}". Cross-subdomain cookies disabled.`,
     );
     return null;

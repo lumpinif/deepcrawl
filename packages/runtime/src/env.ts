@@ -211,7 +211,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     group: 'Upstash',
     targets: ['worker-v0'],
     description: 'Upstash Redis REST URL (used by API rate limiting).',
-    example: '****',
+    example: '',
     secret: true,
   },
   {
@@ -219,7 +219,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     group: 'Upstash',
     targets: ['worker-v0'],
     description: 'Upstash Redis REST token (used by API rate limiting).',
-    example: '****',
+    example: '',
     secret: true,
   },
 

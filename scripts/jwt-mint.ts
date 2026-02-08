@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { sign } from 'hono/jwt';
 
-type Inputs = {
+interface Inputs {
   secret?: string;
   sub?: string;
   email?: string;
@@ -14,7 +14,7 @@ type Inputs = {
   expiresInHours?: number;
   writeDevVars?: boolean;
   writeDevVarsProduction?: boolean;
-};
+}
 
 const OUTPUT_DIVIDER = '----------------------------------------';
 const WARNING_DIVIDER = '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
@@ -105,56 +105,6 @@ const promptInputs = async (seed: Inputs): Promise<Inputs> => {
     }
   }
 
-  if (secret) {
-    const repoRoot = process.cwd();
-    const devVarsPath = join(repoRoot, 'apps', 'workers', 'v0', '.dev.vars');
-    const prodVarsPath = join(
-      repoRoot,
-      'apps',
-      'workers',
-      'v0',
-      '.dev.vars.production',
-    );
-
-    const updates: Record<string, string> = {
-      JWT_SECRET: secret,
-    };
-
-    if (seed.issuer) {
-      updates.JWT_ISSUER = seed.issuer;
-    }
-
-    if (seed.audience) {
-      updates.JWT_AUDIENCE = seed.audience;
-    }
-
-    let writeDev = seed.writeDevVars;
-    if (writeDev === undefined) {
-      const answer = await rl.question(
-        `\n[ENV] Write JWT_SECRET to ${devVarsPath}? (Y/n): `,
-      );
-      writeDev = resolveYes(answer);
-    }
-
-    if (writeDev) {
-      upsertEnvFile(devVarsPath, updates);
-      process.stdout.write(`Updated ${devVarsPath}\n`);
-    }
-
-    let writeProd = seed.writeDevVarsProduction;
-    if (writeProd === undefined) {
-      const answer = await rl.question(
-        `\n[ENV] Write JWT_SECRET to ${prodVarsPath}? (Y/n): `,
-      );
-      writeProd = resolveYes(answer);
-    }
-
-    if (writeProd) {
-      upsertEnvFile(prodVarsPath, updates);
-      process.stdout.write(`Updated ${prodVarsPath}\n`);
-    }
-  }
-
   let sub = seed.sub ?? '';
   while (!sub.trim()) {
     sub = await rl.question('Subject (sub, user id): ');
@@ -175,6 +125,52 @@ const promptInputs = async (seed: Inputs): Promise<Inputs> => {
   const expiresInput =
     seed.expiresInHours ??
     (await rl.question('Expires in hours (default 24): '));
+
+  if (secret) {
+    const repoRoot = process.cwd();
+    const devVarsPath = join(repoRoot, 'apps', 'workers', 'v0', '.dev.vars');
+    const prodVarsPath = join(
+      repoRoot,
+      'apps',
+      'workers',
+      'v0',
+      '.dev.vars.production',
+    );
+
+    const updates: Record<string, string> = { JWT_SECRET: secret };
+    if (issuer?.trim()) {
+      updates.JWT_ISSUER = issuer.trim();
+    }
+    if (audience?.trim()) {
+      updates.JWT_AUDIENCE = audience.trim();
+    }
+
+    let writeDev = seed.writeDevVars;
+    if (writeDev === undefined) {
+      const answer = await rl.question(
+        `\n[ENV] Write JWT vars to ${devVarsPath}? (Y/n): `,
+      );
+      writeDev = resolveYes(answer);
+    }
+
+    if (writeDev) {
+      upsertEnvFile(devVarsPath, updates);
+      process.stdout.write(`Updated ${devVarsPath}\n`);
+    }
+
+    let writeProd = seed.writeDevVarsProduction;
+    if (writeProd === undefined) {
+      const answer = await rl.question(
+        `\n[ENV] Write JWT vars to ${prodVarsPath}? (Y/n): `,
+      );
+      writeProd = resolveYes(answer);
+    }
+
+    if (writeProd) {
+      upsertEnvFile(prodVarsPath, updates);
+      process.stdout.write(`Updated ${prodVarsPath}\n`);
+    }
+  }
 
   rl.close();
 
@@ -325,10 +321,10 @@ const run = async () => {
 
   rl.close();
 
-  // Env file updates for worker secrets are handled right after the JWT secret is set.
+  // Env file updates for worker vars are handled in `promptInputs()`.
 };
 
 run().catch((error) => {
-  console.error(`❌ Failed to mint JWT: ${error.message}`);
+  process.stderr.write(`❌ Failed to mint JWT: ${error.message}\n`);
   process.exit(1);
 });

@@ -41,7 +41,7 @@ export interface NavigationItem {
   isExternal?: boolean;
 }
 
-export const NAVGATION_ITEMS: NavigationItem[] = [
+export const NAVIGATION_ITEMS: NavigationItem[] = [
   {
     label: 'Playground',
     title: 'Home',
@@ -77,19 +77,21 @@ export const NAVGATION_ITEMS: NavigationItem[] = [
   },
 ];
 
+interface NavigationItemsOptions {
+  hideAuthEntries?: boolean;
+}
+
 export const getNavigationItems = ({
   hideAuthEntries,
-}: {
-  hideAuthEntries?: boolean;
-} = {}) => {
+}: NavigationItemsOptions = {}) => {
   if (!hideAuthEntries) {
-    return NAVGATION_ITEMS;
+    return NAVIGATION_ITEMS;
   }
 
   const accountRoute = getAppRoute('/account');
   const apiKeysRoute = getAppRoute('/api-keys');
 
-  return NAVGATION_ITEMS.filter(
+  return NAVIGATION_ITEMS.filter(
     (item) => item.url !== accountRoute && item.url !== apiKeysRoute,
   );
 };

@@ -5,7 +5,7 @@ import type { AppBindings } from '@/lib/context';
 import { resolveAuthMode } from '@/utils/auth-mode';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
 
-type JwtPayload = {
+interface JwtPayload {
   sub?: string;
   email?: string;
   name?: string;
@@ -16,7 +16,7 @@ type JwtPayload = {
   jti?: string;
   iss?: string;
   aud?: string | string[];
-};
+}
 
 const getBearerToken = (authHeader?: string | null) => {
   if (!authHeader) {
@@ -85,11 +85,7 @@ export const jwtAuthMiddleware = createMiddleware<AppBindings>(
       return next();
     }
 
-    if (
-      c.get('session') ||
-      c.get('session')?.session ||
-      c.get('session')?.user
-    ) {
+    if (c.get('session')) {
       logDebug('✅ Skipping [jwtAuthMiddleware] Session found');
       return next();
     }

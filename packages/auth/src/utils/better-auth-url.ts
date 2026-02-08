@@ -21,7 +21,12 @@ const API_AUTH_PATH = '/api/auth';
  * - `https://example.com/api/auth/get-session` => `https://example.com/api/auth`
  */
 export function resolveBetterAuthApiBaseUrl(rawUrl: string): string {
-  const trimmed = stripTrailingSlashes(rawUrl.trim());
+  const cleaned = rawUrl.trim();
+  if (!cleaned) {
+    throw new Error('Better Auth base URL is required.');
+  }
+
+  const trimmed = stripTrailingSlashes(cleaned);
 
   // Match `/api/auth` as a path segment (not `/api/authentication`).
   const match = trimmed.match(/\/api\/auth(?=$|\/|\?|#)/);

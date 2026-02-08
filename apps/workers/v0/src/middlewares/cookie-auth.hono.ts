@@ -60,17 +60,21 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
       return next();
     }
 
-    if (
-      c.get('session') ||
-      c.get('session')?.session ||
-      c.get('session')?.user
-    ) {
+    if (c.get('session')) {
       logDebug('✅ Skipping [checkCookieAuthMiddleware] Session found');
       return next();
     }
 
     const serviceFetcher = c.var.serviceFetcher;
     const customFetcher = c.var.customFetcher;
+    const betterAuthUrl = c.env.BETTER_AUTH_URL;
+
+    if (typeof betterAuthUrl !== 'string' || !betterAuthUrl.trim()) {
+      logWarn(
+        '⚠️ [checkCookieAuthMiddleware] BETTER_AUTH_URL is missing; skipping cookie auth.',
+      );
+      return next();
+    }
 
     try {
       // 1. Try Better Auth client first
@@ -98,7 +102,7 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
       }
 
       // 2. Fallback to direct API calls
-      const authApiBaseUrl = resolveBetterAuthApiBaseUrl(c.env.BETTER_AUTH_URL);
+      const authApiBaseUrl = resolveBetterAuthApiBaseUrl(betterAuthUrl);
       const authUrl = `${authApiBaseUrl}/get-session`;
       const request = new Request(authUrl, {
         headers: new Headers(c.req.raw.headers),

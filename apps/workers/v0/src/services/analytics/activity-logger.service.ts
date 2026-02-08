@@ -47,7 +47,7 @@ export class ActivityLogger {
     const logData = {
       path,
       id: requestId,
-      userId: this.userId ?? null,
+      userId: this.userId,
       success,
       cached,
       requestTimestamp,

@@ -1,6 +1,6 @@
 import { OFFICIAL_APP_URL } from '@deepcrawl/runtime/urls';
 import { brandName } from './brand';
-import { NAVGATION_ITEMS } from './navigation-config';
+import { NAVIGATION_ITEMS } from './navigation-config';
 
 export const siteConfig = {
   name: brandName,
@@ -11,7 +11,7 @@ export const siteConfig = {
     twitter: 'https://twitter.com/felixlu1018',
     github: 'https://github.com/lumpinif/deepcrawl',
   },
-  navItems: NAVGATION_ITEMS,
+  navItems: NAVIGATION_ITEMS,
 };
 
 export const META_THEME_COLORS = {

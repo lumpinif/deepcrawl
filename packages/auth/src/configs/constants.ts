@@ -1,11 +1,11 @@
 import { toOrigin as toOriginUrl, toWwwOrigin } from '@deepcrawl/runtime/urls';
 
-export type ResolveTrustedOriginsInput = {
+export interface ResolveTrustedOriginsInput {
   appURL: string;
   authURL: string;
   apiURL?: string;
   isDevelopment?: boolean;
-};
+}
 
 const LOCAL_DEV_ORIGINS = [
   // Dashboard
