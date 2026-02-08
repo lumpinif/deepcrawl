@@ -7,6 +7,9 @@ on:
 
 jobs:
   sync:
+    concurrency:
+      group: sync-template-main
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -26,5 +29,4 @@ jobs:
       # not via manual commits on template/main.
       - name: Push main -> template/main
         run: |
-          git push origin HEAD:refs/heads/template/main --force
-
+          git push origin HEAD:refs/heads/template/main --force-with-lease
