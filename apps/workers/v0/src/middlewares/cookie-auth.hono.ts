@@ -1,6 +1,8 @@
 import type { Session } from '@deepcrawl/auth/types';
+import { resolveBetterAuthApiBaseUrl } from '@deepcrawl/auth/utils/better-auth-url';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings, AppContext, AppVariables } from '@/lib/context';
+import { resolveAuthMode } from '@/utils/auth-mode';
 import { logDebug, logError, logWarn } from '@/utils/loggers';
 import { getAuthClient } from './client.auth';
 
@@ -54,17 +56,25 @@ const fetchWithFallback = async (
 export const cookieAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     const start = performance.now();
-    if (
-      c.get('session') ||
-      c.get('session')?.session ||
-      c.get('session')?.user
-    ) {
+    if (resolveAuthMode(c.env.AUTH_MODE) !== 'better-auth') {
+      return next();
+    }
+
+    if (c.get('session')) {
       logDebug('✅ Skipping [checkCookieAuthMiddleware] Session found');
       return next();
     }
 
     const serviceFetcher = c.var.serviceFetcher;
     const customFetcher = c.var.customFetcher;
+    const betterAuthUrl = c.env.BETTER_AUTH_URL;
+
+    if (typeof betterAuthUrl !== 'string' || !betterAuthUrl.trim()) {
+      logWarn(
+        '⚠️ [checkCookieAuthMiddleware] BETTER_AUTH_URL is missing; skipping cookie auth.',
+      );
+      return next();
+    }
 
     try {
       // 1. Try Better Auth client first
@@ -92,7 +102,8 @@ export const cookieAuthMiddleware = createMiddleware<AppBindings>(
       }
 
       // 2. Fallback to direct API calls
-      const authUrl = `${c.env.BETTER_AUTH_URL}/api/auth/get-session`;
+      const authApiBaseUrl = resolveBetterAuthApiBaseUrl(betterAuthUrl);
+      const authUrl = `${authApiBaseUrl}/get-session`;
       const request = new Request(authUrl, {
         headers: new Headers(c.req.raw.headers),
       });

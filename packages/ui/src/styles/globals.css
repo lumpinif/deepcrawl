@@ -148,10 +148,11 @@
   html,
   body {
     scroll-behavior: smooth;
+    overscroll-behavior: none;
   }
 
   body {
-    @apply bg-background text-foreground min-h-[100dvh];
+    @apply bg-background text-foreground min-h-dvh;
   }
 
   html {
@@ -210,7 +211,7 @@
     @apply border-border outline-ring/30;
   }
   body {
-    @apply bg-background text-foreground min-h-[100dvh];
+    @apply bg-background text-foreground min-h-dvh;
   }
 }
 

@@ -13,10 +13,12 @@ import { DashboardLayoutSkeleton } from '@/components/playground/playground-skel
 import type { NavigationMode } from '@/components/providers';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
+import { getAuthMode, isBetterAuthMode } from '@/lib/auth-mode';
+import { siteConfig } from '@/lib/site-config';
 import { authGetSession } from '@/query/auth-query.server';
 
-const title = 'Dashboard';
-const description = 'Dashboard and Playground for Deepcrawl';
+const title = 'Dashboard & Playground';
+const description = `Dashboard & Playground for ${siteConfig.name}`;
 
 export const metadata: Metadata = {
   title,
@@ -52,13 +54,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 async function DashboardLayoutContent({ children }: { children: ReactNode }) {
   // KNOWN ISSUE: DO NOT FETCH listDeviceSessions FROM ANY LAYOUT SERVER COMPONENT WHICH IS BREAKING MULTI-SESSION DATA FETCHING FROM CLIENT COMPONENT AND SESSION REVOKING ISSUES
-  const currentSession = await authGetSession().catch(() => {
-    // Auth failed - redirect to login
-    throw redirect('/login');
-  });
+  const authMode = getAuthMode();
+  const isBetterAuth = isBetterAuthMode();
+  const currentSession = isBetterAuth
+    ? await authGetSession().catch(() => {
+        // Auth failed - redirect to login
+        throw redirect('/login');
+      })
+    : null;
 
   // Redirect to login if no session
-  if (!currentSession?.user) {
+  if (isBetterAuth && !currentSession?.user) {
     redirect('/login');
   }
 
@@ -88,9 +94,10 @@ async function DashboardLayoutContent({ children }: { children: ReactNode }) {
         defaultOpen={defaultSidebarOpen}
         defaultWidth={sidebarWidth}
       >
-        <AppSidebar />
+        <AppSidebar hideAuthEntries={!isBetterAuth} />
         <SidebarInset className={defaultInsetClassname}>
           <SiteHeader
+            authMode={authMode}
             enableThemeToggle={false}
             navigationMode={navigationMode}
             session={currentSession}
@@ -113,11 +120,13 @@ async function DashboardLayoutContent({ children }: { children: ReactNode }) {
         navigationMode={navigationMode}
         SiteHeaderSlot={
           <SiteHeader
+            authMode={authMode}
             enableThemeToggle={false}
             navigationMode={navigationMode}
             session={currentSession}
           />
         }
+        shouldHideAuthEntries={!isBetterAuth}
       >
         {children}
       </HeaderNavigationLayout>

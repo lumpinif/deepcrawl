@@ -1,37 +1,62 @@
-export const PROD_APP_URL = 'https://deepcrawl.dev';
-export const PROD_AUTH_WORKER_URL = 'https://auth.deepcrawl.dev';
+import { toOrigin as toOriginUrl, toWwwOrigin } from '@deepcrawl/runtime/urls';
 
-export const ALLOWED_ORIGINS = [
-  // Production origins
-  PROD_APP_URL,
-  PROD_AUTH_WORKER_URL,
-  'https://deepcrawl.dev',
-  'https://www.deepcrawl.dev',
-  'https://api.deepcrawl.dev',
-  'https://*.deepcrawl.dev',
-  // Add explicit wildcard support for all deepcrawl.dev subdomains
-  '*.deepcrawl.dev',
+export interface ResolveTrustedOriginsInput {
+  appURL: string;
+  authURL: string;
+  apiURL?: string;
+  isDevelopment?: boolean;
+}
 
-  // Local development origins
-  'http://localhost:3000', // Dashboard
-  'https://localhost:3000', // Dashboard HTTPS
-  'http://127.0.0.1:3000', // Dashboard alternative
-  'http://localhost:8787', // Auth worker
-  'http://127.0.0.1:8787', // Auth worker alternative
-  'http://localhost:8080', // V0 worker
-  'http://127.0.0.1:8080', // V0 worker alternative
-];
+const LOCAL_DEV_ORIGINS = [
+  // Dashboard
+  'http://localhost:3000',
+  'https://localhost:3000',
+  'http://127.0.0.1:3000',
+  // Auth worker
+  'http://localhost:8787',
+  'http://127.0.0.1:8787',
+  // V0 worker
+  'http://localhost:8080',
+  'http://127.0.0.1:8080',
+] as const;
 
-export const DEVELOPMENT_ORIGINS = [
-  // Local development origins
-  'http://localhost:3000', // Dashboard
-  'https://localhost:3000', // Dashboard HTTPS
-  'http://127.0.0.1:3000', // Dashboard alternative
-  'http://localhost:8787', // Auth worker
-  'http://127.0.0.1:8787', // Auth worker alternative
-  'http://localhost:8080', // V0 worker
-  'http://127.0.0.1:8080', // V0 worker alternative
-];
+export function resolveTrustedOrigins(
+  input: ResolveTrustedOriginsInput,
+): string[] {
+  const { appURL, authURL, apiURL, isDevelopment = false } = input;
+
+  const origins = new Set<string>();
+
+  const addOrigin = (raw: string, opts?: { withWww?: boolean }) => {
+    const origin = toOriginUrl(raw);
+    if (!origin) {
+      return;
+    }
+
+    origins.add(origin);
+
+    if (opts?.withWww) {
+      const www = toWwwOrigin(origin);
+      if (www) {
+        origins.add(www);
+      }
+    }
+  };
+
+  addOrigin(appURL, { withWww: true });
+  addOrigin(authURL);
+  if (apiURL) {
+    addOrigin(apiURL);
+  }
+
+  if (isDevelopment) {
+    for (const origin of LOCAL_DEV_ORIGINS) {
+      origins.add(origin);
+    }
+  }
+
+  return Array.from(origins);
+}
 
 export const APP_COOKIE_PREFIX = 'deepcrawl';
 
@@ -45,15 +70,6 @@ export const COOKIE_CACHE_CONFIG = {
 export const API_KEY_CACHE_CONFIG = {
   TTL_SECONDS: COOKIE_CACHE_CONFIG.maxAge, // sync with cookie cache config
   KEY_PREFIX: 'api_key_session:',
-} as const;
-
-/**
- * This is better-auth built-in rate limiting only used for API Keys validation, and we implement cache for API Keys sessions
- * Currently same as the user-scope free rate limit in backend services worker, but it is better to have max requests higher than the highest service rate limit
- */
-export const BA_API_KEY_RATE_LIMIT = {
-  maxRequests: 20,
-  timeWindow: 1000 * 60, // 60 seconds
 } as const;
 
 // BUG: OAUTH PROXY CURRENTLY DOES NOT WORK IN LOCALHOST WITH AUTH WORKER

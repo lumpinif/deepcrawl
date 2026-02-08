@@ -1,5 +1,7 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { redirect } from 'next/navigation';
 import { PageContainer, PageHeader } from '@/components/page-elements';
+import { isBetterAuthMode } from '@/lib/auth-mode';
 import { getQueryClient } from '@/query/query.client';
 import {
   authListUserAccountsQueryOptions,
@@ -15,6 +17,10 @@ import { UserAvatarCard } from './components/user-avatar-card';
 import { UserNameCard } from './components/user-name-card';
 
 export default function AccountPage() {
+  if (!isBetterAuthMode()) {
+    redirect('/app');
+  }
+
   const queryClient = getQueryClient();
 
   // Don't prefetch current session or organization as they can return null

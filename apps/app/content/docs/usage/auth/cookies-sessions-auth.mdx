@@ -11,7 +11,11 @@ Deepcrawl uses [better-auth](https://better-auth.com/) to power dashboard sessio
 - The session carries the same roles and rate limits as your dashboard account, and it respects multi-session switching if you belong to multiple organizations.
 
 <Callout type="info">
-If you are self-hosting, configure your worker’s `BETTER_AUTH_URL` and cookie domain so dashboard and API sit under the same parent domain (for example, `app.example.com` and `api.example.com`).
+Cookie sessions only work when your dashboard and API are under the same parent
+domain (for example, `app.example.com` and `api.example.com`). If your
+deployment uses different apex domains (common with free `*.vercel.app` +
+`*.workers.dev`), use API keys (the dashboard may create a device-scoped
+`PLAYGROUND_API_KEY` for its own API calls).
 </Callout>
 
 ## Try it in the browser

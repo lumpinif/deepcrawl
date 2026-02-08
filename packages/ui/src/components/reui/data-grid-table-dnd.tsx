@@ -47,6 +47,8 @@ function DataGridTableDndHeader<TData>({
 }: {
   header: Header<TData, unknown>;
 }) {
+  'use no memo';
+
   const { props } = useDataGrid();
   const { column } = header;
 
@@ -100,6 +102,8 @@ function DataGridTableDndHeader<TData>({
 }
 
 function DataGridTableDndCell<TData>({ cell }: { cell: Cell<TData, unknown> }) {
+  'use no memo';
+
   const { isDragging, setNodeRef, transform, transition } = useSortable({
     id: cell.column.id,
   });
@@ -125,6 +129,8 @@ function DataGridTableDnd<TData>({
 }: {
   handleDragEnd: (event: DragEndEvent) => void;
 }) {
+  'use no memo';
+
   const { table, isLoading, props } = useDataGrid();
   const pagination = table.getState().pagination;
 
@@ -148,11 +154,6 @@ function DataGridTableDnd<TData>({
             {table
               .getHeaderGroups()
               .map((headerGroup: HeaderGroup<TData>, index) => {
-                console.log(
-                  'table.getState().columnOrder:',
-                  table.getState().columnOrder,
-                );
-
                 return (
                   <DataGridTableHeadRow headerGroup={headerGroup} key={index}>
                     <SortableContext

@@ -5,23 +5,29 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { NAVGATION_ITEMS } from '@/lib/navigation-config';
+import { getNavigationItems } from '@/lib/navigation-config';
 
 export default function AppNavTabs({
   className,
   transFormX,
+  hideAuthEntries,
 }: {
   className?: string;
   transFormX?: number;
+  hideAuthEntries?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const items = useMemo(
+    () => getNavigationItems({ hideAuthEntries }),
+    [hideAuthEntries],
+  );
 
   // Find the active index based on the current pathname
   const getActiveIndex = useCallback(() => {
-    const index = NAVGATION_ITEMS.findIndex((item) => item.url === pathname);
+    const index = items.findIndex((item) => item.url === pathname);
     return index >= 0 ? index : 0; // Default to first tab if not found
-  }, [pathname]);
+  }, [items, pathname]);
 
   const [activeIndex, setActiveIndex] = useState(getActiveIndex());
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -127,7 +133,7 @@ export default function AppNavTabs({
   // Memoized navigation items to prevent unnecessary re-renders
   const renderedTabs = useMemo(
     () =>
-      NAVGATION_ITEMS.map((item, index) => (
+      items.map((item, index) => (
         <Link
           className={`h-8 cursor-pointer border-none bg-transparent transition-colors duration-300 ${
             index === activeIndex ? 'text-primary' : 'text-muted-foreground'
@@ -146,6 +152,7 @@ export default function AppNavTabs({
       )),
     [
       activeIndex,
+      items,
       setTabRef,
       handleMouseEnter,
       handleMouseLeave,

@@ -1,26 +1,42 @@
-# Used by Wrangler in local development
+# Used by Wrangler in local development (secrets only)
 # In production, these should be set as Cloudflare Worker Secrets.
+# Non-secrets are configured via Wrangler vars (see wrangler.jsonc).
 
-BETTER_AUTH_URL=http://localhost:8787
+# Auth
+# Better Auth secret.
 BETTER_AUTH_SECRET=
 
+# Postgres connection string (Neon, etc).
 DATABASE_URL=
 
-# Github
-GITHUB_CLIENT_ID=
+# JWT
+# JWT secret used by the API worker when AUTH_MODE=jwt.
+JWT_SECRET=
+
+# OAuth
+# GitHub OAuth client secret.
 GITHUB_CLIENT_SECRET=
 
-# Google
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=
+# Google OAuth client secret.
 GOOGLE_CLIENT_SECRET=
 
-# Resend
+# Email
+# Resend API key (optional).
 RESEND_API_KEY=
 
-UPSTASH_REDIS_REST_URL="****"
-UPSTASH_REDIS_REST_TOKEN="****"
+# Upstash
+# Upstash Redis REST URL (used by API rate limiting).
+UPSTASH_REDIS_REST_URL=
 
-# D1
+# Upstash Redis REST token (used by API rate limiting).
+UPSTASH_REDIS_REST_TOKEN=
+
+# Cloudflare
+# Cloudflare account id (for D1 Drizzle CLI).
 CLOUDFLARE_ACCOUNT_ID=
+
+# Cloudflare D1 database id (for D1 Drizzle CLI).
 CLOUDFLARE_DATABASE_ID=
+
+# Cloudflare API token for D1 Drizzle CLI.
 CLOUDFLARE_D1_TOKEN=

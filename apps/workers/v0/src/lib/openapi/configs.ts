@@ -1,3 +1,4 @@
+import { OFFICIAL_API_URL } from '@deepcrawl/runtime/urls';
 import {
   CacheOptionsSchema,
   ExtractedLinksSchema,
@@ -35,9 +36,7 @@ import type {
 } from '@orpc/openapi';
 import { ZodToJsonSchemaConverter } from '@orpc/zod/zod4';
 
-import packageJSON from '../../../package.json' with { type: 'json' };
-
-const API_URL = 'https://api.deepcrawl.dev';
+import packageJSON from '../../../package.json';
 
 export const OpenAPISpecBaseOptions = {
   info: {
@@ -47,7 +46,7 @@ export const OpenAPISpecBaseOptions = {
   security: [{ bearerAuth: [] }],
   servers: [
     {
-      url: API_URL,
+      url: OFFICIAL_API_URL,
       description: 'Deepcrawl Official API server',
     },
   ],

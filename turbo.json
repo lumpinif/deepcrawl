@@ -3,10 +3,14 @@
   "ui": "stream",
   "globalDependencies": ["**/.env*", "**/tsconfig*.json"],
   "globalEnv": [
+    "AUTH_MODE",
+    "AUTH_JWT_TOKEN",
+    "NEXT_PUBLIC_BRAND_NAME",
     "NEXT_PUBLIC_USE_AUTH_WORKER",
     "BETTER_AUTH_URL",
     "NEXT_PUBLIC_BETTER_AUTH_URL",
     "BETTER_AUTH_SECRET",
+    "JWT_SECRET",
     "DATABASE_URL",
     "GITHUB_CLIENT_ID",
     "GITHUB_CLIENT_SECRET",
@@ -59,6 +63,11 @@
       "outputs": [],
       "cache": true
     },
+    "fix": {
+      "dependsOn": ["^fix"],
+      "outputs": [],
+      "cache": true
+    },
     "typecheck": {
       "dependsOn": ["^typecheck"],
       "outputs": [],
@@ -74,6 +83,11 @@
       "persistent": true,
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": []
+    },
+    "cf-typegen": {
+      "dependsOn": ["^cf-typegen"],
+      "outputs": [],
+      "cache": false
     }
   }
 }

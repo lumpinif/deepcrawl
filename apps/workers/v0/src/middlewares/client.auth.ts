@@ -1,4 +1,5 @@
 import { createAuthClientConfig } from '@deepcrawl/auth/configs/auth.client.config';
+import { resolveBetterAuthOriginUrl } from '@deepcrawl/auth/utils/better-auth-url';
 import {
   type BetterAuthClientOptions,
   createAuthClient,
@@ -10,7 +11,8 @@ export function getAuthClient(
   options: BetterAuthClientOptions = {},
 ) {
   const baseAuthClientConfig = createAuthClientConfig({
-    baseURL: c.env.BETTER_AUTH_URL,
+    // createAuthClientConfig() uses basePath `/api/auth`, so keep baseURL origin-like.
+    baseURL: resolveBetterAuthOriginUrl(c.env.BETTER_AUTH_URL),
   });
 
   const headers = new Headers(c.req.raw.headers);

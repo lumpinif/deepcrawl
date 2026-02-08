@@ -1,5 +1,6 @@
 'use client';
 
+import { ensureAbsoluteUrl } from '@deepcrawl/runtime/urls';
 import {
   IconHoverButton,
   IconHoverButtonIcon,
@@ -305,12 +306,8 @@ export function PGResponseArea({ className }: PGResponseAreaProps) {
 
 function normalizeUrl(targetUrl: string) {
   try {
-    if (targetUrl.startsWith('http')) {
-      return new URL(targetUrl).toString();
-    }
-
-    return new URL(`https://${targetUrl}`).toString();
-  } catch (error) {
+    return new URL(ensureAbsoluteUrl(targetUrl)).toString();
+  } catch {
     return targetUrl;
   }
 }

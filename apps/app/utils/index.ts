@@ -1,4 +1,5 @@
 import * as z from 'zod/v4';
+import { brandName } from '@/lib/brand';
 import type { AuthView, AuthViewSegments } from '@/routes/auth';
 
 // Re-export utilities
@@ -71,15 +72,15 @@ export function getSearchParam(paramName: string) {
  */
 export function getAuthViewTitle(authView: AuthView): string {
   const titleMap: Record<AuthView, string> = {
-    login: 'Login to Deepcrawl',
-    signUp: 'Sign Up to Deepcrawl',
-    logout: 'Logout of Deepcrawl',
+    login: `Login to ${brandName}`,
+    signUp: `Sign Up to ${brandName}`,
+    logout: `Logout of ${brandName}`,
     callback: 'Authentication Callback',
     emailOTP: 'Email Verification',
-    magicLink: 'Magic Link to Deepcrawl',
+    magicLink: `Magic Link to ${brandName}`,
     twoFactor: 'Two-Factor Authentication',
-    resetPassword: 'Reset Password for Deepcrawl',
-    forgotPassword: 'Forgot Password for Deepcrawl',
+    resetPassword: `Reset Password for ${brandName}`,
+    forgotPassword: `Forgot Password for ${brandName}`,
     verifyEmail: 'Verify Your Email',
     acceptInvitation: 'Accept Invitation',
     // recoverAccount: 'Recover Account for Deepcrawl',
@@ -116,7 +117,7 @@ export function getAuthViewDescriptionTitle(authView: AuthView): string {
 export function getAuthViewDetailedDescription(authView: AuthView): string {
   const detailedDescriptionMap: Record<AuthView, string> = {
     login: 'Please sign in to your account to continue.',
-    signUp: 'Create a new account to get started with Deepcrawl Dashboard.',
+    signUp: `Create a new account to get started with ${brandName} Playground & Dashboard.`,
     logout: 'You are being logged out of your account.',
     callback: 'Processing your authentication request...',
     emailOTP: 'Enter the verification code sent to your email address.',

@@ -73,7 +73,7 @@ export function ApiKeysPageClient() {
 
   if (error) {
     return (
-      <div className="space-y-6">
+      <PageContainer>
         <Card className="bg-card">
           <CardContent className="pt-6">
             <div className="py-8 text-center">
@@ -83,7 +83,7 @@ export function ApiKeysPageClient() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 

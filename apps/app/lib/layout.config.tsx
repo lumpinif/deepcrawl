@@ -41,7 +41,7 @@ export const docsOptions: DocsLayoutProps = {
       children: (
         <Button asChild className="w-full" variant="outline">
           <Link className="w-full" href="/app">
-            Go to Dashboard
+            Go to Playground
           </Link>
         </Button>
       ),

@@ -27,8 +27,9 @@ description: Common issues and diagnostics checklist.
 - **Schema drift**: Updating `packages/contracts` without regenerating the SDK
   or redeploying Workers leads to type mismatches. Bump both in the same branch
   and run affected builds.
-- **Rate limit surprises**: Development accounts hit Upstash quotas quickly.
-  Check Redis logs and back off polling intervals or request an increased plan.
+- **Rate limit surprises**: The API Worker (v0) uses Upstash (`@upstash/ratelimit`)
+  for API rate limiting. Development accounts can hit Upstash quotas quickly.
+  If you don't want rate limiting in dev, set `ENABLE_API_RATE_LIMIT=false`.
 - **Edge caching confusion**: Cloudflare caches worker responses aggressively.
   Disable caching with preview bindings when testing or explicitly purge via the
   Cloudflare dashboard.

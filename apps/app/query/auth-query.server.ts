@@ -11,12 +11,17 @@ import type {
 } from '@deepcrawl/auth/types';
 import { headers } from 'next/headers';
 import type { ActiveOrganization } from '@/lib/auth.client-types';
+import { isBetterAuthMode } from '@/lib/auth-mode';
 
 /**
  * Auth Server API Call:
  * the current authenticated session
  */
 export async function authGetSession(): Promise<Session | null> {
+  if (!isBetterAuthMode()) {
+    return null;
+  }
+
   const auth = getAuth();
   const requestHeaders = await headers();
 
@@ -32,6 +37,10 @@ export async function authGetSession(): Promise<Session | null> {
  * @description listSessions returns all active sessions for the current user across all devices
  */
 export async function authListSessions(): Promise<ListSessions> {
+  if (!isBetterAuthMode()) {
+    return [];
+  }
+
   const auth = getAuth();
   const requestHeaders = await headers();
 
@@ -54,6 +63,10 @@ export async function authListSessions(): Promise<ListSessions> {
  * @description listDeviceSessions (from the multi-session plugin) returns sessions for different user accounts stored in the same browser/device.
  */
 export async function authListDeviceSessions(): Promise<ListDeviceSessions> {
+  if (!isBetterAuthMode()) {
+    return [];
+  }
+
   const auth = getAuth();
   const requestHeaders = await headers();
 
@@ -77,6 +90,10 @@ export async function authListDeviceSessions(): Promise<ListDeviceSessions> {
  * the full organization details
  */
 export async function authGetFullOrganization(): Promise<ActiveOrganization | null> {
+  if (!isBetterAuthMode()) {
+    return null;
+  }
+
   const auth = getAuth();
   const requestHeaders = await headers();
   try {
@@ -96,6 +113,10 @@ export async function authGetFullOrganization(): Promise<ActiveOrganization | nu
  * user's passkeys using Better Auth official API
  */
 export async function authListPasskeys(): Promise<Passkey[]> {
+  if (!isBetterAuthMode()) {
+    return [];
+  }
+
   const auth = getAuth();
   const requestHeaders = await headers();
 
@@ -118,6 +139,10 @@ export async function authListPasskeys(): Promise<Passkey[]> {
  * user's linked OAuth accounts
  */
 export async function authListUserAccounts(): Promise<ListUserAccounts> {
+  if (!isBetterAuthMode()) {
+    return [];
+  }
+
   const auth = getAuth();
   const requestHeaders = await headers();
 
@@ -142,6 +167,10 @@ export async function authListUserAccounts(): Promise<ListUserAccounts> {
  * user's API keys
  */
 export async function authListApiKeys(): Promise<ListApiKeys> {
+  if (!isBetterAuthMode()) {
+    return [];
+  }
+
   const auth = getAuth();
   const requestHeaders = await headers();
 

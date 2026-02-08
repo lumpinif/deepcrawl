@@ -7,7 +7,8 @@
   "author": "deepcrawl.ai - Felix",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "check": "biome check . --write && pnpm typecheck",
+    "check": "pnpm typecheck && biome ci .",
+    "fix": "biome check . --write",
     "db:create": "pnpm wrangler d1 create",
     "db:push": "dotenv -e ../../../apps/workers/v0/.dev.vars.production -- pnpm drizzle-kit push",
     "db:studio": "dotenv -e ../../../apps/workers/v0/.dev.vars.production -- pnpm drizzle-kit studio",

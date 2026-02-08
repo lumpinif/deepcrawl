@@ -50,4 +50,10 @@ Then rerun `wrangler secret put` for any values you store in Cloudflare.
 
 ### What if my dev environment cannot reach Redis or KV?
 
-Check the bindings in `wrangler.jsonc` and ensure Upstash/Cloudflare credentials are present. For local-only testing, switch to in-memory fallbacks defined in `packages/auth` and `packages/contracts`.
+Deepcrawl uses Upstash Redis for **API rate limiting** in the API Worker (v0).
+If you don't have Upstash configured (or you want to disable it in dev), set
+`ENABLE_API_RATE_LIMIT=false`.
+
+Cloudflare KV is used for caching. If KV is misconfigured, requests can still
+work but caching will be degraded; double-check the KV bindings in
+`wrangler.jsonc`.

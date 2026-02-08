@@ -8,6 +8,17 @@ Authentication service powered by Better Auth and Cloudflare Workers.
 
 ## 🚀 Development
 
+Before running Wrangler locally, sync env files from the repo root:
+
+```bash
+pnpm env:bootstrap
+```
+
+This generates:
+
+- `.dev.vars` (secrets only)
+- `wrangler.jsonc` vars (non-secrets), synced from `env/.vars`.
+
 ```bash
 # Start development server
 pnpm dev

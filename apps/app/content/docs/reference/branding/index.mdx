@@ -1,0 +1,26 @@
+---
+title: Branding
+description: Customize the visible brand of your deployment.
+---
+
+## Single source of truth
+
+This deployment supports template-friendly branding via a single environment
+variable:
+
+```bash
+NEXT_PUBLIC_BRAND_NAME="FasterCrawl"
+```
+
+## What it changes
+
+- Dashboard site name and logo text
+- Email template copy and subjects (Better Auth emails)
+- API surface display (OpenAPI title and server description)
+- Scrape request `User-Agent` (keeps browser-like UA and appends a brand token)
+
+## What it does not change
+
+- Package names (e.g. `deepcrawl`, `@deepcrawl/*`)
+- Official SDK API (`DeepcrawlApp`, `npm i deepcrawl`, etc.)
+
