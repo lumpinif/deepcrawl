@@ -63,6 +63,16 @@ export const WRANGLER_VARS: readonly WranglerVar[] = [
     productionDefault: true,
   },
   {
+    key: 'ENABLE_API_RATE_LIMIT',
+    type: 'boolean',
+    group: 'Upstash',
+    targets: ['worker-v0'],
+    description:
+      'Enable API rate limiting (requires Upstash secrets UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN).',
+    localDefault: true,
+    productionDefault: true,
+  },
+  {
     key: 'WORKER_NODE_ENV',
     type: 'string',
     group: 'Workers',

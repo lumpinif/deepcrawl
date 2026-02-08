@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis/cloudflare';
 import { EPHEMERAL_CACHE } from '@/app';
 import type { AppBindings } from '@/lib/context';
 import { publicProcedures } from '@/orpc';
-import { logDebug } from '@/utils/loggers';
+import { logDebug, logWarn } from '@/utils/loggers';
 
 const RATE_LIMIT_RULES: Record<
   string,
@@ -77,15 +77,83 @@ const RATE_LIMIT_RULES: Record<
 // Create rate limiters at module level to reuse across requests
 const rateLimiters = new Map<string, Ratelimit>();
 
+type RateLimitEnv = Partial<{
+  ENABLE_API_RATE_LIMIT: boolean | string;
+  UPSTASH_REDIS_REST_URL: string;
+  UPSTASH_REDIS_REST_TOKEN: string;
+}>;
+
+function resolveBool(value: unknown, fallback: boolean): boolean {
+  if (value === undefined || value === null) {
+    return fallback;
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) {
+    return fallback;
+  }
+  return ['1', 'true', 'yes', 'y', 'on'].includes(normalized);
+}
+
+function resolveUpstashCredentials(
+  env: AppBindings['Bindings'],
+): { url: string; token: string } | null {
+  const url = (env as unknown as RateLimitEnv).UPSTASH_REDIS_REST_URL;
+  const token = (env as unknown as RateLimitEnv).UPSTASH_REDIS_REST_TOKEN;
+
+  if (!(typeof url === 'string' && url.trim())) {
+    return null;
+  }
+
+  if (!(typeof token === 'string' && token.trim())) {
+    return null;
+  }
+
+  return { url, token };
+}
+
+let didWarnMissingUpstash = false;
+function warnMissingUpstashOnce() {
+  if (didWarnMissingUpstash) {
+    return;
+  }
+  didWarnMissingUpstash = true;
+  logWarn(
+    '[rate-limit] Upstash is not configured; API rate limiting is disabled. ' +
+      'Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN to enable.',
+  );
+}
+
 function getRateLimiter(
   operation: keyof typeof RATE_LIMIT_RULES,
   env: AppBindings['Bindings'],
-): Ratelimit {
+): Ratelimit | null {
   const key = `${operation}-free`; // Using free tier for now
+
+  const rateLimitEnabled = resolveBool(
+    (env as unknown as RateLimitEnv).ENABLE_API_RATE_LIMIT,
+    true,
+  );
+  if (!rateLimitEnabled) {
+    return null;
+  }
+
+  const credentials = resolveUpstashCredentials(env);
+  if (!credentials) {
+    warnMissingUpstashOnce();
+    return null;
+  }
 
   let ratelimit = rateLimiters.get(key);
   if (!ratelimit) {
     ratelimit = new Ratelimit({
+      // Avoid Redis.fromEnv() warnings by validating credentials first.
       redis: Redis.fromEnv(env),
       limiter: Ratelimit.slidingWindow(
         RATE_LIMIT_RULES[operation].free.limit,
@@ -111,7 +179,21 @@ export function rateLimitMiddleware({
     const identifier = `${user?.id ?? 'anonymous'}-${c.var.userIP ?? 'unknown-ip'}`;
 
     const ratelimit = getRateLimiter(operation, c.env);
-    const result = await ratelimit.limit(identifier);
+    if (!ratelimit) {
+      return next();
+    }
+
+    let result: Awaited<ReturnType<typeof ratelimit.limit>>;
+    try {
+      result = await ratelimit.limit(identifier);
+    } catch (error) {
+      // Fail-open: rate limiting is an optional protection layer.
+      logWarn('[rate-limit] Failed to enforce rate limit; allowing request.', {
+        operation,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return next();
+    }
     c.executionCtx.waitUntil(result.pending);
 
     logDebug(

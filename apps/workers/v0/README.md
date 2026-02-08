@@ -141,6 +141,33 @@ This is configured in `wrangler.jsonc`:
 
 Set this to `false` to skip writing activity logs.
 
+### API Rate Limiting (Upstash)
+
+Deepcrawl uses **Upstash Redis** (via `@upstash/ratelimit`) to enforce rate
+limits on **API Worker (v0)** endpoints.
+
+Enable/disable via Wrangler vars:
+
+```jsonc
+"vars": {
+  "ENABLE_API_RATE_LIMIT": true
+}
+```
+
+Required secrets when enabled:
+
+```bash
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
+Notes:
+
+- If Upstash secrets are missing, API rate limiting is automatically disabled
+  (fail-open) to avoid blocking requests in minimal deployments.
+- For local-only testing or when hitting Upstash quotas, set
+  `ENABLE_API_RATE_LIMIT=false`.
+
 ### JWT Configuration
 
 Required when `AUTH_MODE=jwt`:

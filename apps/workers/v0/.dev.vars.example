@@ -25,10 +25,10 @@ GOOGLE_CLIENT_SECRET=
 RESEND_API_KEY=
 
 # Upstash
-# Upstash Redis REST URL (used by rate limiting).
+# Upstash Redis REST URL (used by API rate limiting).
 UPSTASH_REDIS_REST_URL="****"
 
-# Upstash Redis REST token (used by rate limiting).
+# Upstash Redis REST token (used by API rate limiting).
 UPSTASH_REDIS_REST_TOKEN="****"
 
 # Cloudflare

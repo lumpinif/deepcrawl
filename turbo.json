@@ -85,6 +85,11 @@
       "persistent": true,
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": []
+    },
+    "cf-typegen": {
+      "dependsOn": ["^cf-typegen"],
+      "outputs": [],
+      "cache": false
     }
   }
 }

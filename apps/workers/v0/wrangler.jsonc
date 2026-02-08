@@ -48,7 +48,8 @@
     // JWT_* are only needed when AUTH_MODE=jwt, JWT_ISSUER and JWT_AUDIENCE are optional.
     // Don't put JWT_SECRET here. Use Wrangler secrets for JWT_SECRET in production. Or add it to .dev.vars for local development.
     "JWT_ISSUER": "",
-    "JWT_AUDIENCE": ""
+    "JWT_AUDIENCE": "",
+    "ENABLE_API_RATE_LIMIT": true
   },
   "kv_namespaces": [
     {
@@ -87,7 +88,8 @@
         // JWT_* are only needed when AUTH_MODE=jwt, JWT_ISSUER and JWT_AUDIENCE are optional.
         // Don't put JWT_SECRET here. Use Wrangler secrets for JWT_SECRET in production. Or add it to .dev.vars.production for production secrets.
         "JWT_ISSUER": "",
-        "JWT_AUDIENCE": ""
+        "JWT_AUDIENCE": "",
+        "ENABLE_API_RATE_LIMIT": true
       },
       "d1_databases": [
         {
