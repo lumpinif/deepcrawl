@@ -58,7 +58,7 @@ export const deepCrawlCors = createMiddleware<AppBindings>(async (c, next) => {
   // Note: in AUTH_MODE=jwt/none (API-only deployments), BETTER_AUTH_URL may be
   // intentionally unset. In that case, we do not enable credentialed CORS.
   const trustedOrigins =
-    appUrl && betterAuthUrl && apiUrl
+    appUrl && betterAuthUrl
       ? new Set(
           resolveTrustedOrigins({
             appURL: appUrl,

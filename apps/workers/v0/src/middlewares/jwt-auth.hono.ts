@@ -55,7 +55,7 @@ const resolveJwtSession = (
 
   const name = typeof payload.name === 'string' ? payload.name : undefined;
 
-  return {
+  const session: Session = {
     session: {
       id: sessionId,
       createdAt: now,
@@ -65,6 +65,8 @@ const resolveJwtSession = (
       token: sessionId,
       ipAddress: context.ipAddress ?? null,
       userAgent: context.userAgent ?? null,
+      impersonatedBy: null,
+      activeOrganizationId: null,
     },
     user: {
       id: userId,
@@ -74,8 +76,11 @@ const resolveJwtSession = (
       emailVerified: payload.email_verified ?? false,
       name: name ?? (email || userId),
       image: typeof payload.picture === 'string' ? payload.picture : null,
+      banned: null,
     },
-  } as Session;
+  };
+
+  return session;
 };
 
 export const jwtAuthMiddleware = createMiddleware<AppBindings>(
