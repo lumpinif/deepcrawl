@@ -49,7 +49,14 @@ BASE_REF="$BASE_REMOTE/$BASE_BRANCH"
 # CI only runs these checks on pull_request, so we skip them on main.
 if [ "$CURRENT_BRANCH" != "$BASE_BRANCH" ]; then
   echo "🔄 Syncing base ref for changeset checks: $BASE_REF"
-  git fetch "$BASE_REMOTE" "$BASE_BRANCH" --depth=1
+  # Avoid shallow fetches here. Changesets relies on git history to compute a
+  # merge-base; fetching with `--depth=1` can make that impossible.
+  if git rev-parse --is-shallow-repository 2>/dev/null | grep -q "true"; then
+    echo "⚠️  Repository is shallow; fetching full history for reliable changeset checks..."
+    git fetch "$BASE_REMOTE" --unshallow --no-tags 2>/dev/null || \
+      git fetch "$BASE_REMOTE" --depth=100000 --no-tags
+  fi
+  git fetch "$BASE_REMOTE" "$BASE_BRANCH" --no-tags
 
   echo "🧾 Summarizing pending changesets (since $BASE_REF)..."
   pnpm changeset status --since="$BASE_REF"

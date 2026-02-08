@@ -72,7 +72,11 @@ jobs:
           publish: npx changeset publish
           createGithubReleases: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use a PAT/fine-grained token so pushes to `changeset-release/*` can
+          # trigger other workflows (required checks). Fallback to the default
+          # token for forks/local testing.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_GH_TOKEN || secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
           # Prevent Husky git hooks (e.g. pre-push) from blocking CI pushes
