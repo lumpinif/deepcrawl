@@ -4,25 +4,54 @@ import { DeepcrawlApp } from 'deepcrawl';
 import { DeepcrawlError } from 'deepcrawl/types';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
+import { buildDeepcrawlHeaders, isBetterAuthMode } from '@/lib/auth-mode';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
-export async function GET(request: NextRequest) {
-  const sessionToken = getSessionCookie(request, {
-    cookiePrefix: APP_COOKIE_PREFIX,
-  });
+function extractApiKeyFromRequest(request: NextRequest): string | null {
+  const xApiKey = request.headers.get('x-api-key')?.trim();
+  if (xApiKey) {
+    return xApiKey;
+  }
 
-  if (!sessionToken) {
-    return NextResponse.json({ error: 'Unauthorized!' }, { status: 401 });
+  const auth = request.headers.get('authorization');
+  if (!auth) {
+    return null;
+  }
+
+  const match = auth.match(/^Bearer\s+(.+)$/i);
+  const token = match?.[1]?.trim();
+  return token && token.length > 0 ? token : null;
+}
+
+export async function GET(request: NextRequest) {
+  const apiKey = extractApiKeyFromRequest(request);
+
+  if (isBetterAuthMode()) {
+    const sessionToken = getSessionCookie(request, {
+      cookiePrefix: APP_COOKIE_PREFIX,
+    });
+
+    // In self-hosted cross-domain deployments, the Better Auth session cookie
+    // cannot be shared with the dashboard domain. Allow API key auth as a
+    // fallback (passed via Authorization / x-api-key header).
+    if (!(sessionToken || apiKey)) {
+      return NextResponse.json({ error: 'Unauthorized!' }, { status: 401 });
+    }
   }
 
   const requestHeaders = await headers();
 
   try {
-    const dc = new DeepcrawlApp({
-      baseUrl: DEEPCRAWL_BASE_URL,
-      headers: requestHeaders,
-    });
+    const dc = apiKey
+      ? new DeepcrawlApp({
+          baseUrl: DEEPCRAWL_BASE_URL,
+          apiKey,
+        })
+      : new DeepcrawlApp({
+          baseUrl: DEEPCRAWL_BASE_URL,
+          headers: buildDeepcrawlHeaders(requestHeaders),
+        });
 
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');

@@ -66,7 +66,8 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "check": "biome check --write && pnpm typecheck",
+    "check": "pnpm typecheck && biome ci .",
+    "fix": "biome check . --write",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run check && pnpm run clean && pnpm run build",
     "test": "vitest run",

@@ -2,6 +2,8 @@
   "extends": "@deepcrawl/typescript-config/base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "paths": {
       "@/*": ["./src/*"],
       "@deepcrawl/types/*": ["../types/src/*"]

@@ -16,6 +16,7 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 import { IconBook } from '@tabler/icons-react';
 import Link from 'next/link';
 import type { NavigationMode } from '@/components/providers';
+import type { AuthMode } from '@/lib/auth-mode';
 import { DeepcrawlLogo } from '../deepcrawl-logo';
 import { LayoutToggle } from '../layout-toggle';
 import { SearchTrigger } from '../search-trigger';
@@ -35,6 +36,7 @@ export interface SiteHeaderProps {
   logoTransformY?: number;
   enableSearchDialog?: boolean;
   enableFeedbackLink?: boolean;
+  authMode?: AuthMode;
 }
 
 export function SiteHeader({
@@ -51,6 +53,7 @@ export function SiteHeader({
   logoScale = 1,
   logoTransformY = 0,
   enableFeedbackLink = true,
+  authMode,
 }: SiteHeaderProps) {
   const isMobile = useMediaQuery('(max-width: 640px)');
 
@@ -61,7 +64,7 @@ export function SiteHeader({
         'flex shrink-0 items-center gap-2',
         'transition-[width,height] ease-in-out sm:group-has-data-[collapsible=icon]/sidebar-wrapper:h-12',
         navigationMode === 'header' &&
-          '!h-13 border-none bg-background-subtle pt-4 pb-0',
+          'h-13! border-none bg-background-subtle pt-4 pb-0',
         className,
       )}
     >
@@ -85,7 +88,7 @@ export function SiteHeader({
           <div
             className={cn(
               'top-4 left-7 z-50 block bg-background-subtle max-sm:pl-3 sm:fixed',
-              'transform-gpu transition-all duration-[50ms] ease-linear',
+              'transform-gpu transition-all duration-50 ease-linear',
               logoTransformY >= 85 &&
                 'top-2.5 text-muted-foreground hover:text-foreground',
             )}
@@ -206,17 +209,12 @@ export function SiteHeader({
             />
           )}
 
-          {session ? (
-            <UserDropdown
-              enableLayoutViewToggle={enableLayoutViewToggle}
-              navigationMode={navigationMode}
-              session={session}
-            />
-          ) : (
-            <Button asChild variant="outline">
-              <Link href="/login">Login</Link>
-            </Button>
-          )}
+          <UserDropdown
+            authMode={authMode}
+            enableLayoutViewToggle={enableLayoutViewToggle}
+            navigationMode={navigationMode}
+            session={session ?? null}
+          />
         </div>
       </div>
     </header>

@@ -3,10 +3,16 @@
   "ui": "stream",
   "globalDependencies": ["**/.env*", "**/tsconfig*.json"],
   "globalEnv": [
+    "AUTH_MODE",
+    "AUTH_JWT_TOKEN",
+    "NEXT_PUBLIC_BRAND_NAME",
     "NEXT_PUBLIC_USE_AUTH_WORKER",
     "BETTER_AUTH_URL",
     "NEXT_PUBLIC_BETTER_AUTH_URL",
     "BETTER_AUTH_SECRET",
+    "JWT_SECRET",
+    "JWT_ISSUER",
+    "JWT_AUDIENCE",
     "DATABASE_URL",
     "GITHUB_CLIENT_ID",
     "GITHUB_CLIENT_SECRET",
@@ -56,6 +62,11 @@
     },
     "check": {
       "dependsOn": ["^check"],
+      "outputs": [],
+      "cache": true
+    },
+    "fix": {
+      "dependsOn": ["^fix"],
       "outputs": [],
       "cache": true
     },

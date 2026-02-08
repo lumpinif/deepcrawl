@@ -9,7 +9,7 @@ const config = {
   /* config options here */
   // devIndicators: false,
   reactStrictMode: true,
-  transpilePackages: ['shiki'],
+  transpilePackages: ['shiki', '@deepcrawl/ui'],
   images: {
     remotePatterns: [
       {

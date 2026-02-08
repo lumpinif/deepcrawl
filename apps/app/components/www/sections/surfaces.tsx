@@ -11,7 +11,7 @@ const SURFACES = [
     title: 'Worker with Hono.js and oRPC',
     description: 'REST + oRPC APIs powering the backend workflow.',
     illustration: (
-      <div className="relative flex size-full items-center justify-center overflow-hidden opacity-85 [mask-image:linear-gradient(to_top,transparent,black_50%)]">
+      <div className="mask-[linear-gradient(to_top,transparent,black_50%)] relative flex size-full items-center justify-center overflow-hidden opacity-85">
         <LazyGlobe className="md:max-w-[250px] md:-translate-x-3" />
       </div>
     ),
@@ -27,11 +27,11 @@ const SURFACES = [
     ),
   },
   {
-    title: 'Next.js Dashboard On Vercel',
+    title: 'Next.js Playground On Vercel',
     description:
-      'Optimized Next.js dashboard, monitoring, playground, and key management interface.',
+      'Optimized Next.js playground & dashboard, monitoring, playground, and key management interface.',
     illustration: (
-      <div className="flex size-full items-center justify-center overflow-hidden opacity-85 [mask-image:linear-gradient(to_top,transparent,black_30%)]">
+      <div className="mask-[linear-gradient(to_top,transparent,black_30%)] flex size-full items-center justify-center overflow-hidden opacity-85">
         <LazyPyramidAnimation className="scale-[0.5]" edges={false} />
       </div>
     ),

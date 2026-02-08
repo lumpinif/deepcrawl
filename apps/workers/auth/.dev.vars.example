@@ -1,0 +1,21 @@
+# Used by Wrangler in local development (secrets only)
+# In production, these should be set as Cloudflare Worker Secrets.
+# Non-secrets are configured via Wrangler vars (see wrangler.jsonc).
+
+# Auth
+# Better Auth secret.
+BETTER_AUTH_SECRET=
+
+# Postgres connection string (Neon, etc).
+DATABASE_URL=
+
+# OAuth
+# GitHub OAuth client secret.
+GITHUB_CLIENT_SECRET=
+
+# Google OAuth client secret.
+GOOGLE_CLIENT_SECRET=
+
+# Email
+# Resend API key (optional).
+RESEND_API_KEY=

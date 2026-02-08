@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@deepcrawl/ui/components/ui/accordion';
+import { brandName } from '@/lib/brand';
 import { H2 } from '../h2';
 import { Tick } from '../tick';
 
@@ -22,16 +23,14 @@ const FAQS = [
 
 const CONTENT = [
   {
-    title: 'Is Deepcrawl free to use and self-host?',
+    title: `Is ${brandName} free to use and self-host?`,
     value: 'self-hosting',
-    content:
-      'Yes. Deepcrawl is 100% free and open for anyone to deploy. Follow the self-hosting guide to provision the Next.js app, Workers, and SDK locally or on your own infrastructure.',
+    content: `Yes. ${brandName} is 100% free and open for anyone to deploy. Follow the self-hosting guide to provision the Next.js app, Workers, and SDK locally or on your own infrastructure.`,
   },
   {
-    title: 'How fast is Deepcrawl compared to Firecrawl?',
+    title: `How fast is ${brandName} compared to Firecrawl?`,
     value: 'speed-comparison',
-    content:
-      'Deepcrawl is faster than Firecrawl on general by a lot, ranging from 5x to 10x faster in some cases. Deepcrawl uses the Cloudflare Workers platform to fetch and process pages with v8 engine, which is much faster than Firecrawl.',
+    content: `${brandName} is faster than Firecrawl on general by a lot, ranging from 5x to 10x faster in some cases. ${brandName} uses the Cloudflare Workers platform to fetch and process pages with V8 engine, which is much faster than Firecrawl.`,
   },
   {
     title: 'What are the planned features coming soon?',
@@ -46,12 +45,12 @@ const CONTENT = [
       'Run `pnpm add deepcrawl` (or `npm install` / `bun install`). Then create a server-side client. Check the documentation for more details.',
   },
   {
-    title: 'How do I learn to use Deepcrawl?',
+    title: `How do I learn to use ${brandName}?`,
     value: 'learn-to-use-deepcrawl',
     content: 'Visit the documentation to learn how to use the SDK and API.',
   },
   {
-    title: 'How can I contribute to Deepcrawl?',
+    title: `How can I contribute to ${brandName}?`,
     value: 'contribute-to-deepcrawl',
     content:
       'Visit the documentation to learn how to contribute to the project. Contributions are welcome! Please read the CONTRIBUTING.md file for details.',
@@ -67,7 +66,7 @@ export function Faq() {
           <div className="py-0 text-left md:py-4">
             <H2>FAQs</H2>
             <p className="text-base text-muted-foreground">
-              Frequently asked questions about Deepcrawl.
+              Frequently asked questions about {brandName}.
             </p>
           </div>
           <div className="col-span-2 border-t px-3 sm:px-4 md:border-none">

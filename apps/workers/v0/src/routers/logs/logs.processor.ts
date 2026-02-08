@@ -17,6 +17,7 @@ import {
   eq,
   getTableColumns,
   gte,
+  isNull,
   lte,
   responseRecord,
 } from '@deepcrawl/db-d1';
@@ -257,13 +258,12 @@ export async function listLogs(
   }
 
   // Get user ID from session
-  const userId = c.var.session?.user?.id;
-  if (!userId) {
-    throw new Error('User ID not found in session');
-  }
+  const userId = c.var.session?.user?.id ?? null;
 
   // Build where conditions
-  const conditions = [eq(activityLog.userId, userId)];
+  const conditions = [
+    userId ? eq(activityLog.userId, userId) : isNull(activityLog.userId),
+  ];
 
   if (path) {
     conditions.push(eq(activityLog.path, path));
@@ -344,10 +344,7 @@ export async function getOneLogWithReconstruction(
   const { id } = options;
 
   // Get user ID from session
-  const userId = c.var.session?.user?.id;
-  if (!userId) {
-    throw new Error('User ID not found in session');
-  }
+  const userId = c.var.session?.user?.id ?? null;
 
   // Get single activity log with response record
   const result = await c.var.dbd1
@@ -360,11 +357,20 @@ export async function getOneLogWithReconstruction(
       responseRecord,
       eq(activityLog.responseHash, responseRecord.responseHash),
     )
-    .where(and(eq(activityLog.id, id), eq(activityLog.userId, userId)))
+    .where(
+      and(
+        eq(activityLog.id, id),
+        userId ? eq(activityLog.userId, userId) : isNull(activityLog.userId),
+      ),
+    )
     .limit(1);
 
   if (result.length === 0) {
-    throw new Error('Activity log not found');
+    throw new ORPCError('NOT_FOUND', {
+      status: 404,
+      message: 'Activity log not found',
+      data: { id },
+    });
   }
 
   const log = result[0];
@@ -386,13 +392,7 @@ export async function exportResponseByIdAndFormat(
   const { id, format } = options;
 
   // Get user ID from session
-  const userId = c.var.session?.user?.id;
-  if (!userId) {
-    throw new ORPCError('UNAUTHORIZED', {
-      status: 401,
-      message: 'User ID not found in session',
-    });
-  }
+  const userId = c.var.session?.user?.id ?? null;
 
   // Get single activity log with response record
   const result = await c.var.dbd1
@@ -405,7 +405,12 @@ export async function exportResponseByIdAndFormat(
       responseRecord,
       eq(activityLog.responseHash, responseRecord.responseHash),
     )
-    .where(and(eq(activityLog.id, id), eq(activityLog.userId, userId)))
+    .where(
+      and(
+        eq(activityLog.id, id),
+        userId ? eq(activityLog.userId, userId) : isNull(activityLog.userId),
+      ),
+    )
     .limit(1);
 
   if (result.length === 0) {
@@ -443,26 +448,29 @@ export async function exportResponseByIdAndFormat(
           if (readResponse.markdown) {
             return readResponse.markdown;
           }
+          const message =
+            'No markdown content available for this request. The original request did not include markdown extraction.';
           throw new ORPCError('INVALID_EXPORT_FORMAT', {
             status: 400,
-            message:
-              'No markdown content available for this request. The original request did not include markdown extraction.',
-            data: { id, path: activity.path },
+            message,
+            data: { id, path: activity.path, message },
           });
         }
         // Error response
+        const message = 'Cannot export markdown from error response';
         throw new ORPCError('INVALID_EXPORT_FORMAT', {
           status: 400,
-          message: 'Cannot export markdown from error response',
-          data: { id, path: activity.path },
+          message,
+          data: { id, path: activity.path, message },
         });
       }
 
       // Links endpoints don't have markdown
+      const message = `Markdown export is not supported for ${activity.path} endpoint`;
       throw new ORPCError('INVALID_EXPORT_FORMAT', {
         status: 400,
-        message: `Markdown export is not supported for ${activity.path} endpoint`,
-        data: { id, path: activity.path },
+        message,
+        data: { id, path: activity.path, message },
       });
     }
 
@@ -478,34 +486,39 @@ export async function exportResponseByIdAndFormat(
           if ('tree' in linksResponse && linksResponse.tree) {
             return linksResponse.tree;
           }
+          const message =
+            'No links tree available for this request. The original request did not include tree generation.';
           throw new ORPCError('INVALID_EXPORT_FORMAT', {
             status: 400,
-            message:
-              'No links tree available for this request. The original request did not include tree generation.',
-            data: { id, path: activity.path },
+            message,
+            data: { id, path: activity.path, message },
           });
         }
         // Error response
+        const message = 'Cannot export links from error response';
         throw new ORPCError('INVALID_EXPORT_FORMAT', {
           status: 400,
-          message: 'Cannot export links from error response',
-          data: { id, path: activity.path },
+          message,
+          data: { id, path: activity.path, message },
         });
       }
 
       // Read endpoints don't have links tree
+      const message = `Links export is not supported for ${activity.path} endpoint`;
       throw new ORPCError('INVALID_EXPORT_FORMAT', {
         status: 400,
-        message: `Links export is not supported for ${activity.path} endpoint`,
-        data: { id, path: activity.path },
+        message,
+        data: { id, path: activity.path, message },
       });
     }
 
-    default:
+    default: {
+      const message = `Unsupported export format: ${format}`;
       throw new ORPCError('INVALID_EXPORT_FORMAT', {
         status: 400,
-        message: `Unsupported export format: ${format}`,
-        data: { id, format },
+        message,
+        data: { id, format, message },
       });
+    }
   }
 }

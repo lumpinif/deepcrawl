@@ -8,6 +8,8 @@
       "!.next",
       "!src/components/ui",
       "!components/ui",
+      "!src/components/reui/**/*",
+      "!components/reui/**/*",
       "!src/styles/globals.css"
     ]
   },

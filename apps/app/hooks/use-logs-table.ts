@@ -1,6 +1,7 @@
 import {
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
   type PaginationState,
   type SortingState,
   useReactTable,
@@ -30,6 +31,8 @@ export function useLogsTable({
   onPaginationChange,
   onSortingChange,
 }: UseLogsTableOptions) {
+  'use no memo';
+
   const [columnOrder, setColumnOrder] = useState<string[]>(
     activityLogsColumns.map((column) => column.id as string),
   );
@@ -53,6 +56,7 @@ export function useLogsTable({
     onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     manualPagination: true,
   });
 

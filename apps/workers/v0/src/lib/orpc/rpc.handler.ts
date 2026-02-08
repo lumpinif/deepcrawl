@@ -1,12 +1,11 @@
 import { onError } from '@orpc/server';
 import { RPCHandler } from '@orpc/server/fetch';
-import { CORSPlugin } from '@orpc/server/plugins';
-import { CORS_OPTIONS } from '@/middlewares/cors.hono';
+import type { ORPCContext } from '@/lib/context';
 import { router } from '@/routers';
 
-export const rpcHandler = new RPCHandler(router, {
+export const rpcHandler = new RPCHandler<ORPCContext>(router, {
   interceptors: [
-    onError((err) => {
+    onError((err: unknown) => {
       // Type guard for error-like objects
       const error = err as {
         code?: string;
@@ -48,16 +47,6 @@ export const rpcHandler = new RPCHandler(router, {
         `\n  Status: ${errorStatus}`,
         `\n  Message: ${errorMessage}`,
       );
-    }),
-  ],
-  plugins: [
-    new CORSPlugin({
-      origin: (origin) => origin,
-      credentials: CORS_OPTIONS.credentials,
-      maxAge: CORS_OPTIONS.maxAge,
-      allowMethods: CORS_OPTIONS.allowMethods,
-      allowHeaders: CORS_OPTIONS.allowHeaders,
-      exposeHeaders: CORS_OPTIONS.exposeHeaders,
     }),
   ],
 });

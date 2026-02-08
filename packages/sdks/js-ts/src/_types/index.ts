@@ -213,7 +213,7 @@ export abstract class DeepcrawlError<TData = unknown> extends Error {
 export class DeepcrawlReadError extends DeepcrawlError<ReadErrorResponse> {
   constructor(data: ReadErrorResponse) {
     // Pass data.error as the message for consistency with JavaScript Error patterns
-    super('READ_ERROR_RESPONSE', data.error, data, 400, true);
+    super('READ_ERROR_RESPONSE', data.error, data, 500, true);
   }
 
   get userMessage(): string {
@@ -240,7 +240,7 @@ export class DeepcrawlReadError extends DeepcrawlError<ReadErrorResponse> {
 export class DeepcrawlLinksError extends DeepcrawlError<LinksErrorResponse> {
   constructor(data: LinksErrorResponse) {
     // Pass data.error as the message for consistency with JavaScript Error patterns
-    super('LINKS_ERROR_RESPONSE', data.error, data, 400, true);
+    super('LINKS_ERROR_RESPONSE', data.error, data, 500, true);
   }
 
   get userMessage(): string {

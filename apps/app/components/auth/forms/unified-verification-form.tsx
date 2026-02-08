@@ -420,7 +420,7 @@ export function UnifiedVerificationForm({
               className="w-full"
               onClick={() => router.push(getAppRoute(BASE_APP_PATH))}
             >
-              Continue to Dashboard
+              Continue to Playground
             </Button>
           </>
         );
@@ -512,7 +512,7 @@ export function UnifiedVerificationForm({
               className="w-full"
               onClick={() => router.push(getAppRoute(BASE_APP_PATH))}
             >
-              Go to Dashboard
+              Go to Playground
             </Button>
             {verificationType !== 'accept-invitation' && (
               <Button

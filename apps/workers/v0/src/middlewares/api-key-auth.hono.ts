@@ -1,11 +1,17 @@
 import type { Session } from '@deepcrawl/auth/types';
+import { resolveBetterAuthApiBaseUrl } from '@deepcrawl/auth/utils/better-auth-url';
 import { createMiddleware } from 'hono/factory';
 import type { AppBindings } from '@/lib/context';
+import { resolveAuthMode } from '@/utils/auth-mode';
 import { logDebug } from '@/utils/loggers';
 
 export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     const start = performance.now();
+    if (resolveAuthMode(c.env.AUTH_MODE) !== 'better-auth') {
+      return next();
+    }
+
     if (
       c.get('session') ||
       c.get('session')?.session ||
@@ -34,65 +40,68 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       let sessionData: Session | undefined;
 
       // First, try using the service binding RPC call
-      try {
-        logDebug('🔄 Attempting RPC call to AUTH_WORKER.getSessionWithAPIKey');
-        const rpcStartTime = performance.now();
+      const authWorker = (
+        c.env as unknown as {
+          AUTH_WORKER?: {
+            getSessionWithAPIKey?: (key: string) => Promise<unknown>;
+          };
+        }
+      ).AUTH_WORKER;
 
-        sessionData = (await c.env.AUTH_WORKER.getSessionWithAPIKey(
-          apiKey,
-        )) as Session;
+      if (typeof authWorker?.getSessionWithAPIKey === 'function') {
+        try {
+          logDebug(
+            '🔄 Attempting RPC call to AUTH_WORKER.getSessionWithAPIKey',
+          );
+          const rpcStartTime = performance.now();
 
-        const rpcEndTime = performance.now();
-        logDebug(
-          '✅ RPC call successful, took:',
-          ((rpcEndTime - rpcStartTime) / 1000).toFixed(3),
-          'seconds',
-        );
-      } catch (rpcError) {
-        logDebug('⚠️ RPC call failed, falling back to HTTP fetch:', rpcError);
+          sessionData = (await authWorker.getSessionWithAPIKey(
+            apiKey,
+          )) as Session;
 
-        // Fallback to HTTP fetch approach
-        const request = new Request(
-          `${c.env.BETTER_AUTH_URL}/getSessionWithAPIKey`,
-          {
-            method: 'POST',
+          const rpcEndTime = performance.now();
+          logDebug(
+            '✅ RPC call successful, took:',
+            ((rpcEndTime - rpcStartTime) / 1000).toFixed(3),
+            'seconds',
+          );
+        } catch (rpcError) {
+          logDebug('⚠️ RPC call failed, falling back to HTTP fetch:', rpcError);
+        }
+      } else {
+        logDebug('ℹ️ AUTH_WORKER binding missing, skipping RPC call');
+      }
+
+      const fetcher = c.var.serviceFetcher;
+
+      // Preferred HTTP fallback:
+      // Better Auth supports returning a session for API keys on `/get-session`
+      // when the api-key plugin is enabled with `enableSessionForAPIKeys`.
+      if (!sessionData) {
+        try {
+          const authApiBaseUrl = resolveBetterAuthApiBaseUrl(
+            c.env.BETTER_AUTH_URL,
+          );
+          const request = new Request(`${authApiBaseUrl}/get-session`, {
+            method: 'GET',
             headers: {
               'x-api-key': apiKey,
-              'Content-Type': 'application/json',
+              authorization: `Bearer ${apiKey}`,
             },
-            body: JSON.stringify({ apiKey }),
-          },
-        );
-
-        const fetcher = c.var.serviceFetcher;
-        const response = await fetcher(request);
-
-        // Check if the request was successful
-        if (!response.ok) {
-          const errorText = await response.text();
-          logDebug('🚨 Auth service error:', {
-            status: response.status,
-            error: errorText,
           });
 
-          // For service errors, let it through - auth guard will handle
-          if (response.status === 404 || response.status >= 500) {
-            logDebug('⚠️ Auth service issue, proceeding to next middleware');
-            return next();
+          const response = await fetcher(request);
+          if (response.ok) {
+            sessionData = (await response.json()) as Session;
+          } else {
+            const errorText = await response.text();
+            logDebug('🚨 Auth get-session error:', {
+              status: response.status,
+              error: errorText,
+            });
           }
-
-          // For invalid API key, also proceed - let auth guard decide
-          logDebug('⚠️ Invalid API key, proceeding to next middleware');
-          return next();
-        }
-
-        // Parse response
-        try {
-          sessionData = await response.json();
-        } catch (parseError) {
-          logDebug('🚨 Failed to parse auth response:', parseError);
-          // Continue to next middleware on parse errors
-          return next();
+        } catch (fetchError) {
+          logDebug('⚠️ Auth get-session fetch failed:', fetchError);
         }
       }
 

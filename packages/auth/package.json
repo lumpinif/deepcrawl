@@ -8,8 +8,9 @@
   "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "check": "biome check --write && pnpm typecheck",
-    "auth:generate": "dotenv -e ../../apps/app/.env.development.local -- pnpm dlx @better-auth/cli@latest generate --output ../db/db-auth/src/db/schema.ts -y && biome check ../db/db-auth/src/db/schema.ts --write && turbo typecheck --filter=@deepcrawl/db-auth",
+    "check": "pnpm typecheck && biome ci .",
+    "fix": "biome check . --write",
+    "auth:generate": "dotenv -e ../../apps/app/.env -- pnpm dlx @better-auth/cli@latest generate --output ../db/db-auth/src/db/schema.ts -y && biome check ../db/db-auth/src/db/schema.ts --write && turbo typecheck --filter=@deepcrawl/db-auth",
     "email:dev": "email dev --dir src/templates",
     "email:export": "email export --dir src/templates"
   },
@@ -26,6 +27,7 @@
   ],
   "dependencies": {
     "@better-auth/passkey": "^1.4.18",
+    "@deepcrawl/runtime": "workspace:*",
     "@react-email/components": "^0.5.7",
     "better-auth-harmony": "^1.2.5",
     "react": "catalog:",

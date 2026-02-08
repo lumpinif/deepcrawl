@@ -26,6 +26,8 @@ import { LogsToolbar } from './logs-toolbar';
 // import { LogsChart } from './logs-chart';
 
 export default function ActivityLogsDataGrid() {
+  'use no memo';
+
   const [selectedLog, setSelectedLog] = useState<ActivityLogEntry | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -77,6 +79,9 @@ export default function ActivityLogsDataGrid() {
 
   return (
     <>
+      {/* <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
+        <LogsChart />
+      </div> */}
       <DataGrid
         loadingMessage="Loading activity logs..."
         onRowClick={handleRowClick}
@@ -89,9 +94,6 @@ export default function ActivityLogsDataGrid() {
           columnsVisibility: true,
         }}
       >
-        {/* <div className="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
-        <LogsChart />
-      </div> */}
         <LogsDataGridCard>
           <LogsToolbar
             pathOptions={pathOptions}

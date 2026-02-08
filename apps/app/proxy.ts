@@ -1,10 +1,15 @@
 import { APP_COOKIE_PREFIX } from '@deepcrawl/auth/configs/constants';
 import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
+import { isBetterAuthMode } from './lib/auth-mode';
 import { getAppRoute } from './lib/navigation-config';
 import { authViewSegments } from './routes/auth';
 
 export async function proxy(request: NextRequest) {
+  if (!isBetterAuthMode()) {
+    return NextResponse.next();
+  }
+
   const sessionCookie = getSessionCookie(request, {
     cookiePrefix: APP_COOKIE_PREFIX,
   });

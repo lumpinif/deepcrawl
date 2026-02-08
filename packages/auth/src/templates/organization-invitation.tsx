@@ -32,6 +32,7 @@ export interface OrganizationInvitationProps {
   inviterEmail?: string;
   organizationName: string;
   invitationUrl: string;
+  brandName?: string;
 }
 
 export default function OrganizationInvitation({
@@ -40,6 +41,7 @@ export default function OrganizationInvitation({
   inviterEmail,
   organizationName,
   invitationUrl,
+  brandName = 'Deepcrawl',
 }: OrganizationInvitationProps) {
   return (
     <Html>
@@ -47,7 +49,7 @@ export default function OrganizationInvitation({
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Heading style={heading}>Deepcrawl</Heading>
+            <Heading style={heading}>{brandName}</Heading>
           </Section>
 
           <Section style={content}>
@@ -59,13 +61,13 @@ export default function OrganizationInvitation({
 
             <Text style={text}>
               {inviterName} ({inviterEmail}) has invited you to join{' '}
-              <strong>{organizationName}</strong> on Deepcrawl.
+              <strong>{organizationName}</strong> on {brandName}.
             </Text>
 
             <Text style={text}>
-              Deepcrawl is a easy and mordern solution for web scraping and data
-              extraction. Join your team to start collaborating on projects and
-              insights.
+              {brandName} is an easy and modern solution for web scraping and
+              data extraction. Join your team to start collaborating on projects
+              and insights.
             </Text>
 
             <Section style={buttonContainer}>
@@ -100,4 +102,5 @@ OrganizationInvitation.PreviewProps = {
   inviterEmail: 'sarah@deepcrawl.dev',
   organizationName: 'Deepcrawl Team',
   invitationUrl: 'https://auth.deepcrawl.dev/accept-invitation/inv_123456789',
+  brandName: 'Deepcrawl',
 } as OrganizationInvitationProps;

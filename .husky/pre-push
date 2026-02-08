@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 set -e
 
 # 1) Ensure local branch is up to date with remote
@@ -36,23 +38,27 @@ if [ -n "$COMMIT_MESSAGE" ] && printf '%s' "$COMMIT_MESSAGE" | grep -qiE '\[(ski
   exit 0
 fi
 
-echo "⚡ Running turborepo lint and typecheck tasks..."
-pnpm turbo run lint typecheck --parallel
+BASE_REMOTE="origin"
+if ! git remote get-url "$BASE_REMOTE" >/dev/null 2>&1; then
+  BASE_REMOTE="$PUSH_REMOTE"
+fi
+BASE_BRANCH="main"
+BASE_REF="$BASE_REMOTE/$BASE_BRANCH"
 
-# 3) Detect changed files vs upstream (robust on Windows/Git Bash)
-UPSTREAM=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "")
-if [ -n "$UPSTREAM" ]; then
-  CHANGED_FILES=$(git diff --name-only "$UPSTREAM"...HEAD 2>/dev/null || echo "")
+# Keep parity with CI's PR-only validation steps.
+# CI only runs these checks on pull_request, so we skip them on main.
+if [ "$CURRENT_BRANCH" != "$BASE_BRANCH" ]; then
+  echo "🔄 Syncing base ref for changeset checks: $BASE_REF"
+  git fetch "$BASE_REMOTE" "$BASE_BRANCH" --depth=1
+
+  echo "🧾 Summarizing pending changesets (since $BASE_REF)..."
+  pnpm changeset status --since="$BASE_REF"
+
+  echo "🧩 Ensuring SDK changes include required changesets (base: $BASE_REF)..."
+  node .github/ensure-sdk-changeset.mjs "$BASE_REF"
 else
-  # Fallback: last commit range
-  CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+  echo "ℹ️  On $BASE_BRANCH branch; skipping PR-only changeset checks."
 fi
 
-# 4) If SDK paths changed, run SDK tests
-#    Use a regex that's safe with spaces by enumerating paths explicitly.
-if printf '%s\n' "$CHANGED_FILES" | grep -qE '^(packages/sdks/js-ts|packages/types|packages/contracts)(/|$)'; then
-  echo "🧪 SDK-related files changed. Running SDK test suite..."
-  pnpm -C packages/sdks/js-ts test
-else
-  echo "✅ No SDK-related files changed. Skipping SDK tests."
-fi
+echo "⚡ Running CI-equivalent checks..."
+pnpm check:ci

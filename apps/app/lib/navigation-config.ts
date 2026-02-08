@@ -1,3 +1,4 @@
+import { OFFICIAL_APP_URL } from '@deepcrawl/runtime/urls';
 import type { Icon } from '@tabler/icons-react';
 import {
   IconBook,
@@ -10,7 +11,8 @@ import {
 import { BASE_APP_PATH } from '@/config';
 
 export function absoluteUrl(path: string) {
-  return `${process.env.NEXT_PUBLIC_APP_URL}${path}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? OFFICIAL_APP_URL;
+  return `${appUrl}${path}`;
 }
 
 export const getAppRoute = (path?: string) => {
@@ -41,7 +43,7 @@ export interface NavigationItem {
 
 export const NAVGATION_ITEMS: NavigationItem[] = [
   {
-    label: 'Dashboard',
+    label: 'Playground',
     title: 'Home',
     url: getAppRoute(BASE_APP_PATH),
     icon: IconDashboard,
@@ -74,3 +76,20 @@ export const NAVGATION_ITEMS: NavigationItem[] = [
     icon: IconBook,
   },
 ];
+
+export const getNavigationItems = ({
+  hideAuthEntries,
+}: {
+  hideAuthEntries?: boolean;
+} = {}) => {
+  if (!hideAuthEntries) {
+    return NAVGATION_ITEMS;
+  }
+
+  const accountRoute = getAppRoute('/account');
+  const apiKeysRoute = getAppRoute('/api-keys');
+
+  return NAVGATION_ITEMS.filter(
+    (item) => item.url !== accountRoute && item.url !== apiKeysRoute,
+  );
+};

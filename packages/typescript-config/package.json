@@ -7,6 +7,7 @@
     "access": "public"
   },
   "scripts": {
-    "check": "biome check . --write"
+    "check": "biome ci .",
+    "fix": "biome check . --write"
   }
 }

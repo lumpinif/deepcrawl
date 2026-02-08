@@ -48,7 +48,7 @@ export default function CopyButton({
             className={cn('h-8 w-8', className)}
             onClick={handleCopy}
             size="icon"
-            variant="link"
+            variant="ghost"
             {...props}
           >
             {isCopied ? (

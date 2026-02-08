@@ -3,6 +3,7 @@
 import { Label } from '@deepcrawl/ui/components/ui/label';
 import type { LinksTree } from 'deepcrawl/types';
 import { useState } from 'react';
+import { brandName } from '@/lib/brand';
 import { extractLinksResponseSample } from '@/lib/response-samples';
 import { TreeViewCard } from '../../playground/response-area/content-tabs';
 import { FreeTag } from '../free-tag';
@@ -19,22 +20,19 @@ const VALUE_ITEMS = [
   {
     label: '5-10x faster than Firecrawl on general',
     title: 'Better Performance by Default',
-    description:
-      "No headless browser tax or virtual DOM overhead required for simple HTML parsing! Edge-native Workers on V8 engine returns response in milliseconds with specially optimized Deepcrawl's parsers and tuned HTML cleaners, and smart dynamic caching controls.",
+    description: `No headless browser tax or virtual DOM overhead required for simple HTML parsing! Edge-native Workers on V8 engine returns response in milliseconds with specially optimized ${brandName}'s parsers and tuned HTML cleaners, and smart dynamic caching controls.`,
     illustration: <LazyDisplayCards />,
   },
   {
     label: 'Open with full transparency',
     title: 'Free to anyone and Open Source',
-    description:
-      '100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of Deepcrawl without server maintenance overhead.',
+    description: `100% free to consume APIs or use playground without any metered credits. MIT licensing mean you can fork, extend, and deploy your own version of ${brandName} without server maintenance overhead.`,
     illustration: <FreeTag />,
   },
   {
     label: "Save your LLM's tokens with better context",
     title: 'Optimized for AI, less tokens spent',
-    description:
-      'Deepcrawl assembles markdown, metadata, and link trees from any target URL without relying on sitemap.xml, so agents plan next steps with real topology and fewer wasted tokens spending, potentially outperforming llms.txt.',
+    description: `${brandName} assembles markdown, metadata, and link trees from any target URL without relying on sitemap.xml, so agents plan next steps with real topology and fewer wasted tokens spending, potentially outperforming llms.txt.`,
     illustration: (
       <div className="fade-in-0 will-change relative size-full transform-gpu animate-in overflow-hidden rounded-xl border bg-background-subtle pb-10 opacity-100 not-dark:shadow-md transition-opacity duration-700">
         <TreeViewCard
@@ -58,8 +56,7 @@ const VALUE_ITEMS = [
   {
     label: 'SDK Ergonomics',
     title: 'Developer-first Tooling',
-    description:
-      'The super lightweight typeScript SDK ships the same contracts, types, and schemas we use to build Deepcrawl, and typed errors as the worker plus playground parity straight from install.',
+    description: `The super lightweight TypeScript SDK ships the same contracts, types, and schemas we use to build ${brandName}, and typed errors as the worker plus playground parity straight from install.`,
     illustration: (
       <div className="fade-in-0 will-change relative size-full transform-gpu animate-in overflow-hidden rounded-xl opacity-100 transition-opacity duration-700">
         <div className="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(circle_at_center,transparent_40%,color-mix(in_oklch,var(--color-background)_90%,transparent)_75%,var(--color-background)_100%)]" />

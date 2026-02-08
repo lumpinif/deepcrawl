@@ -27,7 +27,7 @@ export const getLinksContract = linksOC
     path: '/',
     method: 'GET',
     summary: 'Get page links',
-    description: `Endpoint: GET \`api.deepcrawl.dev/links?url=example.com\`\n\nDirectly return page links from the request URL as a string response.`,
+    description: `Endpoint: GET \`/links?url=example.com\`\n\nDirectly return page links from the request URL as a string response.`,
   })
   .input(GetLinksOptionsSchema)
   /* LinksSuccessResponse is a union of two shapes.
@@ -63,7 +63,7 @@ export const ExtractLinksContract = linksOC
     path: '/',
     method: 'POST',
     summary: 'Extract links from a URL',
-    description: `Endpoint: POST \`api.deepcrawl.dev/links\`\n\nExtract links from a URL and return the full detailed result object. This is a POST request can handle more complex requests and use cases.`,
+    description: `Endpoint: POST \`/links\`\n\nExtract links from a URL and return the full detailed result object. This is a POST request can handle more complex requests and use cases.`,
   })
   .input(ExtractLinksOptionsSchema)
   .output(ExtractLinksResponseSchema);

@@ -10,6 +10,7 @@
     "moduleResolution": "Bundler",
     "paths": {
       "@/*": ["src/*"],
+      "@deepcrawl/auth-worker/*": ["../../../apps/workers/auth/src/*"],
       "@deepcrawl/db-d1/*": ["../../../packages/db/db-d1/src/*"],
       "@deepcrawl/db-auth/*": ["../../../packages/db/db-auth/src/*"],
       "@deepcrawl/auth/*": ["../../../packages/auth/src/*"],

@@ -13,8 +13,8 @@
   "aliases": {
     "components": "@deepcrawl/ui/components",
     "utils": "@deepcrawl/ui/lib/utils",
-    "hooks": "@deepcrawl/ui/hooks",
+    "ui": "@deepcrawl/ui/components/ui",
     "lib": "@deepcrawl/ui/lib",
-    "ui": "@deepcrawl/ui/components/ui"
+    "hooks": "@deepcrawl/ui/hooks"
   }
 }

@@ -1,6 +1,7 @@
 import { cn } from '@deepcrawl/ui/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import Link from 'next/link';
+import { brandName } from '@/lib/brand';
 
 // TODO: CONSIDER CREATE A CUSTOM CSS LAYER SINCE base → components → utilities.
 export const DeepcrawlLogoClassNames =
@@ -8,7 +9,7 @@ export const DeepcrawlLogoClassNames =
 
 export function DeepcrawlLogoText({
   className,
-  children = 'Deepcrawl',
+  children = brandName,
   ...props
 }: React.ComponentProps<'span'>) {
   return (
@@ -29,7 +30,7 @@ export function DeepcrawlLogo({
   className,
   href = '/',
   asChild = false,
-  children = 'Deepcrawl',
+  children = brandName,
   ...props
 }: DeepcrawlLogoProps) {
   const Comp = asChild ? Slot : href ? Link : 'span';

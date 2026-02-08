@@ -3,7 +3,16 @@ import type { AppBindings } from '@/lib/context';
 
 export const serviceFetcherMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
-    const serviceFetcher = c.env.AUTH_WORKER.fetch.bind(c.env.AUTH_WORKER);
+    // Auth worker binding is optional in some deployments (e.g. AUTH_MODE=jwt/none),
+    // so we must be defensive at runtime.
+    const authWorker = (
+      c.env as unknown as { AUTH_WORKER?: { fetch: typeof fetch } }
+    ).AUTH_WORKER;
+
+    const serviceFetcher =
+      typeof authWorker?.fetch === 'function'
+        ? authWorker.fetch.bind(authWorker)
+        : fetch;
     c.set('serviceFetcher', serviceFetcher);
 
     const authClientServiceFetcher = async (

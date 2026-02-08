@@ -30,6 +30,8 @@ interface DataGridPaginationProps {
 }
 
 function DataGridPagination(props: DataGridPaginationProps) {
+  'use no memo';
+
   const { table, recordCount, isLoading } = useDataGrid();
 
   const defaultProps: Partial<DataGridPaginationProps> = {

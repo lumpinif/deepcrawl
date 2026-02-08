@@ -120,6 +120,8 @@ function DataGridTableHeadRowCell<TData>({
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
 }) {
+  'use no memo';
+
   const { props } = useDataGrid();
 
   const { column } = header;
@@ -176,6 +178,8 @@ function DataGridTableHeadRowCellResize<TData>({
 }: {
   header: Header<TData, unknown>;
 }) {
+  'use no memo';
+
   const { column } = header;
 
   return (
@@ -213,6 +217,8 @@ function DataGridTableBody({ children }: { children: ReactNode }) {
 }
 
 function DataGridTableBodyRowSkeleton({ children }: { children: ReactNode }) {
+  'use no memo';
+
   const { table, props } = useDataGrid();
 
   return (
@@ -242,6 +248,8 @@ function DataGridTableBodyRowSkeletonCell<TData>({
   children: ReactNode;
   column: Column<TData>;
 }) {
+  'use no memo';
+
   const { props, table } = useDataGrid();
   const bodyCellSpacing = bodyCellSpacingVariants({
     size: props.tableLayout?.dense ? 'dense' : 'default',
@@ -282,6 +290,8 @@ function DataGridTableBodyRow<TData>({
   dndRef?: React.Ref<HTMLTableRowElement>;
   dndStyle?: CSSProperties;
 }) {
+  'use no memo';
+
   const { props, table } = useDataGrid();
 
   return (
@@ -313,6 +323,8 @@ function DataGridTableBodyRow<TData>({
 }
 
 function DataGridTableBodyRowExpandded<TData>({ row }: { row: Row<TData> }) {
+  'use no memo';
+
   const { props, table } = useDataGrid();
 
   return (
@@ -342,6 +354,8 @@ function DataGridTableBodyRowCell<TData>({
   dndRef?: React.Ref<HTMLTableCellElement>;
   dndStyle?: CSSProperties;
 }) {
+  'use no memo';
+
   const { props } = useDataGrid();
 
   const { column, row } = cell;
@@ -392,6 +406,8 @@ function DataGridTableBodyRowCell<TData>({
 }
 
 function DataGridTableEmpty() {
+  'use no memo';
+
   const { table, props } = useDataGrid();
   const totalColumns = table.getAllColumns().length;
 
@@ -447,6 +463,8 @@ function DataGridTableRowSelect<TData>({
   row: Row<TData>;
   size?: 'sm' | 'md' | 'lg';
 }) {
+  'use no memo';
+
   return (
     <>
       <div
@@ -468,6 +486,8 @@ function DataGridTableRowSelect<TData>({
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function DataGridTableRowSelectAll({ size }: { size?: 'sm' | 'md' | 'lg' }) {
+  'use no memo';
+
   const { table, recordCount, isLoading } = useDataGrid();
 
   return (
@@ -486,6 +506,8 @@ function DataGridTableRowSelectAll({ size }: { size?: 'sm' | 'md' | 'lg' }) {
 }
 
 function DataGridTable<TData>() {
+  'use no memo';
+
   const { table, isLoading, props } = useDataGrid();
   const pagination = table.getState().pagination;
 

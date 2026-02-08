@@ -1,25 +1,33 @@
 import { env } from 'cloudflare:workers';
+import { resolveBrandConfigFromEnv } from '@deepcrawl/runtime';
+import { ensureAbsoluteUrl, OFFICIAL_API_URL } from '@deepcrawl/runtime/urls';
 import { SmartCoercionPlugin } from '@orpc/json-schema';
 import type { OpenAPIGeneratorGenerateOptions } from '@orpc/openapi';
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
 import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
 import { onError } from '@orpc/server';
-import { CORSPlugin } from '@orpc/server/plugins';
 import type { ORPCContext } from '@/lib/context';
-import { CORS_OPTIONS } from '@/middlewares/cors.hono';
 import { router } from '@/routers';
 import { OpenAPISpecBaseOptions, SchemaConverters } from './configs';
 
+const brandName = resolveBrandConfigFromEnv(env).name;
+
 const OpenAPISpecOptions = {
   ...OpenAPISpecBaseOptions,
+  info: {
+    ...OpenAPISpecBaseOptions.info,
+    title: brandName,
+  },
   servers: [
     {
       ...OpenAPISpecBaseOptions.servers[0],
+      description: `${brandName} API server`,
       url: (() => {
+        const raw = env.API_URL || OFFICIAL_API_URL;
         try {
-          return new URL(env.API_URL).toString();
+          return new URL(ensureAbsoluteUrl(raw)).toString();
         } catch {
-          return new URL(`https://${env.API_URL}`).toString();
+          return OFFICIAL_API_URL;
         }
       })(),
     },
@@ -33,14 +41,6 @@ export const openAPIHandler = new OpenAPIHandler<ORPCContext>(router, {
     }),
   ],
   plugins: [
-    new CORSPlugin({
-      origin: (origin) => origin, // Allow all origins (same as Hono)
-      credentials: CORS_OPTIONS.credentials,
-      maxAge: CORS_OPTIONS.maxAge,
-      allowMethods: CORS_OPTIONS.allowMethods,
-      allowHeaders: CORS_OPTIONS.allowHeaders,
-      exposeHeaders: CORS_OPTIONS.exposeHeaders,
-    }),
     new SmartCoercionPlugin({
       schemaConverters: SchemaConverters,
     }),

@@ -15,6 +15,8 @@ function DataGridColumnVisibility<TData>({
   table: Table<TData>;
   trigger: ReactNode;
 }) {
+  'use no memo';
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>

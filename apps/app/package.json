@@ -17,13 +17,15 @@
     "typecheck": "tsc --noEmit",
     "css-format": "pnpm biome check . --write --unsafe",
     "postinstall": "fumadocs-mdx",
-    "check": "pnpm install && pnpm lint:fix && pnpm typecheck && biome check --write"
+    "check": "pnpm lint && pnpm typecheck && biome ci .",
+    "fix": "pnpm lint:fix && biome check . --write"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.21",
     "@deepcrawl/auth": "workspace:*",
     "@deepcrawl/contracts": "workspace:*",
     "@deepcrawl/db-auth": "workspace:*",
+    "@deepcrawl/runtime": "workspace:*",
     "@deepcrawl/types": "workspace:*",
     "@dnd-kit/core": "catalog:",
     "@dnd-kit/modifiers": "catalog:",
@@ -105,6 +107,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "baseline-browser-mapping": "^2.9.19",
     "eslint": "catalog:",
     "eslint-config-next": "catalog:",
     "prettier": "^3.8.1",

@@ -1,3 +1,4 @@
+import { resolveBrandConfigFromEnv } from '@deepcrawl/runtime';
 import { getRuntimeKey } from 'hono/adapter';
 import { getConnInfo } from 'hono/cloudflare-workers';
 import { createContext } from '@/lib/context';
@@ -16,21 +17,25 @@ export const EPHEMERAL_CACHE = new Map();
 
 const app = createHonoApp();
 
-// Health check
+// Index & Health check (debug/info)
 app.get('/', async (c) => {
+  const brand = resolveBrandConfigFromEnv(c.env);
   const info = getConnInfo(c);
+  const apiOrigin = new URL(c.req.url).origin;
 
   return c.json({
-    message: 'Welcome to Deepcrawl Official API',
+    message: `Welcome to ${brand.name} API`,
+    brand,
     runtime: getRuntimeKey(),
     nodeEnv: c.env.WORKER_NODE_ENV,
+    timestamp: new Date().toISOString(),
     routes: {
       docs: '/docs',
       openapi: '/openapi',
       read: '/read?=url',
       links: '/links?=url',
       logs: '/logs?id=requestId',
-      site: 'https://deepcrawl.dev',
+      site: apiOrigin,
     },
     connInfo: c.env.WORKER_NODE_ENV === 'development' ? 'development' : info,
     services: {
@@ -38,7 +43,7 @@ app.get('/', async (c) => {
     },
     authentication: c.var.session?.user
       ? { ...c.var.session }
-      : 'You are currently not logged in! Login from https://deepcrawl.dev/app',
+      : 'You are currently not logged in.',
   });
 });
 

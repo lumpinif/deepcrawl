@@ -35,6 +35,8 @@ function DataGridColumnFilter<TData, TValue>({
   title,
   options,
 }: DataGridColumnFilterProps<TData, TValue>) {
+  'use no memo';
+
   const facets = column?.getFacetedUniqueValues();
   const selectedValues = new Set(column?.getFilterValue() as string[]);
 

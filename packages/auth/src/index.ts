@@ -15,6 +15,11 @@ export {
   PasswordReset,
   type PasswordResetProps,
 } from './templates';
+// Better Auth URL helpers (shared across dashboard and workers)
+export {
+  resolveBetterAuthApiBaseUrl,
+  resolveBetterAuthOriginUrl,
+} from './utils/better-auth-url';
 // Configuration validation utilities
 export {
   assertValidAuthConfiguration,

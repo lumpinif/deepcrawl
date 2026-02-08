@@ -22,6 +22,8 @@ import { type ActivityLogEntry, activityLogsColumns } from './logs-columns';
 import { LogsDataGridCard } from './logs-data-grid-card';
 
 export function ActivityLogsSkeleton() {
+  'use no memo';
+
   const [pagination] = useState<PaginationState>({
     pageIndex: LIST_LOGS_DEFAULT_OFFSET,
     pageSize: LIST_LOGS_DEFAULT_LIMIT,

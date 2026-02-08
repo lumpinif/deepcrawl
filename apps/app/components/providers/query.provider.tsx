@@ -4,6 +4,7 @@ import { Toaster } from '@deepcrawl/ui/components/ui/sonner';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { ReactNode } from 'react';
+import { PlaygroundApiKeyBootstrap } from '@/components/api-keys/playground-api-key-bootstrap';
 import { getQueryClient } from '@/query/query.client';
 
 export function QueryProviders({ children }: { children: ReactNode }) {
@@ -16,6 +17,7 @@ export function QueryProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      <PlaygroundApiKeyBootstrap />
       <Toaster
         className="custom-toaster flex items-center justify-center"
         offset={{ top: 0 }}

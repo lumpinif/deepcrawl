@@ -77,9 +77,16 @@ import { useTheme } from "next-themes";
 
 ## 🔧 Configuration
 
+Internal reference:
+
+- See `AUTH_MODES_AND_WORKERS.md` for the full auth matrix (AUTH_MODE x auth backend).
+
 ### **Environment Variables**
 ```bash
 # Authentication
+AUTH_MODE=better-auth | jwt | none
+# only effective if you set AUTH_MODE to jwt
+AUTH_JWT_TOKEN=your_jwt_token 
 NEXT_PUBLIC_USE_AUTH_WORKER=true
 BETTER_AUTH_SECRET=your_secret_key
 

@@ -18,19 +18,39 @@ import {
 } from 'deepcrawl/types';
 import { headers } from 'next/headers';
 import type { PlaygroundResponse } from '@/hooks/playground/types';
+import { buildDeepcrawlHeaders } from '@/lib/auth-mode';
 
 const DEEPCRAWL_BASE_URL = process.env.NEXT_PUBLIC_DEEPCRAWL_API_URL as string;
 
-/**
- * Create Deepcrawl client with proper auth header forwarding
- */
-async function createPlaygroundClient() {
+async function callWithAuthFallback<T>({
+  apiKey,
+  call,
+}: {
+  apiKey?: string;
+  call: (dc: DeepcrawlApp) => Promise<T>;
+}): Promise<T> {
   const requestHeaders = await headers();
 
-  return new DeepcrawlApp({
+  // 1) Prefer cookie session (or server-side JWT if configured via env).
+  const sessionClient = new DeepcrawlApp({
     baseUrl: DEEPCRAWL_BASE_URL,
-    headers: requestHeaders,
+    headers: buildDeepcrawlHeaders(requestHeaders),
   });
+
+  try {
+    return await call(sessionClient);
+  } catch (error) {
+    // 2) Fallback to device-stored playground API key.
+    if (apiKey && error instanceof DeepcrawlAuthError) {
+      const keyClient = new DeepcrawlApp({
+        baseUrl: DEEPCRAWL_BASE_URL,
+        apiKey,
+      });
+      return await call(keyClient);
+    }
+
+    throw error;
+  }
 }
 
 /**
@@ -38,10 +58,13 @@ async function createPlaygroundClient() {
  */
 export async function playgroundGetMarkdown(
   options: GetMarkdownOptions,
+  apiKey?: string,
 ): Promise<PlaygroundResponse<GetMarkdownResponse>> {
   try {
-    const dc = await createPlaygroundClient();
-    const data = await dc.getMarkdown(options);
+    const data = await callWithAuthFallback({
+      apiKey,
+      call: (dc) => dc.getMarkdown(options),
+    });
 
     return { data }; // must return in object to match the `data` property in PlaygroundResponse type
   } catch (error) {
@@ -54,10 +77,13 @@ export async function playgroundGetMarkdown(
  */
 export async function playgroundReadUrl(
   options: ReadUrlOptions,
+  apiKey?: string,
 ): Promise<PlaygroundResponse<ReadUrlResponse>> {
   try {
-    const dc = await createPlaygroundClient();
-    const data = await dc.readUrl(options);
+    const data = await callWithAuthFallback({
+      apiKey,
+      call: (dc) => dc.readUrl(options),
+    });
 
     return { data }; // must return in object to match the `data` property in PlaygroundResponse type
   } catch (error) {
@@ -70,10 +96,13 @@ export async function playgroundReadUrl(
  */
 export async function playgroundExtractLinks(
   options: ExtractLinksOptions,
+  apiKey?: string,
 ): Promise<PlaygroundResponse<ExtractLinksResponse>> {
   try {
-    const dc = await createPlaygroundClient();
-    const data = await dc.extractLinks(options);
+    const data = await callWithAuthFallback({
+      apiKey,
+      call: (dc) => dc.extractLinks(options),
+    });
 
     return { data }; // must return in object to match the `data` property in PlaygroundResponse type
   } catch (error) {

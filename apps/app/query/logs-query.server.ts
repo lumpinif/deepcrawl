@@ -5,6 +5,7 @@ import { resolveListLogsOptions } from '@deepcrawl/contracts';
 import { DeepcrawlApp } from 'deepcrawl';
 import { normalizeListLogsPagination } from 'deepcrawl/types';
 import { headers } from 'next/headers';
+import { buildDeepcrawlHeaders } from '@/lib/auth-mode';
 
 // import { z } from 'zod/v4';
 
@@ -21,7 +22,7 @@ export async function dcListLogs(
     const requestHeaders = await headers();
     const dc = new DeepcrawlApp({
       baseUrl: DEEPCRAWL_BASE_URL,
-      headers: requestHeaders,
+      headers: buildDeepcrawlHeaders(requestHeaders),
     });
 
     // DISABLED VALIDATION FOR NOW

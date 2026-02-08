@@ -13,6 +13,7 @@ export {
   eq,
   getTableColumns,
   gte,
+  isNull,
   lte,
   or,
   sql,

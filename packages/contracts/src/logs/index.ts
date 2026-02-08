@@ -30,7 +30,7 @@ export const listLogsContract = logsOC
     path: '/',
     method: 'POST',
     summary: 'List activity logs',
-    description: `Endpoint: POST \`api.deepcrawl.dev/logs\`\n\nRetrieve activity logs with request options but no response reconstruction payload. Returns paginated results with optional filtering by path, success status, and date range.`,
+    description: `Endpoint: POST \`/logs\`\n\nRetrieve activity logs with request options but no response reconstruction payload. Returns paginated results with optional filtering by path, success status, and date range.`,
   })
   .input(ListLogsOptionsSchema)
   .output(ListLogsResponseSchema);
@@ -49,7 +49,7 @@ export const getOneLogContract = logsOC
     path: '/',
     method: 'GET',
     summary: 'Get a single activity log',
-    description: `Endpoint: GET \`api.deepcrawl.dev/logs?id={requestId}\`\n\nRetrieve a single activity log with original response by ID.`,
+    description: `Endpoint: GET \`/logs?id={requestId}\`\n\nRetrieve a single activity log with original response by ID.`,
   })
   .input(GetOneLogOptionsSchema)
   .output(GetOneLogResponseSchema);
@@ -69,7 +69,7 @@ export const exportResponseContract = logsOC
     path: '/export',
     method: 'GET',
     summary: 'Export response by request ID',
-    description: `Endpoint: GET \`api.deepcrawl.dev/logs/export?id={requestId}&format={format}\`\n\nExport the response data from a specific request. Choose format:\n- \`json\`: Full response object\n- \`markdown\`: Markdown string (from getMarkdown or readUrl)\n- \`links\`: Links tree data (from getLinks or extractLinks)`,
+    description: `Endpoint: GET \`/logs/export?id={requestId}&format={format}\`\n\nExport the response data from a specific request. Choose format:\n- \`json\`: Full response object\n- \`markdown\`: Markdown string (from getMarkdown or readUrl)\n- \`links\`: Links tree data (from getLinks or extractLinks)`,
   })
   .input(ExportResponseOptionsSchema)
   .output(ExportResponseOutputSchema);

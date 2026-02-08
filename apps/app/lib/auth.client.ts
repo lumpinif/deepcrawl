@@ -1,6 +1,7 @@
 import { createAuthClientConfig } from '@deepcrawl/auth/configs';
 import type { Auth } from '@deepcrawl/auth/types';
 import { assertValidAuthConfiguration } from '@deepcrawl/auth/utils/config-validator';
+import { OFFICIAL_APP_URL, OFFICIAL_AUTH_URL } from '@deepcrawl/runtime/urls';
 import {
   inferAdditionalFields,
   twoFactorClient,
@@ -17,26 +18,25 @@ const getAuthBaseURL = () => {
   const useAuthWorker = process.env.NEXT_PUBLIC_USE_AUTH_WORKER !== 'false';
   const isDevelopment = process.env.NODE_ENV === 'development';
 
-  let baseAuthURL: string;
-
-  // Determine base URL based on auth mode and environment
   if (useAuthWorker) {
-    // External auth worker mode
-    baseAuthURL = isDevelopment
-      ? 'http://localhost:8787'
-      : 'https://auth.deepcrawl.dev';
-  } else {
-    // Next.js integrated auth mode
-    baseAuthURL = isDevelopment
-      ? 'http://localhost:3000'
-      : process.env.NEXT_PUBLIC_APP_URL || 'https://deepcrawl.dev';
+    const baseAuthURL =
+      process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+      (isDevelopment ? 'http://localhost:8787' : OFFICIAL_AUTH_URL);
+
+    assertValidAuthConfiguration({
+      useAuthWorker,
+      betterAuthUrl: baseAuthURL,
+      isDevelopment,
+      context: 'client',
+    });
+
+    return baseAuthURL;
   }
 
-  // Fallback if no auth URL is configured
-  if (!baseAuthURL) {
-    console.warn('⚠️ No BETTER_AUTH_URL configured');
-    throw new Error('⚠️ No BETTER_AUTH_URL configured');
-  }
+  const baseAuthURL =
+    (isDevelopment
+      ? 'http://localhost:3000'
+      : process.env.NEXT_PUBLIC_APP_URL) || OFFICIAL_APP_URL;
 
   // Validate configuration consistency (not graceful)
   assertValidAuthConfiguration({

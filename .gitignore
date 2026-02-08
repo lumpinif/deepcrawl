@@ -15,6 +15,10 @@ dist/
 .vscode/*
 !.vscode/launch.json
 !.vscode/*.code-snippets
+!.vscode/extensions.json
+!.vscode/settings.json
+.vscode/settings.local.json
+!.vscode/tasks.json
 .idea/workspace.xml
 .idea/usage.statistics.xml
 .idea/shelf
@@ -28,6 +32,8 @@ dist/
 .env.production
 .env.test
 .env.test.local
+.vars
+env/.env.local
 
 .dev.vars
 .dev.vars.dev

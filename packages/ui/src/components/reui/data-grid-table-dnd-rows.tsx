@@ -42,6 +42,8 @@ import { GripHorizontal } from 'lucide-react';
 import { type CSSProperties, useId } from 'react';
 
 function DataGridTableDndRowHandle({ rowId }: { rowId: string }) {
+  'use no memo';
+
   const { attributes, listeners } = useSortable({
     id: rowId,
   });
@@ -60,6 +62,8 @@ function DataGridTableDndRowHandle({ rowId }: { rowId: string }) {
 }
 
 function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
+  'use no memo';
+
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.id,
   });
@@ -96,6 +100,8 @@ function DataGridTableDndRows<TData>({
   handleDragEnd: (event: DragEndEvent) => void;
   dataIds: UniqueIdentifier[];
 }) {
+  'use no memo';
+
   const { table, isLoading, props } = useDataGrid();
   const pagination = table.getState().pagination;
 
