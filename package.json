@@ -31,6 +31,8 @@
     "env:generate": "pnpm exec tsx scripts/env/generate-env-examples.ts",
     "env:sync:local": "pnpm exec tsx scripts/env/sync-local-env.ts",
     "env:sync:vars": "pnpm exec tsx scripts/env/sync-to-vars.ts",
+    "env:sync:cloudflare:secrets": "pnpm exec tsx scripts/env/sync-cloudflare-secrets.ts",
+    "env:sync:vercel": "pnpm exec tsx scripts/env/sync-vercel-env.ts",
     "env:bootstrap": "pnpm exec tsx scripts/env/bootstrap-env-vars.ts && turbo cf-typegen --filter=deepcrawl-worker-auth --filter=deepcrawl-worker-v0",
     "test:env": "pnpm exec tsx --test scripts/env/__tests__/*.test.ts",
     "prepare": "husky",

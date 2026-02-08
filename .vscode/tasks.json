@@ -156,6 +156,38 @@
       }
     },
     {
+      "label": "Env: Sync Cloudflare Secrets (dry-run)",
+      "detail": "Plan Cloudflare Worker secrets sync from env/.env (dry-run; add --apply to write)",
+      "type": "shell",
+      "command": "pnpm env:sync:cloudflare:secrets --target worker-v0 --env production",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "tools",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
+      "label": "Env: Sync Vercel Env (dry-run)",
+      "detail": "Plan Vercel env sync from env/.env (dry-run; add --apply to write)",
+      "type": "shell",
+      "command": "pnpm env:sync:vercel --target production",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "new",
+        "group": "tools",
+        "reveal": "always",
+        "clear": true
+      }
+    },
+    {
       "label": "JWT: Mint",
       "detail": "Mint a JWT token (interactive) and optionally write to env/.env and env/.vars",
       "type": "shell",

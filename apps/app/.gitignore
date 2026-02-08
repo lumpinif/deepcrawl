@@ -49,3 +49,4 @@ next-env.d.ts
 
 # todo
 TODO.MD
+.env*.local
