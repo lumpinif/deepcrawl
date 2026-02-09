@@ -5,6 +5,9 @@ export const serviceFetcherMiddleware = createMiddleware<AppBindings>(
   async (c, next) => {
     // Auth worker binding is optional in some deployments (e.g. AUTH_MODE=jwt/none),
     // so we must be defensive at runtime.
+    //
+    // We intentionally avoid relying on generated binding types here because
+    // template/CLI deployments may omit the auth worker entirely.
     const authWorker = (
       c.env as unknown as { AUTH_WORKER?: { fetch: typeof fetch } }
     ).AUTH_WORKER;

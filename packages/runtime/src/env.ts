@@ -68,7 +68,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     group: 'Auth',
     targets: ['dashboard'],
     description:
-      "Set to 'false' to use integrated Next.js auth routes instead of the auth worker.",
+      "Dashboard only. Set to 'false' to use integrated Next.js auth routes instead of the auth worker (service binding).",
     example: true,
   },
   {
@@ -76,7 +76,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     group: 'Auth',
     targets: ['dashboard', 'worker-auth', 'worker-v0'],
     description:
-      'Auth base URL. Points to auth worker or to Next.js /api/auth depending on mode.',
+      'Better Auth base URL. Required when AUTH_MODE=better-auth. Points to the auth worker or to Next.js /api/auth depending on your setup.',
     example: 'http://localhost:8787',
   },
   {
@@ -107,7 +107,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     key: 'BETTER_AUTH_SECRET',
     group: 'Auth',
     targets: ['dashboard', 'worker-auth', 'worker-v0'],
-    description: 'Better Auth secret.',
+    description: 'Better Auth secret. Required when AUTH_MODE=better-auth.',
     example: '',
     secret: true,
   },
@@ -115,7 +115,8 @@ export const ENV_VARS: readonly EnvVar[] = [
     key: 'DATABASE_URL',
     group: 'Auth',
     targets: ['dashboard', 'worker-auth', 'worker-v0', 'db-auth'],
-    description: 'Postgres connection string (Neon, etc).',
+    description:
+      'Postgres connection string (Neon, etc). Required when AUTH_MODE=better-auth.',
     example: '',
     secret: true,
   },
@@ -131,7 +132,8 @@ export const ENV_VARS: readonly EnvVar[] = [
     key: 'AUTH_JWT_TOKEN',
     group: 'JWT',
     targets: ['dashboard'],
-    description: 'JWT token used by the dashboard server when AUTH_MODE=jwt.',
+    description:
+      'Dashboard only. JWT token used by the dashboard server when AUTH_MODE=jwt (v0-only deployments typically do not need this).',
     example: '',
     secret: true,
   },
@@ -196,7 +198,8 @@ export const ENV_VARS: readonly EnvVar[] = [
     key: 'UPSTASH_REDIS_REST_URL',
     group: 'Upstash',
     targets: ['worker-v0'],
-    description: 'Upstash Redis REST URL (used by API rate limiting).',
+    description:
+      'Upstash Redis REST URL (used by API rate limiting). Required only when ENABLE_API_RATE_LIMIT=true.',
     example: '',
     secret: true,
   },
@@ -204,7 +207,8 @@ export const ENV_VARS: readonly EnvVar[] = [
     key: 'UPSTASH_REDIS_REST_TOKEN',
     group: 'Upstash',
     targets: ['worker-v0'],
-    description: 'Upstash Redis REST token (used by API rate limiting).',
+    description:
+      'Upstash Redis REST token (used by API rate limiting). Required only when ENABLE_API_RATE_LIMIT=true.',
     example: '',
     secret: true,
   },
