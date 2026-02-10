@@ -2,6 +2,9 @@
 
 set -e
 
+# Avoid any interactive credential prompts in hooks.
+export GIT_TERMINAL_PROMPT=0
+
 # 1) Ensure local branch is up to date with remote
 # Pre-push hook receives remote name as $1
 PUSH_REMOTE="${1:-origin}"
