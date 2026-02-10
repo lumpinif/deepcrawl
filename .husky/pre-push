@@ -61,26 +61,31 @@ if [ "$CURRENT_BRANCH" != "$BASE_BRANCH" ]; then
   fi
   git fetch "$BASE_REMOTE" "$BASE_BRANCH" --no-tags
 
-  # changesets is intentionally bypassed for create-deepcrawl. We publish that
-  # package manually and do not want it to block pushes when it changes alone.
   CHANGED_FILES=$(git diff --name-only "$BASE_REF"...HEAD)
-  ONLY_CREATE_DEEPCRAWL=true
+
+  TOUCHED_SDK=false
+  TOUCHED_TYPES=false
+  TOUCHED_CONTRACTS=false
+
   for file in $CHANGED_FILES; do
     case "$file" in
-      packages/create-deepcrawl/*|pnpm-lock.yaml) ;;
-      *) ONLY_CREATE_DEEPCRAWL=false ;;
+      packages/sdks/js-ts/*) TOUCHED_SDK=true ;;
+      packages/types/*) TOUCHED_TYPES=true ;;
+      packages/contracts/*) TOUCHED_CONTRACTS=true ;;
     esac
   done
 
-  if [ "$ONLY_CREATE_DEEPCRAWL" = "true" ] && [ -n "$CHANGED_FILES" ]; then
-    echo "ℹ️  Only packages/create-deepcrawl changed; skipping changeset status."
-  else
+  if [ "$TOUCHED_SDK" = "true" ] || [ "$TOUCHED_TYPES" = "true" ] || [ "$TOUCHED_CONTRACTS" = "true" ]; then
     echo "🧾 Summarizing pending changesets (since $BASE_REF)..."
     pnpm changeset status --since="$BASE_REF"
-  fi
 
-  echo "🧩 Ensuring SDK changes include required changesets (base: $BASE_REF)..."
-  node .github/ensure-sdk-changeset.mjs "$BASE_REF"
+    if [ "$TOUCHED_TYPES" = "true" ] || [ "$TOUCHED_CONTRACTS" = "true" ]; then
+      echo "🧩 Ensuring SDK changes include required changesets (base: $BASE_REF)..."
+      node .github/ensure-sdk-changeset.mjs "$BASE_REF"
+    fi
+  else
+    echo "ℹ️  No SDK/types/contracts changes detected; skipping changeset checks."
+  fi
 else
   echo "ℹ️  On $BASE_BRANCH branch; skipping PR-only changeset checks."
 fi
