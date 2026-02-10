@@ -68,7 +68,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     group: 'Auth',
     targets: ['dashboard'],
     description:
-      "Dashboard only. Set to 'false' to use integrated Next.js auth routes instead of the auth worker (service binding).",
+      "Dashboard only. Set to 'false' to use integrated Next.js auth routes instead of the Cloudflare Auth Worker.",
     example: true,
   },
   {
@@ -76,7 +76,7 @@ export const ENV_VARS: readonly EnvVar[] = [
     group: 'Auth',
     targets: ['dashboard', 'worker-auth', 'worker-v0'],
     description:
-      'Better Auth base URL. Required when AUTH_MODE=better-auth. Points to the auth worker or to Next.js /api/auth depending on your setup.',
+      'Better Auth base/origin URL (no /api/auth). Required when AUTH_MODE=better-auth. Set to the auth worker origin or the Next.js app origin.',
     example: 'http://localhost:8787',
   },
   {
