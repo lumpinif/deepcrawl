@@ -24,9 +24,20 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Keep template/main as a mirror of main (no divergence).
-      # Template-specific tweaks should be applied as an explicit patch step later,
-      # not via manual commits on template/main.
+      # Keep template/main as a generated template output (no manual divergence).
+      # We intentionally strip repo-internal tooling (e.g. create-deepcrawl) so
+      # template consumers get a clean deployable codebase.
+      - name: Prepare template output (strip internal tooling)
+        run: |
+          git switch -c template-build
+
+          # CLI tooling lives in the main repo, but should not ship in the template.
+          git rm -r --ignore-unmatch packages/create-deepcrawl
+
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(template): strip internal tooling"
+          fi
+
       - name: Push main -> template/main
         run: |
           git push origin HEAD:refs/heads/template/main --force-with-lease

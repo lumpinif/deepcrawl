@@ -3,10 +3,10 @@
 # Non-secrets are configured via Wrangler vars (see wrangler.jsonc).
 
 # Auth
-# Better Auth secret.
+# Better Auth secret. Required when AUTH_MODE=better-auth.
 BETTER_AUTH_SECRET=
 
-# Postgres connection string (Neon, etc).
+# Postgres connection string (Neon, etc). Required when AUTH_MODE=better-auth.
 DATABASE_URL=
 
 # OAuth

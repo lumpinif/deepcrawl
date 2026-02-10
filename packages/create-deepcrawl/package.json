@@ -1,0 +1,20 @@
+{
+  "name": "create-deepcrawl",
+  "version": "0.0.1",
+  "description": "Create and deploy your own version of Deepcrawl.",
+  "license": "MIT",
+  "files": [
+    "README.md"
+  ],
+  "keywords": [
+    "deepcrawl",
+    "create",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
