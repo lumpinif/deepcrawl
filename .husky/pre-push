@@ -58,8 +58,23 @@ if [ "$CURRENT_BRANCH" != "$BASE_BRANCH" ]; then
   fi
   git fetch "$BASE_REMOTE" "$BASE_BRANCH" --no-tags
 
-  echo "🧾 Summarizing pending changesets (since $BASE_REF)..."
-  pnpm changeset status --since="$BASE_REF"
+  # changesets is intentionally bypassed for create-deepcrawl. We publish that
+  # package manually and do not want it to block pushes when it changes alone.
+  CHANGED_FILES=$(git diff --name-only "$BASE_REF"...HEAD)
+  ONLY_CREATE_DEEPCRAWL=true
+  for file in $CHANGED_FILES; do
+    case "$file" in
+      packages/create-deepcrawl/*|pnpm-lock.yaml) ;;
+      *) ONLY_CREATE_DEEPCRAWL=false ;;
+    esac
+  done
+
+  if [ "$ONLY_CREATE_DEEPCRAWL" = "true" ] && [ -n "$CHANGED_FILES" ]; then
+    echo "ℹ️  Only packages/create-deepcrawl changed; skipping changeset status."
+  else
+    echo "🧾 Summarizing pending changesets (since $BASE_REF)..."
+    pnpm changeset status --since="$BASE_REF"
+  fi
 
   echo "🧩 Ensuring SDK changes include required changesets (base: $BASE_REF)..."
   node .github/ensure-sdk-changeset.mjs "$BASE_REF"
