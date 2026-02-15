@@ -11,6 +11,9 @@ function normalizeWorkerName(projectName: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9-]+/g, '-')
     .replace(/^-+|-+$/g, '');
+  if (!base) {
+    throw new Error('Project name must include at least one letter or number.');
+  }
   return `${base}-api-worker`;
 }
 

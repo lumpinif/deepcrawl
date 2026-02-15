@@ -12,12 +12,16 @@ export type V0Resources = {
 };
 
 function normalizeResourceToken(raw: string): string {
-  return raw
+  const token = raw
     .trim()
     .toUpperCase()
     .replace(/[^A-Z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '')
     .replace(/_+/g, '_');
+  if (!token) {
+    throw new Error('Project name must include at least one letter or number.');
+  }
+  return token;
 }
 
 export function getV0ResourceNamesForProject(projectName: string): {

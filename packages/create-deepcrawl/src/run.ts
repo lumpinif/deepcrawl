@@ -28,11 +28,17 @@ type Answers = {
 
 function normalizeProjectName(raw: string): string {
   const trimmed = raw.trim();
+  if (!trimmed) {
+    throw new Error('Project name is required.');
+  }
   const kebab = trimmed
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
-  return kebab || trimmed;
+  if (!kebab) {
+    throw new Error('Project name must include at least one letter or number.');
+  }
+  return kebab;
 }
 
 async function promptAnswers(): Promise<Answers> {
@@ -40,9 +46,6 @@ async function promptAnswers(): Promise<Answers> {
   try {
     const rawName = await rl.question('Project name: ');
     const projectName = normalizeProjectName(rawName);
-    if (!projectName) {
-      throw new Error('Project name is required.');
-    }
 
     const rawPath = await rl.question('Project path (default: .): ');
     const projectPath = rawPath.trim() || '.';
