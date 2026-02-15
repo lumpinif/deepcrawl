@@ -127,6 +127,34 @@ AUTH_MODE=better-auth
 - `jwt`: Verify JWT tokens from `Authorization: Bearer <token>`.
 - `none`: No authentication, all operations are open. Use with caution.
 
+### V0-Only Minimal Deployment (JWT or None)
+
+If you only deploy the API worker (v0), you can run without the dashboard and
+without an auth worker:
+
+- `AUTH_MODE=none`: no auth, open API (use with caution).
+- `AUTH_MODE=jwt`: server verifies JWT locally using `hono/jwt`.
+
+In these modes, the following are NOT required:
+
+- `AUTH_WORKER` service binding (auth worker).
+- `BETTER_AUTH_URL` and other Better Auth config.
+- Upstash Redis rate limit secrets (unless you explicitly enable rate limiting).
+
+Minimal configuration for `AUTH_MODE=jwt`:
+
+```bash
+AUTH_MODE=jwt
+JWT_SECRET=your_jwt_secret
+```
+
+Optional (only if you want to enforce `iss` / `aud` claims):
+
+```bash
+JWT_ISSUER=deepcrawl
+JWT_AUDIENCE=deepcrawl-api
+```
+
 ### Activity Logs
 
 Logs are enabled by default across environments.

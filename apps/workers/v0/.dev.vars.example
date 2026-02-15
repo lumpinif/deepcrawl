@@ -3,10 +3,10 @@
 # Non-secrets are configured via Wrangler vars (see wrangler.jsonc).
 
 # Auth
-# Better Auth secret.
+# Better Auth secret. Required when AUTH_MODE=better-auth.
 BETTER_AUTH_SECRET=
 
-# Postgres connection string (Neon, etc).
+# Postgres connection string (Neon, etc). Required when AUTH_MODE=better-auth.
 DATABASE_URL=
 
 # JWT
@@ -25,10 +25,10 @@ GOOGLE_CLIENT_SECRET=
 RESEND_API_KEY=
 
 # Upstash
-# Upstash Redis REST URL (used by API rate limiting).
+# Upstash Redis REST URL (used by API rate limiting). Required only when ENABLE_API_RATE_LIMIT=true.
 UPSTASH_REDIS_REST_URL=
 
-# Upstash Redis REST token (used by API rate limiting).
+# Upstash Redis REST token (used by API rate limiting). Required only when ENABLE_API_RATE_LIMIT=true.
 UPSTASH_REDIS_REST_TOKEN=
 
 # Cloudflare

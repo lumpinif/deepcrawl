@@ -76,6 +76,9 @@ export const apiKeyAuthMiddleware = createMiddleware<AppBindings>(
       // AUTH_WORKER is an optional binding in template deployments.
       // Better Auth can run in the dashboard (Next.js) instead of a dedicated auth worker,
       // so we treat the service binding as a best-effort optimization.
+      //
+      // Note: We intentionally keep this binding loosely typed because some
+      // template/CLI deployments do not include an auth worker at all.
       const authWorkerCandidate = (
         c.env as unknown as { AUTH_WORKER?: unknown }
       ).AUTH_WORKER;

@@ -2,6 +2,9 @@
 
 set -e
 
+# Avoid any interactive credential prompts in hooks.
+export GIT_TERMINAL_PROMPT=0
+
 # 1) Ensure local branch is up to date with remote
 # Pre-push hook receives remote name as $1
 PUSH_REMOTE="${1:-origin}"
@@ -58,11 +61,31 @@ if [ "$CURRENT_BRANCH" != "$BASE_BRANCH" ]; then
   fi
   git fetch "$BASE_REMOTE" "$BASE_BRANCH" --no-tags
 
-  echo "🧾 Summarizing pending changesets (since $BASE_REF)..."
-  pnpm changeset status --since="$BASE_REF"
+  CHANGED_FILES=$(git diff --name-only "$BASE_REF"...HEAD)
 
-  echo "🧩 Ensuring SDK changes include required changesets (base: $BASE_REF)..."
-  node .github/ensure-sdk-changeset.mjs "$BASE_REF"
+  TOUCHED_SDK=false
+  TOUCHED_TYPES=false
+  TOUCHED_CONTRACTS=false
+
+  for file in $CHANGED_FILES; do
+    case "$file" in
+      packages/sdks/js-ts/*) TOUCHED_SDK=true ;;
+      packages/types/*) TOUCHED_TYPES=true ;;
+      packages/contracts/*) TOUCHED_CONTRACTS=true ;;
+    esac
+  done
+
+  if [ "$TOUCHED_SDK" = "true" ] || [ "$TOUCHED_TYPES" = "true" ] || [ "$TOUCHED_CONTRACTS" = "true" ]; then
+    echo "🧾 Summarizing pending changesets (since $BASE_REF)..."
+    pnpm changeset status --since="$BASE_REF"
+
+    if [ "$TOUCHED_TYPES" = "true" ] || [ "$TOUCHED_CONTRACTS" = "true" ]; then
+      echo "🧩 Ensuring SDK changes include required changesets (base: $BASE_REF)..."
+      node .github/ensure-sdk-changeset.mjs "$BASE_REF"
+    fi
+  else
+    echo "ℹ️  No SDK/types/contracts changes detected; skipping changeset checks."
+  fi
 else
   echo "ℹ️  On $BASE_BRANCH branch; skipping PR-only changeset checks."
 fi

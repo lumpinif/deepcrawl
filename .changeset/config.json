@@ -15,12 +15,14 @@
   "ignore": [
     "workers",
     "dashboard",
+    "create-deepcrawl",
     "deepcrawl-worker-auth",
     "deepcrawl-worker-v0",
     "@deepcrawl/auth",
     "@deepcrawl/eslint-config",
     "db",
     "@deepcrawl/ui",
+    "@deepcrawl/runtime",
     "sdks",
     "@deepcrawl/db-auth",
     "@deepcrawl/db-d1"
