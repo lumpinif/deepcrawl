@@ -18,9 +18,9 @@ This is the exact prompt order for the **v0-only** minimal deployment flow.
      - kebab-case recommended (CLI can normalize)
 
 2. **Auth mode**
-   - Prompt: `Authentication mode (none / jwt)`
+   - Prompt: `Authentication mode (jwt / none)`
    - Value: `authMode`
-   - Allowed: `none`, `jwt`
+   - Allowed: `jwt`, `none`
 
 3. **JWT configuration** (only if `authMode=jwt`)
    1. Prompt: `JWT secret (leave blank to generate)`
@@ -67,4 +67,3 @@ This is the exact prompt order for the **v0-only** minimal deployment flow.
    - Write Wrangler secrets (`JWT_SECRET`, optional Upstash secrets)
 5. Deploy:
    - `wrangler deploy` for v0 worker (production)
-

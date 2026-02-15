@@ -1,9 +1,22 @@
 {
   "name": "create-deepcrawl",
   "version": "0.0.1",
-  "description": "Create and deploy your own version of Deepcrawl.",
+  "description": "Bootstrap and deploy a Deepcrawl stack from your terminal.",
   "license": "MIT",
+  "type": "module",
+  "bin": {
+    "create-deepcrawl": "./bin/create-deepcrawl.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/bin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check": "pnpm typecheck"
+  },
   "files": [
+    "bin",
+    "dist",
+    "docs",
     "README.md"
   ],
   "keywords": [
@@ -16,5 +29,14 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
+  },
+  "devDependencies": {
+    "@deepcrawl/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "tsx": "^4.20.5",
+    "typescript": "catalog:"
   }
 }

@@ -1,5 +1,6 @@
 # create-deepcrawl
 
-Create and deploy your own version of Deepcrawl from your terminal.
+Bootstrap and deploy a Deepcrawl stack from your terminal.
 
+Status: early MVP (v0-only).
 
