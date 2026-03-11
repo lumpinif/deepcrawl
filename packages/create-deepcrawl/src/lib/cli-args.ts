@@ -1,5 +1,6 @@
 export type CliArgs = {
   dryRun: boolean;
+  targetPath?: string;
   templateSource?: string;
   templateBranch?: string;
 };
@@ -20,6 +21,10 @@ export function parseCliArgs(argv: string[]): CliArgs {
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
 
+    if (arg === undefined) {
+      continue;
+    }
+
     if (arg === '--') {
       continue;
     }
@@ -38,6 +43,16 @@ export function parseCliArgs(argv: string[]): CliArgs {
     if (arg === '--template-branch') {
       args.templateBranch = readFlagValue(argv, i, arg);
       i += 1;
+      continue;
+    }
+
+    if (!arg.startsWith('--')) {
+      if (args.targetPath) {
+        throw new Error(
+          'Only one target path may be provided. Example: npm create deepcrawl ../my-app',
+        );
+      }
+      args.targetPath = arg;
       continue;
     }
 

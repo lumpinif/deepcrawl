@@ -5,6 +5,8 @@ import type { V0Resources } from './provision-v0-resources.js';
 
 type AuthMode = 'none' | 'jwt';
 
+type ProductionVars = Record<string, string | boolean>;
+
 function normalizeWorkerName(projectName: string): string {
   const base = projectName
     .trim()
@@ -21,6 +23,23 @@ function getExistingMigrationsDir(source: string): string | null {
   const data = parse(source) as any;
   const migrations = data?.d1_databases?.[0]?.migrations_dir;
   return typeof migrations === 'string' ? migrations : null;
+}
+
+function buildProductionVars(input: {
+  authMode: AuthMode;
+  enableActivityLogs: boolean;
+  jwtIssuer?: string;
+  jwtAudience?: string;
+}): ProductionVars {
+  return {
+    AUTH_MODE: input.authMode,
+    ENABLE_ACTIVITY_LOGS: input.enableActivityLogs,
+    WORKER_NODE_ENV: 'production',
+    JWT_ISSUER: input.authMode === 'jwt' ? (input.jwtIssuer?.trim() ?? '') : '',
+    JWT_AUDIENCE:
+      input.authMode === 'jwt' ? (input.jwtAudience?.trim() ?? '') : '',
+    ENABLE_API_RATE_LIMIT: false,
+  };
 }
 
 export async function patchV0WranglerConfigForDeployment({
@@ -61,53 +80,17 @@ export async function patchV0WranglerConfigForDeployment({
       // Give the worker a per-project name to avoid collisions.
       next = setJsoncPath(next, ['name'], normalizeWorkerName(projectName));
 
-      // Minimal production vars for v0-only MVP.
+      // Rebuild production vars from an allowlist so template defaults never leak
+      // Deepcrawl's official URLs or OAuth public identifiers into user deployments.
       next = setJsoncPath(
         next,
-        ['env', 'production', 'vars', 'AUTH_MODE'],
-        authMode,
-      );
-      next = setJsoncPath(
-        next,
-        ['env', 'production', 'vars', 'ENABLE_ACTIVITY_LOGS'],
-        enableActivityLogs,
-      );
-      next = setJsoncPath(
-        next,
-        ['env', 'production', 'vars', 'WORKER_NODE_ENV'],
-        'production',
-      );
-
-      if (authMode === 'jwt') {
-        next = setJsoncPath(
-          next,
-          ['env', 'production', 'vars', 'JWT_ISSUER'],
-          jwtIssuer?.trim() ?? '',
-        );
-        next = setJsoncPath(
-          next,
-          ['env', 'production', 'vars', 'JWT_AUDIENCE'],
-          jwtAudience?.trim() ?? '',
-        );
-      } else {
-        // Keep vars present but empty for discoverability.
-        next = setJsoncPath(
-          next,
-          ['env', 'production', 'vars', 'JWT_ISSUER'],
-          '',
-        );
-        next = setJsoncPath(
-          next,
-          ['env', 'production', 'vars', 'JWT_AUDIENCE'],
-          '',
-        );
-      }
-
-      // Default to no rate limiting for MVP.
-      next = setJsoncPath(
-        next,
-        ['env', 'production', 'vars', 'ENABLE_API_RATE_LIMIT'],
-        false,
+        ['env', 'production', 'vars'],
+        buildProductionVars({
+          authMode,
+          enableActivityLogs,
+          jwtIssuer,
+          jwtAudience,
+        }),
       );
 
       if (resources) {

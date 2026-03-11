@@ -1,153 +1,34 @@
 import { existsSync } from 'node:fs';
-import { isAbsolute, resolve } from 'node:path';
-import { stdin as input, stdout as output } from 'node:process';
-import { createInterface } from 'node:readline/promises';
 import type { CliArgs } from './lib/cli-args.js';
-import { runCommand } from './lib/exec.js';
-import { generateJwtSecret } from './lib/jwt.js';
 import { resolveTemplateSourceConfig } from './lib/template-source.js';
 import { applyV0RemoteMigrations } from './steps/apply-v0-remote-migrations.js';
 import { cloneTemplateRepo } from './steps/clone-template.js';
 import { deployV0Worker } from './steps/deploy-v0-worker.js';
 import { installDependencies } from './steps/install-deps.js';
 import { patchV0WranglerConfigForDeployment } from './steps/patch-v0-wrangler.js';
+import { preflight } from './steps/preflight.js';
 import { prepareTemplateOutput } from './steps/prepare-template-output.js';
-import {
-  getV0ResourceNamesForProject,
-  provisionV0Resources,
-} from './steps/provision-v0-resources.js';
+import { provisionV0Resources } from './steps/provision-v0-resources.js';
 import { setWranglerSecret } from './steps/set-wrangler-secret.js';
-
-type AuthMode = 'none' | 'jwt';
-
-type Answers = {
-  projectName: string;
-  projectPath: string;
-  authMode: AuthMode;
-  jwtSecret?: string;
-  jwtIssuer?: string;
-  jwtAudience?: string;
-  enableActivityLogs: boolean;
-};
-
-function normalizeProjectName(raw: string): string {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    throw new Error('Project name is required.');
-  }
-  const kebab = trimmed
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  if (!kebab) {
-    throw new Error('Project name must include at least one letter or number.');
-  }
-  return kebab;
-}
-
-async function promptAnswers(): Promise<Answers> {
-  const rl = createInterface({ input, output });
-  try {
-    const rawName = await rl.question('Project name: ');
-    const projectName = normalizeProjectName(rawName);
-
-    const rawPath = await rl.question('Project path (default: .): ');
-    const projectPath = rawPath.trim() || '.';
-
-    const rawAuth = await rl.question('Authentication mode (jwt/none): ');
-    const authMode = rawAuth.trim().toLowerCase();
-    if (authMode !== 'none' && authMode !== 'jwt') {
-      throw new Error('Auth mode must be "none" or "jwt".');
-    }
-
-    let jwtSecret: string | undefined;
-    let jwtIssuer: string | undefined;
-    let jwtAudience: string | undefined;
-
-    if (authMode === 'jwt') {
-      const rawSecret = await rl.question(
-        'JWT secret (leave blank to generate): ',
-      );
-      jwtSecret = rawSecret.trim() || generateJwtSecret();
-
-      jwtIssuer = (await rl.question('JWT issuer (optional): ')).trim();
-      jwtAudience = (await rl.question('JWT audience (optional): ')).trim();
-    }
-
-    const rawLogs = await rl.question('Enable activity logs? (Y/n): ');
-    const enableActivityLogs = rawLogs.trim().toLowerCase() !== 'n';
-
-    const targetDir = isAbsolute(projectPath)
-      ? resolve(projectPath, projectName)
-      : resolve(process.cwd(), projectPath, projectName);
-
-    process.stdout.write('\nSummary:\n');
-    process.stdout.write(`- Project: ${projectName}\n`);
-    process.stdout.write(`- Path: ${targetDir}\n`);
-    process.stdout.write(`- Deploy: Cloudflare Workers (API)\n`);
-    process.stdout.write(`- Auth mode: ${authMode}\n`);
-    process.stdout.write(
-      `- Activity logs: ${enableActivityLogs ? 'enabled' : 'disabled'}\n`,
-    );
-    const names = getV0ResourceNamesForProject(projectName);
-    process.stdout.write('- Resources (derived from project name):\n');
-    process.stdout.write(`  - D1: ${names.d1Name}\n`);
-    process.stdout.write(`  - KV (links): ${names.linksTitle}\n`);
-    process.stdout.write(`  - KV (read): ${names.readTitle}\n`);
-
-    const proceedRaw = await rl.question('\nProceed? (y/N): ');
-    const proceed = proceedRaw.trim().toLowerCase() === 'y';
-    if (!proceed) {
-      throw new Error('Aborted by user.');
-    }
-
-    return {
-      projectName,
-      projectPath,
-      authMode,
-      jwtSecret,
-      jwtIssuer,
-      jwtAudience,
-      enableActivityLogs,
-    };
-  } finally {
-    rl.close();
-  }
-}
-
-async function preflight() {
-  process.stdout.write('[preflight] checking toolchain...\n');
-  await runCommand('git', ['--version'], { mode: 'inherit' });
-  await runCommand('pnpm', ['--version'], { mode: 'inherit' });
-  await runCommand('wrangler', ['--version'], { mode: 'inherit' });
-
-  const whoami = await runCommand('wrangler', ['whoami'], {
-    allowFailure: true,
-    mode: 'pipe',
-  });
-  if (whoami.exitCode !== 0) {
-    throw new Error(
-      'Cloudflare Wrangler is not logged in. Run "wrangler login" and re-run.',
-    );
-  }
-}
+import { promptAnswers } from './ui/prompt-answers.js';
 
 export async function run(
-  { dryRun = false, templateSource, templateBranch }: CliArgs = {
+  { dryRun = false, targetPath, templateSource, templateBranch }: CliArgs = {
     dryRun: false,
   },
 ) {
   await preflight();
 
-  const answers = await promptAnswers();
+  const answers = await promptAnswers({
+    cwd: process.cwd(),
+    targetPath,
+  });
   const template = resolveTemplateSourceConfig({
     cwd: process.cwd(),
     templateSource,
     templateBranch,
   });
-  const targetDir = isAbsolute(answers.projectPath)
-    ? resolve(answers.projectPath, answers.projectName)
-    : resolve(process.cwd(), answers.projectPath, answers.projectName);
+  const targetDir = answers.targetDirectory;
 
   if (existsSync(targetDir)) {
     throw new Error(`Target directory already exists: ${targetDir}`);

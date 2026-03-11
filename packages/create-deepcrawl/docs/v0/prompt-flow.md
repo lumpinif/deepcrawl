@@ -7,23 +7,55 @@ This is the exact prompt order for the **v0-only** minimal deployment flow.
 - Ask all questions **before** provisioning/deployment starts.
 - Once provisioning starts, do not ask new questions.
 - Prefer defaults that make the flow succeed without optional services.
+- Explain the project folder in plain English before asking for it.
+- If a target path is passed on the command line, skip the folder questions.
 
 ## Prompt Order
 
-1. **Project name**
+1. **Deployment target**
+   - Prompt: `What would you like to deploy?`
+   - Value: `deploymentTarget`
+   - Show these options in the same select:
+     - `V0 API Worker only (Available now)`
+     - `Dashboard app + API (Supporting soon)`
+     - `Fullstack app + auth + API (Supporting soon)`
+     - `Custom domains and routes (Supporting soon)`
+   - Allowed now:
+     - `v0-api-worker`
+   - Supporting soon:
+     - shown dim in the CLI
+     - not selectable
+
+2. **Project name**
    - Prompt: `Project name`
    - Value: `projectName`
    - Validation:
      - non-empty
      - kebab-case recommended (CLI can normalize)
 
-2. **Auth mode**
-   - Prompt: `Authentication mode (jwt / none)`
+3. **Project folder**
+   - Show a short guide card first:
+     - `We'll create one new folder for your project.`
+     - `Folder name: the new project folder.`
+     - `Create in: the folder where it should go.`
+     - `Example: my-app + .. = ../my-app`
+   - Prompt: `Create in`
+   - Value: `parentDirectory`
+   - Default: `.`
+   - Meaning:
+     - this is the folder where the new project folder will be created
+
+4. **Auth mode**
+   - Prompt: `How should this API handle auth?`
    - Value: `authMode`
    - Allowed: `jwt`, `none`
+   - Options:
+     - `JWT`
+     - `No auth`
 
-3. **JWT configuration** (only if `authMode=jwt`)
-   1. Prompt: `JWT secret (leave blank to generate)`
+5. **JWT configuration** (only if `authMode=jwt`)
+   1. Prompt: `JWT secret`
+      - Placeholder: `Leave blank to generate one`
       - Value: `jwtSecret`
       - If blank: generate a random 32-byte (or longer) secret (hex or base64).
    2. Prompt: `JWT issuer (optional)`
@@ -33,12 +65,12 @@ This is the exact prompt order for the **v0-only** minimal deployment flow.
       - Value: `jwtAudience`
       - Default: empty
 
-4. **Activity logs**
-   - Prompt: `Enable activity logs?`
+6. **Activity logs**
+   - Prompt: `Turn on activity logs?`
    - Value: `enableActivityLogs`
    - Default: `true`
 
-5. **API rate limit (Upstash)** (optional prompt, can be skipped in MVP)
+7. **API rate limit (Upstash)** (optional prompt, can be skipped in MVP)
    - Prompt: `Enable API rate limiting (Upstash)?`
    - Value: `enableApiRateLimit`
    - Default: `false`
@@ -46,16 +78,16 @@ This is the exact prompt order for the **v0-only** minimal deployment flow.
      - Prompt: `Upstash REST URL`
      - Prompt: `Upstash REST token`
 
-6. **Confirmation (summary)**
+8. **Confirmation (summary)**
    - Show a summary of:
+     - the final project folder that will be created
      - resources that will be created (D1 + 2 KV namespaces)
-     - vars/secrets that will be set
      - target deployment: Cloudflare v0 worker
-   - Prompt: `Proceed? (yes/no)`
+   - Prompt: `Deploy now?`
 
 ## Execution Steps (after confirmation)
 
-1. Clone the template repo/branch into `./<projectName>`
+1. Clone the template repo/branch into `<parentDirectory>/<projectName>`
 2. Apply v0-only patches:
    - Remove `services` from `apps/workers/v0/wrangler.jsonc` (root + production)
 3. Provision Cloudflare resources:

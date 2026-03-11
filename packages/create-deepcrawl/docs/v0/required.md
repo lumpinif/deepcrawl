@@ -15,8 +15,11 @@ flow.
 
 The CLI must collect the following before it starts provisioning/deploying:
 
+- Project location, in one of these forms:
+  - `projectName` + `parentDirectory`
+  - `targetPath` passed on the command line (for example `npm create deepcrawl ../my-app`)
 - `projectName`
-  - Used for local folder name and as a prefix for Cloudflare resource names.
+  - Used for the local folder name and as a prefix for Cloudflare resource names.
 - `authMode`
   - Allowed: `none` | `jwt`
 
@@ -65,4 +68,3 @@ Specifically, the CLI must remove `services` from:
 - `env.production` inside `apps/workers/v0/wrangler.jsonc`
 
 (The repo already has a helper to strip services in JSONC.)
-

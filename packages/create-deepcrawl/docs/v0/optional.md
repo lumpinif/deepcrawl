@@ -43,8 +43,7 @@ this as a configuration error if the user explicitly enabled rate limiting.
 
 ## Out of Scope (V0 MVP)
 
-- Custom domains and routes
-- AuthWorker provisioning
-- Dashboard (Next.js) provisioning
-- Better Auth / OAuth provider setup
-
+- Custom domains and routes (`Supporting soon`)
+- Dashboard + API deployments (`Supporting soon`)
+- Fullstack app + auth + API deployments (`Supporting soon`)
+- Better Auth / OAuth provider setup (`Supporting soon`)

@@ -1,6 +1,6 @@
 {
   "name": "create-deepcrawl",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Bootstrap and deploy a Deepcrawl stack from your terminal.",
   "license": "MIT",
   "type": "module",
@@ -33,6 +33,8 @@
     "access": "public"
   },
   "dependencies": {
+    "@clack/core": "^0.3.5",
+    "@clack/prompts": "^0.8.2",
     "jsonc-parser": "^3.3.1"
   },
   "devDependencies": {

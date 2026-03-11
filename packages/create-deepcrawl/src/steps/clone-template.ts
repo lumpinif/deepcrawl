@@ -2,12 +2,15 @@ import { existsSync } from 'node:fs';
 import { runCommand } from '../lib/exec.js';
 import type { TemplateSourceConfig } from '../lib/template-source.js';
 
-async function assertLocalTemplateRepo(source: string) {
+async function assertLocalTemplateRepo(
+  source: string,
+  run: typeof runCommand = runCommand,
+) {
   if (!existsSync(source)) {
     throw new Error(`Local template source not found: ${source}`);
   }
 
-  const result = await runCommand(
+  const result = await run(
     'git',
     ['-C', source, 'rev-parse', '--is-inside-work-tree'],
     {
@@ -26,25 +29,23 @@ async function assertLocalTemplateRepo(source: string) {
 export async function cloneTemplateRepo({
   destDir,
   template,
+  run = runCommand,
 }: {
   destDir: string;
   template: TemplateSourceConfig;
+  run?: typeof runCommand;
 }) {
   if (template.sourceKind === 'local') {
-    await assertLocalTemplateRepo(template.source);
+    await assertLocalTemplateRepo(template.source, run);
   }
 
-  await runCommand(
-    'git',
-    [
-      'clone',
-      '--depth',
-      '1',
-      '--branch',
-      template.branch,
-      template.source,
-      destDir,
-    ],
-    { mode: 'inherit' },
-  );
+  const args = ['clone'];
+
+  if (template.sourceKind !== 'local') {
+    args.push('--depth', '1');
+  }
+
+  args.push('--branch', template.branch, template.source, destDir);
+
+  await run('git', args, { mode: 'inherit' });
 }

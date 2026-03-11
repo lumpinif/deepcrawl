@@ -16,13 +16,33 @@ test('parseCliArgs supports default mode', () => {
   });
 });
 
+test('parseCliArgs accepts a positional target path', () => {
+  assert.deepEqual(parseCliArgs(['../my-app']), {
+    dryRun: false,
+    targetPath: '../my-app',
+  });
+});
+
 test('parseCliArgs ignores standalone pnpm argument separator', () => {
   assert.deepEqual(
-    parseCliArgs(['--', '--template-branch', 'feat/create-deepcrawl']),
+    parseCliArgs([
+      '--',
+      '../my-app',
+      '--template-branch',
+      'feat/create-deepcrawl',
+    ]),
     {
       dryRun: false,
+      targetPath: '../my-app',
       templateBranch: 'feat/create-deepcrawl',
     },
+  );
+});
+
+test('parseCliArgs rejects more than one positional target path', () => {
+  assert.throws(
+    () => parseCliArgs(['../my-app', '../my-other-app']),
+    /Only one target path may be provided/,
   );
 });
 
@@ -39,6 +59,7 @@ test('parseCliArgs supports official repo branch override', () => {
 test('parseCliArgs supports template source override', () => {
   assert.deepEqual(
     parseCliArgs([
+      '../my-app',
       '--dry-run',
       '--template-source',
       '/tmp/deepcrawl',
@@ -47,6 +68,7 @@ test('parseCliArgs supports template source override', () => {
     ]),
     {
       dryRun: true,
+      targetPath: '../my-app',
       templateSource: '/tmp/deepcrawl',
       templateBranch: 'feat/create-deepcrawl',
     },
