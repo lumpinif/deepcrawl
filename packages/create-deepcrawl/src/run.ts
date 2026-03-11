@@ -2,12 +2,16 @@ import { existsSync } from 'node:fs';
 import { isAbsolute, resolve } from 'node:path';
 import { stdin as input, stdout as output } from 'node:process';
 import { createInterface } from 'node:readline/promises';
+import type { CliArgs } from './lib/cli-args.js';
 import { runCommand } from './lib/exec.js';
 import { generateJwtSecret } from './lib/jwt.js';
+import { resolveTemplateSourceConfig } from './lib/template-source.js';
+import { applyV0RemoteMigrations } from './steps/apply-v0-remote-migrations.js';
 import { cloneTemplateRepo } from './steps/clone-template.js';
 import { deployV0Worker } from './steps/deploy-v0-worker.js';
 import { installDependencies } from './steps/install-deps.js';
 import { patchV0WranglerConfigForDeployment } from './steps/patch-v0-wrangler.js';
+import { prepareTemplateOutput } from './steps/prepare-template-output.js';
 import {
   getV0ResourceNamesForProject,
   provisionV0Resources,
@@ -128,10 +132,19 @@ async function preflight() {
   }
 }
 
-export async function run({ dryRun = false }: { dryRun?: boolean } = {}) {
+export async function run(
+  { dryRun = false, templateSource, templateBranch }: CliArgs = {
+    dryRun: false,
+  },
+) {
   await preflight();
 
   const answers = await promptAnswers();
+  const template = resolveTemplateSourceConfig({
+    cwd: process.cwd(),
+    templateSource,
+    templateBranch,
+  });
   const targetDir = isAbsolute(answers.projectPath)
     ? resolve(answers.projectPath, answers.projectName)
     : resolve(process.cwd(), answers.projectPath, answers.projectName);
@@ -143,7 +156,15 @@ export async function run({ dryRun = false }: { dryRun?: boolean } = {}) {
   process.stdout.write(`[clone] cloning template into ${targetDir}...\n`);
   await cloneTemplateRepo({
     destDir: targetDir,
+    template,
   });
+
+  if (template.isOverride) {
+    process.stdout.write('[template] preparing template output...\n');
+    await prepareTemplateOutput({
+      projectDir: targetDir,
+    });
+  }
 
   if (dryRun) {
     process.stdout.write(
@@ -200,6 +221,13 @@ export async function run({ dryRun = false }: { dryRun?: boolean } = {}) {
       value: secret,
     });
   }
+
+  process.stdout.write('[db] applying remote D1 migrations...\n');
+  await applyV0RemoteMigrations({
+    cwd: targetDir,
+    configPath: 'apps/workers/v0/wrangler.jsonc',
+    env: 'production',
+  });
 
   process.stdout.write('[deploy] deploying v0 worker...\n');
   await deployV0Worker({

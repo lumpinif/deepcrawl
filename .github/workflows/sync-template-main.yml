@@ -30,9 +30,8 @@ jobs:
       - name: Prepare template output (strip internal tooling)
         run: |
           git switch -c template-build
-
-          # CLI tooling lives in the main repo, but should not ship in the template.
-          git rm -r --ignore-unmatch packages/create-deepcrawl
+          node packages/create-deepcrawl/scripts/prepare-template-output.mjs .
+          git add -A
 
           if ! git diff --cached --quiet; then
             git commit -m "chore(template): strip internal tooling"

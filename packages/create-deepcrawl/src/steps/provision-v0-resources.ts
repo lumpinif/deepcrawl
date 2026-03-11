@@ -39,7 +39,7 @@ export function getV0ResourceNamesForProject(projectName: string): {
 
 function parseFirstMatch(text: string, regex: RegExp, label: string): string {
   const m = text.match(regex);
-  const value = m?.[1];
+  const value = m?.[1] ?? m?.[2];
   if (!value) {
     throw new Error(`Failed to parse ${label} from Wrangler output.`);
   }
@@ -49,14 +49,21 @@ function parseFirstMatch(text: string, regex: RegExp, label: string): string {
 function parseDatabaseId(output: string): string {
   return parseFirstMatch(
     output,
-    /database_id\s*=\s*"([^"]+)"/i,
+    /"database_id"\s*:\s*"([^"]+)"|\bdatabase_id\s*=\s*"([^"]+)"/i,
     'D1 database_id',
   );
 }
 
-function parseKvId(output: string): string {
-  // Wrangler prints a TOML snippet that includes: id = "..."
-  return parseFirstMatch(output, /\bid\s*=\s*"([^"]+)"/i, 'KV namespace id');
+function parseKvId(output: string, preview: boolean): string {
+  const property = preview ? 'preview_id' : 'id';
+  return parseFirstMatch(
+    output,
+    new RegExp(
+      `"${property}"\\s*:\\s*"([^"]+)"|\\b${property}\\s*=\\s*"([^"]+)"`,
+      'i',
+    ),
+    `KV namespace ${property}`,
+  );
 }
 
 async function createD1({
@@ -89,7 +96,7 @@ async function createKvNamespace({
   }
   const result = await runCommand('wrangler', args, { cwd, mode: 'pipe' });
   const output = `${result.stdout}\n${result.stderr}`;
-  return parseKvId(output);
+  return parseKvId(output, preview);
 }
 
 export async function provisionV0Resources({
