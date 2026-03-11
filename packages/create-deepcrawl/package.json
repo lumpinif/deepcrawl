@@ -1,6 +1,6 @@
 {
   "name": "create-deepcrawl",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Bootstrap and deploy a Deepcrawl stack from your terminal.",
   "license": "MIT",
   "type": "module",
@@ -8,7 +8,7 @@
     "create-deepcrawl": "./bin/create-deepcrawl.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "dev": "tsx src/bin.ts",
     "test": "tsx --test src/**/*.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
