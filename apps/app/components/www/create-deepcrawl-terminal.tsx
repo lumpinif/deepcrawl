@@ -60,7 +60,7 @@ const TERMINAL_LINES: TerminalLine[] = [
   { text: '', delay: 90 },
   { text: 'wait... creating your project', delay: 180, tone: 'muted' },
   {
-    text: '🎉 Your Firecrawl is ready. Do you want to test your API now?',
+    text: '🎉 Your Faircrawl is ready. Do you want to test your API now?',
     delay: 120,
     tone: 'accent',
   },
