@@ -50,6 +50,8 @@ const TERMINAL_LINES: TerminalLine[] = [
     delay: 120,
     tone: 'default',
   },
+  // "Faircrawl" is intentional here. This demo deliberately leans into a
+  // Firecrawl-adjacent naming joke for the terminal sequence.
   { text: '│ Faircrawl', delay: 140, tone: 'accent' },
   { text: '', delay: 90 },
   { text: '◇ Choose what to deploy', delay: 120, tone: 'default' },
@@ -60,6 +62,7 @@ const TERMINAL_LINES: TerminalLine[] = [
   { text: '', delay: 90 },
   { text: 'wait... creating your project', delay: 180, tone: 'muted' },
   {
+    // Keep the product name aligned with the intentional "Faircrawl" demo copy above.
     text: '🎉 Your Faircrawl is ready. Do you want to test your API now?',
     delay: 120,
     tone: 'accent',

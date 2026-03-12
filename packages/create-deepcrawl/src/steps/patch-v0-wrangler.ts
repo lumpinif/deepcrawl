@@ -10,6 +10,7 @@ type ParsedWranglerConfig = {
   d1_databases?: Array<{
     migrations_dir?: string;
   }>;
+  vars?: Record<string, string | boolean>;
 };
 
 function normalizeWorkerName(projectName: string): string {
@@ -28,6 +29,12 @@ function getExistingMigrationsDir(source: string): string | null {
   const data = parse(source) as ParsedWranglerConfig;
   const migrations = data?.d1_databases?.[0]?.migrations_dir;
   return typeof migrations === 'string' ? migrations : null;
+}
+
+function getExistingLocalApiUrl(source: string): string | null {
+  const data = parse(source) as ParsedWranglerConfig;
+  const apiUrl = data?.vars?.API_URL;
+  return typeof apiUrl === 'string' ? apiUrl : null;
 }
 
 function buildSharedWorkerVars(input: {
@@ -114,6 +121,10 @@ export async function patchV0WranglerConfigForDeployment({
         jwtIssuer,
         jwtAudience,
       });
+      const localApiUrl = getExistingLocalApiUrl(source);
+      if (localApiUrl) {
+        rootVars.API_URL = localApiUrl;
+      }
       const deploymentVars = buildProductionVars({
         authMode,
         enableActivityLogs,

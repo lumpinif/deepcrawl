@@ -3,6 +3,10 @@ import { dirname } from 'node:path';
 
 type EnvUpdates = Record<string, string>;
 
+function formatEnvValue(value: string): string {
+  return /^[A-Za-z0-9_./:-]+$/.test(value) ? value : JSON.stringify(value);
+}
+
 function getDefaultHeader(filePath: string): string[] {
   if (filePath.endsWith('.dev.vars.production')) {
     return [
@@ -48,7 +52,7 @@ export function upsertEnvFile(filePath: string, updates: EnvUpdates): void {
     }
 
     seen.add(key);
-    return `${key}=${updates[key]}`;
+    return `${key}=${formatEnvValue(updates[key])}`;
   });
 
   for (const [key, value] of Object.entries(updates)) {
@@ -63,7 +67,7 @@ export function upsertEnvFile(filePath: string, updates: EnvUpdates): void {
       updatedLines.push('# JWT');
     }
 
-    updatedLines.push(`${key}=${value}`);
+    updatedLines.push(`${key}=${formatEnvValue(value)}`);
   }
 
   const output = updatedLines

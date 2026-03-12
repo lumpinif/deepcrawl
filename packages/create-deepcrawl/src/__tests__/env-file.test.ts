@@ -36,3 +36,15 @@ test('upsertEnvFile updates JWT_SECRET and keeps other lines', () => {
   assert.match(output, /JWT_SECRET=second-secret/);
   assert.equal(output.match(/JWT_SECRET=/g)?.length, 1);
 });
+
+test('upsertEnvFile quotes values that would break dotenv parsing', () => {
+  const root = mkdtempSync(join(tmpdir(), 'create-deepcrawl-env-'));
+  const filePath = join(root, '.dev.vars');
+
+  upsertEnvFile(filePath, {
+    JWT_SECRET: 'abc#def with spaces',
+  });
+
+  const output = readFileSync(filePath, 'utf8');
+  assert.match(output, /JWT_SECRET="abc#def with spaces"/);
+});

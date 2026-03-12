@@ -63,6 +63,7 @@ test('prepareV0LocalProject aligns local wrangler config and JWT secret files', 
   assert.deepEqual(data.vars, {
     AUTH_MODE: 'jwt',
     ENABLE_ACTIVITY_LOGS: false,
+    API_URL: 'http://localhost:8080',
     WORKER_NODE_ENV: 'development',
     JWT_ISSUER: 'issuer-1',
     JWT_AUDIENCE: 'audience-1',
@@ -85,5 +86,62 @@ test('prepareV0LocalProject aligns local wrangler config and JWT secret files', 
   assert.match(
     await readFile(result.localJwtSecretFiles.productionDevVarsPath, 'utf8'),
     /JWT_SECRET=generated-secret/,
+  );
+});
+
+test('prepareV0LocalProject keeps no-auth local config aligned without secret files', async () => {
+  const projectDir = await createProjectFixture();
+
+  const result = await prepareV0LocalProject({
+    projectDir,
+    projectName: 'My Deepcrawl',
+    authMode: 'none',
+    enableActivityLogs: true,
+  });
+
+  const next = await readFile(
+    join(projectDir, 'apps', 'workers', 'v0', 'wrangler.jsonc'),
+    'utf8',
+  );
+  const data = parse(next) as {
+    vars?: Record<string, string | boolean>;
+    env?: {
+      production?: {
+        vars?: Record<string, string | boolean>;
+      };
+    };
+  };
+
+  assert.equal(result.localJwtSecretFiles, undefined);
+  assert.deepEqual(data.vars, {
+    AUTH_MODE: 'none',
+    ENABLE_ACTIVITY_LOGS: true,
+    API_URL: 'http://localhost:8080',
+    WORKER_NODE_ENV: 'development',
+    JWT_ISSUER: '',
+    JWT_AUDIENCE: '',
+    ENABLE_API_RATE_LIMIT: false,
+  });
+  assert.deepEqual(data.env?.production?.vars, {
+    AUTH_MODE: 'none',
+    ENABLE_ACTIVITY_LOGS: true,
+    WORKER_NODE_ENV: 'production',
+    JWT_ISSUER: '',
+    JWT_AUDIENCE: '',
+    ENABLE_API_RATE_LIMIT: false,
+  });
+});
+
+test('prepareV0LocalProject rejects jwt mode without a secret', async () => {
+  const projectDir = await createProjectFixture();
+
+  await assert.rejects(
+    prepareV0LocalProject({
+      projectDir,
+      projectName: 'My Deepcrawl',
+      authMode: 'jwt',
+      enableActivityLogs: false,
+    }),
+    /JWT secret is missing/,
   );
 });

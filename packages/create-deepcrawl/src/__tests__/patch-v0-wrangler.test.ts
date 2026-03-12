@@ -62,6 +62,7 @@ test('patchV0WranglerConfigForDeployment rebuilds production vars from allowlist
   assert.deepEqual(data.vars, {
     AUTH_MODE: 'jwt',
     ENABLE_ACTIVITY_LOGS: true,
+    API_URL: 'http://localhost:8080',
     WORKER_NODE_ENV: 'development',
     JWT_ISSUER: 'issuer-1',
     JWT_AUDIENCE: 'audience-1',
@@ -104,6 +105,7 @@ test('patchV0WranglerConfigForDeployment keeps optional jwt vars discoverable wh
   assert.deepEqual(data.vars, {
     AUTH_MODE: 'none',
     ENABLE_ACTIVITY_LOGS: false,
+    API_URL: 'http://localhost:8080',
     WORKER_NODE_ENV: 'development',
     JWT_ISSUER: '',
     JWT_AUDIENCE: '',

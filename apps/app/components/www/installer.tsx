@@ -70,6 +70,9 @@ export const CommandInstaller = ({
             {code}
           </pre>
           <Button
+            aria-label={
+              isCopied ? 'Installer command copied' : 'Copy installer command'
+            }
             className="absolute right-1 rounded-sm bg-transparent! text-muted-foreground group-hover:text-foreground"
             onClick={(event) => {
               event.stopPropagation();
@@ -89,6 +92,9 @@ export const CommandInstaller = ({
             {code}
           </pre>
           <Button
+            aria-label={
+              isCopied ? 'Installer command copied' : 'Copy installer command'
+            }
             className="justify-self-center rounded-sm bg-transparent! text-muted-foreground group-hover:text-foreground"
             onClick={(event) => {
               event.stopPropagation();
