@@ -99,3 +99,15 @@ This is the exact prompt order for the **v0-only** minimal deployment flow.
    - Write Wrangler secrets (`JWT_SECRET`, optional Upstash secrets)
 5. Deploy:
    - `wrangler deploy` for v0 worker (production)
+
+## Success card and quick test
+
+- The final note highlights the deployed API URL, a link to this document, and
+  the two gitignored files (`apps/workers/v0/.dev.vars` and
+  `apps/workers/v0/.dev.vars.production`) that store `JWT_SECRET`.
+- It then prompts `Try your API now?`. Choosing `Yes` runs a quick test flow
+  (`Read a page` or `Extract links`, target URL) that automatically mints a
+  15-minute HS256 token when JWT auth is active.
+- The quick test displays the HTTP status, a truncated pretty-printed preview
+  of the response, and a ready-to-copy `curl` command that embeds the temporary
+  token. No response data is written to disk.

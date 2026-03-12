@@ -5,7 +5,13 @@ import type { V0Resources } from './provision-v0-resources.js';
 
 type AuthMode = 'none' | 'jwt';
 
-type ProductionVars = Record<string, string | boolean>;
+type WorkerVars = Record<string, string | boolean>;
+type ParsedWranglerConfig = {
+  d1_databases?: Array<{
+    migrations_dir?: string;
+  }>;
+  vars?: Record<string, string | boolean>;
+};
 
 function normalizeWorkerName(projectName: string): string {
   const base = projectName
@@ -20,9 +26,43 @@ function normalizeWorkerName(projectName: string): string {
 }
 
 function getExistingMigrationsDir(source: string): string | null {
-  const data = parse(source) as any;
+  const data = parse(source) as ParsedWranglerConfig;
   const migrations = data?.d1_databases?.[0]?.migrations_dir;
   return typeof migrations === 'string' ? migrations : null;
+}
+
+function getExistingLocalApiUrl(source: string): string | null {
+  const data = parse(source) as ParsedWranglerConfig;
+  const apiUrl = data?.vars?.API_URL;
+  return typeof apiUrl === 'string' ? apiUrl : null;
+}
+
+function buildSharedWorkerVars(input: {
+  authMode: AuthMode;
+  enableActivityLogs: boolean;
+  jwtIssuer?: string;
+  jwtAudience?: string;
+}): WorkerVars {
+  return {
+    AUTH_MODE: input.authMode,
+    ENABLE_ACTIVITY_LOGS: input.enableActivityLogs,
+    JWT_ISSUER: input.authMode === 'jwt' ? (input.jwtIssuer?.trim() ?? '') : '',
+    JWT_AUDIENCE:
+      input.authMode === 'jwt' ? (input.jwtAudience?.trim() ?? '') : '',
+    ENABLE_API_RATE_LIMIT: false,
+  };
+}
+
+function buildRootVars(input: {
+  authMode: AuthMode;
+  enableActivityLogs: boolean;
+  jwtIssuer?: string;
+  jwtAudience?: string;
+}): WorkerVars {
+  return {
+    ...buildSharedWorkerVars(input),
+    WORKER_NODE_ENV: 'development',
+  };
 }
 
 function buildProductionVars(input: {
@@ -30,15 +70,10 @@ function buildProductionVars(input: {
   enableActivityLogs: boolean;
   jwtIssuer?: string;
   jwtAudience?: string;
-}): ProductionVars {
+}): WorkerVars {
   return {
-    AUTH_MODE: input.authMode,
-    ENABLE_ACTIVITY_LOGS: input.enableActivityLogs,
+    ...buildSharedWorkerVars(input),
     WORKER_NODE_ENV: 'production',
-    JWT_ISSUER: input.authMode === 'jwt' ? (input.jwtIssuer?.trim() ?? '') : '',
-    JWT_AUDIENCE:
-      input.authMode === 'jwt' ? (input.jwtAudience?.trim() ?? '') : '',
-    ENABLE_API_RATE_LIMIT: false,
   };
 }
 
@@ -80,18 +115,31 @@ export async function patchV0WranglerConfigForDeployment({
       // Give the worker a per-project name to avoid collisions.
       next = setJsoncPath(next, ['name'], normalizeWorkerName(projectName));
 
+      const rootVars = buildRootVars({
+        authMode,
+        enableActivityLogs,
+        jwtIssuer,
+        jwtAudience,
+      });
+      const localApiUrl = getExistingLocalApiUrl(source);
+      if (localApiUrl) {
+        rootVars.API_URL = localApiUrl;
+      }
+      const deploymentVars = buildProductionVars({
+        authMode,
+        enableActivityLogs,
+        jwtIssuer,
+        jwtAudience,
+      });
+
+      // Rebuild root vars too so local Wrangler config stays aligned with the
+      // generated production environment and does not inherit Deepcrawl's
+      // official public URLs or OAuth identifiers.
+      next = setJsoncPath(next, ['vars'], rootVars);
+
       // Rebuild production vars from an allowlist so template defaults never leak
       // Deepcrawl's official URLs or OAuth public identifiers into user deployments.
-      next = setJsoncPath(
-        next,
-        ['env', 'production', 'vars'],
-        buildProductionVars({
-          authMode,
-          enableActivityLogs,
-          jwtIssuer,
-          jwtAudience,
-        }),
-      );
+      next = setJsoncPath(next, ['env', 'production', 'vars'], deploymentVars);
 
       if (resources) {
         const migrationsDir =

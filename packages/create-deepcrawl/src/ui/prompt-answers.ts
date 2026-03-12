@@ -1,6 +1,6 @@
 import { basename, dirname, isAbsolute, resolve } from 'node:path';
 import { cancel, isCancel, note, select, text } from '@clack/prompts';
-import { generateJwtSecret } from '../lib/jwt.js';
+import { generateJwtSecret, validateJwtSecretStrength } from '../lib/jwt.js';
 import { createUserAbortError } from '../lib/user-abort.js';
 import { getV0ResourceNamesForProject } from '../steps/provision-v0-resources.js';
 import { promptConfirmValue } from './confirm-prompt.js';
@@ -16,6 +16,7 @@ export type Answers = {
   targetDirectory: string;
   authMode: AuthMode;
   jwtSecret?: string;
+  jwtSecretWasGenerated?: boolean;
   jwtIssuer?: string;
   jwtAudience?: string;
   enableActivityLogs: boolean;
@@ -272,6 +273,7 @@ export async function promptAnswers(
   );
 
   let jwtSecret: string | undefined;
+  let jwtSecretWasGenerated = false;
   let jwtIssuer: string | undefined;
   let jwtAudience: string | undefined;
 
@@ -279,8 +281,15 @@ export async function promptAnswers(
     const rawSecret = await promptTextValue({
       message: 'JWT secret',
       placeholder: 'Leave blank to generate one',
+      validate: validateJwtSecretStrength,
     });
-    jwtSecret = rawSecret.trim() || generateJwtSecret();
+    const providedSecret = rawSecret.trim();
+    if (providedSecret) {
+      jwtSecret = providedSecret;
+    } else {
+      jwtSecret = generateJwtSecret();
+      jwtSecretWasGenerated = true;
+    }
 
     jwtIssuer = (
       await promptTextValue({
@@ -323,7 +332,7 @@ export async function promptAnswers(
 
   const proceed = await promptConfirmValue({
     message: 'Deploy now?',
-    initialValue: false,
+    initialValue: true,
     activeLabel: 'Yes',
     inactiveLabel: 'No',
   });
@@ -340,6 +349,7 @@ export async function promptAnswers(
     targetDirectory: location.targetDirectory,
     authMode,
     jwtSecret,
+    jwtSecretWasGenerated,
     jwtIssuer,
     jwtAudience,
     enableActivityLogs,

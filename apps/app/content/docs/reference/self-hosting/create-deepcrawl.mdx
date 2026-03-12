@@ -1,0 +1,154 @@
+---
+title: Deploy with npm create deepcrawl
+description: Launch your own Deepcrawl API Worker on Cloudflare with one command.
+---
+
+`npm create deepcrawl` is the fastest way to launch your own Deepcrawl API on
+Cloudflare. It asks a few simple questions, creates the required Cloudflare
+resources, applies D1 migrations, and deploys the Worker for you.
+
+## Prerequisites
+
+Before you run `npm create deepcrawl`, make sure you have:
+
+- A free [Cloudflare account](https://www.cloudflare.com/plans/free/). The CLI
+  creates Worker, D1, and KV resources in your Cloudflare account.
+- Node.js 20 or later, `git`, and `pnpm`
+- `wrangler` available in your terminal. If it is missing, the CLI can install
+  it for you.
+- A logged-in Wrangler session. Run `wrangler login` first.
+
+## What it deploys today
+
+- A single **V0 API Worker**
+- **1 D1 database**
+- **2 KV namespaces**
+- Optional **JWT auth**
+- Optional **activity logs**
+
+<Callout type="info" title="Current scope">
+Right now the CLI deploys the API Worker only. Dashboard, Auth Worker, and
+custom domains are not included yet.
+</Callout>
+
+### Coming soon
+
+- **Dashboard app + API** in one guided flow
+- **Full-stack deployment** with the **Dashboard, Auth Worker, and API**
+- **Custom domains and routes**
+
+## Run it
+
+```bash
+npm create deepcrawl
+```
+
+Want a safe preview first? Run `npm create deepcrawl -- --dry-run` to
+rehearse the full setup before you deploy.
+
+You can also pass the target folder up front:
+
+```bash
+npm create deepcrawl ../my-app
+```
+
+## What the CLI asks
+
+1. **Where to create the project**
+2. **How auth should work**
+3. **Whether to turn on activity logs**
+4. **Whether to deploy right away**
+
+If you choose **JWT**, the CLI will ask for:
+
+- `JWT secret`
+- `JWT issuer` (optional)
+- `JWT audience` (optional)
+
+If you leave the JWT secret blank, the CLI generates one for you, stores it in
+both `apps/workers/v0/.dev.vars` and `apps/workers/v0/.dev.vars.production`,
+and shows it once after deployment so you can copy it before it disappears.
+
+## What happens during setup
+
+The CLI will:
+
+1. Check that `git`, `pnpm`, and `wrangler` are ready
+2. Clone the Deepcrawl template
+3. Install dependencies
+4. Create the Cloudflare D1 and KV resources
+5. Apply remote D1 migrations
+6. Deploy the Worker
+
+## After deployment
+
+The success screen highlights four things: the deployed Worker URL, a link to
+[the `npm create deepcrawl` docs](https://deepcrawl.dev/docs/reference/self-hosting/create-deepcrawl),
+the two gitignored files where your JWT secret lives (`apps/workers/v0/.dev.vars`
+and `apps/workers/v0/.dev.vars.production`), and a short recap of what the CLI
+just provisioned.
+
+It also asks `Try your API now?`. Choosing `Yes` launches an automated quick
+test that prompts for the endpoint (`Read a page` or `Extract links`) and the
+target URL (default `https://example.com`). If your API requires JWT, the CLI
+automatically mints a 15-minute HS256 token that includes the issuer/audience
+you configured, makes the request, and prints the status, a truncated preview,
+and a ready-to-paste `curl` command with that temporary token. The quick test
+only renders the preview in the terminal; no response file is written to disk.
+
+## Test your deployed API
+
+After deployment the CLI prints your Worker URL and, if you chose `Yes` for
+`Try your API now?`, the quick test runs immediately, reusing the temporary JWT
+it minted and showing a reusable `curl` command and response preview in the
+terminal.
+
+### Health check
+
+```bash
+curl "https://your-worker.workers.dev/"
+```
+
+### Read a page
+
+```bash
+curl "https://your-worker.workers.dev/read?url=https://example.com"
+```
+
+### Extract links
+
+```bash
+curl "https://your-worker.workers.dev/links?url=https://example.com"
+```
+
+## How JWT auth works
+
+If you selected **JWT**:
+
+- Sign an **HS256** JWT with your JWT secret
+- Send it as `Authorization: Bearer <your-jwt>`
+- If you set `issuer` or `audience`, the token must match them exactly
+
+Example request:
+
+```bash
+curl \
+  -H "Authorization: Bearer <your-jwt>" \
+  "https://your-worker.workers.dev/read?url=https://example.com"
+```
+
+<Callout type="warn" title="Save the generated secret">
+If the CLI generated your JWT secret, store it right away. The success screen
+shows it once so you can start testing immediately.
+</Callout>
+
+## What to read next
+
+- Use the [Read endpoint guide](/docs/features/read/get-markdown) for the
+  fastest markdown-only request
+- Use the [Read URL guide](/docs/features/read/read-url) for the full response
+  payload
+- Use the [Links guide](/docs/features/links/get-links) to map pages and link
+  trees
+- Use the [Self Hosting overview](/docs/reference/self-hosting) if you want the
+  full stack instead of the Worker-only flow

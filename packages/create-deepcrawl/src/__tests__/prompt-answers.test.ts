@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { MIN_JWT_SECRET_BYTES, validateJwtSecretStrength } from '../lib/jwt.js';
 import {
   buildDeploymentSummary,
   normalizeProjectName,
@@ -13,6 +14,33 @@ test('normalizeProjectName converts input to kebab-case', () => {
 
 test('normalizeProjectName rejects empty names', () => {
   assert.throws(() => normalizeProjectName('   '), /Project name is required/);
+});
+
+test('validateJwtSecretStrength allows blank input so setup can generate one', () => {
+  assert.equal(validateJwtSecretStrength(''), undefined);
+  assert.equal(validateJwtSecretStrength('   '), undefined);
+});
+
+test('validateJwtSecretStrength rejects secrets shorter than 32 bytes', () => {
+  assert.match(
+    validateJwtSecretStrength('too-short') ?? '',
+    new RegExp(`${MIN_JWT_SECRET_BYTES} bytes`),
+  );
+});
+
+test('validateJwtSecretStrength counts UTF-8 bytes instead of characters', () => {
+  assert.match(
+    validateJwtSecretStrength('密'.repeat(10)) ?? '',
+    new RegExp(`${MIN_JWT_SECRET_BYTES} bytes`),
+  );
+  assert.equal(validateJwtSecretStrength('密'.repeat(11)), undefined);
+});
+
+test('validateJwtSecretStrength accepts a 32-byte secret', () => {
+  assert.equal(
+    validateJwtSecretStrength('a'.repeat(MIN_JWT_SECRET_BYTES)),
+    undefined,
+  );
 });
 
 test('resolveProjectLocation builds the target directory from the parent directory', () => {

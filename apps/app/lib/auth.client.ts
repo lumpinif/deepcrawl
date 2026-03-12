@@ -1,4 +1,4 @@
-import { createAuthClientConfig } from '@deepcrawl/auth/configs';
+import { createAuthClientConfig } from '@deepcrawl/auth/configs/auth.client.config';
 import type { Auth } from '@deepcrawl/auth/types';
 import { assertValidAuthConfiguration } from '@deepcrawl/auth/utils/config-validator';
 import { OFFICIAL_APP_URL, OFFICIAL_AUTH_URL } from '@deepcrawl/runtime/urls';

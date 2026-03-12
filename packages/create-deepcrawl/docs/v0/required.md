@@ -28,6 +28,8 @@ If `authMode=jwt`:
 - `jwtSecret`
   - HS256 secret used by the v0 worker to verify JWTs.
   - The CLI should offer to generate a secure random value.
+  - The CLI persists the secret inside both `apps/workers/v0/.dev.vars` and
+    `apps/workers/v0/.dev.vars.production` so the user can reuse it locally.
 
 ## Cloudflare Resources (Required)
 

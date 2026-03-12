@@ -8,6 +8,13 @@ Current focus:
 - Authentication: `none` or `jwt`
 - A single guided flow that creates required Cloudflare resources, writes config,
   and deploys in one pass (no extra questions after deployment starts).
+- After deployment the CLI shows the Worker URL, a docs link, and the two blocked
+  secret files (`apps/workers/v0/.dev.vars` and
+  `apps/workers/v0/.dev.vars.production`) that store `JWT_SECRET` plus a short
+  recap of what was provisioned.
+- It then prompts `Try your API now?`, auto-mints a 15-minute token when JWT is
+  required, runs a quick test, and prints status, preview, and a copyable `curl`
+  command without persisting the response.
 
 Deployment targets:
 
