@@ -152,6 +152,7 @@ export function buildDeploymentSuccessCard(
 ): string {
   const workerUrl = input.workerUrl ?? '(Worker URL not found)';
   const workerName = input.workerName ?? 'V0 API Worker';
+  // The same placeholder token is intentionally reused by both sample curl commands.
   const tryItNowToken = input.authMode === 'jwt' ? '<your-jwt>' : undefined;
   const tryItNowCurl =
     input.authMode === 'jwt'

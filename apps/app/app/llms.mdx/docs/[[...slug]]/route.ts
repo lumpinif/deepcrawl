@@ -1,6 +1,8 @@
 import { getLLMText } from '@/lib/get-llm-text';
 import { source } from '@/lib/source';
 
+// Next 16 already emits this route handler as SSG from generateStaticParams,
+// so we intentionally do not add dynamic = 'force-static' here.
 export function generateStaticParams() {
   return source.generateParams();
 }

@@ -5,7 +5,8 @@ import { cn } from '@deepcrawl/ui/lib/utils';
 // import { track } from "@vercel/analytics/react";
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { type KeyboardEvent, useState } from 'react';
+import { copyToClipboard } from '@/utils';
 
 const CODE = 'npm i deepcrawl';
 const TIMEOUT = 2000;
@@ -23,17 +24,29 @@ export const CommandInstaller = ({
 }: CommandInstallerProps) => {
   const [isCopied, setIsCopied] = useState(false);
 
-  const copyToClipboard = async () => {
-    if (typeof window === 'undefined' || !navigator.clipboard.writeText) {
+  const handleCopy = async () => {
+    const didCopy = await copyToClipboard(code);
+    if (!didCopy) {
+      setIsCopied(false);
       return;
     }
 
-    try {
-      await navigator.clipboard.writeText(code);
-      setIsCopied(true);
-      // track("Copied installer code");
-      setTimeout(() => setIsCopied(false), TIMEOUT);
-    } catch (_error) {}
+    setIsCopied(true);
+    // track("Copied installer code");
+    window.setTimeout(() => setIsCopied(false), TIMEOUT);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      void handleCopy();
+      return;
+    }
+
+    if (event.key === ' ' || event.key === 'Spacebar') {
+      event.preventDefault();
+      void handleCopy();
+    }
   };
 
   const Icon = isCopied ? CheckIcon : CopyIcon;
@@ -46,7 +59,8 @@ export const CommandInstaller = ({
           : 'group inline-grid max-w-full cursor-default grid-cols-[2.5rem_auto_2.5rem] items-center rounded-md border bg-background text-foreground',
         className,
       )}
-      onClick={copyToClipboard}
+      onClick={() => void handleCopy()}
+      onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
     >
@@ -57,8 +71,12 @@ export const CommandInstaller = ({
           </pre>
           <Button
             className="absolute right-1 rounded-sm bg-transparent! text-muted-foreground group-hover:text-foreground"
-            onClick={copyToClipboard}
+            onClick={(event) => {
+              event.stopPropagation();
+              void handleCopy();
+            }}
             size="icon"
+            type="button"
             variant="ghost"
           >
             <Icon className="h-4 w-4" />
@@ -72,8 +90,12 @@ export const CommandInstaller = ({
           </pre>
           <Button
             className="justify-self-center rounded-sm bg-transparent! text-muted-foreground group-hover:text-foreground"
-            onClick={copyToClipboard}
+            onClick={(event) => {
+              event.stopPropagation();
+              void handleCopy();
+            }}
             size="icon"
+            type="button"
             variant="ghost"
           >
             <Icon className="h-4 w-4" />

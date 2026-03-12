@@ -35,26 +35,31 @@ export function CopyMarkdownButton({
   }, [isCopied]);
 
   const handleCopy = async () => {
-    const response = await fetch(markdownUrl, {
-      headers: {
-        Accept: 'text/markdown',
-      },
-    });
+    try {
+      const response = await fetch(markdownUrl, {
+        headers: {
+          Accept: 'text/markdown',
+        },
+      });
 
-    if (!response.ok) {
-      toast.error('Failed to load markdown');
-      return;
+      if (!response.ok) {
+        throw new Error('Failed to load markdown');
+      }
+
+      const markdown = await response.text();
+      const didCopy = await copyToClipboard(markdown);
+
+      if (!didCopy) {
+        throw new Error('Failed to copy markdown');
+      }
+
+      setIsCopied(true);
+    } catch (error) {
+      setIsCopied(false);
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to copy markdown',
+      );
     }
-
-    const markdown = await response.text();
-    const didCopy = await copyToClipboard(markdown);
-
-    if (!didCopy) {
-      toast.error('Failed to copy markdown');
-      return;
-    }
-
-    setIsCopied(true);
   };
 
   return (

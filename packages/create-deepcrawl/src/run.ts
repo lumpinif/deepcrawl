@@ -8,16 +8,14 @@ import { installDependencies } from './steps/install-deps.js';
 import { patchV0WranglerConfigForDeployment } from './steps/patch-v0-wrangler.js';
 import { preflight } from './steps/preflight.js';
 import { prepareTemplateOutput } from './steps/prepare-template-output.js';
+import { prepareV0LocalProject } from './steps/prepare-v0-local-project.js';
 import { provisionV0Resources } from './steps/provision-v0-resources.js';
 import {
   buildQuickTestPreviewResult,
   runQuickTestV0Worker,
 } from './steps/quick-test-v0-worker.js';
 import { setWranglerSecret } from './steps/set-wrangler-secret.js';
-import {
-  type V0LocalJwtSecretFiles,
-  writeV0LocalJwtSecret,
-} from './steps/write-v0-local-jwt-secret.js';
+import type { V0LocalJwtSecretFiles } from './steps/write-v0-local-jwt-secret.js';
 import { buildDeploymentSuccessCard } from './ui/deployment-success.js';
 import { promptAnswers } from './ui/prompt-answers.js';
 import {
@@ -74,26 +72,29 @@ export async function run(
 
   let localJwtSecretFiles: V0LocalJwtSecretFiles | undefined;
 
+  // Prepare local worker files before any Cloudflare mutations so a local
+  // write failure never leaves the deploy half-completed remotely.
+  process.stdout.write(
+    '[local] preparing worker config for selected auth mode...\n',
+  );
+  ({ localJwtSecretFiles } = await prepareV0LocalProject({
+    projectDir: targetDir,
+    projectName: answers.projectName,
+    authMode: answers.authMode,
+    enableActivityLogs: answers.enableActivityLogs,
+    jwtIssuer: answers.jwtIssuer,
+    jwtAudience: answers.jwtAudience,
+    jwtSecret: answers.jwtSecret,
+  }));
+
+  if (localJwtSecretFiles) {
+    process.stdout.write('[local] saved JWT secret to worker env files...\n');
+  }
+
   if (dryRun) {
     process.stdout.write(
       '[dry-run] clone completed. Skipping real Cloudflare provisioning and deploy.\n',
     );
-
-    if (answers.authMode === 'jwt') {
-      // promptAnswers always provides a JWT secret in JWT mode, either from the
-      // user or by generating one during setup.
-      const secret = answers.jwtSecret;
-      if (!secret) {
-        throw new Error('JWT secret is missing.');
-      }
-      process.stdout.write(
-        '[dry-run] saving JWT secret to worker env files for preview...\n',
-      );
-      localJwtSecretFiles = writeV0LocalJwtSecret({
-        projectDir: targetDir,
-        jwtSecret: secret,
-      });
-    }
 
     const previewWorkerUrl = buildDryRunWorkerUrl(answers.projectName);
 
@@ -148,18 +149,6 @@ export async function run(
   process.stdout.write('[deps] installing dependencies...\n');
   await installDependencies({ cwd: targetDir });
 
-  process.stdout.write(
-    '[patch] preparing wrangler config for v0-only deploy...\n',
-  );
-  await patchV0WranglerConfigForDeployment({
-    projectDir: targetDir,
-    projectName: answers.projectName,
-    authMode: answers.authMode,
-    enableActivityLogs: answers.enableActivityLogs,
-    jwtIssuer: answers.jwtIssuer,
-    jwtAudience: answers.jwtAudience,
-  });
-
   process.stdout.write('[cloudflare] provisioning required resources...\n');
   const resources = await provisionV0Resources({
     projectDir: targetDir,
@@ -192,12 +181,6 @@ export async function run(
       key: 'JWT_SECRET',
       value: secret,
     });
-
-    process.stdout.write('[local] saving JWT secret to worker env files...\n');
-    localJwtSecretFiles = writeV0LocalJwtSecret({
-      projectDir: targetDir,
-      jwtSecret: secret,
-    });
   }
 
   process.stdout.write('[db] applying remote D1 migrations...\n');
@@ -208,11 +191,29 @@ export async function run(
   });
 
   process.stdout.write('[deploy] deploying v0 worker...\n');
-  const deployment = await deployV0Worker({
-    cwd: targetDir,
-    configPath: 'apps/workers/v0/wrangler.jsonc',
-    env: 'production',
-  });
+  let deployment: Awaited<ReturnType<typeof deployV0Worker>>;
+
+  try {
+    deployment = await deployV0Worker({
+      cwd: targetDir,
+      configPath: 'apps/workers/v0/wrangler.jsonc',
+      env: 'production',
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes('Could not parse wrangler deploy output')
+    ) {
+      throw new Error(
+        'Worker deployment finished, but create-deepcrawl could not parse Wrangler output. The worker may still have been deployed. Check the streamed deploy logs above for details.',
+        {
+          cause: error,
+        },
+      );
+    }
+
+    throw error;
+  }
 
   process.stdout.write(
     `${renderCliCard(

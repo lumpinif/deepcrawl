@@ -110,15 +110,6 @@ export function CreateDeepcrawlCliSection() {
               </span>{' '}
               component.
             </p>
-
-            {/* <p className="text-muted-foreground text-sm">
-            Want a safe preview first? Use{' '}
-            <code className="rounded bg-background px-1.5 py-0.5 font-mono text-foreground text-xs">
-              --dry-run
-            </code>{' '}
-            to rehearse the full setup before you deploy.
-          </p> */}
-
             <div className="mt-6">
               <Button asChild className="gap-2">
                 <Link href="/docs/reference/self-hosting/create-deepcrawl">

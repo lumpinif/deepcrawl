@@ -97,6 +97,8 @@ function CreateDeepcrawlTerminalCard({ onReplay }: TerminalCardProps) {
   const commandStartDelayMs = prefersReducedMotion ? 0 : COMMAND_START_DELAY_MS;
 
   useEffect(() => {
+    // This reset effect only runs on mount/remount; timer scheduling lives in
+    // the next effect so replay timing stays driven by commandStartDelayMs.
     timersRef.current = [];
     setTypedCommand('');
     setVisibleLineCount(0);
@@ -244,6 +246,7 @@ function CreateDeepcrawlTerminalCard({ onReplay }: TerminalCardProps) {
                   (line, index) => (
                     <div
                       className={cn(
+                        // Tailwind CSS v4 keeps wrap-break-word for overflow-wrap.
                         'wrap-break-word',
                         line.tone === 'logo' && 'leading-none',
                         line.preserveWhitespace
