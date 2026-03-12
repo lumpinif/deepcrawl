@@ -17,8 +17,20 @@ function toBase64Url(value: string | Buffer): string {
 }
 
 export function mintHs256Jwt(input: MintHs256JwtInput): string {
-  const nowSeconds = Math.floor(Date.now() / 1000);
+  if (!input.secret) {
+    throw new Error('JWT secret must not be empty.');
+  }
+
+  if (!input.subject.trim()) {
+    throw new Error('JWT subject must not be blank.');
+  }
+
   const expiresInMinutes = input.expiresInMinutes ?? 15;
+  if (!Number.isInteger(expiresInMinutes) || expiresInMinutes <= 0) {
+    throw new Error('JWT expiresInMinutes must be a positive integer.');
+  }
+
+  const nowSeconds = Math.floor(Date.now() / 1000);
   const header = {
     alg: 'HS256',
     typ: 'JWT',

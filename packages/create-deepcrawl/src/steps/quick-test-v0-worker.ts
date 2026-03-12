@@ -1,4 +1,5 @@
 import { mintHs256Jwt } from '../lib/jwt-token.js';
+import { sanitizeTerminalText } from '../lib/terminal-text.js';
 import type { AuthMode } from '../ui/prompt-answers.js';
 
 export type QuickTestKind = 'read' | 'links';
@@ -26,6 +27,10 @@ function truncatePreview(value: string, maxLength = 1200): string {
   }
 
   return `${normalized.slice(0, maxLength)}...`;
+}
+
+function formatPreview(value: string): string {
+  return truncatePreview(sanitizeTerminalText(value));
 }
 
 function buildCurlCommand(url: string, token?: string): string {
@@ -79,21 +84,21 @@ async function buildResponsePreview(response: Response): Promise<string> {
 
   if (contentType.includes('application/json')) {
     try {
-      return truncatePreview(JSON.stringify(JSON.parse(body), null, 2));
+      return formatPreview(JSON.stringify(JSON.parse(body), null, 2));
     } catch {
-      return truncatePreview(body);
+      return formatPreview(body);
     }
   }
 
   if (body.trim().startsWith('{') || body.trim().startsWith('[')) {
     try {
-      return truncatePreview(JSON.stringify(JSON.parse(body), null, 2));
+      return formatPreview(JSON.stringify(JSON.parse(body), null, 2));
     } catch {
-      return truncatePreview(body);
+      return formatPreview(body);
     }
   }
 
-  return truncatePreview(body);
+  return formatPreview(body);
 }
 
 export function buildQuickTestPreviewResult({
@@ -199,7 +204,7 @@ export async function runQuickTestV0Worker({
       authLabel,
       statusCode: 0,
       statusText: 'Request failed',
-      preview: truncatePreview(message),
+      preview: formatPreview(message),
       curlCommand: buildCurlCommand(requestUrl, token),
     };
   }

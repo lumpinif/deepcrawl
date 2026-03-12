@@ -90,6 +90,27 @@ test('runQuickTestV0Worker pretty prints and truncates JSON previews', async () 
   assert.ok(result.preview.length <= 1203);
 });
 
+test('runQuickTestV0Worker escapes terminal control characters in previews', async () => {
+  const result = await runQuickTestV0Worker({
+    workerUrl: 'https://example-worker.workers.dev',
+    kind: 'read',
+    targetUrl: 'https://example.com',
+    authMode: 'none',
+    fetcher: async () =>
+      new Response('hello\u001b[31mred\u001b[0m\rreset\u0007bell', {
+        status: 200,
+      }),
+  });
+
+  assert.equal(
+    result.preview,
+    'hello\\u001b[31mred\\u001b[0m\\rreset\\u0007bell',
+  );
+  for (const char of ['\u001b', '\r', '\u0007']) {
+    assert.equal(result.preview.includes(char), false);
+  }
+});
+
 test('runQuickTestV0Worker returns a readable failure result', async () => {
   const result = await runQuickTestV0Worker({
     workerUrl: 'https://example-worker.workers.dev',
@@ -107,6 +128,23 @@ test('runQuickTestV0Worker returns a readable failure result', async () => {
   assert.equal(result.statusText, 'Request failed');
   assert.match(result.preview, /Network down/);
   assert.match(result.curlCommand, /Authorization: Bearer /);
+});
+
+test('runQuickTestV0Worker escapes terminal control characters in failures', async () => {
+  const result = await runQuickTestV0Worker({
+    workerUrl: 'https://example-worker.workers.dev',
+    kind: 'read',
+    targetUrl: 'https://example.com',
+    authMode: 'none',
+    fetcher: async () => {
+      throw new Error('boom\u001b]2;pwnd\u0007');
+    },
+  });
+
+  assert.equal(result.preview, 'boom\\u001b]2;pwnd\\u0007');
+  for (const char of ['\u001b', '\u0007']) {
+    assert.equal(result.preview.includes(char), false);
+  }
 });
 
 test('buildQuickTestPreviewResult creates a simulated success result', () => {

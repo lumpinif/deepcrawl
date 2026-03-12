@@ -59,7 +59,15 @@ test('patchV0WranglerConfigForDeployment rebuilds production vars from allowlist
     JWT_AUDIENCE: 'audience-1',
     ENABLE_API_RATE_LIMIT: false,
   });
-  assert.deepEqual(data.vars, data.env?.production?.vars);
+  assert.deepEqual(data.vars, {
+    AUTH_MODE: 'jwt',
+    ENABLE_ACTIVITY_LOGS: true,
+    WORKER_NODE_ENV: 'development',
+    JWT_ISSUER: 'issuer-1',
+    JWT_AUDIENCE: 'audience-1',
+    ENABLE_API_RATE_LIMIT: false,
+  });
+  assert.notDeepEqual(data.vars, data.env?.production?.vars);
 });
 
 test('patchV0WranglerConfigForDeployment keeps optional jwt vars discoverable when auth is none', async () => {
@@ -93,5 +101,13 @@ test('patchV0WranglerConfigForDeployment keeps optional jwt vars discoverable wh
     JWT_AUDIENCE: '',
     ENABLE_API_RATE_LIMIT: false,
   });
-  assert.deepEqual(data.vars, data.env?.production?.vars);
+  assert.deepEqual(data.vars, {
+    AUTH_MODE: 'none',
+    ENABLE_ACTIVITY_LOGS: false,
+    WORKER_NODE_ENV: 'development',
+    JWT_ISSUER: '',
+    JWT_AUDIENCE: '',
+    ENABLE_API_RATE_LIMIT: false,
+  });
+  assert.notDeepEqual(data.vars, data.env?.production?.vars);
 });

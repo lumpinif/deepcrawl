@@ -1,6 +1,10 @@
 const DEFAULT_WIDTH = 54;
 const SECRET_BOX_WIDTH = 24;
 
+type WrapCardValueOptions = {
+  preserveLeadingWhitespace?: boolean;
+};
+
 function splitLongToken(value: string, width: number): string[] {
   const chunks: string[] = [];
 
@@ -11,17 +15,22 @@ function splitLongToken(value: string, width: number): string[] {
   return chunks;
 }
 
-export function wrapCardValue(value: string, width = DEFAULT_WIDTH): string[] {
-  const source = value.trim();
-  if (!source) {
+export function wrapCardValue(
+  value: string,
+  options: WrapCardValueOptions = {},
+): string[] {
+  const source = options.preserveLeadingWhitespace
+    ? value.replace(/\s+$/g, '')
+    : value.trim();
+  if (!source.trim()) {
     return [''];
   }
 
   const lines: string[] = [];
   let remaining = source;
 
-  while (remaining.length > width) {
-    const slice = remaining.slice(0, width + 1);
+  while (remaining.length > DEFAULT_WIDTH) {
+    const slice = remaining.slice(0, DEFAULT_WIDTH + 1);
     const breakIndex = Math.max(
       slice.lastIndexOf(' '),
       slice.lastIndexOf('/'),
@@ -32,13 +41,16 @@ export function wrapCardValue(value: string, width = DEFAULT_WIDTH): string[] {
       slice.lastIndexOf(':'),
     );
 
-    if (breakIndex >= Math.floor(width * 0.45)) {
+    if (breakIndex >= Math.floor(DEFAULT_WIDTH * 0.45)) {
       lines.push(remaining.slice(0, breakIndex + 1).trimEnd());
-      remaining = remaining.slice(breakIndex + 1).trimStart();
+      const nextLine = remaining.slice(breakIndex + 1);
+      remaining = options.preserveLeadingWhitespace
+        ? nextLine
+        : nextLine.trimStart();
       continue;
     }
 
-    const chunks = splitLongToken(remaining, width);
+    const chunks = splitLongToken(remaining, DEFAULT_WIDTH);
     lines.push(...chunks.slice(0, -1));
     remaining = chunks.at(-1) ?? '';
     break;
@@ -56,6 +68,8 @@ export function indentLines(lines: string[], prefix = '  '): string[] {
 }
 
 export function renderSecretBox(secret: string): string[] {
+  // Secret boxes are only rendered for generated or validated non-empty secrets.
+  // Callers intentionally own that invariant so we do not show a misleading blank secret box.
   const rows = splitLongToken(secret, SECRET_BOX_WIDTH);
   const width = Math.max(...rows.map((row) => row.length));
   const top = `┌${'─'.repeat(width + 2)}┐`;

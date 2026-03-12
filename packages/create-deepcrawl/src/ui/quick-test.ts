@@ -37,8 +37,16 @@ function formatStatus(result: QuickTestResult): string {
   return `${result.statusCode} ${result.statusText}`;
 }
 
+export function normalizeQuickTestTargetUrl(value: string): string {
+  return value.trim() || DEFAULT_QUICK_TEST_URL;
+}
+
 function wrapMultilineValue(value: string): string[] {
-  return value.split('\n').flatMap((line) => wrapCardValue(line));
+  return value.split('\n').flatMap((line) =>
+    wrapCardValue(line, {
+      preserveLeadingWhitespace: true,
+    }),
+  );
 }
 
 export async function promptTryYourApiNow(): Promise<boolean> {
@@ -104,7 +112,7 @@ export async function promptQuickTestInput(
       message: 'URL to test',
       initialValue: DEFAULT_QUICK_TEST_URL,
       validate(value) {
-        const trimmed = value.trim() || DEFAULT_QUICK_TEST_URL;
+        const trimmed = normalizeQuickTestTargetUrl(value);
 
         try {
           const url = new URL(trimmed);
@@ -119,13 +127,13 @@ export async function promptQuickTestInput(
     }),
   );
 
-  if (!targetUrl) {
+  if (targetUrl === null) {
     return null;
   }
 
   return {
     kind,
-    targetUrl: targetUrl.trim() || DEFAULT_QUICK_TEST_URL,
+    targetUrl: normalizeQuickTestTargetUrl(targetUrl),
   };
 }
 

@@ -95,6 +95,58 @@ function buildJwtSection(input: BuildDeploymentSuccessCardInput): string[] {
   return lines;
 }
 
+function buildNoAuthSection(input: BuildDeploymentSuccessCardInput): string[] {
+  if (input.previewMode) {
+    return [`${greenText('✅')} No auth would be required for a real deploy.`];
+  }
+
+  return [`${greenText('✅')} This API is open. You can test it right away.`];
+}
+
+function buildPreviewSetupSection(
+  input: BuildDeploymentSuccessCardInput & {
+    workerName: string;
+    workerUrl: string;
+  },
+): string[] {
+  return [
+    `${greenText('✅')} Project folder ready`,
+    ...indentLines(wrapCardValue(input.projectDir)),
+    `${greenText('✅')} Preview worker name`,
+    ...indentLines(wrapCardValue(input.workerName)),
+    `${greenText('✅')} Preview URL`,
+    ...indentLines(wrapCardValue(input.workerUrl).map(cyanText)),
+    `${greenText(input.enableActivityLogs ? '✅' : '•')} Activity logs setting: ${
+      input.enableActivityLogs ? greenText('On') : dimText('Off')
+    }`,
+    `${yellowText('⚠')} Not run in preview`,
+    ...indentLines(
+      wrapCardValue(
+        'Cloudflare resources were not created, remote D1 migrations were not applied, and the worker was not deployed.',
+      ),
+    ),
+  ];
+}
+
+function buildCreatedSection(
+  input: BuildDeploymentSuccessCardInput & {
+    workerName: string;
+  },
+): string[] {
+  return [
+    `${greenText('✅')} Worker ready`,
+    ...indentLines(wrapCardValue(input.workerName)),
+    `${greenText('✅')} Cloudflare resources`,
+    ...indentLines(wrapCardValue('1 D1 database and 2 KV namespaces')),
+    `${greenText('✅')} Remote D1 migrations applied`,
+    `${greenText(input.enableActivityLogs ? '✅' : '•')} Activity logs: ${
+      input.enableActivityLogs ? greenText('On') : dimText('Off')
+    }`,
+    `${boldText('📂 Project folder')}`,
+    ...indentLines(wrapCardValue(input.projectDir)),
+  ];
+}
+
 export function buildDeploymentSuccessCard(
   input: BuildDeploymentSuccessCardInput,
 ): string {
@@ -145,20 +197,22 @@ export function buildDeploymentSuccessCard(
     boldText(input.authMode === 'jwt' ? '🔐 JWT' : '🟢 No auth'),
     input.authMode === 'jwt'
       ? buildJwtSection(input)
-      : [`${greenText('✅')} This API is open. You can test it right away.`],
+      : buildNoAuthSection(input),
   );
-  addSection(lines, boldText('✅ Created for you'), [
-    `${greenText('✅')} Worker ready`,
-    ...indentLines(wrapCardValue(workerName)),
-    `${greenText('✅')} Cloudflare resources`,
-    ...indentLines(wrapCardValue('1 D1 database and 2 KV namespaces')),
-    `${greenText('✅')} Remote D1 migrations applied`,
-    `${greenText(input.enableActivityLogs ? '✅' : '•')} Activity logs: ${
-      input.enableActivityLogs ? greenText('On') : dimText('Off')
-    }`,
-    `${boldText('📂 Project folder')}`,
-    ...indentLines(wrapCardValue(input.projectDir)),
-  ]);
+  addSection(
+    lines,
+    boldText(input.previewMode ? '🧰 Prepared locally' : '✅ Created for you'),
+    input.previewMode
+      ? buildPreviewSetupSection({
+          ...input,
+          workerName,
+          workerUrl,
+        })
+      : buildCreatedSection({
+          ...input,
+          workerName,
+        }),
+  );
 
   if (input.versionId) {
     addSection(lines, dimText('🧩 Deployment ID (advanced)'), [

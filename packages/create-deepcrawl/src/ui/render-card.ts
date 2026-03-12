@@ -2,6 +2,8 @@ import { boldText, cyanText, grayText } from './terminal-style.js';
 
 const MAX_INNER_WIDTH = 60;
 
+// This width helper only strips simple ANSI styling so borders stay aligned.
+// Untrusted text must be sanitized before it reaches renderCliCard.
 function stripAnsi(value: string): string {
   let result = '';
 

@@ -79,13 +79,19 @@ export async function run(
       '[dry-run] clone completed. Skipping real Cloudflare provisioning and deploy.\n',
     );
 
-    if (answers.authMode === 'jwt' && answers.jwtSecret) {
+    if (answers.authMode === 'jwt') {
+      // promptAnswers always provides a JWT secret in JWT mode, either from the
+      // user or by generating one during setup.
+      const secret = answers.jwtSecret;
+      if (!secret) {
+        throw new Error('JWT secret is missing.');
+      }
       process.stdout.write(
         '[dry-run] saving JWT secret to worker env files for preview...\n',
       );
       localJwtSecretFiles = writeV0LocalJwtSecret({
         projectDir: targetDir,
-        jwtSecret: answers.jwtSecret,
+        jwtSecret: secret,
       });
     }
 
@@ -226,10 +232,6 @@ export async function run(
       }),
     )}\n`,
   );
-
-  if (!deployment.workerUrl) {
-    return;
-  }
 
   const shouldRunQuickTest = await promptTryYourApiNow();
   if (!shouldRunQuickTest) {

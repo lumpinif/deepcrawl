@@ -1,6 +1,6 @@
 import { basename, dirname, isAbsolute, resolve } from 'node:path';
 import { cancel, isCancel, note, select, text } from '@clack/prompts';
-import { generateJwtSecret } from '../lib/jwt.js';
+import { generateJwtSecret, validateJwtSecretStrength } from '../lib/jwt.js';
 import { createUserAbortError } from '../lib/user-abort.js';
 import { getV0ResourceNamesForProject } from '../steps/provision-v0-resources.js';
 import { promptConfirmValue } from './confirm-prompt.js';
@@ -281,6 +281,7 @@ export async function promptAnswers(
     const rawSecret = await promptTextValue({
       message: 'JWT secret',
       placeholder: 'Leave blank to generate one',
+      validate: validateJwtSecretStrength,
     });
     const providedSecret = rawSecret.trim();
     if (providedSecret) {

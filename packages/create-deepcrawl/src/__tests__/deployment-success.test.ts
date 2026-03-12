@@ -62,3 +62,26 @@ test('buildDeploymentSuccessCard does not echo a user-provided secret', () => {
   assert.doesNotMatch(card, /user-provided-secret/);
   assert.match(card, /Your JWT secret is saved in both files\./);
 });
+
+test('buildDeploymentSuccessCard keeps preview mode separate from real deployment claims', () => {
+  const card = buildDeploymentSuccessCard({
+    projectDir: '/tmp/bettercrawl',
+    workerName: 'bettercrawl-api-worker-preview',
+    workerUrl: 'https://bettercrawl-api-worker-preview.example.workers.dev',
+    authMode: 'none',
+    enableActivityLogs: false,
+    previewMode: true,
+  });
+
+  assert.match(card, /PREVIEW ONLY/);
+  assert.match(card, /No Cloudflare resources were created/);
+  assert.match(card, /🧰 Prepared locally/);
+  assert.match(card, /Preview worker name/);
+  assert.match(card, /Preview URL/);
+  assert.match(card, /Not run in preview/);
+  assert.match(card, /No auth would be required for a real deploy/);
+  assert.doesNotMatch(card, /✅ Created for you/);
+  assert.doesNotMatch(card, /Worker ready/);
+  assert.doesNotMatch(card, /1 D1 database and 2 KV namespaces/);
+  assert.doesNotMatch(card, /Remote D1 migrations applied/);
+});

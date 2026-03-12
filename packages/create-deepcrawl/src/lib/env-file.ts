@@ -42,6 +42,8 @@ export function upsertEnvFile(filePath: string, updates: EnvUpdates): void {
     }
 
     if (seen.has(key)) {
+      // Intentionally leave an empty placeholder here; the final newline
+      // normalization collapses duplicate entries without reordering comments.
       return '';
     }
 

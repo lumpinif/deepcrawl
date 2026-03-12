@@ -6,6 +6,8 @@ export type RunCommandOptions = {
   stdin?: string;
   allowFailure?: boolean;
   mode?: 'pipe' | 'inherit';
+  onStdout?: (chunk: string) => void;
+  onStderr?: (chunk: string) => void;
 };
 
 export type RunCommandResult = {
@@ -35,10 +37,14 @@ export function runCommand(
       child.stderr?.setEncoding('utf8');
 
       child.stdout?.on('data', (chunk: string) => {
-        stdout += String(chunk);
+        const value = String(chunk);
+        stdout += value;
+        options.onStdout?.(value);
       });
       child.stderr?.on('data', (chunk: string) => {
-        stderr += String(chunk);
+        const value = String(chunk);
+        stderr += value;
+        options.onStderr?.(value);
       });
     }
 
@@ -50,9 +56,12 @@ export function runCommand(
       const exitCode = code ?? 1;
       const result: RunCommandResult = { exitCode, stdout, stderr };
       if (exitCode !== 0 && !options.allowFailure) {
+        const combinedOutput = [stdout, stderr].filter(Boolean).join('\n');
         reject(
           new Error(
-            `Command failed: ${command} ${args.join(' ')}\n${stderr || stdout}`,
+            combinedOutput
+              ? `Command failed: ${command} ${args.join(' ')}\n${combinedOutput}`
+              : `Command failed: ${command} ${args.join(' ')}`,
           ),
         );
         return;
