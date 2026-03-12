@@ -65,8 +65,8 @@
     "shadcn": "catalog:",
     "tailwind-scrollbar": "catalog:",
     "tailwindcss": "catalog:",
-    "tw-animate-css": "catalog:",
     "turbo": "catalog:",
+    "tw-animate-css": "catalog:",
     "typescript": "catalog:",
     "wrangler": "catalog:",
     "zod": "catalog:"
