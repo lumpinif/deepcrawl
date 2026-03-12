@@ -6,6 +6,11 @@ import type { V0Resources } from './provision-v0-resources.js';
 type AuthMode = 'none' | 'jwt';
 
 type ProductionVars = Record<string, string | boolean>;
+type ParsedWranglerConfig = {
+  d1_databases?: Array<{
+    migrations_dir?: string;
+  }>;
+};
 
 function normalizeWorkerName(projectName: string): string {
   const base = projectName
@@ -20,7 +25,7 @@ function normalizeWorkerName(projectName: string): string {
 }
 
 function getExistingMigrationsDir(source: string): string | null {
-  const data = parse(source) as any;
+  const data = parse(source) as ParsedWranglerConfig;
   const migrations = data?.d1_databases?.[0]?.migrations_dir;
   return typeof migrations === 'string' ? migrations : null;
 }
@@ -80,18 +85,21 @@ export async function patchV0WranglerConfigForDeployment({
       // Give the worker a per-project name to avoid collisions.
       next = setJsoncPath(next, ['name'], normalizeWorkerName(projectName));
 
+      const deploymentVars = buildProductionVars({
+        authMode,
+        enableActivityLogs,
+        jwtIssuer,
+        jwtAudience,
+      });
+
+      // Rebuild root vars too so local Wrangler config stays aligned with the
+      // generated production environment and does not inherit Deepcrawl's
+      // official public URLs or OAuth identifiers.
+      next = setJsoncPath(next, ['vars'], deploymentVars);
+
       // Rebuild production vars from an allowlist so template defaults never leak
       // Deepcrawl's official URLs or OAuth public identifiers into user deployments.
-      next = setJsoncPath(
-        next,
-        ['env', 'production', 'vars'],
-        buildProductionVars({
-          authMode,
-          enableActivityLogs,
-          jwtIssuer,
-          jwtAudience,
-        }),
-      );
+      next = setJsoncPath(next, ['env', 'production', 'vars'], deploymentVars);
 
       if (resources) {
         const migrationsDir =

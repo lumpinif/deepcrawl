@@ -16,6 +16,7 @@ export type Answers = {
   targetDirectory: string;
   authMode: AuthMode;
   jwtSecret?: string;
+  jwtSecretWasGenerated?: boolean;
   jwtIssuer?: string;
   jwtAudience?: string;
   enableActivityLogs: boolean;
@@ -272,6 +273,7 @@ export async function promptAnswers(
   );
 
   let jwtSecret: string | undefined;
+  let jwtSecretWasGenerated = false;
   let jwtIssuer: string | undefined;
   let jwtAudience: string | undefined;
 
@@ -280,7 +282,13 @@ export async function promptAnswers(
       message: 'JWT secret',
       placeholder: 'Leave blank to generate one',
     });
-    jwtSecret = rawSecret.trim() || generateJwtSecret();
+    const providedSecret = rawSecret.trim();
+    if (providedSecret) {
+      jwtSecret = providedSecret;
+    } else {
+      jwtSecret = generateJwtSecret();
+      jwtSecretWasGenerated = true;
+    }
 
     jwtIssuer = (
       await promptTextValue({
@@ -323,7 +331,7 @@ export async function promptAnswers(
 
   const proceed = await promptConfirmValue({
     message: 'Deploy now?',
-    initialValue: false,
+    initialValue: true,
     activeLabel: 'Yes',
     inactiveLabel: 'No',
   });
@@ -340,6 +348,7 @@ export async function promptAnswers(
     targetDirectory: location.targetDirectory,
     authMode,
     jwtSecret,
+    jwtSecretWasGenerated,
     jwtIssuer,
     jwtAudience,
     enableActivityLogs,

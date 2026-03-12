@@ -9,8 +9,33 @@ import { patchV0WranglerConfigForDeployment } from './steps/patch-v0-wrangler.js
 import { preflight } from './steps/preflight.js';
 import { prepareTemplateOutput } from './steps/prepare-template-output.js';
 import { provisionV0Resources } from './steps/provision-v0-resources.js';
+import {
+  buildQuickTestPreviewResult,
+  runQuickTestV0Worker,
+} from './steps/quick-test-v0-worker.js';
 import { setWranglerSecret } from './steps/set-wrangler-secret.js';
+import {
+  type V0LocalJwtSecretFiles,
+  writeV0LocalJwtSecret,
+} from './steps/write-v0-local-jwt-secret.js';
+import { buildDeploymentSuccessCard } from './ui/deployment-success.js';
 import { promptAnswers } from './ui/prompt-answers.js';
+import {
+  buildQuickTestFailureCard,
+  buildQuickTestSuccessCard,
+  promptQuickTestInput,
+  promptTryYourApiNow,
+  promptTryYourApiNowWithMode,
+} from './ui/quick-test.js';
+import { renderCliCard } from './ui/render-card.js';
+
+function buildDryRunWorkerName(projectName: string): string {
+  return `${projectName}-api-worker-preview`;
+}
+
+function buildDryRunWorkerUrl(projectName: string): string {
+  return `https://${buildDryRunWorkerName(projectName)}.example.workers.dev`;
+}
 
 export async function run(
   { dryRun = false, targetPath, templateSource, templateBranch }: CliArgs = {
@@ -47,9 +72,69 @@ export async function run(
     });
   }
 
+  let localJwtSecretFiles: V0LocalJwtSecretFiles | undefined;
+
   if (dryRun) {
     process.stdout.write(
-      '[dry-run] clone completed. Skipping provisioning/deploy.\n',
+      '[dry-run] clone completed. Skipping real Cloudflare provisioning and deploy.\n',
+    );
+
+    if (answers.authMode === 'jwt' && answers.jwtSecret) {
+      process.stdout.write(
+        '[dry-run] saving JWT secret to worker env files for preview...\n',
+      );
+      localJwtSecretFiles = writeV0LocalJwtSecret({
+        projectDir: targetDir,
+        jwtSecret: answers.jwtSecret,
+      });
+    }
+
+    const previewWorkerUrl = buildDryRunWorkerUrl(answers.projectName);
+
+    process.stdout.write(
+      `${renderCliCard(
+        'Preview only',
+        buildDeploymentSuccessCard({
+          projectDir: targetDir,
+          workerName: buildDryRunWorkerName(answers.projectName),
+          workerUrl: previewWorkerUrl,
+          authMode: answers.authMode,
+          enableActivityLogs: answers.enableActivityLogs,
+          jwtIssuer: answers.jwtIssuer,
+          jwtAudience: answers.jwtAudience,
+          jwtSecret: answers.jwtSecret,
+          jwtSecretWasGenerated: answers.jwtSecretWasGenerated,
+          localJwtSecretFiles,
+          previewMode: true,
+        }),
+      )}\n`,
+    );
+
+    const shouldRunQuickTestPreview = await promptTryYourApiNowWithMode(true);
+    if (!shouldRunQuickTestPreview) {
+      return;
+    }
+
+    const quickTestInput = await promptQuickTestInput(true);
+    if (!quickTestInput) {
+      return;
+    }
+
+    const quickTestPreview = buildQuickTestPreviewResult({
+      workerUrl: previewWorkerUrl,
+      kind: quickTestInput.kind,
+      targetUrl: quickTestInput.targetUrl,
+      authMode: answers.authMode,
+      jwtSecret: answers.jwtSecret,
+      jwtIssuer: answers.jwtIssuer,
+      jwtAudience: answers.jwtAudience,
+    });
+
+    process.stdout.write(
+      `${renderCliCard(
+        'Preview result',
+        buildQuickTestSuccessCard(quickTestPreview, true),
+      )}\n`,
     );
     return;
   }
@@ -101,6 +186,12 @@ export async function run(
       key: 'JWT_SECRET',
       value: secret,
     });
+
+    process.stdout.write('[local] saving JWT secret to worker env files...\n');
+    localJwtSecretFiles = writeV0LocalJwtSecret({
+      projectDir: targetDir,
+      jwtSecret: secret,
+    });
   }
 
   process.stdout.write('[db] applying remote D1 migrations...\n');
@@ -111,11 +202,61 @@ export async function run(
   });
 
   process.stdout.write('[deploy] deploying v0 worker...\n');
-  await deployV0Worker({
+  const deployment = await deployV0Worker({
     cwd: targetDir,
     configPath: 'apps/workers/v0/wrangler.jsonc',
     env: 'production',
   });
 
-  process.stdout.write('\nDone.\n');
+  process.stdout.write(
+    `${renderCliCard(
+      "You're live",
+      buildDeploymentSuccessCard({
+        projectDir: targetDir,
+        workerName: deployment.workerName,
+        workerUrl: deployment.workerUrl,
+        versionId: deployment.versionId,
+        authMode: answers.authMode,
+        enableActivityLogs: answers.enableActivityLogs,
+        jwtIssuer: answers.jwtIssuer,
+        jwtAudience: answers.jwtAudience,
+        jwtSecret: answers.jwtSecret,
+        jwtSecretWasGenerated: answers.jwtSecretWasGenerated,
+        localJwtSecretFiles,
+      }),
+    )}\n`,
+  );
+
+  if (!deployment.workerUrl) {
+    return;
+  }
+
+  const shouldRunQuickTest = await promptTryYourApiNow();
+  if (!shouldRunQuickTest) {
+    return;
+  }
+
+  const quickTestInput = await promptQuickTestInput();
+  if (!quickTestInput) {
+    return;
+  }
+
+  const quickTestResult = await runQuickTestV0Worker({
+    workerUrl: deployment.workerUrl,
+    kind: quickTestInput.kind,
+    targetUrl: quickTestInput.targetUrl,
+    authMode: answers.authMode,
+    jwtSecret: answers.jwtSecret,
+    jwtIssuer: answers.jwtIssuer,
+    jwtAudience: answers.jwtAudience,
+  });
+
+  process.stdout.write(
+    `${renderCliCard(
+      quickTestResult.ok ? 'Quick test result' : 'Quick test failed',
+      quickTestResult.ok
+        ? buildQuickTestSuccessCard(quickTestResult)
+        : buildQuickTestFailureCard(quickTestResult),
+    )}\n`,
+  );
 }

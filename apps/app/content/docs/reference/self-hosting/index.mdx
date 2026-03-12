@@ -3,6 +3,19 @@ title: Self Hosting
 description: Self-host the full stack for free.
 ---
 
+## Fastest path
+
+If you want the quickest Cloudflare deployment path, start with
+[Deploy with npm create deepcrawl](/docs/reference/self-hosting/create-deepcrawl).
+It handles the API Worker setup for you in one guided flow.
+
+When the guided flow finishes it shows the deployed Worker URL, a link back to
+this doc, and the paths to `apps/workers/v0/.dev.vars` plus
+`apps/workers/v0/.dev.vars.production` where the CLI stored your `JWT_SECRET`.
+It also asks `Try your API now?` to run a quick test that auto-mints a 15-minute
+JWT (if needed) and prints status, preview, and a reusable `curl` command without
+saving any response files.
+
 ## Prerequisites
 
 - Node.js 20 or later
@@ -29,6 +42,10 @@ cp apps/workers/v0/.dev.vars.example apps/workers/v0/.dev.vars
 ```
 
 These files include placeholders for the API key, base URL, and Wrangler-specific tokens.
+
+`npm create deepcrawl` also writes your `JWT_SECRET` into
+`apps/workers/v0/.dev.vars` and `apps/workers/v0/.dev.vars.production` so you can
+reuse those values when you run Wrangler manually later.
 
 ## 3. Fill In Secrets
 

@@ -43,6 +43,7 @@ test('patchV0WranglerConfigForDeployment rebuilds production vars from allowlist
     'utf8',
   );
   const data = parse(next) as {
+    vars?: Record<string, string | boolean>;
     env?: {
       production?: {
         vars?: Record<string, string | boolean>;
@@ -58,6 +59,7 @@ test('patchV0WranglerConfigForDeployment rebuilds production vars from allowlist
     JWT_AUDIENCE: 'audience-1',
     ENABLE_API_RATE_LIMIT: false,
   });
+  assert.deepEqual(data.vars, data.env?.production?.vars);
 });
 
 test('patchV0WranglerConfigForDeployment keeps optional jwt vars discoverable when auth is none', async () => {
@@ -75,6 +77,7 @@ test('patchV0WranglerConfigForDeployment keeps optional jwt vars discoverable wh
     'utf8',
   );
   const data = parse(next) as {
+    vars?: Record<string, string | boolean>;
     env?: {
       production?: {
         vars?: Record<string, string | boolean>;
@@ -90,4 +93,5 @@ test('patchV0WranglerConfigForDeployment keeps optional jwt vars discoverable wh
     JWT_AUDIENCE: '',
     ENABLE_API_RATE_LIMIT: false,
   });
+  assert.deepEqual(data.vars, data.env?.production?.vars);
 });

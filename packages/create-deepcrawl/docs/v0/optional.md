@@ -47,3 +47,12 @@ this as a configuration error if the user explicitly enabled rate limiting.
 - Dashboard + API deployments (`Supporting soon`)
 - Fullstack app + auth + API deployments (`Supporting soon`)
 - Better Auth / OAuth provider setup (`Supporting soon`)
+
+## Quick test (post deployment)
+
+- The CLI asks `Try your API now?` once the Worker is live.
+- If the user agrees, it jumps into the quick test flow (`Read a page` or
+  `Extract links`, `https://example.com` by default) and automatically mints a
+  15-minute JWT when `authMode=jwt`.
+- The quick test prints status, a truncated preview, and a `curl` command with
+  the temporary token, but never writes the response to disk.
