@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "create-deepcrawl": "./bin/create-deepcrawl.js"
+    "create-deepcrawl": "bin/create-deepcrawl.js"
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
