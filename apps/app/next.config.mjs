@@ -1,6 +1,9 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createMDX } from 'fumadocs-mdx/next';
 
 const withMDX = createMDX();
+const configDirectory = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -9,6 +12,18 @@ const config = {
   /* config options here */
   // devIndicators: false,
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/docs.mdx',
+        destination: '/llms.mdx/docs',
+      },
+      {
+        source: '/docs/:path*.mdx',
+        destination: '/llms.mdx/docs/:path*',
+      },
+    ];
+  },
   transpilePackages: ['shiki', '@deepcrawl/ui'],
   images: {
     remotePatterns: [
@@ -22,8 +37,8 @@ const config = {
       },
     ],
   },
-  experimental: {
-    turbopackFileSystemCacheForDev: true,
+  turbopack: {
+    root: path.join(configDirectory, '../..'),
   },
 };
 

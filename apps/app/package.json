@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "dev:workers": "turbo dev --filter=dashboard --filter=deepcrawl-worker-auth --filter=deepcrawl-worker-v0",
     "dev:auth-worker": "turbo dev --filter=dashboard --filter=deepcrawl-worker-auth",
     "clean": "rimraf .next .turbo",

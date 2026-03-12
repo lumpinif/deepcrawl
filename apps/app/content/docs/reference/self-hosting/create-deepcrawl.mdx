@@ -7,6 +7,17 @@ description: Launch your own Deepcrawl API Worker on Cloudflare with one command
 Cloudflare. It asks a few simple questions, creates the required Cloudflare
 resources, applies D1 migrations, and deploys the Worker for you.
 
+## Prerequisites
+
+Before you run `npm create deepcrawl`, make sure you have:
+
+- A free [Cloudflare account](https://www.cloudflare.com/plans/free/). The CLI
+  creates Worker, D1, and KV resources in your Cloudflare account.
+- Node.js 20 or later, `git`, and `pnpm`
+- `wrangler` available in your terminal. If it is missing, the CLI can install
+  it for you.
+- A logged-in Wrangler session. Run `wrangler login` first.
+
 ## What it deploys today
 
 - A single **V0 API Worker**
@@ -20,11 +31,20 @@ Right now the CLI deploys the API Worker only. Dashboard, Auth Worker, and
 custom domains are not included yet.
 </Callout>
 
+### Coming soon
+
+- **Dashboard app + API** in one guided flow
+- **Full stack deployment** with the **Dashboard, Auth Worker, and API**
+- **Custom domains and routes**
+
 ## Run it
 
 ```bash
 npm create deepcrawl
 ```
+
+Want a safe preview first? Run `npm create deepcrawl -- --dry-run` to
+rehearse the full setup before you deploy.
 
 You can also pass the target folder up front:
 

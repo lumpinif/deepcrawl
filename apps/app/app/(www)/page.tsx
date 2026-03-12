@@ -1,4 +1,5 @@
 import { Banner } from '@/components/www/banner';
+import { CreateDeepcrawlCliSection } from '@/components/www/sections/create-deepcrawl-cli';
 import { Faq } from '@/components/www/sections/faq';
 import { Footer } from '@/components/www/sections/footer';
 import { Hero } from '@/components/www/sections/hero';
@@ -11,6 +12,7 @@ export default function IndexPage() {
     <div className="container relative mx-auto size-full max-w-6xl divide-y px-0 [&>*:nth-child(n+3)]:sm:border-x">
       <Banner />
       <Hero />
+      <CreateDeepcrawlCliSection />
       <ValueProp />
       <ToolkitSuite />
       <Surfaces />

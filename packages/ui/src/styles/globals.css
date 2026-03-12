@@ -6,8 +6,7 @@
 @plugin 'tailwind-scrollbar';
 
 @source "../**/*.{ts,tsx}";
-@source "../../../../apps/**/*.{ts,tsx}";
-@source "../../../../packages/**/*.{ts,tsx}";
+@source "../../../../apps/app/**/*.{ts,tsx,mdx}";
 
 @source "../node_modules/streamdown/dist/index.js";
 

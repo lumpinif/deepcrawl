@@ -7,6 +7,11 @@ import { createGenerator, remarkAutoTypeTable } from 'fumadocs-typescript';
 
 export const docs = defineDocs({
   dir: 'content/docs',
+  docs: {
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
 });
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));

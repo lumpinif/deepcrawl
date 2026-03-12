@@ -5,6 +5,7 @@
     "paths": {
       "@/.source": ["./.source/index.ts"],
       "@/*": ["./*"],
+      "@deepcrawl/ui/globals.css": ["../../packages/ui/src/styles/globals.css"],
       "@deepcrawl/ui/*": ["../../packages/ui/src/*"],
       "@deepcrawl/auth/*": ["../../packages/auth/src/*"],
       "@deepcrawl/types/*": ["../../packages/types/src/*"],

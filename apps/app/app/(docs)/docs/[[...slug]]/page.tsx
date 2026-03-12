@@ -5,6 +5,8 @@ import {
   DocsTitle,
 } from 'fumadocs-ui/page';
 import { notFound } from 'next/navigation';
+import { CopyMarkdownButton } from '@/components/docs/copy-markdown-button';
+import { OpenDocsMenu } from '@/components/docs/open-docs-menu';
 import { getMDXComponents } from '@/components/mdx-components';
 import { absoluteUrl } from '@/lib/navigation-config';
 import { source } from '@/lib/source';
@@ -71,6 +73,9 @@ export default async function Page(props: {
   }
 
   const MDX = page.data.body;
+  const pageUrl = absoluteUrl(page.url);
+  const markdownUrl = `${page.url}.mdx`;
+  const githubUrl = `https://github.com/lumpinif/deepcrawl/blob/main/apps/app/content/docs/${page.path}`;
 
   return (
     <DocsPage
@@ -89,8 +94,20 @@ export default async function Page(props: {
       toc={page.data.toc}
       // lastUpdate={page.data.lastUpdated}
     >
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <DocsTitle className="mb-0">{page.data.title}</DocsTitle>
+        <div className="flex shrink-0 flex-wrap items-center gap-2 md:justify-end">
+          <CopyMarkdownButton markdownUrl={markdownUrl} />
+          <OpenDocsMenu
+            githubUrl={githubUrl}
+            markdownUrl={markdownUrl}
+            pageUrl={pageUrl}
+          />
+        </div>
+      </div>
+      <DocsDescription className="mb-8">
+        {page.data.description}
+      </DocsDescription>
       <DocsBody>
         <MDX components={getMDXComponents()} />
       </DocsBody>

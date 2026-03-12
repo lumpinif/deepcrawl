@@ -111,6 +111,9 @@ catalogs:
     '@tabler/icons-react':
       specifier: ^3.36.1
       version: 3.36.1
+    '@tailwindcss/postcss':
+      specifier: ^4.1.18
+      version: 4.1.18
     '@tanstack/react-table':
       specifier: ^8.21.3
       version: 8.21.3
@@ -210,9 +213,15 @@ catalogs:
     tailwind-scrollbar:
       specifier: ^4.0.2
       version: 4.0.2
+    tailwindcss:
+      specifier: ^4.1.18
+      version: 4.1.18
     turbo:
       specifier: ^2.8.3
       version: 2.8.3
+    tw-animate-css:
+      specifier: ^1.4.0
+      version: 1.4.0
     typescript:
       specifier: ^5.9.3
       version: 5.9.3
@@ -266,12 +275,18 @@ importers:
       '@orpc/zod':
         specifier: 'catalog:'
         version: 1.13.4(@opentelemetry/api@1.9.0)(@orpc/contract@1.13.4(@opentelemetry/api@1.9.0))(@orpc/server@1.13.4(@opentelemetry/api@1.9.0)(ws@8.18.3))(ws@8.18.3)(zod@4.3.6)
+      '@tailwindcss/postcss':
+        specifier: 'catalog:'
+        version: 4.1.18
       better-auth:
         specifier: 'catalog:'
         version: 1.4.18(better-sqlite3@12.4.1)(drizzle-kit@0.31.8)(drizzle-orm@0.45.1(@cloudflare/workers-types@4.20260207.0)(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.0)(@types/pg@8.15.5)(@upstash/redis@1.36.2)(better-sqlite3@12.4.1)(kysely@0.28.8))(next@16.1.6(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.4)(vue@3.5.22(typescript@5.9.3))
       dotenv-cli:
         specifier: 'catalog:'
         version: 10.0.0
+      fumadocs-ui:
+        specifier: 'catalog:'
+        version: 16.5.1(@types/react-dom@19.2.3(@types/react@19.2.13))(@types/react@19.2.13)(fumadocs-core@16.5.1(@types/react@19.2.13)(lucide-react@0.563.0(react@19.2.4))(next@16.1.6(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(zod@4.3.6))(next@16.1.6(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
       hono:
         specifier: 'catalog:'
         version: 4.11.8
@@ -287,9 +302,18 @@ importers:
       shadcn:
         specifier: 'catalog:'
         version: 3.8.4(@types/node@24.10.9)(typescript@5.9.3)
+      tailwind-scrollbar:
+        specifier: 'catalog:'
+        version: 4.0.2(react@19.2.4)(tailwindcss@4.1.18)
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.1.18
       turbo:
         specifier: 'catalog:'
         version: 2.8.3
+      tw-animate-css:
+        specifier: 'catalog:'
+        version: 1.4.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
