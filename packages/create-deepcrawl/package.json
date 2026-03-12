@@ -1,6 +1,6 @@
 {
   "name": "create-deepcrawl",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Bootstrap and deploy a Deepcrawl stack from your terminal.",
   "license": "MIT",
   "type": "module",
